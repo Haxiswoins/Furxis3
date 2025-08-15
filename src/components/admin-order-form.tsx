@@ -178,43 +178,6 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
   return (
     <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-             <Card>
-                <CardHeader>
-                    <CardTitle>订单管理</CardTitle>
-                    <CardDescription>修改订单的核心状态和信息。</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <FormField control={form.control} name="total" render={({ field }) => ( <FormItem> <FormLabel>总价</FormLabel> <FormControl><Input placeholder="例如：5200.00" {...field} /></FormControl> <FormDescription>最终确定的订单价格。如果是估价，请保留文字说明。</FormDescription> <FormMessage /> </FormItem> )}/>
-                    <FormField
-                        control={form.control}
-                        name="status"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>订单状态</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="选择一个状态" />
-                                </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <SelectItem value="处理中">处理中</SelectItem>
-                                    <SelectItem value="待确认">待确认</SelectItem>
-                                    <SelectItem value="已确认">已确认</SelectItem>
-                                    <SelectItem value="退养中">退养中</SelectItem>
-                                    <SelectItem value="已发货">已发货</SelectItem>
-                                    <SelectItem value="已完成">已完成</SelectItem>
-                                    <SelectItem value="已取消">已取消</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField control={form.control} name="shippingTrackingId" render={({ field }) => ( <FormItem> <FormLabel>物流单号</FormLabel> <FormControl><Input placeholder="例如：SF123456789" {...field} /></FormControl> <FormDescription>如果订单已发货，请填写此项。</FormDescription> <FormMessage /> </FormItem> )}/>
-                </CardContent>
-            </Card>
-
             <Card>
                 <CardHeader>
                     <CardTitle>申请详情</CardTitle>
@@ -336,10 +299,47 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
                             </div>
                         )}
                         <div>
-                            <p className="font-semibold">用户ID (不可修改)</p>
+                            <p className="font-semibold">用户ID</p>
                             <p className="text-muted-foreground break-all text-xs">{order.userId}</p>
                         </div>
                     </div>
+                </CardContent>
+            </Card>
+
+             <Card>
+                <CardHeader>
+                    <CardTitle>订单管理</CardTitle>
+                    <CardDescription>修改订单的核心状态和信息。</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <FormField control={form.control} name="total" render={({ field }) => ( <FormItem> <FormLabel>总价</FormLabel> <FormControl><Input placeholder="例如：5200.00" {...field} /></FormControl> <FormDescription>最终确定的订单价格。如果是估价，请保留文字说明。</FormDescription> <FormMessage /> </FormItem> )}/>
+                    <FormField
+                        control={form.control}
+                        name="status"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>订单状态</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="选择一个状态" />
+                                </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    <SelectItem value="处理中">处理中</SelectItem>
+                                    <SelectItem value="待确认">待确认</SelectItem>
+                                    <SelectItem value="已确认">已确认</SelectItem>
+                                    <SelectItem value="退养中">退养中</SelectItem>
+                                    <SelectItem value="已发货">已发货</SelectItem>
+                                    <SelectItem value="已完成">已完成</SelectItem>
+                                    <SelectItem value="已取消">已取消</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField control={form.control} name="shippingTrackingId" render={({ field }) => ( <FormItem> <FormLabel>物流单号</FormLabel> <FormControl><Input placeholder="例如：SF123456789" {...field} /></FormControl> <FormDescription>如果订单已发货，请填写此项。</FormDescription> <FormMessage /> </FormItem> )}/>
                 </CardContent>
             </Card>
             
@@ -355,5 +355,4 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
     </Form>
   );
 }
-
     
