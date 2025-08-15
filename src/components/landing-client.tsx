@@ -1,15 +1,17 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import Link from 'next/link';
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import * as THREE from 'three';
 
 export function LandingPageClient() {
+  const router = useRouter();
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isInitialAnimationDone, setIsInitialAnimationDone] = useState(false);
+  const [isWarping, setIsWarping] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
 
@@ -35,63 +37,61 @@ export function LandingPageClient() {
 
     let animationFrameId: number;
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 5;
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.z = 1;
+    camera.rotation.x = Math.PI / 2;
 
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    
-    // Starfield
-    const starVertices: number[] = [];
-    for (let i = 0; i < 10000; i++) {
-        const x = (Math.random() - 0.5) * 2000;
-        const y = (Math.random() - 0.5) * 2000;
-        const z = (Math.random() - 0.5) * 2000;
-        starVertices.push(x, y, z);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const starCount = 6000;
+    const positions = new Float32Array(starCount * 3);
+    const geometry = new THREE.BufferGeometry();
+
+    for (let i = 0; i < starCount; i++) {
+        const i3 = i * 3;
+        positions[i3] = (Math.random() - 0.5) * 50;
+        positions[i3 + 1] = (Math.random() - 0.5) * 50;
+        positions[i3 + 2] = Math.random() * -1000;
     }
 
-    const starGeometry = new THREE.BufferGeometry();
-    starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     
-    const starMaterial = new THREE.PointsMaterial({
+    const material = new THREE.PointsMaterial({
+        size: 0.03,
         color: 0xffffff,
-        size: 0.7,
         transparent: true,
-        opacity: 0.8,
+        blending: THREE.AdditiveBlending,
     });
 
-    const stars = new THREE.Points(starGeometry, starMaterial);
+    const stars = new THREE.Points(geometry, material);
     scene.add(stars);
 
-
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
     };
 
-    const handleMouseMove = (event: MouseEvent) => {
-        mouse.current.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    }
-    
     window.addEventListener('resize', handleResize);
-    window.addEventListener('mousemove', handleMouseMove);
-
-    const clock = new THREE.Clock();
     
-    const animate = () => {
-      const elapsedTime = clock.getElapsedTime();
-      
-      // Animate stars
-      stars.position.z += elapsedTime * 0.002;
-      if (stars.position.z > 1000) stars.position.z = -1000;
+    const clock = new THREE.Clock();
 
-      // Make camera react to mouse movement
-      camera.position.x += (mouse.current.x * 2 - camera.position.x) * 0.02;
-      camera.position.y += (mouse.current.y * 2 - camera.position.y) * 0.02;
-      camera.lookAt(scene.position);
+    const animate = () => {
+      const delta = clock.getDelta();
+
+      if (isWarping) {
+        stars.material.size = 0.01;
+        stars.position.z += delta * 250;
+      } else {
+        stars.material.size = 0.03;
+        stars.position.z += delta * 0.2;
+      }
+      
+      if (stars.position.z > camera.position.z) {
+        stars.position.z = -1000;
+      }
 
       renderer.render(scene, camera);
       animationFrameId = requestAnimationFrame(animate);
@@ -101,24 +101,45 @@ export function LandingPageClient() {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationFrameId);
-      starGeometry.dispose();
-      starMaterial.dispose();
+      geometry.dispose();
+      material.dispose();
       renderer.dispose();
     };
-  }, []);
+  }, [isWarping]); // Re-run effect if isWarping changes to adjust speed
+
+  const handleWarp = () => {
+    setIsWarping(true);
+    setTimeout(() => {
+      router.push('/home');
+    }, 1200); // Animation duration before navigation
+  };
   
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
       {/* WebGL Starfield Canvas */}
-      <canvas ref={canvasRef} className="absolute inset-0 z-0"></canvas>
+      <canvas ref={canvasRef} className={cn("absolute inset-0 z-0 transition-opacity duration-1000", isWarping ? "opacity-30" : "opacity-100")}></canvas>
       
+       {/* Warp Tunnel Effect */}
+      <div className={cn(
+        "pointer-events-none fixed inset-0 z-10",
+        "bg-[radial-gradient(ellipse_at_center,_transparent_40%,_black_90%)]",
+        "transition-all duration-500 ease-in-out",
+        isWarping ? "opacity-100 scale-150" : "opacity-0 scale-100"
+      )}></div>
+
+       {/* White Flash Effect */}
+      <div className={cn(
+        "pointer-events-none fixed inset-0 z-40 bg-white",
+        "transition-opacity duration-300 ease-in-out",
+         isWarping ? "opacity-100" : "opacity-0"
+      )}></div>
+
       {/* Initial Loading Text Overlay */}
       <div
         className={cn(
           'absolute inset-0 z-30 flex flex-col items-center justify-center text-white transition-opacity duration-1000',
-          isInitialAnimationDone ? 'opacity-0' : 'opacity-100',
+          isInitialAnimationDone || isWarping ? 'opacity-0' : 'opacity-100',
           'pointer-events-none'
         )}
       >
@@ -129,19 +150,18 @@ export function LandingPageClient() {
        <div
         className={cn(
           'absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-1000',
-          isContentVisible ? 'opacity-100' : 'opacity-0'
+          (isContentVisible && !isWarping) ? 'opacity-100' : 'opacity-0'
         )}
       >
         <div className="absolute top-1/2 -translate-y-1/2">
-          <Link href="/home" passHref>
-            <button
-              aria-label="进入网站"
-              className="group relative flex h-28 w-28 items-center justify-center rounded-full border border-primary/50 bg-black/30 text-white transition-all duration-300 ease-in-out hover:scale-110 hover:border-primary hover:shadow-[0_0_35px_rgba(255,97,47,0.7)] active:scale-100 backdrop-blur-sm"
-            >
-              <div className="absolute inset-0 rounded-full border-2 border-white/20 scale-125 group-hover:scale-150 group-hover:opacity-0 transition-all duration-500 animate-pulse"></div>
-              <Rocket className="h-14 w-14 text-primary/80 transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1 group-hover:scale-110" />
-            </button>
-          </Link>
+          <button
+            onClick={handleWarp}
+            aria-label="进入网站"
+            className="group relative flex h-28 w-28 items-center justify-center rounded-full border border-primary/50 bg-black/30 text-white transition-all duration-300 ease-in-out hover:scale-110 hover:border-primary hover:shadow-[0_0_35px_rgba(255,97,47,0.7)] active:scale-100 backdrop-blur-sm"
+          >
+            <div className="absolute inset-0 rounded-full border-2 border-white/20 scale-125 group-hover:scale-150 group-hover:opacity-0 transition-all duration-500 animate-pulse"></div>
+            <Rocket className="h-14 w-14 text-primary/80 transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1 group-hover:scale-110" />
+          </button>
         </div>
       </div>
     </div>

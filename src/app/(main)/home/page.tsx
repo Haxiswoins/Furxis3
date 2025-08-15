@@ -1,9 +1,14 @@
 
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { getSiteContent } from '@/lib/data-service';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ContactInfo } from '@/components/contact-info';
+import { useEffect, useState } from 'react';
+import type { SiteContent } from '@/types';
+import { cn } from '@/lib/utils';
 
 function HomeCardSkeleton({ className }: { className?: string }) {
   return (
@@ -17,8 +22,19 @@ function HomeCardSkeleton({ className }: { className?: string }) {
   )
 }
 
-export default async function HomePage() {
-  const content = await getSiteContent();
+
+export default function HomePage() {
+  const [content, setContent] = useState<SiteContent | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    getSiteContent().then(data => {
+      setContent(data);
+      setLoading(false);
+    });
+  }, []);
 
   const cardLinkClass = "group block";
   const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]";
@@ -28,9 +44,11 @@ export default async function HomePage() {
   const cardTitleClass = "font-headline text-2xl md:text-4xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1";
   const cardDescriptionClass = "mt-2 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base";
 
-
   return (
-    <div className="flex flex-col min-h-[calc(100vh-8rem)]">
+    <div className={cn(
+      "flex flex-col min-h-[calc(100vh-8rem)] transition-opacity duration-1000 ease-in",
+      isMounted ? "opacity-100" : "opacity-0"
+    )}>
       <div className="flex-grow flex flex-col items-center justify-center">
         <div className="text-center mb-12">
           <Link href="/">
@@ -52,7 +70,7 @@ export default async function HomePage() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl">
             
-            {!content ? <HomeCardSkeleton /> : (
+            {loading ? <HomeCardSkeleton /> : (
               <Link href="/commission" className={cardLinkClass}>
                 <div className={cardDivClass}>
                   <Image
@@ -72,7 +90,7 @@ export default async function HomePage() {
               </Link>
             )}
 
-            {!content ? <HomeCardSkeleton /> : (
+            {loading ? <HomeCardSkeleton /> : (
               <Link href="/adoption" className={cardLinkClass}>
                 <div className={cardDivClass}>
                   <Image
@@ -91,7 +109,7 @@ export default async function HomePage() {
               </Link>
             )}
 
-            {!content ? <HomeCardSkeleton /> : (
+            {loading ? <HomeCardSkeleton /> : (
               <Link href="/works" className={cardLinkClass}>
                 <div className={cardDivClass}>
                   <Image
