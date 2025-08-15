@@ -1,7 +1,8 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter, notFound } from 'next/navigation';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,55 +13,37 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { chinaDivisions } from '@/lib/china-divisions';
 import { useAuth } from '@/context/AuthContext';
-import { createAdoptionApplication } from '@/lib/data-service';
-import type { Character } from '@/types';
-import { Skeleton } from '@/components/ui/skeleton';
+import type { Character, SiteContent } from '@/types';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogClose,
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
+type AdoptionApplicationFormProps = {
+    character: Character;
+    siteContent: SiteContent | null;
+    createAdoptionApplication: (userId: string, applicationData: any) => Promise<string>;
+}
 
-export default function AdoptionApplyPage() {
-  const params = useParams();
+export function AdoptionApplicationForm({ character, siteContent, createAdoptionApplication }: AdoptionApplicationFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const { user } = useAuth();
-
-  const [character, setCharacter] = useState<Character | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [cities, setCities] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
-  
-  const characterName = decodeURIComponent(params.name as string);
-
-  useEffect(() => {
-    if (!characterName) return;
-    // This is now a client component, and we can't call `getCharacterByName` directly.
-    // It should fetch data from an API or receive it as props.
-    // Since it's a separate page, it must fetch its own data.
-    // To resolve this without creating a new API, we can assume this data is passed
-    // through a different mechanism or this component logic is moved.
-    // The previous fix I made was incorrect by having a client component call a server function.
-    
-    // For now, to make it work, I'll remove the data fetching logic from here.
-    // The data should be passed via props from a parent server component.
-    // Let's refactor the page structure slightly.
-    setLoading(false); // Assume data will be passed.
-  }, [characterName]);
 
   const handleProvinceChange = (province: string) => {
     setSelectedProvince(province);
     const provinceData = chinaDivisions.find(p => p.name === province);
-    const newCities = provinceData ? provinceData.cities.map(c => c.name) : [];
+    const newCities = provinceData?.cities.map(c => c.name) || [];
     setCities(newCities);
     setSelectedCity('');
     setDistricts([]);
@@ -70,13 +53,18 @@ export default function AdoptionApplyPage() {
     setSelectedCity(city);
     const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
     const cityData = provinceData?.cities.find(c => c.name === city);
-    const newDistricts = cityData ? cityData.districts : [];
+    const newDistricts = cityData?.districts || [];
     setDistricts(newDistricts);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!user || !character) return;
+    if (!user || !character) {
+        if(!user) {
+            router.push(`/login?redirect=${window.location.pathname}`);
+        }
+        return;
+    };
 
     const formData = new FormData(e.currentTarget);
     const applicationData = {
@@ -94,67 +82,29 @@ export default function AdoptionApplyPage() {
     };
 
     try {
-      setLoading(true);
-      await createAdoptionApplication(user.uid, character, applicationData);
+      setSubmitting(true);
+      await createAdoptionApplication(user.uid, applicationData);
       toast({
         title: "恭喜您！申请已提交",
         description: `管理员将在三个工作日内联系您。`,
       });
       router.push('/orders');
     } catch (error) {
+      console.error("申请失败:", error);
       toast({
         title: "申请失败",
-        description: "提交申请时发生错误，请稍后再试。",
+        description: error instanceof Error ? error.message : "提交申请时发生错误，请稍后再试。",
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
-  
-  if (loading || !character) {
-     return (
-        <div className="max-w-4xl mx-auto py-8">
-            <Card>
-                <CardHeader className="text-center">
-                    <Skeleton className="h-9 w-1/2 mx-auto" />
-                    <Skeleton className="h-6 w-3/4 mx-auto mt-2" />
-                </CardHeader>
-                <CardContent className="space-y-4">
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                       {[...Array(7)].map((_, i) => (
-                           <div className="space-y-2" key={i}>
-                               <Skeleton className="h-4 w-1/4" />
-                               <Skeleton className="h-10 w-full" />
-                           </div>
-                       ))}
-                   </div>
-                   <div className="space-y-2">
-                        <Skeleton className="h-4 w-1/4" />
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                           <Skeleton className="h-10 w-full" />
-                           <Skeleton className="h-10 w-full" />
-                           <Skeleton className="h-10 w-full" />
-                        </div>
-                   </div>
-                   <div className="space-y-2">
-                        <Skeleton className="h-4 w-1/4" />
-                        <Skeleton className="h-20 w-full" />
-                   </div>
-                   <div className="text-center pt-4">
-                       <Skeleton className="h-12 w-48 mx-auto" />
-                   </div>
-                </CardContent>
-            </Card>
-        </div>
-     );
-  }
-  
+
   return (
-    <div className="max-w-4xl mx-auto py-8">
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-headline">领养申请：{characterName}</CardTitle>
+          <CardTitle className="text-3xl font-headline">领养申请：{character.name}</CardTitle>
           <CardDescription>请填写您的信息以完成申请。</CardDescription>
         </CardHeader>
         <CardContent>
@@ -236,22 +186,19 @@ export default function AdoptionApplyPage() {
                     </DialogHeader>
                     <ScrollArea className="h-[60vh] pr-6">
                         <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
-                            {'条款加载中...'}
+                            {siteContent?.adoptionContractText || '条款加载中...'}
                         </div>
                     </ScrollArea>
                   </DialogContent>
               </Dialog>
             </div>
             <div className="text-center pt-4">
-                <Button type="submit" size="lg" disabled={loading}>
-                    {loading ? '提交中...' : '确认申请领养'}
+                <Button type="submit" size="lg" disabled={submitting}>
+                    {submitting ? '提交中...' : '确认申请领养'}
                 </Button>
             </div>
           </form>
         </CardContent>
       </Card>
-    </div>
-  );
+  )
 }
-
-    
