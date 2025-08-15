@@ -37,9 +37,9 @@ export function LandingPageClient() {
 
     const galaxyParameters = {
         count: 50000,
-        size: 0.02,
+        size: 0.015,
         radius: 15,
-        branches: 4,
+        branches: 5,
         spin: 1.5,
         randomness: 0.5,
         randomnessPower: 3,
@@ -47,11 +47,11 @@ export function LandingPageClient() {
         outsideColor: '#1b3984'
     };
 
+    let galaxyGroup: THREE.Group | null = null;
     let geometry: THREE.BufferGeometry | null = null;
     let material: THREE.PointsMaterial | null = null;
     let points: THREE.Points | null = null;
-    let galaxyGroup: THREE.Group | null = null;
-
+    
     const generateGalaxy = () => {
         if (galaxyGroup) {
             geometry?.dispose();
@@ -65,8 +65,7 @@ export function LandingPageClient() {
         geometry = new THREE.BufferGeometry();
         const positions = new Float32Array(galaxyParameters.count * 3);
         const colors = new Float32Array(galaxyParameters.count * 3);
-        const randomness = new Float32Array(galaxyParameters.count * 3);
-
+        
         const colorInside = new THREE.Color(galaxyParameters.insideColor);
         const colorOutside = new THREE.Color(galaxyParameters.outsideColor);
 
@@ -80,14 +79,10 @@ export function LandingPageClient() {
             const randomX = Math.pow(Math.random(), galaxyParameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * galaxyParameters.randomness * radius;
             const randomY = Math.pow(Math.random(), galaxyParameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * galaxyParameters.randomness * radius;
             const randomZ = Math.pow(Math.random(), galaxyParameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * galaxyParameters.randomness * radius;
-            
-            randomness[i3] = randomX;
-            randomness[i3+1] = randomY;
-            randomness[i3+2] = randomZ;
 
-            positions[i3] = Math.cos(branchAngle + spinAngle) * radius;
-            positions[i3 + 1] = 0;
-            positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius;
+            positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
+            positions[i3 + 1] = randomY;
+            positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
             
             const mixedColor = colorInside.clone();
             mixedColor.lerp(colorOutside, radius / galaxyParameters.radius);
@@ -99,9 +94,7 @@ export function LandingPageClient() {
 
         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        geometry.setAttribute('aRandomness', new THREE.BufferAttribute(randomness, 3));
-
-
+        
         material = new THREE.PointsMaterial({
             size: galaxyParameters.size,
             sizeAttenuation: true,
@@ -138,41 +131,25 @@ export function LandingPageClient() {
 
     const animate = () => {
         const elapsedTime = clock.getElapsedTime();
-      
-        if(galaxyGroup && geometry) {
-            const positions = geometry.attributes.position as THREE.BufferAttribute;
-            const randomness = geometry.attributes.aRandomness as THREE.BufferAttribute;
 
-            // Orbital camera movement
-            const cameraAngle = elapsedTime * 0.05;
-            camera.position.x = Math.sin(cameraAngle) * 30;
-            camera.position.z = Math.cos(cameraAngle) * 30;
-            
-            // Mouse parallax effect
-            const parallaxX = mouse.current.x * 3;
-            const parallaxY = -mouse.current.y * 3;
-            camera.position.x += parallaxX;
-            camera.position.y += parallaxY;
-            
-            // Particle randomness
-            for (let i = 0; i < galaxyParameters.count; i++) {
-                const i3 = i * 3;
-                const x = positions.getX(i);
-                const y = positions.getY(i);
-                const z = positions.getZ(i);
-                
-                const randomX = randomness.getX(i);
-                const randomY = randomness.getY(i);
-                const randomZ = randomness.getZ(i);
+        // Orbital camera movement
+        const cameraAngle = elapsedTime * 0.05;
+        camera.position.x = Math.sin(cameraAngle) * 30;
+        camera.position.z = Math.cos(cameraAngle) * 30;
+        
+        // Mouse parallax effect
+        const parallaxX = mouse.current.x * 0.5;
+        const parallaxY = -mouse.current.y * 0.5;
+        
+        // Use a temporary group to handle camera positioning including parallax
+        const cameraGroup = new THREE.Group();
+        cameraGroup.position.copy(camera.position);
+        cameraGroup.position.x += parallaxX;
+        cameraGroup.position.y += parallaxY;
 
-                positions.setX(i, x + (Math.sin(elapsedTime * 0.1 + i) * randomX * 0.001));
-                positions.setY(i, y + (Math.cos(elapsedTime * 0.1 + i) * randomY * 0.001));
-                positions.setZ(i, z + (Math.sin(elapsedTime * 0.1 + i) * randomZ * 0.001));
-            }
-            positions.needsUpdate = true;
-        }
-      
+        camera.position.copy(cameraGroup.position);
         camera.lookAt(galaxyGroup.position);
+
         renderer.render(scene, camera);
         animationFrameId = requestAnimationFrame(animate);
     };
