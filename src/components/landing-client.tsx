@@ -14,7 +14,7 @@ export function LandingPageClient() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Hardcoded media values since the API is not available
-  const mediaUrl = "https://placehold.co/1920x1080/000000/FFFFFF.png?text=Welcome";
+  const mediaUrl = "https://placehold.co/1920x1080/000000/FFFFFF.png";
   const mediaTitle = "Welcome to Suitopia";
 
   useEffect(() => {
