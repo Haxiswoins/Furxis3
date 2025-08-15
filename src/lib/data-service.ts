@@ -42,7 +42,6 @@ export async function getSiteContent(): Promise<SiteContent | null> {
     const docRef = doc(db, 'site', 'content');
     const docSnap = await getDoc(docRef);
     
-    // Default content structure. This is now the single source of truth for defaults.
     const defaults: SiteContent = {
         commissionTitle: "委托申请",
         commissionDescription: "为您量身定制。",
@@ -67,22 +66,18 @@ export async function getSiteContent(): Promise<SiteContent | null> {
     };
 
     if (docSnap.exists()) {
-      // If content exists in Firestore, merge it with defaults to ensure all keys are present
       return { ...defaults, ...docSnap.data() };
     }
-    // If no content in Firestore, return the default structure.
-    // The frontend will prompt the admin to save this to initialize it.
     return defaults;
   } catch (error) {
     console.error("Error fetching site content:", error);
-    return null; // Return null on error
+    return null;
   }
 }
 
 
 export async function saveSiteContent(content: Partial<SiteContent>): Promise<void> {
     const docRef = doc(db, 'site', 'content');
-    // Use setDoc with merge: true to create or update the document.
     await setDoc(docRef, content, { merge: true });
 }
 
@@ -257,12 +252,17 @@ export async function updateOrder(orderId: string, data: Partial<Omit<Order, 'id
             let emailBody = siteContent.confirmationEmailBody || '';
             emailBody = emailBody.replace('{productName}', newOrder.productName);
             emailBody = emailBody.replace('{commissionOptionName}', newOrder.commissionOptionName || '');
-            await sendEmail({
-                to: newOrder.applicationData.email,
-                from: 'notification@suitopia.club', 
-                subject: siteContent.confirmationEmailSubject || '您的委托已中标！',
-                html: emailBody.replace(/\n/g, '<br>'),
-            });
+            
+            try {
+                await sendEmail({
+                    to: newOrder.applicationData.email,
+                    from: 'notification@suitopia.club', 
+                    subject: siteContent.confirmationEmailSubject || '您的委托已中标！',
+                    html: emailBody.replace(/\n/g, '<br>'),
+                });
+            } catch (e) {
+                console.error("Failed to send confirmation email:", e);
+            }
         }
     }
 }
@@ -306,12 +306,16 @@ export async function createAdoptionApplication(userId: string, character: Chara
     if (process.env.RESEND_API_KEY) {
         const siteContent = await getSiteContent();
         if (siteContent?.adminEmail) {
-            await sendEmail({
-                to: siteContent.adminEmail,
-                from: 'notification@suitopia.club', 
-                subject: `[新领养申请] ${character.name}`,
-                html: `<p>新领养申请: ${character.name} by ${applicationData.userName}. <a href="${BASE_URL}/admin/orders/edit/${newOrderRef.id}">处理订单</a></p>`
-            });
+            try {
+                await sendEmail({
+                    to: siteContent.adminEmail,
+                    from: 'notification@suitopia.club', 
+                    subject: `[新领养申请] ${character.name}`,
+                    html: `<p>新领养申请: ${character.name} by ${applicationData.userName}. <a href="${BASE_URL}/admin/orders/edit/${newOrderRef.id}">处理订单</a></p>`
+                });
+            } catch(e) {
+                console.error("Failed to send admin notification email:", e);
+            }
         }
     }
     return newOrderRef.id;
@@ -347,12 +351,16 @@ export async function createCommissionApplication(userId: string, commissionInfo
     if (process.env.RESEND_API_KEY) {
         const siteContent = await getSiteContent();
         if (siteContent?.adminEmail) {
-            await sendEmail({
-                to: siteContent.adminEmail,
-                from: 'notification@suitopia.club',
-                subject: `[新委托申请] ${commissionInfo.styleName}`,
-                html: `<p>新委托申请: ${commissionInfo.styleName} by ${applicationData.userName}. <a href="${BASE_URL}/admin/orders/edit/${docRef.id}">处理订单</a></p>`
-            });
+            try {
+                await sendEmail({
+                    to: siteContent.adminEmail,
+                    from: 'notification@suitopia.club',
+                    subject: `[新委托申请] ${commissionInfo.styleName}`,
+                    html: `<p>新委托申请: ${commissionInfo.styleName} by ${applicationData.userName}. <a href="${BASE_URL}/admin/orders/edit/${docRef.id}">处理订单</a></p>`
+                });
+            } catch(e) {
+                console.error("Failed to send admin notification email:", e);
+            }
         }
     }
 
@@ -369,12 +377,16 @@ export async function cancelOrder(orderId: string, reason: string): Promise<void
   if (process.env.RESEND_API_KEY && order) {
       const siteContent = await getSiteContent();
       if (siteContent?.adminEmail) {
-          await sendEmail({
-              to: siteContent.adminEmail,
-              from: 'notification@suitopia.club',
-              subject: `[退养申请] 订单 #${order.orderNumber}`,
-              html: `<p>用户申请取消订单: ${order.orderNumber}. 理由: ${reason}. <a href="${BASE_URL}/admin/orders/edit/${order.id}">处理订单</a></p>`
-          });
+          try {
+            await sendEmail({
+                to: siteContent.adminEmail,
+                from: 'notification@suitopia.club',
+                subject: `[退养申请] 订单 #${order.orderNumber}`,
+                html: `<p>用户申请取消订单: ${order.orderNumber}. 理由: ${reason}. <a href="${BASE_URL}/admin/orders/edit/${order.id}">处理订单</a></p>`
+            });
+          } catch(e) {
+              console.error("Failed to send admin notification email for cancellation:", e);
+          }
       }
   }
 }
