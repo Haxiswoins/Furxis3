@@ -17,7 +17,7 @@ export function LandingPageClient() {
   useEffect(() => {
     const contentTimer = setTimeout(() => {
       setIsContentVisible(true);
-    }, 2500);
+    }, 500); // Faster appearance for better UX
 
     return () => {
       clearTimeout(contentTimer);
@@ -29,44 +29,90 @@ export function LandingPageClient() {
 
     let animationFrameId: number;
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.z = 5;
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 10;
 
     const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    const starCount = 3000;
-    const positions = new Float32Array(starCount * 3);
-    const starInfo = new Float32Array(starCount); // To store random phase for drift
+    const galaxyParameters = {
+        count: 50000,
+        size: 0.02,
+        radius: 15,
+        branches: 4,
+        spin: 1.5,
+        randomness: 0.5,
+        randomnessPower: 3,
+        insideColor: '#ff6030',
+        outsideColor: '#1b3984'
+    };
+
+    let geometry: THREE.BufferGeometry | null = null;
+    let material: THREE.PointsMaterial | null = null;
+    let points: THREE.Points | null = null;
     
-    for (let i = 0; i < starCount; i++) {
-        const i3 = i * 3;
-        positions[i3] = (Math.random() - 0.5) * 100;
-        positions[i3 + 1] = (Math.random() - 0.5) * 100;
-        positions[i3 + 2] = (Math.random() - 0.5) * 1000;
-        starInfo[i] = Math.random() * Math.PI * 2;
+    const generateGalaxy = () => {
+        if (points) {
+            geometry?.dispose();
+            material?.dispose();
+            scene.remove(points);
+        }
+
+        geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(galaxyParameters.count * 3);
+        const colors = new Float32Array(galaxyParameters.count * 3);
+
+        const colorInside = new THREE.Color(galaxyParameters.insideColor);
+        const colorOutside = new THREE.Color(galaxyParameters.outsideColor);
+
+        for (let i = 0; i < galaxyParameters.count; i++) {
+            const i3 = i * 3;
+            
+            // Position
+            const radius = Math.random() * galaxyParameters.radius;
+            const spinAngle = radius * galaxyParameters.spin;
+            const branchAngle = ((i % galaxyParameters.branches) / galaxyParameters.branches) * Math.PI * 2;
+
+            const randomX = Math.pow(Math.random(), galaxyParameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * galaxyParameters.randomness * radius;
+            const randomY = Math.pow(Math.random(), galaxyParameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * galaxyParameters.randomness * radius;
+            const randomZ = Math.pow(Math.random(), galaxyParameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * galaxyParameters.randomness * radius;
+
+            positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
+            positions[i3 + 1] = randomY;
+            positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+            
+            // Color
+            const mixedColor = colorInside.clone();
+            mixedColor.lerp(colorOutside, radius / galaxyParameters.radius);
+
+            colors[i3] = mixedColor.r;
+            colors[i3 + 1] = mixedColor.g;
+            colors[i3 + 2] = mixedColor.b;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+        material = new THREE.PointsMaterial({
+            size: galaxyParameters.size,
+            sizeAttenuation: true,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+            vertexColors: true
+        });
+
+        points = new THREE.Points(geometry, material);
+        scene.add(points);
     }
     
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('aRandom', new THREE.BufferAttribute(starInfo, 1));
-
-    const material = new THREE.PointsMaterial({
-        size: 0.05,
-        color: 0xffffff,
-        transparent: true,
-        blending: THREE.AdditiveBlending,
-        sizeAttenuation: true,
-    });
-
-    const stars = new THREE.Points(geometry, material);
-    scene.add(stars);
+    generateGalaxy();
 
     const handleResize = () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     };
     
     const handleMouseMove = (event: MouseEvent) => {
@@ -82,19 +128,16 @@ export function LandingPageClient() {
     const animate = () => {
       const elapsedTime = clock.getElapsedTime();
       
-      // Particle movement logic for drift
-      const positions = stars.geometry.attributes.position.array as Float32Array;
-      const randoms = stars.geometry.attributes.aRandom.array as Float32Array;
-      for (let i = 0; i < starCount; i++) {
-        const i3 = i * 3;
-        positions[i3] += Math.sin(elapsedTime * 0.1 + randoms[i]) * 0.001;
-        positions[i3 + 1] += Math.cos(elapsedTime * 0.1 + randoms[i]) * 0.001;
+      // Animate galaxy
+      if(points) {
+          points.rotation.y = elapsedTime * 0.05;
       }
-      stars.geometry.attributes.position.needsUpdate = true;
       
       // Parallax effect based on mouse
-      scene.rotation.y += (mouse.current.x * 0.1 - scene.rotation.y) * 0.05;
-      scene.rotation.x += (-mouse.current.y * 0.1 - scene.rotation.x) * 0.05;
+      // Dampen the movement for a smoother effect
+      camera.position.x += (mouse.current.x * 0.5 - camera.position.x) * 0.02;
+      camera.position.y += (-mouse.current.y * 0.5 - camera.position.y) * 0.02;
+      camera.lookAt(scene.position);
 
       renderer.render(scene, camera);
       animationFrameId = requestAnimationFrame(animate);
@@ -106,8 +149,8 @@ export function LandingPageClient() {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationFrameId);
-      geometry.dispose();
-      material.dispose();
+      geometry?.dispose();
+      material?.dispose();
       renderer.dispose();
     };
   }, []);
@@ -116,7 +159,7 @@ export function LandingPageClient() {
     setIsExiting(true);
     setTimeout(() => {
       router.push('/home');
-    }, 1000); // Wait for fade-out animation
+    }, 1000); 
   };
   
   return (
