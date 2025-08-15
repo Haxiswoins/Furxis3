@@ -3,7 +3,7 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, CharacterSeries, Work } from '@/types';
+import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, Work } from '@/types';
 import { sendEmail } from '@/ai/flows/send-email-flow';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
@@ -236,28 +236,24 @@ export async function updateOrder(orderId: string, data: Partial<Omit<Order, 'id
 
     const originalOrder = allOrders[orderIndex];
     
-    // Merge the applicationData separately
     const updatedApplicationData = {
         ...originalOrder.applicationData,
         ...data.applicationData,
     };
-
-    // Construct the final updated order object
-    const updatedOrder = {
-        ...originalOrder,
-        ...data,
-        applicationData: updatedApplicationData,
-    };
     
-    // Remove the nested applicationData from the top-level data object to avoid duplication
-    delete (updatedOrder as any).applicationData.applicationData;
+    const updatedOrder: Order = {
+      ...originalOrder,
+      ...data,
+      applicationData: updatedApplicationData,
+    };
 
     allOrders[orderIndex] = updatedOrder;
 
     await writeData('orders.json', allOrders);
     
-    // If status changed to '待确认', send confirmation email
-    if (data.status === '待确认' && originalOrder.status !== '待确认' && process.env.RESEND_API_KEY) {
+    // Side effect: Send confirmation email if status changes to '待确认'
+    const shouldSendEmail = data.status === '待确认' && originalOrder.status !== '待确认';
+    if (shouldSendEmail && process.env.RESEND_API_KEY) {
         const siteContent = await getSiteContent();
         if(updatedOrder.applicationData?.email && siteContent) {
             let emailBody = siteContent.confirmationEmailBody || '';
@@ -269,10 +265,10 @@ export async function updateOrder(orderId: string, data: Partial<Omit<Order, 'id
                     to: updatedOrder.applicationData.email,
                     from: 'notification@suitopia.club', 
                     subject: siteContent.confirmationEmailSubject || '您的委托申请已中标！',
-                    html: emailBody.replace(/\\n/g, '<br>'),
+                    html: emailBody.replace(/\n/g, '<br>'),
                 });
-            } catch (e) {
-                console.error("Failed to send confirmation email:", e);
+            } catch (emailError) {
+                console.error("Failed to send confirmation email, but order was updated successfully. Error:", emailError);
             }
         }
     }
