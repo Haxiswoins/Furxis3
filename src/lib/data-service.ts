@@ -245,6 +245,7 @@ export async function deleteOrder(id: string): Promise<void> {
 // Order Actions (Application Creation)
 export async function createAdoptionApplication(userId: string, character: Character, applicationData: ApplicationData): Promise<string> {
     const orderNumber = `S${new Date().toISOString().slice(0,10).replace(/-/g, '')}${Math.floor(100 + Math.random() * 900)}`;
+    const batch = writeBatch(db);
 
     const newOrderRef = doc(collection(db, 'orders'));
     const charRef = doc(db, 'characters', character.id);
@@ -261,16 +262,16 @@ export async function createAdoptionApplication(userId: string, character: Chara
       shippingAddress: `${applicationData.province} ${applicationData.city} ${applicationData.district} ${applicationData.addressDetail}`,
       applicationData
     };
+    
+    batch.set(newOrderRef, newOrderData);
 
-    await runTransaction(db, async (transaction) => {
-        const charDoc = await transaction.get(charRef);
-        if (!charDoc.exists()) {
-            throw "Character does not exist!";
-        }
+    const charDoc = await getDoc(charRef);
+    if(charDoc.exists()) {
         const currentApplicants = charDoc.data().applicants || 0;
-        transaction.update(charRef, { applicants: currentApplicants + 1 });
-        transaction.set(newOrderRef, newOrderData);
-    });
+        batch.update(charRef, { applicants: currentApplicants + 1 });
+    }
+
+    await batch.commit();
 
     if (process.env.RESEND_API_KEY) {
         const siteContent = await getSiteContent();
