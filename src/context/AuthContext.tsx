@@ -71,6 +71,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, pass: string): Promise<FirebaseUser> => {
     const userCredential = await signInWithEmailAndPassword(auth, email, pass);
     // onAuthStateChanged will handle setting the user state.
+    // We explicitly create the user object here to include the UID for the new project
+    const loggedInUser: CustomUser = {
+      uid: userCredential.user.uid,
+      email: userCredential.user.email,
+      isAdmin: userCredential.user.email === ADMIN_EMAIL
+    };
+    // The onAuthStateChanged listener will also fire, but setting it here can be useful for immediate actions post-login
+    setUser(loggedInUser);
     return userCredential.user;
   };
 
