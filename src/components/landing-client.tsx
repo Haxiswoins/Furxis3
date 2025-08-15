@@ -43,10 +43,10 @@ export function LandingPageClient() {
 
   useEffect(() => {
     // This timer ensures that the main content becomes visible after a short delay,
-    // regardless of how long the image takes to load. This addresses the 3-second timeout requirement.
+    // to meet the timeout requirement.
     const contentTimer = setTimeout(() => {
       setIsContentVisible(true);
-    }, 2000); // Make content visible after 2 seconds
+    }, 3000); // Make content visible after 3 seconds
 
     if (media?.url) {
         const img = new (window as any).Image();
