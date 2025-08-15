@@ -63,12 +63,11 @@ const nextConfig = {
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     FIREBASE_SERVICE_ACCOUNT_KEY: process.env.FIREBASE_SERVICE_ACCOUNT_KEY,
   },
-  // Adding experimental serverActions config
   experimental: {
     serverActions: {
-      bodySizeLimit: '4mb', // Increase body size limit for file uploads if needed
+      bodySizeLimit: '4mb',
     },
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;

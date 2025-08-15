@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@genkit-ai/firebase": "^1.0.0",
     "@genkit-ai/googleai": "^1.0.0",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-accordion": "^1.2.0",
@@ -39,7 +40,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.1.5",
-    "firebase": "^10.12.2",
+    "firebase": "^12.1.0",
     "firebase-admin": "^12.2.0",
     "genkit": "^1.0.0",
     "lucide-react": "^0.395.0",
