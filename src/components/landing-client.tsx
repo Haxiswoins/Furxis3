@@ -18,6 +18,7 @@ export function LandingPageClient() {
   const [media, setMedia] = useState<ApodMedia | null>(null);
   const [isMediaLoaded, setIsMediaLoaded] = useState(false);
   const [isContentVisible, setIsContentVisible] = useState(false);
+  const [isInitialAnimationDone, setIsInitialAnimationDone] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -29,7 +30,6 @@ export function LandingPageClient() {
         setMedia(data);
       } catch (error) {
         console.error(error);
-        // On error, set a fallback image to ensure the page is always functional
         setMedia({ 
           url: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop', 
           title: 'Suitopia Fallback', 
@@ -39,15 +39,25 @@ export function LandingPageClient() {
     }
 
     fetchApod();
+
+    // This timer ensures that the main content becomes visible after a short delay.
+    const contentTimer = setTimeout(() => {
+      setIsContentVisible(true);
+    }, 3000); // Make content visible after 3 seconds guaranteed.
+
+    // This timer handles the initial "The Stars Arriving" fade-out effect.
+    const animationTimer = setTimeout(() => {
+        setIsInitialAnimationDone(true);
+    }, 2500); // Start fading out the text slightly before the button appears.
+
+
+    return () => {
+        clearTimeout(contentTimer);
+        clearTimeout(animationTimer);
+    }
   }, []);
 
   useEffect(() => {
-    // This timer ensures that the main content becomes visible after a short delay,
-    // to meet the timeout requirement.
-    const contentTimer = setTimeout(() => {
-      setIsContentVisible(true);
-    }, 3000); // Make content visible after 3 seconds
-
     if (media?.url) {
         const img = new (window as any).Image();
         img.src = media.url;
@@ -55,8 +65,6 @@ export function LandingPageClient() {
           setIsMediaLoaded(true);
         };
     }
-    
-    return () => clearTimeout(contentTimer);
   }, [media]);
 
   useEffect(() => {
@@ -123,7 +131,7 @@ export function LandingPageClient() {
             priority
             sizes="100vw"
             style={{objectFit: "cover"}}
-            data-ai-hint="space galaxy nebula"
+            data-ai-hint="space galaxy"
           />
         )}
         {/* Always have a dark overlay */}
@@ -133,11 +141,11 @@ export function LandingPageClient() {
       {/* WebGL Wave Canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 z-10"></canvas>
       
-      {/* Initial Loading Text Overlay. This fades out as content becomes visible. */}
+      {/* Initial Loading Text Overlay. This fades out. */}
       <div
         className={cn(
           'absolute inset-0 z-30 flex flex-col items-center justify-center text-white transition-opacity duration-1000',
-          isContentVisible ? 'opacity-0' : 'opacity-100',
+          isInitialAnimationDone ? 'opacity-0' : 'opacity-100',
           'pointer-events-none bg-black'
         )}
       >
