@@ -173,7 +173,7 @@ export function LandingPageClient() {
 
         if (isWarping) {
             warpFactor = Math.min(warpFactor + 0.005, 1); 
-            const easedWarp = warpFactor * warpFactor;
+            const easedWarp = 1 - Math.pow(1 - warpFactor, 5); // EaseOutQuint
             
             // Move camera forward
             camera.position.z -= easedWarp * 0.5;
@@ -200,7 +200,6 @@ export function LandingPageClient() {
             camera.position.y += (parallaxY - camera.position.y) * 0.02;
         }
         
-        camera.lookAt(galaxyGroup.position);
         renderer.render(scene, camera);
         animationFrameIdRef.current = requestAnimationFrame(animate);
     };
@@ -246,7 +245,7 @@ export function LandingPageClient() {
         isContentVisible ? "opacity-100" : "opacity-0",
         isWarping ? 'opacity-0' : 'opacity-100'
       )}>
-         <p>Developed by Haxis</p>
+         <p>Developed by Haxis and Mark</p>
       </div>
 
     </div>
