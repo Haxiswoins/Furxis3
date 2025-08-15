@@ -172,7 +172,7 @@ export function LandingPageClient() {
         isContentVisible ? 'opacity-100' : 'opacity-0',
         isExiting ? 'opacity-0' : 'opacity-100'
       )}>
-        <div className="absolute top-1/2 -translate-y-1/2">
+        <div className="absolute bottom-[20%]">
           <button
             onClick={handleNavigate}
             aria-label="进入网站"
