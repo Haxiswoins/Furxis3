@@ -1,3 +1,4 @@
+
 /** @type {import('next').NextConfig} */
 
 // Helper function to extract hostname from a URL
@@ -71,4 +72,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
