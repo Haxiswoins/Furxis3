@@ -10,11 +10,8 @@ import * as THREE from 'three';
 export function LandingPageClient() {
   const router = useRouter();
   const [isContentVisible, setIsContentVisible] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
-  const isWarping = useRef(false);
-  const warpFactor = useRef(0);
 
   useEffect(() => {
     const contentTimer = setTimeout(() => {
@@ -115,7 +112,7 @@ export function LandingPageClient() {
 
         points = new THREE.Points(geometry, material);
         galaxyGroup.add(points);
-
+        
         galaxyGroup.rotation.x = Math.PI * 0.2;
         galaxyGroup.position.y = 5;
     }
@@ -130,7 +127,6 @@ export function LandingPageClient() {
     };
     
     const handleMouseMove = (event: MouseEvent) => {
-        if (isWarping.current) return;
         mouse.current.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
     }
@@ -147,46 +143,33 @@ export function LandingPageClient() {
             const positions = geometry.attributes.position as THREE.BufferAttribute;
             const randomness = geometry.attributes.aRandomness as THREE.BufferAttribute;
 
-            if (isWarping.current) {
-                // Warp animation
-                warpFactor.current += 0.05; // Acceleration
-                galaxyGroup.rotation.y += 0.05 * warpFactor.current;
+            // Orbital camera movement
+            const cameraAngle = elapsedTime * 0.05;
+            camera.position.x = Math.sin(cameraAngle) * 30;
+            camera.position.z = Math.cos(cameraAngle) * 30;
+            
+            // Mouse parallax effect
+            const parallaxX = mouse.current.x * 3;
+            const parallaxY = -mouse.current.y * 3;
+            camera.position.x += parallaxX;
+            camera.position.y += parallaxY;
+            
+            // Particle randomness
+            for (let i = 0; i < galaxyParameters.count; i++) {
+                const i3 = i * 3;
+                const x = positions.getX(i);
+                const y = positions.getY(i);
+                const z = positions.getZ(i);
                 
-                for (let i = 0; i < positions.count; i++) {
-                    const z = positions.getZ(i);
-                    positions.setZ(i, z + 0.1 * warpFactor.current);
-                    if (positions.getZ(i) > camera.position.z) {
-                        positions.setZ(i, -galaxyParameters.radius * 1.5);
-                    }
-                }
-                positions.needsUpdate = true;
-            } else {
-                // Orbital camera movement
-                const cameraAngle = elapsedTime * 0.05;
-                camera.position.x = Math.sin(cameraAngle) * 30;
-                camera.position.z = Math.cos(cameraAngle) * 30;
-                
-                // Mouse parallax effect
-                camera.position.x += mouse.current.x * 3;
-                camera.position.y += -mouse.current.y * 3;
-                
-                // Particle randomness
-                for (let i = 0; i < galaxyParameters.count; i++) {
-                    const i3 = i * 3;
-                    const x = positions.getX(i);
-                    const y = positions.getY(i);
-                    const z = positions.getZ(i);
-                    
-                    const randomX = randomness.getX(i);
-                    const randomY = randomness.getY(i);
-                    const randomZ = randomness.getZ(i);
+                const randomX = randomness.getX(i);
+                const randomY = randomness.getY(i);
+                const randomZ = randomness.getZ(i);
 
-                    positions.setX(i, x + (Math.sin(elapsedTime * 0.1 + i) * randomX * 0.001));
-                    positions.setY(i, y + (Math.cos(elapsedTime * 0.1 + i) * randomY * 0.001));
-                    positions.setZ(i, z + (Math.sin(elapsedTime * 0.1 + i) * randomZ * 0.001));
-                }
-                positions.needsUpdate = true;
+                positions.setX(i, x + (Math.sin(elapsedTime * 0.1 + i) * randomX * 0.001));
+                positions.setY(i, y + (Math.cos(elapsedTime * 0.1 + i) * randomY * 0.001));
+                positions.setZ(i, z + (Math.sin(elapsedTime * 0.1 + i) * randomZ * 0.001));
             }
+            positions.needsUpdate = true;
         }
       
         camera.lookAt(galaxyGroup.position);
@@ -207,24 +190,16 @@ export function LandingPageClient() {
   }, []);
 
   const handleNavigate = () => {
-    isWarping.current = true;
-    setIsExiting(true); // Fades out the button and text
-    setTimeout(() => {
-      router.push('/home');
-    }, 1500); // Wait for the animation to play out
+    router.push('/home');
   };
   
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
-      <canvas ref={canvasRef} className={cn(
-          "absolute inset-0 z-0 transition-opacity duration-1000",
-          isExiting ? "opacity-30" : "opacity-100"
-      )}></canvas>
+      <canvas ref={canvasRef} className="absolute inset-0 z-0"></canvas>
       
       <div className={cn(
         "absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-1000",
-        isContentVisible ? 'opacity-100' : 'opacity-0',
-        isExiting ? 'opacity-0' : 'opacity-100'
+        isContentVisible ? 'opacity-100' : 'opacity-0'
       )}>
         <div className="absolute bottom-[20%]">
           <button
@@ -237,16 +212,10 @@ export function LandingPageClient() {
           </button>
         </div>
       </div>
-       
-      {/* White flash overlay */}
-      <div className={cn(
-          "absolute inset-0 z-30 bg-white pointer-events-none transition-opacity duration-500",
-          isExiting ? "opacity-100 delay-1000" : "opacity-0"
-      )}></div>
 
       <div className={cn(
         "absolute bottom-8 w-full text-center text-xs text-white/40 transition-opacity duration-1000 ease-in-out",
-        isContentVisible && !isExiting ? "opacity-100" : "opacity-0"
+        isContentVisible ? "opacity-100" : "opacity-0"
       )}>
          <p>Developed by Haxis</p>
       </div>
