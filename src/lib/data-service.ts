@@ -226,26 +226,47 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
   return allOrders.find(o => o.id === orderId) || null;
 }
 
-export async function updateOrder(orderId: string, data: Partial<Omit<Order, 'id'>>): Promise<void> {
+export async function updateOrder(orderId: string, data: Partial<Omit<Order, 'id' | 'applicationData'>> & { applicationData?: ApplicationData }): Promise<void> {
     const allOrders = await getAllOrders();
     const orderIndex = allOrders.findIndex(o => o.id === orderId);
-    if (orderIndex > -1) {
-        allOrders[orderIndex] = { ...allOrders[orderIndex], ...data };
-        await writeData('orders.json', allOrders);
+    
+    if (orderIndex === -1) {
+        throw new Error("Order not found");
     }
+
+    const originalOrder = allOrders[orderIndex];
+    
+    // Merge the applicationData separately
+    const updatedApplicationData = {
+        ...originalOrder.applicationData,
+        ...data.applicationData,
+    };
+
+    // Construct the final updated order object
+    const updatedOrder = {
+        ...originalOrder,
+        ...data,
+        applicationData: updatedApplicationData,
+    };
+    
+    // Remove the nested applicationData from the top-level data object to avoid duplication
+    delete (updatedOrder as any).applicationData.applicationData;
+
+    allOrders[orderIndex] = updatedOrder;
+
+    await writeData('orders.json', allOrders);
     
     // If status changed to '待确认', send confirmation email
-    if (data.status === '待确认' && process.env.RESEND_API_KEY) {
-        const newOrder = await getOrderById(orderId);
+    if (data.status === '待确认' && originalOrder.status !== '待确认' && process.env.RESEND_API_KEY) {
         const siteContent = await getSiteContent();
-        if(newOrder && newOrder.applicationData?.email && siteContent) {
+        if(updatedOrder.applicationData?.email && siteContent) {
             let emailBody = siteContent.confirmationEmailBody || '';
-            emailBody = emailBody.replace('{productName}', newOrder.productName);
-            emailBody = emailBody.replace('{commissionOptionName}', newOrder.commissionOptionName || '');
+            emailBody = emailBody.replace('{productName}', updatedOrder.productName);
+            emailBody = emailBody.replace('{commissionOptionName}', updatedOrder.commissionOptionName || '');
             
             try {
                 await sendEmail({
-                    to: newOrder.applicationData.email,
+                    to: updatedOrder.applicationData.email,
                     from: 'notification@suitopia.club', 
                     subject: siteContent.confirmationEmailSubject || '您的委托申请已中标！',
                     html: emailBody.replace(/\\n/g, '<br>'),
@@ -256,6 +277,7 @@ export async function updateOrder(orderId: string, data: Partial<Omit<Order, 'id
         }
     }
 }
+
 
 export async function deleteOrder(id: string): Promise<void> {
     let allOrders = await getAllOrders();
