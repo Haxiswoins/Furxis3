@@ -1,0 +1,41 @@
+
+[
+  {
+    "id": "char_1723282498223",
+    "seriesId": "series_1723282278917",
+    "name": "星尘",
+    "species": "机械狐",
+    "price": "18888",
+    "description": "拥有在星际间穿梭能力的机械狐，外壳由未知合金构成，能反射出星云的色彩。",
+    "tags": [
+      "赛博朋克",
+      "狐狸",
+      "LED"
+    ],
+    "applicants": 12,
+    "imageUrl": "https://placehold.co/600x800.png",
+    "imageUrl1": "https://placehold.co/600x800.png",
+    "imageUrl2": "https://placehold.co/600x800.png",
+    "imageUrl3": "https://placehold.co/600x800.png",
+    "imageUrl4": "https://placehold.co/600x800.png"
+  },
+  {
+    "id": "char_1723282568656",
+    "seriesId": "series_1723282303884",
+    "name": "烛龙",
+    "species": "神话龙",
+    "price": "25000",
+    "description": "闭眼为夜，睁眼为昼的古老神龙。鳞片在不同光线下会呈现火焰与深海的色泽。",
+    "tags": [
+      "中国风",
+      "龙",
+      "神话"
+    ],
+    "applicants": 8,
+    "imageUrl": "https://placehold.co/600x800.png",
+    "imageUrl1": "https://placehold.co/600x800.png",
+    "imageUrl2": "https://placehold.co/600x800.png",
+    "imageUrl3": "https://placehold.co/600x800.png",
+    "imageUrl4": "https://placehold.co/600x800.png"
+  }
+]

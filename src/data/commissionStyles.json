@@ -1,0 +1,27 @@
+
+[
+  {
+    "id": "style_1723282148161",
+    "commissionOptionId": "comm_1723281987010",
+    "name": "标准全身",
+    "price": "￥15000 起",
+    "description": "包含头壳、身体、手爪、脚爪和尾巴的全套兽装，采用高质量人造毛皮制作。",
+    "imageUrl": "https://placehold.co/600x800.png",
+    "tags": [
+      "全身",
+      "标准"
+    ]
+  },
+  {
+    "id": "style_1723282194168",
+    "commissionOptionId": "comm_1723281987010",
+    "name": "半身（含头壳）",
+    "price": "￥8000 起",
+    "description": "包含头壳、手爪和尾巴。适合轻度活动和展示。",
+    "imageUrl": "https://placehold.co/600x800.png",
+    "tags": [
+      "半身",
+      "轻量"
+    ]
+  }
+]

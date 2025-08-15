@@ -43,7 +43,7 @@ npm install
 
 ### **第 4 步：配置环境变量**
 
-为了让应用能够连接到 Firebase 和其他服务，您需要配置环境变量。这是**至关重要**的一步。
+为了让应用能够连接到 Firebase 用户认证和 Resend 邮件服务，您需要配置环境变量。这是**至关重要**的一步。
 
 1.  在项目根目录中，创建一个名为 `.env.local` 的文件：
 
@@ -65,25 +65,28 @@ npm install
 # 请确保填写您网站的完整公网访问地址，例如：https://www.yourdomain.com 或 http://YOUR_SERVER_IP:3000
 NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 
-# NASA APOD API Key (获取地址: https://api.nasa.gov/)
-# 这个密钥现在是后端服务获取每日天文图所必需的。没有它，网站封面将无法显示。
-NEXT_PUBLIC_NASA_API_KEY="23OevMgRUnGTKdJ5DvwBx2cSpXLF5SrpTAuIuEwb"
-
-# Firebase 项目配置
+# Firebase 项目配置 (仅需要认证部分)
 # 您可以从 Firebase 控制台的项目设置中找到这些值
-NEXT_PUBLIC_FIREBASE_API_KEY="AIzaSyCJjPjbZQZ09wEGyOOgdGAy7z_GUcGHMNU"
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="suitopia-ft2z7.firebaseapp.com"
-NEXT_PUBLIC_FIREBASE_PROJECT_ID="suitopia-ft2z7"
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="suitopia-ft2z7.firebasestorage.app"
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="707178738482"
-NEXT_PUBLIC_FIREBASE_APP_ID="1:707178738482:web:9d089d71aea7ec9ab75d2b"
+NEXT_PUBLIC_FIREBASE_API_KEY="AIzaSyBrer2y0opAjDyQOjskwjlj4QCY2ouBRM8"
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="fursuit-commission-hub.firebaseapp.com"
+NEXT_PUBLIC_FIREBASE_PROJECT_ID="fursuit-commission-hub"
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="fursuit-commission-hub.firebasestorage.app"
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="430525481988"
+NEXT_PUBLIC_FIREBASE_APP_ID="1:430525481988:web:e1ac745830fa0a02cae151"
+
 
 # Resend API Key for Email Notifications (获取地址: https://resend.com/)
 # 这个密钥是发送邮件通知功能所必需的。
-RESEND_API_KEY="re_Vtme2ydt_JvmGrAWzFSX2C51AY1wUTPdi"
+RESEND_API_KEY="re_..."
+
+# Firebase 服务账号密钥 (用于服务器端图片上传)
+# 这是一个非常重要的 JSON 字符串，请从 Firebase 控制台 > 项目设置 > 服务账号 > 生成新的私钥处获取。
+# 获取后，请将整个 JSON 文件的内容压缩成一行，并用引号包裹起来。
+# 例如: FIREBASE_SERVICE_ACCOUNT_KEY='{"type": "service_account", "project_id": "...", ...}'
+FIREBASE_SERVICE_ACCOUNT_KEY=''
 
     ```
-    > **重要提示**: 这些密钥是应用正常运行所必需的。特别是 Firebase 的密钥，它们将您的应用与您的 Firebase 认证服务连接起来。而 NASA 的密钥则直接决定了网站封面能否成功加载。`RESEND_API_KEY` 是邮件通知功能的核心。
+    > **重要提示**: 这些密钥是应用正常运行所必需的。特别是 Firebase 的密钥，它们将您的应用与您的 Firebase 认证服务连接起来。`RESEND_API_KEY` 是邮件通知功能的核心。`FIREBASE_SERVICE_ACCOUNT_KEY` 是图片上传功能所必需的。
 
 4.  保存并关闭文件 (在 `nano` 中，按 `Ctrl+X`，然后按 `Y`，最后按 `Enter`)。
 

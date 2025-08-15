@@ -1,0 +1,26 @@
+
+[
+  {
+    "id": "work_1723366883204",
+    "workName": "青风",
+    "clientName": "匿名委托人A",
+    "clientCity": "上海",
+    "completionDate": "2024-05-20T00:00:00.000Z",
+    "imageUrls": [
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png"
+    ],
+    "description": "以风为灵感，整体采用青色与白色长毛，营造飘逸的感觉。"
+  },
+  {
+    "id": "work_1723366938923",
+    "workName": "赤炎",
+    "clientName": "匿名委托人B",
+    "clientCity": "北京",
+    "completionDate": "2024-03-15T00:00:00.000Z",
+    "imageUrls": [
+      "https://placehold.co/600x800.png"
+    ],
+    "description": "以火为主题，使用了渐变的红色毛皮，眼神犀利。"
+  }
+]
