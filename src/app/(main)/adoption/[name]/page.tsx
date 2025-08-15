@@ -5,45 +5,21 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Heart } from 'lucide-react';
 import Link from 'next/link';
-import { getCharactersBySeriesId, getCharacterSeriesByName } from '@/lib/data-service';
-import type { Character, CharacterSeries } from '@/types';
-import { Skeleton } from '@/components/ui/skeleton';
+import { getCharactersBySeriesId, getCharacterSeriesByName, getSiteContent } from '@/lib/data-service';
 import { notFound } from 'next/navigation';
-
-function CharacterCardSkeleton() {
-  return (
-    <Card className="overflow-hidden shadow-lg flex flex-col text-sm">
-      <CardHeader className="p-0">
-        <div className="relative aspect-[3/4] bg-muted">
-          <Skeleton className="h-full w-full" />
-        </div>
-      </CardHeader>
-      <CardContent className="p-3 flex-grow">
-        <Skeleton className="h-6 w-3/4 mb-1" />
-        <Skeleton className="h-4 w-1/2 mb-2" />
-        <Skeleton className="h-4 w-full mb-1" />
-        <Skeleton className="h-4 w-5/6 mb-3" />
-        <div className="flex flex-wrap gap-1">
-          <Skeleton className="h-5 w-12" />
-          <Skeleton className="h-5 w-12" />
-        </div>
-      </CardContent>
-      <CardFooter className="p-3 bg-muted/50 flex justify-between items-center">
-        <Skeleton className="h-6 w-20" />
-        <Skeleton className="h-8 w-20" />
-      </CardFooter>
-    </Card>
-  );
-}
 
 export default async function AdoptionCharacterListPage({ params }: { params: { name: string } }) {
   const seriesName = decodeURIComponent(params.name as string);
 
-  const series = await getCharacterSeriesByName(seriesName);
+  const [series, characters, content] = await Promise.all([
+      getCharacterSeriesByName(seriesName),
+      getCharactersBySeriesId((await getCharacterSeriesByName(seriesName))?.id || ''),
+      getSiteContent()
+  ]);
+  
   if (!series) {
     notFound();
   }
-  const characters = await getCharactersBySeriesId(series.id);
 
   return (
     <div>
@@ -97,3 +73,5 @@ export default async function AdoptionCharacterListPage({ params }: { params: { 
     </div>
   );
 }
+
+    

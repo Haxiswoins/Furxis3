@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -50,9 +51,13 @@ export default async function AdoptionSeriesPage() {
             </Link>
           ))
         ) : (
-          [...Array(4)].map((_, i) => <SeriesCardSkeleton key={i} />)
+           <div className="col-span-full text-center py-10">
+            <p className="text-muted-foreground">暂无设定系列。</p>
+          </div>
         )}
       </div>
     </div>
   );
 }
+
+    

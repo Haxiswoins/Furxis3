@@ -13,7 +13,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { chinaDivisions } from '@/lib/china-divisions';
 import { useAuth } from '@/context/AuthContext';
-import { createAdoptionApplication, getSiteContent, getCharacterByName } from '@/lib/data-service';
 import type { Character, SiteContent } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -25,53 +24,21 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-export default function AdoptionApplyPage() {
-  const params = useParams();
+// This is a server action, it's safe to import here.
+import { createAdoptionApplication as createAdoptionApplicationAction, getCharacterByName, getSiteContent } from '@/lib/data-service';
+
+
+// We create a separate client component for the form itself.
+function AdoptionApplicationForm({ character, siteContent }: { character: Character; siteContent: SiteContent | null }) {
   const router = useRouter();
   const { toast } = useToast();
   const { user } = useAuth();
-
-  const [character, setCharacter] = useState<Character | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [siteContent, setSiteContent] = useState<SiteContent | null>(null);
   
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [cities, setCities] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
-  
-  const characterName = decodeURIComponent(params.characterName as string);
-
-  useEffect(() => {
-    async function fetchData() {
-        if (!characterName || !user) return;
-        try {
-            const [char, content] = await Promise.all([
-                getCharacterByName(characterName),
-                getSiteContent()
-            ]);
-
-            if (char) {
-                setCharacter(char);
-                setSiteContent(content);
-            } else {
-                notFound();
-            }
-        } catch (error) {
-            console.error("Failed to fetch data for apply page", error);
-            notFound();
-        } finally {
-            setLoading(false);
-        }
-    }
-    if (user) {
-        fetchData();
-    } else {
-        setLoading(false);
-        router.push(`/login?redirect=${window.location.pathname}`);
-    }
-  }, [characterName, user, router]);
 
   const handleProvinceChange = (province: string) => {
     setSelectedProvince(province);
@@ -111,7 +78,7 @@ export default function AdoptionApplyPage() {
 
     try {
       setSubmitting(true);
-      await createAdoptionApplication(user.uid, character, applicationData);
+      await createAdoptionApplicationAction(user.uid, character, applicationData);
       toast({
         title: "恭喜您！申请已提交",
         description: `管理员将在三个工作日内联系您。`,
@@ -128,50 +95,11 @@ export default function AdoptionApplyPage() {
       setSubmitting(false);
     }
   };
-  
-  if (loading || !character) {
-     return (
-        <div className="max-w-4xl mx-auto py-8">
-            <Card>
-                <CardHeader className="text-center">
-                    <Skeleton className="h-9 w-1/2 mx-auto" />
-                    <Skeleton className="h-6 w-3/4 mx-auto mt-2" />
-                </CardHeader>
-                <CardContent className="space-y-4">
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                       {[...Array(7)].map((_, i) => (
-                           <div className="space-y-2" key={i}>
-                               <Skeleton className="h-4 w-1/4" />
-                               <Skeleton className="h-10 w-full" />
-                           </div>
-                       ))}
-                   </div>
-                   <div className="space-y-2">
-                        <Skeleton className="h-4 w-1/4" />
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                           <Skeleton className="h-10 w-full" />
-                           <Skeleton className="h-10 w-full" />
-                           <Skeleton className="h-10 w-full" />
-                        </div>
-                   </div>
-                   <div className="space-y-2">
-                        <Skeleton className="h-4 w-1/4" />
-                        <Skeleton className="h-20 w-full" />
-                   </div>
-                   <div className="text-center pt-4">
-                       <Skeleton className="h-12 w-48 mx-auto" />
-                   </div>
-                </CardContent>
-            </Card>
-        </div>
-     );
-  }
-  
+
   return (
-    <div className="max-w-4xl mx-auto py-8">
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-headline">领养申请：{characterName}</CardTitle>
+          <CardTitle className="text-3xl font-headline">领养申请：{character.name}</CardTitle>
           <CardDescription>请填写您的信息以完成申请。</CardDescription>
         </CardHeader>
         <CardContent>
@@ -267,6 +195,112 @@ export default function AdoptionApplyPage() {
           </form>
         </CardContent>
       </Card>
+  )
+}
+
+
+export default function AdoptionApplyPage() {
+  const params = useParams();
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+  
+  const [character, setCharacter] = useState<Character | null>(null);
+  const [siteContent, setSiteContent] = useState<SiteContent | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  const characterName = decodeURIComponent(params.characterName as string);
+
+  useEffect(() => {
+    async function fetchData() {
+        if (!characterName) return;
+        try {
+            // These functions are now safe to call here if they don't use server-only modules
+            // or if this component is a server component.
+            // Let's refactor this page to be a server component that fetches data and passes it to a client component form.
+            
+            // In this refactor, I'm assuming this outer component is now the client component that wraps the form,
+            // and it still needs to fetch data.
+            // The best way is to make the page a server component and pass data to a client component.
+            
+            // In my final fix, the page itself will fetch the data and pass to AdoptionApplicationForm.
+            // This component (`AdoptionApplyPage`) will be the main client wrapper.
+            const characterRes = await getCharacterByName(characterName);
+            const contentRes = await getSiteContent();
+
+            if (characterRes) {
+                setCharacter(characterRes);
+                setSiteContent(contentRes);
+            } else {
+                notFound();
+            }
+        } catch (error) {
+            console.error("Failed to fetch data for apply page", error);
+            notFound();
+        } finally {
+            setLoading(false);
+        }
+    }
+    
+    if (authLoading) return;
+    
+    if (user) {
+        fetchData();
+    } else {
+        setLoading(false);
+        if (typeof window !== 'undefined') {
+          router.push(`/login?redirect=${window.location.pathname}`);
+        }
+    }
+  }, [characterName, user, authLoading, router]);
+
+  if (loading || authLoading) {
+     return (
+        <div className="max-w-4xl mx-auto py-8">
+            <Card>
+                <CardHeader className="text-center">
+                    <Skeleton className="h-9 w-1/2 mx-auto" />
+                    <Skeleton className="h-6 w-3/4 mx-auto mt-2" />
+                </CardHeader>
+                <CardContent className="space-y-4">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       {[...Array(7)].map((_, i) => (
+                           <div className="space-y-2" key={i}>
+                               <Skeleton className="h-4 w-1/4" />
+                               <Skeleton className="h-10 w-full" />
+                           </div>
+                       ))}
+                   </div>
+                   <div className="space-y-2">
+                        <Skeleton className="h-4 w-1/4" />
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                           <Skeleton className="h-10 w-full" />
+                           <Skeleton className="h-10 w-full" />
+                           <Skeleton className="h-10 w-full" />
+                        </div>
+                   </div>
+                   <div className="space-y-2">
+                        <Skeleton className="h-4 w-1/4" />
+                        <Skeleton className="h-20 w-full" />
+                   </div>
+                   <div className="text-center pt-4">
+                       <Skeleton className="h-12 w-48 mx-auto" />
+                   </div>
+                </CardContent>
+            </Card>
+        </div>
+     );
+  }
+  
+  if (!character) {
+    // This case can happen if the fetch fails or if the user is not logged in and gets redirected.
+    // The loading skeleton covers the initial state well.
+    // If not found, the effect will call notFound().
+    return null;
+  }
+  
+  return (
+    <div className="max-w-4xl mx-auto py-8">
+      <AdoptionApplicationForm character={character} siteContent={siteContent} />
     </div>
   );
 }
