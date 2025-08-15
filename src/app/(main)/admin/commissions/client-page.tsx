@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -50,7 +51,7 @@ export function AdminCommissionsClient({ commissionOptions: initialOptions }: Ad
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-headline">委托选项管理</h1>
+        <h1 className="text-3xl font-headline">各期委托管理</h1>
       </div>
       <div className="border rounded-lg">
         <Table>

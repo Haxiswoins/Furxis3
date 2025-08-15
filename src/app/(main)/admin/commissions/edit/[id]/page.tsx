@@ -46,7 +46,7 @@ export default function EditCommissionPage() {
 
     return (
         <div>
-            <h1 className="text-3xl font-headline mb-6">编辑委托选项：{commission.name}</h1>
+            <h1 className="text-3xl font-headline mb-6">编辑各期委托：{commission.name}</h1>
             <AdminCommissionForm commissionOption={commission} />
         </div>
     );

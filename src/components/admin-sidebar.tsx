@@ -15,7 +15,7 @@ const navItems = [
   { href: '/admin/works', label: '作品管理', icon: Briefcase },
   { href: '/admin/character-series', label: '设定系列管理', icon: Layers },
   { href: '/admin/characters', label: '领养角色管理', icon: PawPrint },
-  { href: '/admin/commissions', label: '委托选项管理', icon: ShoppingCart },
+  { href: '/admin/commissions', label: '各期委托管理', icon: ShoppingCart },
   { href: '/admin/commission-styles', label: '委托样式管理', icon: Component },
   { href: '/admin/content', label: '页面内容管理', icon: Settings },
   { href: '/admin/contracts', label: '合同与邮件管理', icon: FileText },
