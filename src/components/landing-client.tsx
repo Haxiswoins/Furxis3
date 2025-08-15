@@ -19,6 +19,7 @@ const galaxyParameters = {
     outsideColor: '#1b3984'
 };
 
+
 export function LandingPageClient() {
   const router = useRouter();
   const [isContentVisible, setIsContentVisible] = useState(false);
@@ -62,20 +63,19 @@ export function LandingPageClient() {
 
     let geometry: THREE.BufferGeometry | null = null;
     let material: THREE.PointsMaterial | null = null;
-    let points: THREE.Points | null = null;
-    let galaxyGroup: THREE.Group | null = null;
     
     const generateGalaxy = () => {
-        if (galaxyGroup) {
+        if (galaxyGroupRef.current) {
             geometry?.dispose();
             material?.dispose();
-            scene.remove(galaxyGroup);
+            scene.remove(galaxyGroupRef.current);
         }
 
-        galaxyGroup = new THREE.Group();
+        const galaxyGroup = new THREE.Group();
         scene.add(galaxyGroup);
         galaxyGroupRef.current = galaxyGroup;
         
+        galaxyGroup.position.y = 5;
         galaxyGroup.rotation.x = Math.PI * 0.2; 
         
         geometry = new THREE.BufferGeometry();
@@ -118,12 +118,8 @@ export function LandingPageClient() {
             vertexColors: true
         });
 
-        points = new THREE.Points(geometry, material);
-        const galaxyContainer = new THREE.Group();
-        galaxyContainer.add(points);
-        galaxyContainer.position.y = 5;
-
-        galaxyGroup.add(galaxyContainer);
+        const points = new THREE.Points(geometry, material);
+        galaxyGroup.add(points);
     }
     
     generateGalaxy();
@@ -174,46 +170,37 @@ export function LandingPageClient() {
         }
 
         const elapsedTime = clock.getElapsedTime();
-        const galaxyContainer = galaxyGroup.children[0] as THREE.Group;
-        const points = galaxyContainer.children[0] as THREE.Points;
 
         if (isWarping) {
-            warpFactor = Math.min(warpFactor + 0.001, 1); 
+            warpFactor = Math.min(warpFactor + 0.005, 1); 
             const easedWarp = warpFactor * warpFactor;
-
-            galaxyContainer.rotation.y += 0.05 + (easedWarp * 0.5);
-
-            const particles = points.geometry.attributes.position;
-            for (let i = 0; i < particles.count; i++) {
-                particles.setZ(i, particles.getZ(i) + easedWarp * 0.5);
-                if(particles.getZ(i) > camera.position.z) {
-                    particles.setZ(i, -galaxyParameters.radius);
-                }
-            }
-            particles.needsUpdate = true;
             
+            // Move camera forward
+            camera.position.z -= easedWarp * 0.5;
+
             const overlay = document.getElementById('warp-overlay');
             if(overlay) {
                  if (warpFactor >= 0.2) {
                      overlay.style.opacity = `${(warpFactor - 0.2) / 0.8}`;
                  }
-                 if (warpFactor >= 1) {
+                 if (camera.position.z <= 0) { // When camera passes the center
                      router.push('/home');
-                     return;
+                     return; 
                  }
             }
 
         } else {
             // Standard rotation and parallax
-            galaxyContainer.rotation.y = elapsedTime * 0.1;
+            (galaxyGroup.children[0] as THREE.Points).rotation.y = elapsedTime * 0.1;
+            
             const parallaxX = mouse.current.x * 0.2;
             const parallaxY = -mouse.current.y * 0.2;
             
             camera.position.x += (parallaxX - camera.position.x) * 0.02;
             camera.position.y += (parallaxY - camera.position.y) * 0.02;
-            camera.lookAt(galaxyGroup.position);
         }
-
+        
+        camera.lookAt(galaxyGroup.position);
         renderer.render(scene, camera);
         animationFrameIdRef.current = requestAnimationFrame(animate);
     };
