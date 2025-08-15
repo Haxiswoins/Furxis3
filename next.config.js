@@ -31,6 +31,10 @@ const remotePatterns = [
   {
     protocol: 'https',
     hostname: 'www.nasa.gov',
+  },
+  {
+    protocol: 'https',
+    hostname: 'firebasestorage.googleapis.com'
   }
 ];
 

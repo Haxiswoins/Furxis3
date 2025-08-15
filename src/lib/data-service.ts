@@ -11,7 +11,6 @@ import {
   Timestamp,
   orderBy,
   limit,
-  writeBatch,
   runTransaction,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -44,30 +43,7 @@ export async function getSiteContent(): Promise<SiteContent | null> {
     if (docSnap.exists()) {
       return docSnap.data() as SiteContent;
     }
-    console.log("No site content found, returning default.");
-    // Return a default object if it doesn't exist, but don't create it here
-    return {
-        commissionTitle: '委托申请',
-        commissionDescription: '为您量身定制。',
-        commissionImageUrl: 'https://placehold.co/600x800.png',
-        adoptionTitle: '设定领养',
-        adoptionDescription: '领养一个预先设计的角色。',
-        adoptionImageUrl: 'https://placehold.co/600x800.png',
-        workTitle: '作品一览',
-        workDescription: '查看我们过往的精彩作品。',
-        workImageUrl: 'https://placehold.co/600x800.png',
-        adoptionPageDescription: '给这些预先设计的角色一个家。',
-        commissionPageDescription: '选择一个基础套餐开始您的定制兽装之旅。',
-        adminEmail: 'your-email@example.com',
-        homeBackgroundImageUrl: null,
-        sunriseHour: 6,
-        sunsetHour: 18,
-        contactInfo: '邮箱号（haxiswoins@qq.com），QQ号（805909541）',
-        adoptionContractText: '',
-        commissionContractText: '',
-        confirmationEmailSubject: '',
-        confirmationEmailBody: '',
-    };
+     return null;
   } catch (error) {
     console.error("Error fetching site content:", error);
     return null;
@@ -76,17 +52,7 @@ export async function getSiteContent(): Promise<SiteContent | null> {
 
 export async function saveSiteContent(content: Partial<SiteContent>): Promise<void> {
     const docRef = doc(db, 'site', 'content');
-    // Use updateDoc which can also create the document if it doesn't exist with merge: true
-    // However, the standard is to check. Let's stick to update/add.
-    try {
-        await updateDoc(docRef, content);
-    } catch(err: any) {
-        if (err.code === 'not-found') {
-            await addDoc(collection(db, 'site'), content);
-        } else {
-             await updateDoc(docRef, content, { merge: true });
-        }
-    }
+    await updateDoc(docRef, content, { merge: true });
 }
 
 
