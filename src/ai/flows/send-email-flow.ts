@@ -22,8 +22,6 @@ const EmailPayloadSchema = z.object({
 });
 export type EmailPayload = z.infer<typeof EmailPayloadSchema>;
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const sendEmailFlow = ai.defineFlow(
   {
     name: 'sendEmailFlow',
@@ -39,6 +37,8 @@ const sendEmailFlow = ai.defineFlow(
         return;
     }
     
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
     try {
       await resend.emails.send({
         from: payload.from,
