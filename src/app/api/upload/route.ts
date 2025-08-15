@@ -5,21 +5,32 @@ import { getStorage } from 'firebase-admin/storage';
 import { randomUUID } from 'crypto';
 
 // Check if the service account key is available in environment variables
-const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-if (!serviceAccountKey) {
-    throw new Error('Firebase service account key is not set in environment variables. Please set FIREBASE_SERVICE_ACCOUNT_KEY.');
+const serviceAccountKeyString = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+
+// Initialize Firebase Admin SDK only if it hasn't been already
+if (!getApps().length) {
+    if (!serviceAccountKeyString) {
+        // This log is for the server console
+        console.error('CRITICAL: FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set.');
+    } else {
+        try {
+            initializeApp({
+                credential: cert(JSON.parse(serviceAccountKeyString)),
+                storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+            });
+        } catch (e) {
+            console.error('CRITICAL: Failed to initialize Firebase Admin SDK. The service account key might be invalid.', e);
+        }
+    }
 }
 
-// Initialize Firebase Admin SDK
-// This pattern prevents re-initializing the app on every hot-reload
-if (!getApps().length) {
-  initializeApp({
-    credential: cert(JSON.parse(serviceAccountKey)),
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-  });
-}
 
 export async function POST(req: Request) {
+  // Gracefully handle cases where the Admin SDK failed to initialize
+  if (!getApps().length) {
+    return NextResponse.json({ message: "Upload failed: Server is not configured for file uploads." }, { status: 500 });
+  }
+
   try {
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
