@@ -1,158 +1,131 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import * as THREE from 'three';
 
-type ApodMedia = {
-  url: string;
-  title: string;
-  media_type: string;
-};
-
 export function LandingPageClient() {
-  const [media, setMedia] = useState<ApodMedia | null>(null);
-  const [isMediaLoaded, setIsMediaLoaded] = useState(false);
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isInitialAnimationDone, setIsInitialAnimationDone] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mouse = useRef({ x: 0, y: 0 });
 
+  // Timer for initial "The Stars Arriving" text fade out
   useEffect(() => {
-    async function fetchApod() {
-      try {
-        const res = await fetch('/api/apod');
-        if (!res.ok) throw new Error('Failed to fetch APOD');
-        const data: ApodMedia = await res.json();
-        setMedia(data);
-      } catch (error) {
-        console.error(error);
-        setMedia({ 
-          url: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop', 
-          title: 'Suitopia Fallback', 
-          media_type: 'image' 
-        });
-      }
-    }
-
-    fetchApod();
-
-    // This timer ensures that the main content becomes visible after a short delay.
     const contentTimer = setTimeout(() => {
       setIsContentVisible(true);
-    }, 3000); // Make content visible after 3 seconds guaranteed.
+    }, 3000);
 
-    // This timer handles the initial "The Stars Arriving" fade-out effect.
     const animationTimer = setTimeout(() => {
-        setIsInitialAnimationDone(true);
-    }, 2500); // Start fading out the text slightly before the button appears.
-
+      setIsInitialAnimationDone(true);
+    }, 2500);
 
     return () => {
-        clearTimeout(contentTimer);
-        clearTimeout(animationTimer);
-    }
+      clearTimeout(contentTimer);
+      clearTimeout(animationTimer);
+    };
   }, []);
 
-  useEffect(() => {
-    if (media?.url) {
-        const img = new (window as any).Image();
-        img.src = media.url;
-        img.onload = () => {
-          setIsMediaLoaded(true);
-        };
-    }
-  }, [media]);
-
+  // Three.js animation effect
   useEffect(() => {
     if (!canvasRef.current) return;
 
     let animationFrameId: number;
     const scene = new THREE.Scene();
-    const clock = new THREE.Clock();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 1;
+    camera.position.z = 5;
 
     const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     
-    const geometry = new THREE.PlaneGeometry(5, 5, 64, 64);
-    const material = new THREE.ShaderMaterial({
-        uniforms: { u_time: { value: 0.0 } },
-        vertexShader: `uniform float u_time; varying vec2 vUv; float n(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);} void main(){vUv=uv;vec3 pos=position;float noise=n(pos.xy*2.+u_time*.2);pos.z+=sin(pos.x*2.+u_time*.5)*.05+noise*.05;gl_Position=projectionMatrix*modelViewMatrix*vec4(pos,1.);}`,
-        fragmentShader: `uniform float u_time; varying vec2 vUv; float n(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);} void main(){float w1=sin(vUv.x*10.+u_time*.5)*.02;float w2=sin(vUv.y*12.+u_time*.7)*.02;float w3=sin(dot(vUv,vec2(5.,8.))+u_time)*.03;float wc=w1+w2+w3;float i=pow(1.-abs(wc*10.),3.);float r=n(vUv+u_time*.01);float p=step(r,i*.6);gl_FragColor=vec4(vec3(1.),p*i*.25);}`,
-        transparent: true
+    // Starfield
+    const starVertices: number[] = [];
+    for (let i = 0; i < 10000; i++) {
+        const x = (Math.random() - 0.5) * 2000;
+        const y = (Math.random() - 0.5) * 2000;
+        const z = (Math.random() - 0.5) * 2000;
+        starVertices.push(x, y, z);
+    }
+
+    const starGeometry = new THREE.BufferGeometry();
+    starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+    
+    const starMaterial = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 0.7,
+        transparent: true,
+        opacity: 0.8,
     });
 
-    const plane = new THREE.Mesh(geometry, material);
-    scene.add(plane);
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
+
 
     const handleResize = () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
     };
-    window.addEventListener('resize', handleResize);
 
+    const handleMouseMove = (event: MouseEvent) => {
+        mouse.current.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    }
+    
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('mousemove', handleMouseMove);
+
+    const clock = new THREE.Clock();
+    
     const animate = () => {
-        animationFrameId = requestAnimationFrame(animate);
-        plane.material.uniforms.u_time.value = clock.getElapsedTime();
-        renderer.render(scene, camera);
+      const elapsedTime = clock.getElapsedTime();
+      
+      // Animate stars
+      stars.position.z += elapsedTime * 0.002;
+      if (stars.position.z > 1000) stars.position.z = -1000;
+
+      // Make camera react to mouse movement
+      camera.position.x += (mouse.current.x * 2 - camera.position.x) * 0.02;
+      camera.position.y += (mouse.current.y * 2 - camera.position.y) * 0.02;
+      camera.lookAt(scene.position);
+
+      renderer.render(scene, camera);
+      animationFrameId = requestAnimationFrame(animate);
     };
+
     animate();
 
     return () => {
-        window.removeEventListener('resize', handleResize);
-        cancelAnimationFrame(animationFrameId);
-        geometry.dispose();
-        material.dispose();
-        renderer.dispose();
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(animationFrameId);
+      starGeometry.dispose();
+      starMaterial.dispose();
+      renderer.dispose();
     };
   }, []);
   
   return (
-    <div className="relative h-screen w-screen overflow-hidden">
-      {/* Background container */}
-      <div
-        className={cn(
-          'absolute inset-0 z-0 bg-black transition-opacity duration-1000',
-          isMediaLoaded ? 'opacity-100' : 'opacity-0'
-        )}
-      >
-        {media && (
-           <Image
-            src={media.url}
-            alt={media.title}
-            fill
-            priority
-            sizes="100vw"
-            style={{objectFit: "cover"}}
-            data-ai-hint="space galaxy"
-          />
-        )}
-        {/* Always have a dark overlay */}
-        <div className="absolute inset-0 bg-black/20 z-10" />
-      </div>
-
-      {/* WebGL Wave Canvas */}
-      <canvas ref={canvasRef} className="absolute inset-0 z-10"></canvas>
+    <div className="relative h-screen w-screen overflow-hidden bg-black">
+      {/* WebGL Starfield Canvas */}
+      <canvas ref={canvasRef} className="absolute inset-0 z-0"></canvas>
       
-      {/* Initial Loading Text Overlay. This fades out. */}
+      {/* Initial Loading Text Overlay */}
       <div
         className={cn(
           'absolute inset-0 z-30 flex flex-col items-center justify-center text-white transition-opacity duration-1000',
           isInitialAnimationDone ? 'opacity-0' : 'opacity-100',
-          'pointer-events-none bg-black'
+          'pointer-events-none'
         )}
       >
          <h1 className="font-headline text-3xl tracking-widest animate-pulse">The Stars Arriving</h1>
       </div>
       
-      {/* Main Content (Enter button). This fades in. */}
+      {/* Main Content (Enter button) */}
        <div
         className={cn(
           'absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-1000',
@@ -163,9 +136,10 @@ export function LandingPageClient() {
           <Link href="/home" passHref>
             <button
               aria-label="进入网站"
-              className="group relative flex h-28 w-28 items-center justify-center rounded-full border border-foreground/20 bg-black/10 text-foreground transition-all duration-300 ease-in-out hover:scale-110 hover:bg-black/20 active:scale-100 dark:border-white/20 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 backdrop-blur-md"
+              className="group relative flex h-28 w-28 items-center justify-center rounded-full border border-primary/50 bg-black/30 text-white transition-all duration-300 ease-in-out hover:scale-110 hover:border-primary hover:shadow-[0_0_35px_rgba(255,97,47,0.7)] active:scale-100 backdrop-blur-sm"
             >
-              <Rocket className="h-14 w-14 transition-transform duration-300 group-hover:-translate-y-2 group-hover:scale-110" />
+              <div className="absolute inset-0 rounded-full border-2 border-white/20 scale-125 group-hover:scale-150 group-hover:opacity-0 transition-all duration-500 animate-pulse"></div>
+              <Rocket className="h-14 w-14 text-primary/80 transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1 group-hover:scale-110" />
             </button>
           </Link>
         </div>
