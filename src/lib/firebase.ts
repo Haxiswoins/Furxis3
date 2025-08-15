@@ -1,6 +1,6 @@
-
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 // These variables are loaded from environment variables.
@@ -15,11 +15,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 // This pattern prevents re-initializing the app on hot-reloads.
-let app;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-} else {
-  app = getApp();
-}
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-export { app };
+export { app, db };

@@ -22,7 +22,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogClose,
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -34,6 +33,7 @@ export default function AdoptionApplyPage() {
   const { user } = useAuth();
 
   const [character, setCharacter] = useState<Character | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [siteContent, setSiteContent] = useState<SiteContent | null>(null);
   
@@ -106,7 +106,7 @@ export default function AdoptionApplyPage() {
     };
 
     try {
-      setLoading(true);
+      setSubmitting(true);
       await createAdoptionApplication(user.uid, character, applicationData);
       toast({
         title: "恭喜您！申请已提交",
@@ -114,13 +114,14 @@ export default function AdoptionApplyPage() {
       });
       router.push('/orders');
     } catch (error) {
+      console.error("申请失败:", error);
       toast({
         title: "申请失败",
-        description: "提交申请时发生错误，请稍后再试。",
+        description: error instanceof Error ? error.message : "提交申请时发生错误，请稍后再试。",
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
   
@@ -255,8 +256,8 @@ export default function AdoptionApplyPage() {
               </Dialog>
             </div>
             <div className="text-center pt-4">
-                <Button type="submit" size="lg" disabled={loading}>
-                    {loading ? '提交中...' : '确认申请领养'}
+                <Button type="submit" size="lg" disabled={submitting}>
+                    {submitting ? '提交中...' : '确认申请领养'}
                 </Button>
             </div>
           </form>

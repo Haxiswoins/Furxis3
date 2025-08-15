@@ -42,26 +42,26 @@ const darkStatusStyles: { [key: string]: string } = {
 export default function OrderDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const orderId = params.id as string;
   const { theme } = useTheme();
   
   const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true);
   const [siteContent, setSiteContent] = useState<SiteContent | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
+  const [isPageLoading, setIsPageLoading] = useState(true);
 
   const statusStyles = theme === 'dark' ? darkStatusStyles : lightStatusStyles;
 
   const fetchOrderAndContent = useCallback(async () => {
     if (!orderId || !user?.uid) {
-      if(!user) router.push('/login');
+      if(!authLoading && !user) router.push('/login');
       return;
     }
     
-    setLoading(true);
+    setIsPageLoading(true);
     try {
       const [orderData, contentData] = await Promise.all([
         getOrderById(orderId),
@@ -78,14 +78,16 @@ export default function OrderDetailPage() {
       console.error("Failed to fetch order:", error);
       notFound();
     } finally {
-      setLoading(false);
+      setIsPageLoading(false);
     }
-  }, [orderId, user?.uid, user, router]);
+  }, [orderId, user?.uid, authLoading, router]);
 
 
   useEffect(() => {
-    fetchOrderAndContent();
-  }, [fetchOrderAndContent]);
+    if (!authLoading) {
+      fetchOrderAndContent();
+    }
+  }, [authLoading, fetchOrderAndContent]);
 
   const handleConfirmOrder = async () => {
     if (!order) return;
@@ -98,9 +100,10 @@ export default function OrderDetailPage() {
       });
       fetchOrderAndContent(); // Refresh order details
     } catch (error) {
+       console.error("确认失败:", error);
       toast({
         title: "确认失败",
-        description: "发生未知错误，请稍后重试。",
+        description: error instanceof Error ? error.message : "发生未知错误，请稍后重试。",
         variant: "destructive",
       });
     } finally {
@@ -109,7 +112,7 @@ export default function OrderDetailPage() {
   };
 
 
-  if (loading || !order) {
+  if (isPageLoading || authLoading) {
     return (
       <div className="max-w-4xl mx-auto">
         <Card>
@@ -159,8 +162,14 @@ export default function OrderDetailPage() {
     )
   }
 
+  if (!order) {
+    // This case handles after loading is complete but order is still null
+    notFound();
+    return null;
+  }
+
   const handleCancelClick = () => {
-    if (order.status === '处理中') {
+    if (order.status === '处理中' || order.status === '已确认' || order.status === '待确认') {
       router.push(`/orders/${order.id}/cancel`);
     }
   };

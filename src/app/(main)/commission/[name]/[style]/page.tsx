@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -12,12 +13,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { chinaDivisions } from '@/lib/china-divisions';
 import { useAuth } from '@/context/AuthContext';
-import { getCommissionOptionByName, getCommissionStylesByOptionId, createCommissionApplication } from '@/lib/data-service';
-import type { CommissionStyle, CommissionOption } from '@/types';
+import { getCommissionOptionByName, getCommissionStylesByOptionId, createCommissionApplication, getSiteContent } from '@/lib/data-service';
+import type { CommissionStyle, CommissionOption, SiteContent } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { uploadImage } from '@/lib/upload-service';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 export default function CommissionApplicationPage() {
   const params = useParams();
@@ -29,8 +33,10 @@ export default function CommissionApplicationPage() {
 
   const [commissionOption, setCommissionOption] = useState<CommissionOption | null>(null);
   const [commissionStyle, setCommissionStyle] = useState<CommissionStyle | null>(null);
+  const [siteContent, setSiteContent] = useState<SiteContent | null>(null);
   const [loading, setLoading] = useState(true);
   const [formSubmitting, setFormSubmitting] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
@@ -50,10 +56,14 @@ export default function CommissionApplicationPage() {
     async function fetchData() {
         setLoading(true);
         try {
-            const currentOption = await getCommissionOptionByName(commissionName);
+            const [currentOption, content] = await Promise.all([
+                getCommissionOptionByName(commissionName),
+                getSiteContent()
+            ]);
 
             if (currentOption) {
                 setCommissionOption(currentOption);
+                setSiteContent(content);
                 const styles = await getCommissionStylesByOptionId(currentOption.id);
                 const currentStyle = styles.find(s => s.name === styleName);
                 if (currentStyle) {
@@ -65,6 +75,7 @@ export default function CommissionApplicationPage() {
                 notFound();
             }
         } catch (e) {
+            console.error("Failed to fetch page data", e);
             notFound();
         } finally {
             setLoading(false);
@@ -162,7 +173,7 @@ export default function CommissionApplicationPage() {
       console.error("申请失败:", error);
       toast({
         title: "申请失败",
-        description: "提交申请时发生错误，请稍后再试。",
+        description: error instanceof Error ? error.message : "提交申请时发生错误，请稍后再试。",
         variant: "destructive",
       });
     } finally {
@@ -193,7 +204,7 @@ export default function CommissionApplicationPage() {
   );
 
   const renderSubmitButton = () => (
-    <Button size="lg" className="w-full" type="submit" disabled={formSubmitting}>
+    <Button size="lg" className="w-full" type="submit" disabled={formSubmitting || !agreedToTerms}>
         {formSubmitting ? '提交中...' : '申请估价'}
     </Button>
   );
@@ -226,6 +237,8 @@ export default function CommissionApplicationPage() {
       </div>
     );
   }
+  
+  const contractText = siteContent?.commissionContractText;
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -235,8 +248,8 @@ export default function CommissionApplicationPage() {
             <CardDescription className="mt-2 text-base">{commissionStyle.description}</CardDescription>
         </CardHeader>
 
-        <form onSubmit={handleFormSubmit} className="space-y-4 px-6 pb-6">
-           <CardContent className="p-0 space-y-4">
+        <form onSubmit={handleFormSubmit}>
+           <CardContent className="space-y-4">
             <div className="space-y-1">
               <Label>设定图 (可选)</Label>
               <div className="flex items-center gap-4">
@@ -264,7 +277,7 @@ export default function CommissionApplicationPage() {
                     onChange={handleFileChange}
                 />
                  <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                    <Upload className="mr-2" />
+                    <Upload className="mr-2 h-4 w-4" />
                     {referenceImagePreview ? '更换图片' : '选择图片'}
                 </Button>
               </div>
@@ -329,9 +342,33 @@ export default function CommissionApplicationPage() {
                 <Label htmlFor="addressDetail">详细地址</Label>
                 <Textarea id="addressDetail" name="addressDetail" placeholder="请输入街道、门牌号等详细信息" required />
             </div>
+
+            <div className="flex items-center space-x-2 pt-2">
+                <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} />
+                 <Dialog>
+                    <DialogTrigger asChild>
+                       <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                         我已阅读并同意 <span className="text-primary hover:underline cursor-pointer">服务条款</span>
+                      </label>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-3xl">
+                        <DialogHeader>
+                            <DialogTitle className="text-xl">服务条款</DialogTitle>
+                        </DialogHeader>
+                        <ScrollArea className="h-[60vh] pr-6">
+                            <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
+                                {contractText || "合同条款正在加载中..."}
+                            </div>
+                        </ScrollArea>
+                    </DialogContent>
+                </Dialog>
+            </div>
            </CardContent>
 
-            <CardFooter className="p-0 pt-4">
+            <CardFooter>
                {isLoggedIn ? renderSubmitButton() : renderLoginDialog()}
             </CardFooter>
           </form>
