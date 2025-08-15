@@ -1,0 +1,26 @@
+[
+  {
+    "id": "comm_1",
+    "name": "2025年秋季委托",
+    "category": "委托期",
+    "status": "开放中",
+    "imageUrl": "https://placehold.co/600x800.png",
+    "tags": [
+      "全身",
+      "半身",
+      "需估价"
+    ],
+    "description": "2025年秋季的兽装定制委托窗口，开放所有类型的委托申请。"
+  },
+  {
+    "id": "comm_2",
+    "name": "2024年春季委托",
+    "category": "委托期",
+    "status": "已结束",
+    "imageUrl": "https://placehold.co/600x800.png",
+    "tags": [
+      "名额已满"
+    ],
+    "description": "2024年春季的委托期已圆满结束，感谢大家的支持。"
+  }
+]

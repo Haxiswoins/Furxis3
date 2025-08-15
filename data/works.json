@@ -1,0 +1,26 @@
+
+[
+    {
+        "id": "work_1",
+        "workName": "青风",
+        "clientName": "匿名委托人",
+        "clientCity": "上海",
+        "completionDate": "2024-05-20T00:00:00.000Z",
+        "imageUrls": [
+            "https://placehold.co/600x800.png",
+            "https://placehold.co/800x600.png"
+        ],
+        "description": ""
+    },
+    {
+        "id": "work_2",
+        "workName": "赤炎",
+        "clientName": "匿名委托人",
+        "clientCity": "北京",
+        "completionDate": "2023-11-15T00:00:00.000Z",
+        "imageUrls": [
+            "https://placehold.co/600x800.png"
+        ],
+        "description": ""
+    }
+]
