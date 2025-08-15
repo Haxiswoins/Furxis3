@@ -347,7 +347,7 @@ export default function CommissionApplicationPage() {
             <div className="flex items-center space-x-2 pt-2">
               <Checkbox id="hasFan" name="hasFan" />
               <label htmlFor="hasFan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                是否安装头内风扇模组 (+￥150)
+                是否安装头内风扇模块 (+￥150)
               </label>
             </div>
 

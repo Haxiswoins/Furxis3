@@ -276,7 +276,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
                     {/* Additional Info */}
                     <div className="space-y-4">
                         <div className="space-y-1">
-                          <p className="font-semibold">是否安装风扇</p>
+                          <p className="font-semibold">是否安装头内风扇模块</p>
                           <p className="text-muted-foreground">{order.hasFan ? "是" : "否"}</p>
                         </div>
                         {order.cancellationReason && (
