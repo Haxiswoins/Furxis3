@@ -1,4 +1,3 @@
-
 [
   {
     "id": "style_1723282148161",
@@ -15,13 +14,13 @@
   {
     "id": "style_1723282194168",
     "commissionOptionId": "comm_1723281987010",
-    "name": "半身（含头壳）",
-    "price": "￥8000 起",
-    "description": "包含头壳、手爪和尾巴。适合轻度活动和展示。",
-    "imageUrl": "https://placehold.co/600x800.png",
+    "name": "半装",
+    "price": "￥3800 起",
+    "description": "包含头、手爪。适合轻度活动和展示。",
     "tags": [
       "半身",
       "轻量"
-    ]
+    ],
+    "imageUrl": "https://placehold.co/600x800.png"
   }
 ]

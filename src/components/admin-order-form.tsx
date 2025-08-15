@@ -37,7 +37,7 @@ const formSchema = z.object({
   shippingTrackingId: z.string().optional(),
   
   // Application data fields
-  userName: z.string().min(1, '用户姓名不能为空。'),
+  userName: z.string().min(1, '用户名称不能为空。'),
   age: z.string(),
   phone: z.string().min(1, '电话不能为空。'),
   qq: z.string().optional(),
@@ -275,6 +275,10 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
 
                     {/* Additional Info */}
                     <div className="space-y-4">
+                        <div className="space-y-1">
+                          <p className="font-semibold">是否安装风扇</p>
+                          <p className="text-muted-foreground">{order.hasFan ? "是" : "否"}</p>
+                        </div>
                         {order.cancellationReason && (
                             <div className="p-4 rounded-md bg-destructive/10 border border-destructive/30">
                                 <p className="font-semibold text-destructive">退养/取消理由</p>

@@ -79,6 +79,7 @@ export function AdoptionApplicationForm({ character, siteContent }: AdoptionAppl
       city: selectedCity,
       district: formData.get('district') as string,
       addressDetail: formData.get('addressDetail') as string,
+      hasFan: (formData.get('hasFan') as string) === 'on',
     };
 
     try {
@@ -167,6 +168,13 @@ export function AdoptionApplicationForm({ character, siteContent }: AdoptionAppl
              <div className="space-y-1">
                 <Label htmlFor="addressDetail">详细地址</Label>
                 <Textarea id="addressDetail" name="addressDetail" placeholder="请输入街道、门牌号等详细信息" required />
+            </div>
+
+            <div className="flex items-center space-x-2 pt-2">
+              <Checkbox id="hasFan" name="hasFan" />
+              <label htmlFor="hasFan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                是否安装头内风扇模组 (+￥150)
+              </label>
             </div>
 
             <div className="flex items-center space-x-2 pt-2">

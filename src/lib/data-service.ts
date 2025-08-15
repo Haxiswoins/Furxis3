@@ -3,7 +3,7 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, Work } from '@/types';
+import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, Work, CharacterSeries } from '@/types';
 import { sendEmail } from '@/ai/flows/send-email-flow';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
@@ -290,6 +290,11 @@ export async function createAdoptionApplication(character: Character, userId: st
     const orderNumber = `S${new Date().toISOString().slice(0,10).replace(/-/g, '')}${Math.floor(100 + Math.random() * 900)}`;
     const newId = `order_${Date.now()}`;
 
+    let finalPrice = parseFloat(character.price.replace(/[^0-9.]/g, ''));
+    if (applicationData.hasFan) {
+        finalPrice += 150;
+    }
+
     const newOrder: Order = {
       id: newId,
       userId,
@@ -299,9 +304,10 @@ export async function createAdoptionApplication(character: Character, userId: st
       status: '处理中',
       imageUrl: character.imageUrl,
       orderDate: new Date().toISOString(),
-      total: character.price,
+      total: finalPrice.toString(),
       shippingAddress: `${applicationData.province} ${applicationData.city} ${applicationData.district} ${applicationData.addressDetail}`,
-      applicationData
+      applicationData,
+      hasFan: applicationData.hasFan,
     };
     
     allOrders.push(newOrder);
@@ -345,6 +351,11 @@ export async function createCommissionApplication(userId: string, commissionInfo
     const orderNumber = `C${new Date().toISOString().slice(0,10).replace(/-/g, '')}${Math.floor(100 + Math.random() * 900)}`;
     const newId = `order_${Date.now()}`;
 
+    let finalPriceDesc = `${commissionInfo.price} (估价)`;
+    if (applicationData.hasFan) {
+        finalPriceDesc += ` + ￥150 风扇`;
+    }
+
     const newOrderData: Order = {
         id: newId,
         userId,
@@ -354,11 +365,12 @@ export async function createCommissionApplication(userId: string, commissionInfo
         status: '处理中',
         imageUrl: commissionInfo.imageUrl,
         orderDate: new Date().toISOString(),
-        total: `${commissionInfo.price} (估价)`,
+        total: finalPriceDesc,
         shippingAddress: `${applicationData.province} ${applicationData.city} ${applicationData.district} ${applicationData.addressDetail}`,
         applicationData,
         referenceImageUrl: applicationData.referenceImageUrl || null,
         commissionOptionName: commissionInfo.optionName,
+        hasFan: applicationData.hasFan,
     };
     
     allOrders.push(newOrderData);
