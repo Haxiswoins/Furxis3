@@ -53,13 +53,17 @@ export function LandingPageClient() {
     let geometry: THREE.BufferGeometry | null = null;
     let material: THREE.PointsMaterial | null = null;
     let points: THREE.Points | null = null;
-    
+    let galaxyGroup: THREE.Group | null = null;
+
     const generateGalaxy = () => {
-        if (points) {
+        if (galaxyGroup) {
             geometry?.dispose();
             material?.dispose();
-            scene.remove(points);
+            scene.remove(galaxyGroup);
         }
+
+        galaxyGroup = new THREE.Group();
+        scene.add(galaxyGroup);
 
         geometry = new THREE.BufferGeometry();
         const positions = new Float32Array(galaxyParameters.count * 3);
@@ -103,9 +107,12 @@ export function LandingPageClient() {
         });
 
         points = new THREE.Points(geometry, material);
-        points.rotation.x = Math.PI * 0.2;
-        points.position.y = 5;
-        scene.add(points);
+        galaxyGroup.add(points);
+
+        // Tilt the entire group for a better viewing angle
+        galaxyGroup.rotation.x = Math.PI * 0.2;
+        // Position the group, not the points inside
+        galaxyGroup.position.y = 5;
     }
     
     generateGalaxy();
@@ -131,12 +138,12 @@ export function LandingPageClient() {
     const animate = () => {
         const elapsedTime = clock.getElapsedTime();
       
-        if(points) {
+        if(points && geometry) {
             if (isWarping.current) {
                 // Warp animation
                 warpFactor.current += 0.05; // Acceleration
                 points.rotation.y += 0.05 * warpFactor.current;
-                const positions = geometry!.attributes.position as THREE.BufferAttribute;
+                const positions = geometry.attributes.position as THREE.BufferAttribute;
                 for (let i = 0; i < positions.count; i++) {
                     const z = positions.getZ(i);
                     positions.setZ(i, z + 0.1 * warpFactor.current);
