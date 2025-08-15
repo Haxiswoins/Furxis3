@@ -40,6 +40,7 @@ const formSchema = z.object({
   sunriseHour: z.coerce.number().min(0, "小时不能小于0").max(23, "小时不能大于23"),
   sunsetHour: z.coerce.number().min(0, "小时不能小于0").max(23, "小时不能大于23"),
   contactInfo: z.string().optional(),
+  fanPrice: z.coerce.number().min(0, "价格不能为负数"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -139,6 +140,7 @@ export default function SiteContentPage() {
                 sunriseHour: loadedContent?.sunriseHour ?? 6,
                 sunsetHour: loadedContent?.sunsetHour ?? 18,
                 contactInfo: loadedContent?.contactInfo || '',
+                fanPrice: loadedContent?.fanPrice ?? 150,
             }
         },
     });
@@ -161,6 +163,7 @@ export default function SiteContentPage() {
                   sunriseHour: loadedContent.sunriseHour ?? 6,
                   sunsetHour: loadedContent.sunsetHour ?? 18,
                   contactInfo: loadedContent.contactInfo || '',
+                  fanPrice: loadedContent.fanPrice ?? 150,
                 });
                 setCommissionImagePreview(loadedContent.commissionImageUrl);
                 setAdoptionImagePreview(loadedContent.adoptionImageUrl);
@@ -296,6 +299,18 @@ export default function SiteContentPage() {
                                     )}
                                 />
                             </div>
+                            <FormField
+                                control={form.control}
+                                name="fanPrice"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>风扇模块价格 (元)</FormLabel>
+                                        <FormControl><Input type="number" {...field} /></FormControl>
+                                        <FormDescription>设置头内风扇模块的附加价格。</FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                             <FormField
                                 control={form.control}
                                 name="contactInfo"

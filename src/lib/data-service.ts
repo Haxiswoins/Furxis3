@@ -283,7 +283,7 @@ export async function deleteOrder(id: string): Promise<void> {
 
 
 // Order Actions (Application Creation)
-export async function createAdoptionApplication(character: Character, userId: string, applicationData: ApplicationData): Promise<string> {
+export async function createAdoptionApplication(character: Character, userId: string, applicationData: ApplicationData, fanPrice: number): Promise<string> {
     const allOrders = await getAllOrders();
     const allCharacters = await getCharacters();
 
@@ -292,7 +292,7 @@ export async function createAdoptionApplication(character: Character, userId: st
 
     let finalPrice = parseFloat(character.price.replace(/[^0-9.]/g, ''));
     if (applicationData.hasFan) {
-        finalPrice += 150;
+        finalPrice += fanPrice;
     }
 
     const newOrder: Order = {
@@ -346,14 +346,14 @@ type CommissionInfo = {
     imageUrl: string;
     price: string;
 }
-export async function createCommissionApplication(userId: string, commissionInfo: CommissionInfo, applicationData: ApplicationData): Promise<string> {
+export async function createCommissionApplication(userId: string, commissionInfo: CommissionInfo, applicationData: ApplicationData, fanPrice: number): Promise<string> {
     const allOrders = await getAllOrders();
     const orderNumber = `C${new Date().toISOString().slice(0,10).replace(/-/g, '')}${Math.floor(100 + Math.random() * 900)}`;
     const newId = `order_${Date.now()}`;
 
     let finalPriceDesc = `${commissionInfo.price} (估价)`;
     if (applicationData.hasFan) {
-        finalPriceDesc += ` + ￥150 风扇`;
+        finalPriceDesc += ` + ￥${fanPrice} 风扇`;
     }
 
     const newOrderData: Order = {

@@ -40,6 +40,8 @@ export function AdoptionApplicationForm({ character, siteContent }: AdoptionAppl
   const [cities, setCities] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
 
+  const fanPrice = siteContent?.fanPrice ?? 150;
+
   const handleProvinceChange = (province: string) => {
     setSelectedProvince(province);
     const provinceData = chinaDivisions.find(p => p.name === province);
@@ -84,7 +86,7 @@ export function AdoptionApplicationForm({ character, siteContent }: AdoptionAppl
 
     try {
       setSubmitting(true);
-      await createAdoptionApplication(character, user.uid, applicationData);
+      await createAdoptionApplication(character, user.uid, applicationData, fanPrice);
       toast({
         title: "恭喜您！申请已提交",
         description: `管理员将在三个工作日内联系您。`,
@@ -173,7 +175,7 @@ export function AdoptionApplicationForm({ character, siteContent }: AdoptionAppl
             <div className="flex items-center space-x-2 pt-2">
               <Checkbox id="hasFan" name="hasFan" />
               <label htmlFor="hasFan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                是否安装头内风扇模块 (+￥150)
+                是否安装头内风扇模块 (+￥{fanPrice})
               </label>
             </div>
 

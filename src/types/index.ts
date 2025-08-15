@@ -98,6 +98,7 @@ export type SiteContent = {
   commissionContractText?: string;
   confirmationEmailSubject?: string;
   confirmationEmailBody?: string;
+  fanPrice?: number;
 };
 
 export type Work = {

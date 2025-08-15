@@ -85,6 +85,8 @@ export default function CommissionApplicationPage() {
     fetchData();
   }, [commissionName, styleName]);
   
+  const fanPrice = siteContent?.fanPrice ?? 150;
+
   const handleProvinceChange = (province: string) => {
     setSelectedProvince(province);
     const provinceData = chinaDivisions.find(p => p.name === province);
@@ -164,7 +166,7 @@ export default function CommissionApplicationPage() {
         price: commissionStyle.price,
       };
 
-      await createCommissionApplication(user.uid, commissionInfo, applicationData);
+      await createCommissionApplication(user.uid, commissionInfo, applicationData, fanPrice);
       toast({
         title: "申请已提交！",
         description: "我们的团队将审核您的信息并与您联系。",
@@ -347,7 +349,7 @@ export default function CommissionApplicationPage() {
             <div className="flex items-center space-x-2 pt-2">
               <Checkbox id="hasFan" name="hasFan" />
               <label htmlFor="hasFan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                是否安装头内风扇模块 (+￥150)
+                是否安装头内风扇模块 (+￥{fanPrice})
               </label>
             </div>
 
