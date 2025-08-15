@@ -1,61 +1,58 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function to check if a user is the designated admin
-    function isAdmin(userId) {
-      return userId == "s4uext3URcWMry52mRcPSeMhl0H2";
+    // Helper function to check if the user is the designated admin
+    function isAdmin() {
+      return request.auth.uid == 's4uext3URcWMry52mRcPSeMhl0H2';
     }
 
-    // Helper function to check if a user is the owner of a document
+    // Helper function to check if the user is the owner of the document
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
-    
-    // Characters: Publicly readable, admin only write access
+
+    // Publicly readable collections, only writable by admin
     match /characters/{characterId} {
       allow read: if true;
-      allow write: if isAdmin(request.auth.uid);
-    }
-    
-    // Character Series: Publicly readable, admin only write access
-    match /characterSeries/{seriesId} {
-        allow read: if true;
-        allow write: if isAdmin(request.auth.uid);
+      allow write: if isAdmin();
     }
 
-    // Commission Options: Publicly readable, admin only write access
+    match /characterSeries/{seriesId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /commissionOptions/{optionId} {
       allow read: if true;
-      allow write: if isAdmin(request.auth.uid);
-    }
-    
-    // Commission Styles: Publicly readable, admin only write access
-    match /commissionStyles/{styleId} {
-        allow read: if true;
-        allow write: if isAdmin(request.auth.uid);
-    }
-    
-    // Works: Publicly readable, admin only write access
-    match /works/{workId} {
-        allow read: if true;
-        allow write: if isAdmin(request.auth.uid);
+      allow write: if isAdmin();
     }
 
-    // Site Content: Publicly readable, admin only write access
+    match /commissionStyles/{styleId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /works/{workId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Site content is publicly readable, only writable by admin
     match /site/content {
       allow read: if true;
-      allow write: if isAdmin(request.auth.uid);
+      allow write: if isAdmin();
     }
 
-    // Orders: Users can read their own orders, admins can read all.
-    // Users can create orders. Admins can update/delete any order.
-    // Users can only update their own order if they are the owner.
+    // Orders can be created by any authenticated user.
+    // They can only be read or updated by the owner or an admin.
+    // Deletion is restricted to admin only.
     match /orders/{orderId} {
-      allow read, update: if isOwner(resource.data.userId) || isAdmin(request.auth.uid);
-      allow create: if request.auth != null; // Any authenticated user can create an order
-      allow delete: if isAdmin(request.auth.uid);
+      allow create: if request.auth != null;
+      allow read, update: if isOwner(resource.data.userId) || isAdmin();
+      allow delete: if isAdmin();
     }
   }
 }
