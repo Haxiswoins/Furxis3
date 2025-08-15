@@ -76,7 +76,8 @@ NEXT_PUBLIC_FIREBASE_APP_ID="1:430525481988:web:e1ac745830fa0a02cae151"
 
 
 # Resend API Key for Email Notifications (获取地址: https://resend.com/)
-# 这个密钥是发送邮件通知功能所必需的。
+# 这个密钥是发送邮件通知功能（例如新订单提醒、中标通知）所必需的。
+# 您需要注册 Resend 账户并配置一个已验证的域名（例如: notification@yourdomain.com）才能发送邮件。
 RESEND_API_KEY="re_..."
 
 # Firebase 服务账号密钥 (用于服务器端图片上传)
