@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -16,13 +15,9 @@ export function WorkImages({ work }: WorkImagesProps) {
 
     // Dynamically determine grid layout based on image count
     const gridClasses = cn('grid gap-4', {
-      // 1 image: centered, larger
       'grid-cols-1': imageCount === 1,
-      // 2 images: side-by-side
       'grid-cols-2': imageCount === 2,
-      // 3 images: three columns
       'grid-cols-1 md:grid-cols-3': imageCount === 3,
-      // 4 or more images: 2xN grid is often visually appealing
       'grid-cols-1 sm:grid-cols-2': imageCount >= 4,
     });
 
@@ -32,19 +27,18 @@ export function WorkImages({ work }: WorkImagesProps) {
             <Dialog key={index}>
                 <DialogTrigger asChild>
                     <div className={cn(
-                        "rounded-lg overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02]",
+                        "relative aspect-video rounded-lg overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02]",
                         {
-                            "md:col-span-2 md:row-span-2": imageCount === 3 && index === 0, // Make first image larger for 3-image layout
+                            "md:col-span-2 md:row-span-2 aspect-square": imageCount === 3 && index === 0, // Make first image larger for 3-image layout
                              "col-span-1": imageCount !== 1,
                         }
                     )}>
                         <Image
                             src={imgSrc}
                             alt={`${work.workName} - 视图 ${index + 1}`}
-                            width={0}
-                            height={0}
-                            sizes="100vw"
-                            className="w-full h-auto object-cover"
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="object-cover"
                         />
                     </div>
                 </DialogTrigger>
