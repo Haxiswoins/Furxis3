@@ -26,6 +26,7 @@ import Image from 'next/image';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from './ui/textarea';
 import { Separator } from './ui/separator';
+import { Label } from '@/components/ui/label';
 
 const formSchema = z.object({
   // Order status fields
