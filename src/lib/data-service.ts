@@ -12,6 +12,7 @@ import {
   orderBy,
   limit,
   writeBatch,
+  runTransaction,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, CharacterSeries, Work } from '@/types';
@@ -22,6 +23,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 // Generic function to convert Firestore doc data to a typed object with an ID.
 function docToType<T>(docSnap: any): T {
   const data = docSnap.data();
+  if (!data) return { id: docSnap.id } as T;
   // Firestore timestamps need to be converted to ISO strings for consistency
   const convertedData = Object.keys(data).reduce((acc, key) => {
     if (data[key] instanceof Timestamp) {
@@ -57,6 +59,14 @@ export async function getSiteContent(): Promise<SiteContent | null> {
         adoptionPageDescription: '给这些预先设计的角色一个家。',
         commissionPageDescription: '选择一个基础套餐开始您的定制兽装之旅。',
         adminEmail: 'your-email@example.com',
+        homeBackgroundImageUrl: null,
+        sunriseHour: 6,
+        sunsetHour: 18,
+        contactInfo: '邮箱号（haxiswoins@qq.com），QQ号（805909541）',
+        adoptionContractText: '',
+        commissionContractText: '',
+        confirmationEmailSubject: '',
+        confirmationEmailBody: '',
     };
   } catch (error) {
     console.error("Error fetching site content:", error);
@@ -64,16 +74,21 @@ export async function getSiteContent(): Promise<SiteContent | null> {
   }
 }
 
-export async function saveSiteContent(content: SiteContent): Promise<void> {
+export async function saveSiteContent(content: Partial<SiteContent>): Promise<void> {
     const docRef = doc(db, 'site', 'content');
-    await updateDoc(docRef, { ...content }).catch(async (err) => {
+    // Use updateDoc which can also create the document if it doesn't exist with merge: true
+    // However, the standard is to check. Let's stick to update/add.
+    try {
+        await updateDoc(docRef, content);
+    } catch(err: any) {
         if (err.code === 'not-found') {
             await addDoc(collection(db, 'site'), content);
         } else {
-            throw err;
+             await updateDoc(docRef, content, { merge: true });
         }
-    });
+    }
 }
+
 
 // Character Series
 export async function getCharacterSeries(): Promise<CharacterSeries[]> {
@@ -149,8 +164,14 @@ export async function deleteCharacter(id: string): Promise<void> {
 export async function getCommissionOptions(): Promise<CommissionOption[]> {
   const querySnapshot = await getDocs(collection(db, "commissionOptions"));
   const options = querySnapshot.docs.map(doc => docToType<CommissionOption>(doc));
-  // Manual sort because Firestore doesn't handle string-based timestamps well
-  return options.sort((a, b) => parseInt(b.id.split('_')[1] || '0') - parseInt(a.id.split('_')[1] || '0'));
+  return options.sort((a, b) => {
+    // Attempt to parse a year or timestamp from the name for sorting
+    const yearA = a.name.match(/\d{4}/)?.[0] || '0';
+    const yearB = b.name.match(/\d{4}/)?.[0] || '0';
+    if (yearA !== yearB) return parseInt(yearB) - parseInt(yearA);
+    // Fallback for names without years
+    return b.name.localeCompare(a.name);
+  });
 }
 
 export async function getCommissionOptionById(id: string): Promise<CommissionOption | null> {
@@ -169,10 +190,8 @@ export async function saveCommissionOption(commissionOption: Omit<CommissionOpti
         await updateDoc(doc(db, 'commissionOptions', id), commissionOption);
         return id;
     } else {
-        const newId = `comm_${Date.now()}`;
-        const data = { ...commissionOption, id: newId };
-        const docRef = await addDoc(collection(db, 'commissionOptions'), data);
-        return docRef.id; // Firestore generates its own ID, but we use our custom one for sorting.
+        const docRef = await addDoc(collection(db, 'commissionOptions'), commissionOption);
+        return docRef.id;
     }
 }
 
@@ -231,41 +250,40 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
   return docSnap.exists() ? docToType<Order>(docSnap) : null;
 }
 
-export async function updateOrder(orderId: string, data: Partial<Order>): Promise<Order> {
+export async function updateOrder(orderId: string, data: Partial<Omit<Order, 'id'>>): Promise<void> {
     const orderRef = doc(db, 'orders', orderId);
     await updateDoc(orderRef, data);
 
-    const newOrderDoc = await getDoc(orderRef);
-    const newOrder = docToType<Order>(newOrderDoc);
-
     // If status changed to '待确认', send confirmation email
-    if (data.status === '待确认' && newOrder.status !== '待确认' && process.env.RESEND_API_KEY) {
+    if (data.status === '待确认' && process.env.RESEND_API_KEY) {
+        const newOrder = await getOrderById(orderId);
         const siteContent = await getSiteContent();
-        if(newOrder.applicationData?.email && siteContent) {
+        if(newOrder && newOrder.applicationData?.email && siteContent) {
             let emailBody = siteContent.confirmationEmailBody || '';
             emailBody = emailBody.replace('{productName}', newOrder.productName);
             emailBody = emailBody.replace('{commissionOptionName}', newOrder.commissionOptionName || '');
             await sendEmail({
                 to: newOrder.applicationData.email,
-                from: 'notification@suitopia.club',
+                from: 'notification@suitopia.club', 
                 subject: siteContent.confirmationEmailSubject || '您的委托已中标！',
-                html: emailBody.replace(/\\n/g, '<br>'),
+                html: emailBody.replace(/\n/g, '<br>'),
             });
         }
     }
-    return newOrder;
 }
-
 
 export async function deleteOrder(id: string): Promise<void> {
     await deleteDoc(doc(db, 'orders', id));
 }
 
-// Order Actions
+
+// Order Actions (Application Creation)
 export async function createAdoptionApplication(userId: string, character: Character, applicationData: ApplicationData): Promise<string> {
     const orderNumber = `S${new Date().toISOString().slice(0,10).replace(/-/g, '')}${Math.floor(100 + Math.random() * 900)}`;
 
-    const newOrder: Omit<Order, 'id'> = {
+    const newOrderRef = doc(collection(db, 'orders')); // Create a reference with a new ID
+
+    const newOrderData: Omit<Order, 'id'> = {
       userId,
       productName: character.name,
       orderNumber,
@@ -277,12 +295,18 @@ export async function createAdoptionApplication(userId: string, character: Chara
       shippingAddress: `${applicationData.province} ${applicationData.city} ${applicationData.district} ${applicationData.addressDetail}`,
       applicationData
     };
-
-    const docRef = await addDoc(collection(db, 'orders'), newOrder);
     
-    // Increment applicants count
-    const charRef = doc(db, 'characters', character.id);
-    await updateDoc(charRef, { applicants: (character.applicants || 0) + 1 });
+    // Use a transaction to ensure atomicity
+    await runTransaction(db, async (transaction) => {
+        const charRef = doc(db, 'characters', character.id);
+        const charDoc = await transaction.get(charRef);
+        if (!charDoc.exists()) {
+            throw "Character does not exist!";
+        }
+        const currentApplicants = charDoc.data().applicants || 0;
+        transaction.update(charRef, { applicants: currentApplicants + 1 });
+        transaction.set(newOrderRef, newOrderData);
+    });
 
     if (process.env.RESEND_API_KEY) {
         const siteContent = await getSiteContent();
@@ -291,12 +315,13 @@ export async function createAdoptionApplication(userId: string, character: Chara
                 to: siteContent.adminEmail,
                 from: 'notification@suitopia.club', 
                 subject: `[新领养申请] ${character.name}`,
-                html: `<p>新领养申请: ${character.name} by ${applicationData.userName}. <a href="${BASE_URL}/admin/orders/edit/${docRef.id}">处理订单</a></p>`
+                html: `<p>新领养申请: ${character.name} by ${applicationData.userName}. <a href="${BASE_URL}/admin/orders/edit/${newOrderRef.id}">处理订单</a></p>`
             });
         }
     }
-    return docRef.id;
+    return newOrderRef.id;
 }
+
 
 type CommissionInfo = {
     styleName: string;
@@ -307,7 +332,7 @@ type CommissionInfo = {
 export async function createCommissionApplication(userId: string, commissionInfo: CommissionInfo, applicationData: ApplicationData): Promise<string> {
     const orderNumber = `C${new Date().toISOString().slice(0,10).replace(/-/g, '')}${Math.floor(100 + Math.random() * 900)}`;
     
-    const newOrder: Omit<Order, 'id'> = {
+    const newOrderData: Omit<Order, 'id'> = {
         userId,
         productName: commissionInfo.styleName,
         orderNumber,
@@ -322,7 +347,7 @@ export async function createCommissionApplication(userId: string, commissionInfo
         commissionOptionName: commissionInfo.optionName,
     };
     
-    const docRef = await addDoc(collection(db, 'orders'), newOrder);
+    const docRef = await addDoc(collection(db, 'orders'), newOrderData);
 
     if (process.env.RESEND_API_KEY) {
         const siteContent = await getSiteContent();
@@ -339,9 +364,10 @@ export async function createCommissionApplication(userId: string, commissionInfo
     return docRef.id;
 }
 
+
 export async function cancelOrder(orderId: string, reason: string): Promise<void> {
   const orderRef = doc(db, 'orders', orderId);
-  const updatedData = { status: '退养中', cancellationReason: reason };
+  const updatedData = { status: '退养中' as const, cancellationReason: reason };
   await updateDoc(orderRef, updatedData);
 
   const order = await getOrderById(orderId);
