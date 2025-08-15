@@ -68,6 +68,7 @@ export function LandingPageClient() {
         geometry = new THREE.BufferGeometry();
         const positions = new Float32Array(galaxyParameters.count * 3);
         const colors = new Float32Array(galaxyParameters.count * 3);
+        const randomness = new Float32Array(galaxyParameters.count * 3);
 
         const colorInside = new THREE.Color(galaxyParameters.insideColor);
         const colorOutside = new THREE.Color(galaxyParameters.outsideColor);
@@ -82,10 +83,14 @@ export function LandingPageClient() {
             const randomX = Math.pow(Math.random(), galaxyParameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * galaxyParameters.randomness * radius;
             const randomY = Math.pow(Math.random(), galaxyParameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * galaxyParameters.randomness * radius;
             const randomZ = Math.pow(Math.random(), galaxyParameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * galaxyParameters.randomness * radius;
+            
+            randomness[i3] = randomX;
+            randomness[i3+1] = randomY;
+            randomness[i3+2] = randomZ;
 
-            positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
-            positions[i3 + 1] = randomY;
-            positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+            positions[i3] = Math.cos(branchAngle + spinAngle) * radius;
+            positions[i3 + 1] = 0;
+            positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius;
             
             const mixedColor = colorInside.clone();
             mixedColor.lerp(colorOutside, radius / galaxyParameters.radius);
@@ -97,6 +102,8 @@ export function LandingPageClient() {
 
         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.setAttribute('aRandomness', new THREE.BufferAttribute(randomness, 3));
+
 
         material = new THREE.PointsMaterial({
             size: galaxyParameters.size,
@@ -109,9 +116,7 @@ export function LandingPageClient() {
         points = new THREE.Points(geometry, material);
         galaxyGroup.add(points);
 
-        // Tilt the entire group for a better viewing angle
         galaxyGroup.rotation.x = Math.PI * 0.2;
-        // Position the group, not the points inside
         galaxyGroup.position.y = 5;
     }
     
@@ -138,12 +143,15 @@ export function LandingPageClient() {
     const animate = () => {
         const elapsedTime = clock.getElapsedTime();
       
-        if(points && geometry) {
+        if(galaxyGroup && geometry) {
+            const positions = geometry.attributes.position as THREE.BufferAttribute;
+            const randomness = geometry.attributes.aRandomness as THREE.BufferAttribute;
+
             if (isWarping.current) {
                 // Warp animation
                 warpFactor.current += 0.05; // Acceleration
-                points.rotation.y += 0.05 * warpFactor.current;
-                const positions = geometry.attributes.position as THREE.BufferAttribute;
+                galaxyGroup.rotation.y += 0.05 * warpFactor.current;
+                
                 for (let i = 0; i < positions.count; i++) {
                     const z = positions.getZ(i);
                     positions.setZ(i, z + 0.1 * warpFactor.current);
@@ -153,14 +161,35 @@ export function LandingPageClient() {
                 }
                 positions.needsUpdate = true;
             } else {
-                // Normal "stargaze" animation
-                points.rotation.y = elapsedTime * 0.05;
-                camera.position.x += (mouse.current.x * 0.5 - camera.position.x) * 0.02;
-                camera.position.y += (-mouse.current.y * 0.5 - camera.position.y) * 0.02;
+                // Orbital camera movement
+                const cameraAngle = elapsedTime * 0.05;
+                camera.position.x = Math.sin(cameraAngle) * 30;
+                camera.position.z = Math.cos(cameraAngle) * 30;
+                
+                // Mouse parallax effect
+                camera.position.x += mouse.current.x * 3;
+                camera.position.y += -mouse.current.y * 3;
+                
+                // Particle randomness
+                for (let i = 0; i < galaxyParameters.count; i++) {
+                    const i3 = i * 3;
+                    const x = positions.getX(i);
+                    const y = positions.getY(i);
+                    const z = positions.getZ(i);
+                    
+                    const randomX = randomness.getX(i);
+                    const randomY = randomness.getY(i);
+                    const randomZ = randomness.getZ(i);
+
+                    positions.setX(i, x + (Math.sin(elapsedTime * 0.1 + i) * randomX * 0.001));
+                    positions.setY(i, y + (Math.cos(elapsedTime * 0.1 + i) * randomY * 0.001));
+                    positions.setZ(i, z + (Math.sin(elapsedTime * 0.1 + i) * randomZ * 0.001));
+                }
+                positions.needsUpdate = true;
             }
         }
       
-        camera.lookAt(scene.position);
+        camera.lookAt(galaxyGroup.position);
         renderer.render(scene, camera);
         animationFrameId = requestAnimationFrame(animate);
     };
