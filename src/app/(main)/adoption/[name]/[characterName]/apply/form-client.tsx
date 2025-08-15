@@ -22,14 +22,14 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { createAdoptionApplication } from '@/lib/data-service';
 
 type AdoptionApplicationFormProps = {
     character: Character;
     siteContent: SiteContent | null;
-    createAdoptionApplication: (userId: string, applicationData: any) => Promise<string>;
 }
 
-export function AdoptionApplicationForm({ character, siteContent, createAdoptionApplication }: AdoptionApplicationFormProps) {
+export function AdoptionApplicationForm({ character, siteContent }: AdoptionApplicationFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -83,7 +83,7 @@ export function AdoptionApplicationForm({ character, siteContent, createAdoption
 
     try {
       setSubmitting(true);
-      await createAdoptionApplication(user.uid, applicationData);
+      await createAdoptionApplication(character, user.uid, applicationData);
       toast({
         title: "恭喜您！申请已提交",
         description: `管理员将在三个工作日内联系您。`,

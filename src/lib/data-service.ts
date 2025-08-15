@@ -1,4 +1,6 @@
 
+'use server';
+
 import fs from 'fs/promises';
 import path from 'path';
 import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, CharacterSeries, Work } from '@/types';
@@ -263,7 +265,7 @@ export async function deleteOrder(id: string): Promise<void> {
 
 
 // Order Actions (Application Creation)
-export async function createAdoptionApplication(userId: string, character: Character, applicationData: ApplicationData): Promise<string> {
+export async function createAdoptionApplication(character: Character, userId: string, applicationData: ApplicationData): Promise<string> {
     const allOrders = await getAllOrders();
     const allCharacters = await getCharacters();
 
