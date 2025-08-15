@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -20,7 +21,7 @@ type ContactInfoProps = {
 export function ContactInfo({ content }: ContactInfoProps) {
   const infoText = content?.contactInfo 
     ? content.contactInfo 
-    : "暂未设置联系方式。管理员请前往后台“网站内容管理”页面进行配置。";
+    : "联系方式暂未设置。管理员请前往后台“页面内容管理”页面进行配置。";
 
   return (
     <AlertDialog>

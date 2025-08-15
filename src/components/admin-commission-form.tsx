@@ -52,7 +52,6 @@ export function AdminCommissionForm({ commissionOption }: AdminCommissionFormPro
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(commissionOption?.imageUrl || null);
-  const [initialImagePreview, setInitialImagePreview] = useState<string | null>(commissionOption?.imageUrl || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormValues>({
@@ -74,7 +73,7 @@ export function AdminCommissionForm({ commissionOption }: AdminCommissionFormPro
 
     setLoading(true);
     try {
-      let imageUrl = initialImagePreview;
+      let imageUrl = commissionOption?.imageUrl;
 
       if (imageFile) {
         imageUrl = await uploadImage(imageFile, `commissions/${values.name}_${Date.now()}`);
@@ -112,6 +111,14 @@ export function AdminCommissionForm({ commissionOption }: AdminCommissionFormPro
       setLoading(false);
     }
   }
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+        setImageFile(file);
+        setImagePreview(URL.createObjectURL(file));
+    }
+  };
 
   return (
     <Form {...form}>
@@ -197,13 +204,7 @@ export function AdminCommissionForm({ commissionOption }: AdminCommissionFormPro
                     accept="image/*"
                     className="hidden"
                     ref={fileInputRef}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                          setImageFile(file);
-                          setImagePreview(URL.createObjectURL(file));
-                      }
-                    }} 
+                    onChange={handleFileChange}
                 />
                  <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
                     <Upload className="mr-2" />

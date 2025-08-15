@@ -337,7 +337,7 @@ export default function OrderDetailPage() {
                             </DialogHeader>
                             <ScrollArea className="h-[60vh] pr-6">
                                 <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
-                                    {contractText || "合同条款正在加载中..."}
+                                    {contractText || "合同条款暂未配置，请联系管理员。"}
                                 </div>
                             </ScrollArea>
                         </DialogContent>

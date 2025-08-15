@@ -84,7 +84,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
   };
 
   const handleSave = async (values: FormValues) => {
-    if (!images[0].file && !work) {
+    if (!images[0].file && !work?.imageUrls[0]) {
         toast({ title: '图片缺失', description: '新增作品必须上传至少一张图片。', variant: 'destructive' });
         return;
     }
@@ -200,7 +200,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
                             ref={fileInputRefs[index]}
                             id={`file-input-${index}`}
                         />
-                        <Button type="button" variant="outline" onClick={() => fileInputRefs[index].current?.click()}>
+                        <Button type="button" variant="outline" onClick={() => fileInputRefs[index]?.current?.click()}>
                             <Upload className="mr-2 h-4 w-4" />
                             {img.preview ? '更换图片' : '选择图片'}
                         </Button>

@@ -38,7 +38,6 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(commissionStyle?.imageUrl || null);
-  const [initialImagePreview, setInitialImagePreview] = useState<string | null>(commissionStyle?.imageUrl || null);
   const [commissionOptions, setCommissionOptions] = useState<CommissionOption[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -65,7 +64,7 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
 
     setLoading(true);
     try {
-      let imageUrl = initialImagePreview;
+      let imageUrl = commissionStyle?.imageUrl;
 
       if (imageFile) {
         imageUrl = await uploadImage(imageFile, `commission-styles/${values.name}_${Date.now()}`);
@@ -100,6 +99,14 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
       setLoading(false);
     }
   }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+        setImageFile(file);
+        setImagePreview(URL.createObjectURL(file));
+    }
+  };
 
   return (
     <Form {...form}>
@@ -145,13 +152,7 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
                     accept="image/*"
                     className="hidden"
                     ref={fileInputRef}
-                    onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                            setImageFile(file);
-                            setImagePreview(URL.createObjectURL(file));
-                        }
-                    }}
+                    onChange={handleFileChange}
                 />
                  <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
                     <Upload className="mr-2" />
@@ -172,5 +173,3 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
     </Form>
   );
 }
-
-    

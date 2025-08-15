@@ -125,7 +125,6 @@ export function AdminCharacterForm({ character }: AdminCharacterFormProps) {
               if (img.file) {
                   return await uploadImage(img.file, `characters/${values.name}_${index}_${Date.now()}`);
               }
-              // If no new file, use the initial preview URL from when the component loaded
               return initialImagePreviews[index] || undefined;
           })
       );
@@ -214,7 +213,7 @@ export function AdminCharacterForm({ character }: AdminCharacterFormProps) {
                         ref={fileInputRefs[index]}
                         id={`file-input-${index}`}
                     />
-                    <Button type="button" variant="outline" onClick={() => fileInputRefs[index].current?.click()}>
+                    <Button type="button" variant="outline" onClick={() => fileInputRefs[index]?.current?.click()}>
                         <Upload className="mr-2" />
                         {img.preview ? '更换图片' : '选择图片'}
                     </Button>
