@@ -4,9 +4,9 @@ import { getSiteContent } from '@/lib/data-service';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ContactInfo } from '@/components/contact-info';
 
-function HomeCardSkeleton() {
+function HomeCardSkeleton({ className }: { className?: string }) {
   return (
-     <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl bg-muted">
+     <div className={`relative rounded-2xl overflow-hidden shadow-2xl bg-muted ${className}`}>
        <Skeleton className="w-full h-full" />
        <div className="absolute inset-0 flex flex-col justify-end p-8">
            <Skeleton className="h-10 w-3/4" />
@@ -19,10 +19,17 @@ function HomeCardSkeleton() {
 export default async function HomePage() {
   const content = await getSiteContent();
 
-  const cardLinkClass = "group w-full md:w-[30%]";
-  const cardDivClass = "relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl";
-  const cardImageClass = "transition-transform duration-500 group-hover:scale-110";
-  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-8 text-white bg-gradient-to-t from-black/60 to-transparent transition-transform duration-500 group-hover:-translate-y-2 group-hover:scale-105";
+  const primaryCardLinkClass = "group w-full";
+  const primaryCardDivClass = "relative aspect-[16/7] rounded-2xl overflow-hidden shadow-2xl";
+
+  const secondaryCardLinkClass = "group w-full md:w-[calc(50%-1rem)]";
+  const secondaryCardDivClass = "relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl";
+  
+  const cardImageClass = "transition-transform duration-500 ease-in-out group-hover:scale-105";
+  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/70 via-black/40 to-transparent transition-all duration-500 ease-in-out";
+  const cardTitleClass = "font-headline text-3xl md:text-4xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1";
+  const cardDescriptionClass = "mt-2 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base";
+
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-8rem)]">
@@ -44,67 +51,71 @@ export default async function HomePage() {
             </div>
           </Link>
         </div>
-        <div className="flex flex-col md:flex-row items-center justify-center gap-8 w-full max-w-6xl">
+        
+        <div className="flex flex-col items-center justify-center gap-8 w-full max-w-6xl">
             
-            {!content ? <HomeCardSkeleton /> : (
-              <Link href="/commission" className={cardLinkClass}>
-                <div className={cardDivClass}>
+            {!content ? <HomeCardSkeleton className="aspect-[16/7]" /> : (
+              <Link href="/commission" className={primaryCardLinkClass}>
+                <div className={primaryCardDivClass}>
                   <Image
-                    src={content?.commissionImageUrl || "https://placehold.co/600x800.png"}
+                    src={content?.commissionImageUrl || "https://placehold.co/1600x700.png"}
                     alt="委托申请"
                     fill
-                    sizes="(max-width: 768px) 100vw, 30vw"
+                    priority
+                    sizes="(max-width: 768px) 100vw, 66vw"
                     style={{objectFit: "cover"}}
                     className={cardImageClass}
                   />
-                  <div className={cardTextDivClass} style={{textShadow: '2px 2px 8px rgba(0,0,0,0.7)'}}>
-                    <h2 className="font-headline text-4xl">{content?.commissionTitle || '委托申请'}</h2>
-                    <p className="mt-2 opacity-90">{content?.commissionDescription || '为您量身定制。'}</p>
+                  <div className={cardTextDivClass}>
+                    <h2 className={cardTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
+                    <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
                   </div>
                 </div>
               </Link>
             )}
 
-            {!content ? <HomeCardSkeleton /> : (
-              <Link href="/adoption" className={cardLinkClass}>
-                <div className={cardDivClass}>
-                  <Image
-                    src={content?.adoptionImageUrl || "https://placehold.co/600x800.png"}
-                    alt="设定领养"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 30vw"
-                    style={{objectFit: "cover"}}
-                    className={cardImageClass}
-                  />
-                  <div className={cardTextDivClass} style={{textShadow: '2px 2px 8px rgba(0,0,0,0.7)'}}>
-                    <h2 className="font-headline text-4xl">{content?.adoptionTitle || '设定领养'}</h2>
-                    <p className="mt-2 opacity-90">{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-8 w-full">
+              {!content ? <HomeCardSkeleton className="aspect-[4/3] w-full md:w-[calc(50%-1rem)]" /> : (
+                <Link href="/adoption" className={secondaryCardLinkClass}>
+                  <div className={secondaryCardDivClass}>
+                    <Image
+                      src={content?.adoptionImageUrl || "https://placehold.co/800x600.png"}
+                      alt="设定领养"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      style={{objectFit: "cover"}}
+                      className={cardImageClass}
+                    />
+                    <div className={cardTextDivClass}>
+                      <h2 className={cardTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
+                      <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            )}
+                </Link>
+              )}
 
-            {!content ? <HomeCardSkeleton /> : (
-              <Link href="/works" className={cardLinkClass}>
-                <div className={cardDivClass}>
-                  <Image
-                    src={content?.workImageUrl || "https://placehold.co/600x800.png"}
-                    alt="作品一览"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 30vw"
-                    style={{objectFit: "cover"}}
-                    className={cardImageClass}
-                  />
-                  <div className={cardTextDivClass} style={{textShadow: '2px 2px 8px rgba(0,0,0,0.7)'}}>
-                    <h2 className="font-headline text-4xl">{content?.workTitle || '作品一览'}</h2>
-                    <p className="mt-2 opacity-90">{content?.workDescription || '查看我们过往的精彩作品。'}</p>
+              {!content ? <HomeCardSkeleton className="aspect-[4/3] w-full md:w-[calc(50%-1rem)]" /> : (
+                <Link href="/works" className={secondaryCardLinkClass}>
+                  <div className={secondaryCardDivClass}>
+                    <Image
+                      src={content?.workImageUrl || "https://placehold.co/800x600.png"}
+                      alt="作品一览"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      style={{objectFit: "cover"}}
+                      className={cardImageClass}
+                    />
+                    <div className={cardTextDivClass}>
+                      <h2 className={cardTitleClass}>{content?.workTitle || '作品一览'}</h2>
+                      <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            )}
+                </Link>
+              )}
+            </div>
         </div>
       </div>
-      <div className="w-full mt-12 pb-8 text-center">
+      <div className="w-full mt-16 pb-8 text-center">
         <ContactInfo content={content} />
       </div>
     </div>
