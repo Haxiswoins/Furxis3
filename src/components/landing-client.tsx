@@ -8,43 +8,29 @@ import { Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import * as THREE from 'three';
 
-type Media = {
-  media_type: 'image' | 'video' | 'other';
-  url: string; // Will be a Base64 Data URI
-  title: string;
-};
-
 export function LandingPageClient() {
-  const [mediaUrl, setMediaUrl] = useState<string | null>(null);
-  const [mediaTitle, setMediaTitle] = useState<string>('');
   const [isMediaLoaded, setIsMediaLoaded] = useState(false);
   const [isContentVisible, setIsContentVisible] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Hardcoded media values since the API is not available
+  const mediaUrl = "https://placehold.co/1920x1080/000000/FFFFFF.png?text=Welcome";
+  const mediaTitle = "Welcome to Suitopia";
 
   useEffect(() => {
     const contentTimer = setTimeout(() => {
       setIsContentVisible(true);
     }, 500);
 
-    async function fetchDailyMedia() {
-      try {
-        const response = await fetch('/api/apod');
-        if (response.ok) {
-          const data: Media = await response.json();
-          setMediaUrl(data.url);
-          setMediaTitle(data.title);
-        } else {
-          console.error("Failed to fetch from backend /api/apod endpoint.");
-        }
-      } catch (error) {
-         console.error("Error fetching daily media:", error);
-      }
-    }
+    // Simulate image loading
+    const img = new (window as any).Image();
+    img.src = mediaUrl;
+    img.onload = () => {
+      setIsMediaLoaded(true);
+    };
     
-    fetchDailyMedia();
-
     return () => clearTimeout(contentTimer);
-  }, []);
+  }, [mediaUrl]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -93,10 +79,6 @@ export function LandingPageClient() {
     };
   }, []);
   
-  const handleImageLoad = () => {
-    setIsMediaLoaded(true);
-  };
-  
   return (
     <div className="relative h-screen w-screen overflow-hidden">
       {/* Background container */}
@@ -106,18 +88,15 @@ export function LandingPageClient() {
           isMediaLoaded ? 'opacity-100' : 'opacity-0'
         )}
       >
-        {mediaUrl && (
-          <Image
-            src={mediaUrl}
-            alt={mediaTitle}
-            fill
-            priority
-            sizes="100vw"
-            style={{objectFit: "cover"}}
-            onLoad={handleImageLoad}
-            data-ai-hint="space galaxy nebula"
-          />
-        )}
+        <Image
+          src={mediaUrl}
+          alt={mediaTitle}
+          fill
+          priority
+          sizes="100vw"
+          style={{objectFit: "cover"}}
+          data-ai-hint="space galaxy nebula"
+        />
         {/* Always have a dark overlay */}
         <div className="absolute inset-0 bg-black/20 z-10" />
       </div>

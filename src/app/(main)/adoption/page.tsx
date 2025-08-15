@@ -1,15 +1,7 @@
-
-'use client'
-
-import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { getCharacterSeries, getSiteContent } from '@/lib/data-service';
-import type { CharacterSeries, SiteContent } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getCharacterSeries, getSiteContent } from '@/lib/data-service';
 
 function SeriesCardSkeleton() {
   return (
@@ -23,43 +15,23 @@ function SeriesCardSkeleton() {
   );
 }
 
-export default function AdoptionSeriesPage() {
-  const [series, setSeries] = useState<CharacterSeries[]>([]);
-  const [siteContent, setSiteContent] = useState<SiteContent | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
-        const [seriesData, content] = await Promise.all([
-          getCharacterSeries(),
-          getSiteContent(),
-        ]);
-        setSeries(seriesData);
-        setSiteContent(content);
-      } catch (error) {
-        console.error("Failed to fetch page data:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
+export default async function AdoptionSeriesPage() {
+  const [seriesData, content] = await Promise.all([
+    getCharacterSeries(),
+    getSiteContent(),
+  ]);
 
   return (
     <div>
       <div className="text-center mb-12">
         <h1 className="text-4xl font-headline">设定领养</h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          {loading ? <Skeleton className="h-6 w-72 mx-auto" /> : (siteContent?.adoptionPageDescription || '给这些预先设计的角色一个家。')}
+          {content?.adoptionPageDescription || '给这些预先设计的角色一个家。'}
         </p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-        {loading ? (
-          [...Array(4)].map((_, i) => <SeriesCardSkeleton key={i} />)
-        ) : (
-          series.map((s) => (
+        {seriesData.length > 0 ? (
+          seriesData.map((s) => (
              <Link key={s.id} href={`/adoption/${encodeURIComponent(s.name)}`} className="group">
               <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                 <Image
@@ -77,6 +49,8 @@ export default function AdoptionSeriesPage() {
               </div>
             </Link>
           ))
+        ) : (
+          [...Array(4)].map((_, i) => <SeriesCardSkeleton key={i} />)
         )}
       </div>
     </div>

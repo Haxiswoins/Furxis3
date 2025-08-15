@@ -1,14 +1,9 @@
-
-'use client';
-
-import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getWorks } from '@/lib/data-service';
 import type { Work } from '@/types';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
 
 function WorkCardSkeleton() {
   return (
@@ -26,33 +21,17 @@ function WorkCardSkeleton() {
   );
 }
 
-export default function WorksPage() {
-  const [worksByYear, setWorksByYear] = useState<Record<string, Work[]>>({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
-        const worksData = await getWorks();
-        const groupedWorks = worksData.reduce((acc, work) => {
-          const year = new Date(work.completionDate).getFullYear().toString();
-          if (!acc[year]) {
-            acc[year] = [];
-          }
-          acc[year].push(work);
-          return acc;
-        }, {} as Record<string, Work[]>);
-        
-        setWorksByYear(groupedWorks);
-      } catch (error) {
-        console.error("Failed to fetch works:", error);
-      } finally {
-        setLoading(false);
-      }
+export default async function WorksPage() {
+  const worksData = await getWorks();
+  
+  const worksByYear = worksData.reduce((acc, work) => {
+    const year = new Date(work.completionDate).getFullYear().toString();
+    if (!acc[year]) {
+      acc[year] = [];
     }
-    fetchData();
-  }, []);
+    acc[year].push(work);
+    return acc;
+  }, {} as Record<string, Work[]>);
 
   const sortedYears = Object.keys(worksByYear).sort((a, b) => parseInt(b) - parseInt(a));
 
@@ -65,18 +44,7 @@ export default function WorksPage() {
         </p>
       </div>
 
-      {loading ? (
-        <div className="space-y-12">
-            {[...Array(2)].map((_, i) => (
-                <div key={i}>
-                    <Skeleton className="h-10 w-32 mb-6" />
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        {[...Array(5)].map((_, j) => <WorkCardSkeleton key={j} />)}
-                    </div>
-                </div>
-            ))}
-        </div>
-      ) : sortedYears.length > 0 ? (
+      {sortedYears.length > 0 ? (
         <div className="space-y-12">
           {sortedYears.map(year => (
             <div key={year}>
@@ -109,8 +77,15 @@ export default function WorksPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-10">
-          <p className="text-muted-foreground">暂无已完成的作品。</p>
+        <div className="space-y-12">
+            {[...Array(2)].map((_, i) => (
+                <div key={i}>
+                    <Skeleton className="h-10 w-32 mb-6" />
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        {[...Array(5)].map((_, j) => <WorkCardSkeleton key={j} />)}
+                    </div>
+                </div>
+            ))}
         </div>
       )}
     </div>

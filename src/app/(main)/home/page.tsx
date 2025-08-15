@@ -1,11 +1,6 @@
-
-'use client';
-
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
 import { getSiteContent } from '@/lib/data-service';
-import type { SiteContent } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ContactInfo } from '@/components/contact-info';
 
@@ -21,20 +16,8 @@ function HomeCardSkeleton() {
   )
 }
 
-
-export default function HomePage() {
-  const [content, setContent] = useState<SiteContent | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getSiteContent()
-      .then(data => {
-        if (data) {
-          setContent(data);
-        }
-      })
-      .finally(() => setLoading(false));
-  }, []);
+export default async function HomePage() {
+  const content = await getSiteContent();
 
   const cardLinkClass = "group w-full md:w-[30%]";
   const cardDivClass = "relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl";
@@ -63,7 +46,7 @@ export default function HomePage() {
         </div>
         <div className="flex flex-col md:flex-row items-center justify-center gap-8 w-full max-w-6xl">
             
-            {loading ? <HomeCardSkeleton /> : (
+            {!content ? <HomeCardSkeleton /> : (
               <Link href="/commission" className={cardLinkClass}>
                 <div className={cardDivClass}>
                   <Image
@@ -82,7 +65,7 @@ export default function HomePage() {
               </Link>
             )}
 
-            {loading ? <HomeCardSkeleton /> : (
+            {!content ? <HomeCardSkeleton /> : (
               <Link href="/adoption" className={cardLinkClass}>
                 <div className={cardDivClass}>
                   <Image
@@ -101,7 +84,7 @@ export default function HomePage() {
               </Link>
             )}
 
-            {loading ? <HomeCardSkeleton /> : (
+            {!content ? <HomeCardSkeleton /> : (
               <Link href="/works" className={cardLinkClass}>
                 <div className={cardDivClass}>
                   <Image
