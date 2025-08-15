@@ -12,7 +12,19 @@ const FALLBACK_IMAGE = {
     media_type: 'image'
 };
 
+// In-memory cache to store the APOD data
+let cachedData: any = null;
+let lastFetchTime: number = 0;
+const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
+
 export async function GET() {
+  const now = Date.now();
+
+  // If we have valid cache, return it immediately
+  if (cachedData && (now - lastFetchTime < CACHE_DURATION)) {
+    return NextResponse.json(cachedData);
+  }
+  
   try {
     const response = await fetch(APOD_URL);
 
@@ -20,6 +32,7 @@ export async function GET() {
     if (!response.ok) {
       const errorBody = await response.text();
       console.error(`NASA APOD API Error: ${response.status} ${errorBody}`);
+      // Don't cache the fallback image, so we can retry on the next request
       return NextResponse.json(FALLBACK_IMAGE);
     }
     
@@ -27,14 +40,21 @@ export async function GET() {
     
     // If the media type is not an image, return the fallback image.
     if (data.media_type !== 'image') {
+        // Cache the fallback so we don't re-request a video for the cache duration
+        cachedData = FALLBACK_IMAGE;
+        lastFetchTime = now;
         return NextResponse.json(FALLBACK_IMAGE);
     }
+
+    // Cache the successful response
+    cachedData = data;
+    lastFetchTime = now;
 
     return NextResponse.json(data);
 
   } catch (error) {
     console.error('APOD route internal error:', error);
-    // In case of any other error (e.g., network issues), return the fallback.
+    // In case of any other error (e.g., network issues), return the fallback without caching.
     return NextResponse.json(FALLBACK_IMAGE, { status: 500 });
   }
 }
