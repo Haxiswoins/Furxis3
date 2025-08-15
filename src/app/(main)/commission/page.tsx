@@ -96,8 +96,8 @@ export default function CommissionPage() {
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
-          [...Array(8)].map((_, i) => <CommissionCardSkeleton key={i} />)
-        ) : (
+          [...Array(3)].map((_, i) => <CommissionCardSkeleton key={i} />)
+        ) : commissionOptions.length > 0 ? (
           commissionOptions.map((item) => (
              <Link key={item.id} href={`/commission/${encodeURIComponent(item.name)}`} className="group block relative aspect-[3/5] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                 <Image
@@ -122,6 +122,10 @@ export default function CommissionPage() {
                 </div>
             </Link>
           ))
+        ) : (
+           <div className="col-span-full text-center py-10">
+            <p className="text-muted-foreground">暂无委托选项。</p>
+          </div>
         )}
       </div>
     </div>

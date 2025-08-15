@@ -10,15 +10,15 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/admin/dashboard', icon: LayoutDashboard, label: '仪表盘' },
-  { href: '/admin/orders', icon: Package, label: '订单管理' },
-  { href: '/admin/works', icon: Briefcase, label: '作品管理' },
-  { href: '/admin/character-series', icon: Layers, label: '设定系列管理' },
-  { href: '/admin/characters', icon: PawPrint, label: '领养角色管理' },
-  { href: '/admin/commissions', icon: ShoppingCart, label: '委托选项管理' },
-  { href: '/admin/commission-styles', icon: Component, label: '委托样式管理' },
-  { href: '/admin/content', icon: Settings, label: '页面内容管理' },
-  { href: '/admin/contracts', icon: FileText, label: '合同与邮件管理' },
+  { href: '/admin/dashboard', label: '仪表盘', icon: LayoutDashboard },
+  { href: '/admin/orders', label: '订单管理', icon: Package },
+  { href: '/admin/works', label: '作品管理', icon: Briefcase },
+  { href: '/admin/character-series', label: '设定系列管理', icon: Layers },
+  { href: '/admin/characters', label: '领养角色管理', icon: PawPrint },
+  { href: '/admin/commissions', label: '委托选项管理', icon: ShoppingCart },
+  { href: '/admin/commission-styles', label: '委托样式管理', icon: Component },
+  { href: '/admin/content', label: '页面内容管理', icon: Settings },
+  { href: '/admin/contracts', label: '合同与邮件管理', icon: FileText },
 ];
 
 export default function AdminSidebar() {
@@ -52,20 +52,27 @@ export default function AdminSidebar() {
         </Link>
       </div>
       <nav className="flex-1 px-4 space-y-2">
-        {navItems.map((item) => (
-          <Link key={item.label} href={item.href}>
-            <Button
-              variant={pathname.startsWith(item.href) ? 'secondary' : 'ghost'}
-              className="w-full justify-start"
-            >
-              <item.icon className="mr-2 h-4 w-4" />
-              {item.label}
-            </Button>
-          </Link>
-        ))}
+        {navItems.map((item) => {
+          // Check for an exact match for the dashboard, otherwise check if the path starts with the href
+          const isActive = item.href === '/admin/dashboard'
+            ? pathname === item.href
+            : pathname.startsWith(item.href);
+
+          return (
+            <Link key={item.label} href={item.href}>
+              <Button
+                variant={isActive ? 'secondary' : 'ghost'}
+                className="w-full justify-start"
+              >
+                <item.icon className="mr-2 h-4 w-4" />
+                {item.label}
+              </Button>
+            </Link>
+          );
+        })}
       </nav>
       <div className="p-4 border-t">
-        <Button variant="ghost" className="w-full justify-start" onClick={() => router.push('/')}>
+        <Button variant="ghost" className="w-full justify-start" onClick={() => router.push('/home')}>
           <Home className="mr-2 h-4 w-4" />
           返回网站
         </Button>

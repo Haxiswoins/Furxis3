@@ -81,20 +81,22 @@ export default function AdoptionCharacterListPage() {
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {loading ? (
-          [...Array(10)].map((_, i) => <CharacterCardSkeleton key={i} />)
+          [...Array(5)].map((_, i) => <CharacterCardSkeleton key={i} />)
         ) : characters.length > 0 ? (
           characters.map((char) => (
             <Card key={char.id} className="overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col text-sm">
               <CardHeader className="p-0">
-                <div className="relative aspect-[3/4]">
-                    <Image
-                      src={char.imageUrl}
-                      alt={char.name}
-                      fill
-                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-                      style={{objectFit: 'cover'}}
-                    />
-                </div>
+                <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
+                  <div className="relative aspect-[3/4]">
+                      <Image
+                        src={char.imageUrl}
+                        alt={char.name}
+                        fill
+                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                        style={{objectFit: 'cover'}}
+                      />
+                  </div>
+                </Link>
               </CardHeader>
               <CardContent className="p-3 flex-grow">
                 <CardTitle className="text-lg font-headline mb-1 truncate">{char.name}</CardTitle>
@@ -106,7 +108,7 @@ export default function AdoptionCharacterListPage() {
               </CardContent>
               <CardFooter className="p-3 bg-muted/50 flex justify-between items-center">
                 <p className="text-base font-bold text-primary">{char.price}</p>
-                <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
+                <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}/apply`} passHref>
                   <Button size="sm">
                     <Heart className="mr-1 h-3 w-3" /> 领养
                   </Button>

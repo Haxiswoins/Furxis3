@@ -11,7 +11,6 @@ import {
   Timestamp,
   orderBy,
   limit,
-  runTransaction,
   writeBatch,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -42,7 +41,30 @@ export async function getSiteContent(): Promise<SiteContent | null> {
     const docRef = doc(db, 'site', 'content');
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      return docSnap.data() as SiteContent;
+      // Create a default object and merge the loaded data to ensure all keys exist
+      const defaults: SiteContent = {
+        commissionTitle: "委托申请",
+        commissionDescription: "为您量身定制。",
+        commissionImageUrl: "",
+        adoptionTitle: "设定领养",
+        adoptionDescription: "领养一个预先设计的角色。",
+        adoptionImageUrl: "",
+        workTitle: "作品一览",
+        workDescription: "查看我们过往的精彩作品。",
+        workImageUrl: "",
+        adoptionPageDescription: "给这些预先设计的角色一个家。",
+        commissionPageDescription: "选择一个基础套餐开始您的定制兽装之旅。",
+        adminEmail: "",
+        homeBackgroundImageUrl: null,
+        sunriseHour: 6,
+        sunsetHour: 18,
+        contactInfo: "",
+        adoptionContractText: "",
+        commissionContractText: "",
+        confirmationEmailSubject: "恭喜！您的委托申请已中标！",
+        confirmationEmailBody: "恭喜！您的前行无界 {commissionOptionName} - {productName} 委托申请已中标！请您及时前往工作室官网 -> 右上角个人信息图标 -> 我的订单 -> 订单详情页面阅读服务条款并确认委托申请。"
+      };
+      return { ...defaults, ...docSnap.data() };
     }
      return null;
   } catch (error) {
@@ -53,7 +75,8 @@ export async function getSiteContent(): Promise<SiteContent | null> {
 
 export async function saveSiteContent(content: Partial<SiteContent>): Promise<void> {
     const docRef = doc(db, 'site', 'content');
-    await updateDoc(docRef, content, { merge: true });
+    // Use set with merge:true to create the document if it doesn't exist, or update it if it does.
+    await updateDoc(docRef, content);
 }
 
 

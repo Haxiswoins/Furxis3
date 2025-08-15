@@ -1,3 +1,4 @@
+
 'use client';
 
 import Header from '@/components/header';
@@ -29,7 +30,7 @@ export function AppShell({
 
   if (loading) {
     return (
-       <div className="flex items-center justify-center min-h-screen">
+       <div className="flex items-center justify-center min-h-screen bg-background">
          <div className="w-full max-w-md space-y-4 p-4">
            <Skeleton className="h-12 w-full" />
            <Skeleton className="h-20 w-full" />
@@ -57,7 +58,7 @@ export function AppShell({
     }
     return (
       <div className="min-h-screen flex bg-background">
-        <div className="hidden md:block fixed h-full">
+        <div className="hidden md:block fixed h-full z-20">
            <AdminSidebar />
         </div>
         <div className="md:hidden fixed top-4 left-4 z-50">
@@ -74,7 +75,7 @@ export function AppShell({
           </Sheet>
         </div>
         <main className="flex-1 md:ml-64">
-          <div className="container mx-auto px-4 sm:px-6 md:px-8 py-8">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {children}
           </div>
         </main>
