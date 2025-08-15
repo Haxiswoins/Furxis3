@@ -10,8 +10,15 @@ import * as THREE from 'three';
 export function LandingPageClient() {
   const router = useRouter();
   const [isContentVisible, setIsContentVisible] = useState(false);
+  const [isWarping, setIsWarping] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const galaxyGroupRef = useRef<THREE.Group | null>(null);
+  const animationFrameIdRef = useRef<number | null>(null);
+  const clockRef = useRef<THREE.Clock | null>(null);
 
   useEffect(() => {
     const contentTimer = setTimeout(() => {
@@ -25,15 +32,21 @@ export function LandingPageClient() {
 
   useEffect(() => {
     if (!canvasRef.current) return;
+    
+    // Ensure this effect runs only once
+    if (rendererRef.current) return;
 
-    let animationFrameId: number;
     const scene = new THREE.Scene();
+    sceneRef.current = scene;
+    
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 30;
+    cameraRef.current = camera;
     
     const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    rendererRef.current = renderer;
 
     const galaxyParameters = {
         count: 50000,
@@ -47,10 +60,10 @@ export function LandingPageClient() {
         outsideColor: '#1b3984'
     };
 
-    let galaxyGroup: THREE.Group | null = null;
     let geometry: THREE.BufferGeometry | null = null;
     let material: THREE.PointsMaterial | null = null;
     let points: THREE.Points | null = null;
+    let galaxyGroup: THREE.Group | null = null;
     
     const generateGalaxy = () => {
         if (galaxyGroup) {
@@ -61,6 +74,7 @@ export function LandingPageClient() {
 
         galaxyGroup = new THREE.Group();
         scene.add(galaxyGroup);
+        galaxyGroupRef.current = galaxyGroup;
         
         galaxyGroup.position.y = 5; 
         galaxyGroup.rotation.x = Math.PI * 0.2; 
@@ -74,7 +88,6 @@ export function LandingPageClient() {
 
         for (let i = 0; i < galaxyParameters.count; i++) {
             const i3 = i * 3;
-            
             const radius = Math.random() * galaxyParameters.radius;
             const spinAngle = radius * galaxyParameters.spin;
             const branchAngle = ((i % galaxyParameters.branches) / galaxyParameters.branches) * Math.PI * 2;
@@ -127,55 +140,99 @@ export function LandingPageClient() {
     window.addEventListener('resize', handleResize);
     window.addEventListener('mousemove', handleMouseMove);
     
-    const clock = new THREE.Clock();
+    clockRef.current = new THREE.Clock();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (animationFrameIdRef.current) {
+          cancelAnimationFrame(animationFrameIdRef.current);
+      }
+      geometry?.dispose();
+      material?.dispose();
+      renderer.dispose();
+      rendererRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const clock = clockRef.current;
+    const renderer = rendererRef.current;
+    const scene = sceneRef.current;
+    const camera = cameraRef.current;
+    const galaxyGroup = galaxyGroupRef.current;
+    let warpFactor = 0;
 
     const animate = () => {
-        const elapsedTime = clock.getElapsedTime();
-
-        // Galaxy self-rotation
-        if(galaxyGroup) {
-            galaxyGroup.rotation.y = elapsedTime * 0.1;
+        if (!clock || !renderer || !scene || !camera || !galaxyGroup) {
+            animationFrameIdRef.current = requestAnimationFrame(animate);
+            return;
         }
 
-        // Mouse parallax effect on camera
-        const parallaxX = mouse.current.x * 0.2;
-        const parallaxY = -mouse.current.y * 0.2;
-        
-        camera.position.x += (parallaxX - camera.position.x) * 0.02;
-        camera.position.y += (parallaxY - camera.position.y) * 0.02;
+        const elapsedTime = clock.getElapsedTime();
 
-        // Keep camera focused on the galaxy's general position
-        if (galaxyGroup) {
-            camera.lookAt(new THREE.Vector3(0, galaxyGroup.position.y, 0));
+        if (isWarping) {
+            warpFactor = Math.min(warpFactor + 0.001, 1); 
+            const easedWarp = warpFactor * warpFactor;
+
+            galaxyGroup.rotation.y += 0.05 + (easedWarp * 0.5);
+
+            const particles = (galaxyGroup.children[0] as THREE.Points).geometry.attributes.position;
+            for (let i = 0; i < particles.count; i++) {
+                particles.setZ(i, particles.getZ(i) + easedWarp * 0.5);
+                if(particles.getZ(i) > camera.position.z) {
+                    particles.setZ(i, -galaxyParameters.radius);
+                }
+            }
+            particles.needsUpdate = true;
+            
+            if (warpFactor >= 0.2) {
+                 const overlay = document.getElementById('warp-overlay');
+                 if(overlay) overlay.style.opacity = `${(warpFactor - 0.2) / 0.8}`;
+            }
+            if (warpFactor >= 1) {
+                router.push('/home');
+                return;
+            }
+
+        } else {
+            // Standard rotation and parallax
+            galaxyGroup.rotation.y = elapsedTime * 0.1;
+            const parallaxX = mouse.current.x * 0.2;
+            const parallaxY = -mouse.current.y * 0.2;
+            
+            camera.position.x += (parallaxX - camera.position.x) * 0.02;
+            camera.position.y += (parallaxY - camera.position.y) * 0.02;
+            camera.lookAt(galaxyGroup.position);
         }
 
         renderer.render(scene, camera);
-        animationFrameId = requestAnimationFrame(animate);
+        animationFrameIdRef.current = requestAnimationFrame(animate);
     };
 
     animate();
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(animationFrameId);
-      geometry?.dispose();
-      material?.dispose();
-      renderer.dispose();
-    };
-  }, []);
+        if(animationFrameIdRef.current) {
+            cancelAnimationFrame(animationFrameIdRef.current);
+        }
+    }
+  }, [isWarping, router]);
+
 
   const handleNavigate = () => {
-    router.push('/home');
+    setIsWarping(true);
   };
   
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
       <canvas ref={canvasRef} className="absolute inset-0 z-0"></canvas>
+      <div id="warp-overlay" className="absolute inset-0 z-10 bg-white" style={{opacity: 0, pointerEvents: 'none'}}></div>
       
       <div className={cn(
         "absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-1000",
-        isContentVisible ? 'opacity-100' : 'opacity-0'
+        isContentVisible ? 'opacity-100' : 'opacity-0',
+        isWarping ? 'opacity-0' : 'opacity-100'
       )}>
         <div className="absolute bottom-[20%]">
           <button
@@ -191,7 +248,8 @@ export function LandingPageClient() {
 
       <div className={cn(
         "absolute bottom-8 w-full text-center text-xs text-white/40 transition-opacity duration-1000 ease-in-out",
-        isContentVisible ? "opacity-100" : "opacity-0"
+        isContentVisible ? "opacity-100" : "opacity-0",
+        isWarping ? 'opacity-0' : 'opacity-100'
       )}>
          <p>Developed by Haxis</p>
       </div>
