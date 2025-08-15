@@ -2,7 +2,6 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { getSiteContent } from '@/lib/data-service';
 import type { SiteContent } from '@/types';
 
 type Theme = 'dark' | 'light';
@@ -18,8 +17,20 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [siteContent, setSiteContent] = useState<SiteContent | null>(null);
 
   useEffect(() => {
-    // Fetch site content once on mount
-    getSiteContent().then(setSiteContent);
+    // Fetch site content from the new API endpoint
+    async function fetchSiteContent() {
+        try {
+            const response = await fetch('/api/site-content');
+            if (!response.ok) {
+                throw new Error('Failed to fetch site content');
+            }
+            const data: SiteContent = await response.json();
+            setSiteContent(data);
+        } catch (error) {
+            console.error("Error fetching site content:", error);
+        }
+    }
+    fetchSiteContent();
   }, []);
 
   useEffect(() => {
