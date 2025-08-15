@@ -46,16 +46,19 @@ export function LandingPageClient() {
 
     const starCount = 3000;
     const positions = new Float32Array(starCount * 3);
-    const geometry = new THREE.BufferGeometry();
+    const starInfo = new Float32Array(starCount);
     
     for (let i = 0; i < starCount; i++) {
         const i3 = i * 3;
         positions[i3] = (Math.random() - 0.5) * 120;
         positions[i3 + 1] = (Math.random() - 0.5) * 120;
         positions[i3 + 2] = (Math.random() - 0.5) * 1000;
+        starInfo[i] = Math.random() * Math.PI * 2; // Store a random phase for each star
     }
     
+    const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('aRandom', new THREE.BufferAttribute(starInfo, 1));
 
     const material = new THREE.PointsMaterial({
         size: 0.05,
@@ -85,24 +88,29 @@ export function LandingPageClient() {
     const clock = new THREE.Clock();
 
     const animate = () => {
+      const elapsedTime = clock.getElapsedTime();
       const delta = clock.getDelta();
       const positions = stars.geometry.attributes.position.array as Float32Array;
-      
-      // Use a much higher speed for warping, but keep the base speed subtle.
+      const randoms = stars.geometry.attributes.aRandom.array as Float32Array;
+
       const speed = isWarping ? 250 : 0.2;
 
       for (let i = 0; i < starCount; i++) {
         const i3 = i * 3;
+        
+        if(!isWarping) {
+            positions[i3] += Math.sin(elapsedTime * 0.1 + randoms[i]) * 0.005;
+            positions[i3 + 1] += Math.cos(elapsedTime * 0.1 + randoms[i]) * 0.005;
+        }
+
         positions[i3 + 2] += delta * speed;
         
-        // When a star is behind the camera, reset its position to the far end.
         if (positions[i3 + 2] > camera.position.z) {
             positions[i3 + 2] = -500 - Math.random() * 500;
         }
       }
       stars.geometry.attributes.position.needsUpdate = true;
       
-      // Add subtle parallax effect based on mouse position if not warping
       if (!isWarping) {
         scene.rotation.y += (mouse.current.x * 0.1 - scene.rotation.y) * 0.05;
         scene.rotation.x += (-mouse.current.y * 0.1 - scene.rotation.x) * 0.05;
@@ -128,15 +136,13 @@ export function LandingPageClient() {
     setIsWarping(true);
     setTimeout(() => {
       router.push('/home');
-    }, 1200); // Animation duration before navigation
+    }, 1200);
   };
   
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
-      {/* WebGL Starfield Canvas */}
       <canvas ref={canvasRef} className={cn("absolute inset-0 z-0")}></canvas>
       
-       {/* Warp Tunnel Effect - more subtle with just gradient */}
       <div className={cn(
         "pointer-events-none fixed inset-0 z-10",
         "bg-[radial-gradient(ellipse_at_center,_transparent_60%,_black)]",
@@ -144,14 +150,12 @@ export function LandingPageClient() {
         isWarping ? "opacity-100" : "opacity-0"
       )}></div>
 
-       {/* White Flash Effect for transition */}
       <div className={cn(
         "pointer-events-none fixed inset-0 z-40 bg-white",
-        "transition-opacity duration-500 ease-in-out delay-700",
+        "transition-opacity duration-700 ease-in-out delay-500",
          isWarping ? "opacity-100" : "opacity-0"
       )}></div>
 
-      {/* Initial Loading Text Overlay */}
       <div
         className={cn(
           'absolute inset-0 z-30 flex flex-col items-center justify-center text-white transition-opacity duration-1000',
@@ -162,7 +166,6 @@ export function LandingPageClient() {
          <h1 className="font-headline text-3xl tracking-widest animate-pulse">The Stars Arriving</h1>
       </div>
       
-      {/* Main Content (Enter button) */}
        <div
         className={cn(
           'absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-1000',

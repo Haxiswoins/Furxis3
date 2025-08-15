@@ -32,9 +32,7 @@ export default function HomePage() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // This delay ensures the transition from the landing page is smooth
-    // before the content starts to fade in.
-    const mountTimer = setTimeout(() => setIsMounted(true), 100);
+    const mountTimer = setTimeout(() => setIsMounted(true), 10);
     
     getSiteContent().then(data => {
       setContent(data);
@@ -54,8 +52,8 @@ export default function HomePage() {
 
   return (
     <div className={cn(
-      "flex flex-col min-h-[calc(100vh-8rem)] transition-opacity duration-1000 ease-in",
-      isMounted ? "opacity-100" : "opacity-0"
+      "flex flex-col min-h-[calc(100vh-8rem)] transition-all duration-1000 ease-out",
+      isMounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
     )}>
       <div className="flex-grow flex flex-col items-center justify-center">
         <div className="text-center mb-12">
