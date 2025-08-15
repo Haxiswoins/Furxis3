@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 
-function CharacterDetailClient({ character }: { character: Character }) {
+export function CharacterDetailClient({ character }: { character: Character }) {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuth();
@@ -66,7 +66,7 @@ function CharacterDetailClient({ character }: { character: Character }) {
   );
 }
 
-function Images({ images, name }: { images: string[]; name: string }) {
+export function Images({ images, name }: { images: string[]; name: string }) {
   return (
     <div className="max-h-[80vh] overflow-y-auto space-y-4 pr-2">
       {images.map((imgSrc, index) => (
@@ -95,7 +95,3 @@ function Images({ images, name }: { images: string[]; name: string }) {
     </div>
   );
 }
-
-CharacterDetailClient.Images = Images;
-
-export { CharacterDetailClient };

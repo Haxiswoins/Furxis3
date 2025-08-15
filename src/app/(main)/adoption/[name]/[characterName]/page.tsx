@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { getCharacterByName } from '@/lib/data-service';
-import { CharacterDetailClient } from './client-page';
+import { CharacterDetailClient, Images } from './client-page';
 
 export default async function AdoptionDetailPage({ params }: { params: { name: string, characterName: string }}) {
   const characterName = decodeURIComponent(params.characterName as string);
@@ -40,7 +40,7 @@ export default async function AdoptionDetailPage({ params }: { params: { name: s
                 <CharacterDetailClient character={character} />
               </CardFooter>
             </div>
-            <CharacterDetailClient.Images images={characterImages} name={character.name} />
+            <Images images={characterImages} name={character.name} />
           </div>
         </CardContent>
       </Card>
