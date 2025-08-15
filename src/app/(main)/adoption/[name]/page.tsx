@@ -1,7 +1,4 @@
 
-'use client'
-
-import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,7 +8,7 @@ import Link from 'next/link';
 import { getCharactersBySeriesId, getCharacterSeriesByName } from '@/lib/data-service';
 import type { Character, CharacterSeries } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useParams, notFound } from 'next/navigation';
+import { notFound } from 'next/navigation';
 
 function CharacterCardSkeleton() {
   return (
@@ -39,50 +36,25 @@ function CharacterCardSkeleton() {
   );
 }
 
-export default function AdoptionCharacterListPage() {
-  const params = useParams();
+export default async function AdoptionCharacterListPage({ params }: { params: { name: string } }) {
   const seriesName = decodeURIComponent(params.name as string);
 
-  const [characters, setCharacters] = useState<Character[]>([]);
-  const [series, setSeries] = useState<CharacterSeries | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchData() {
-      if (!seriesName) return;
-
-      try {
-        setLoading(true);
-        const seriesData = await getCharacterSeriesByName(seriesName);
-        if (seriesData) {
-          setSeries(seriesData);
-          const chars = await getCharactersBySeriesId(seriesData.id);
-          setCharacters(chars);
-        } else {
-          notFound();
-        }
-      } catch (error) {
-        console.error("Failed to fetch page data:", error);
-        notFound();
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, [seriesName]);
+  const series = await getCharacterSeriesByName(seriesName);
+  if (!series) {
+    notFound();
+  }
+  const characters = await getCharactersBySeriesId(series.id);
 
   return (
     <div>
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-headline">{loading ? <Skeleton className="h-10 w-64 mx-auto" /> : series?.name}</h1>
+        <h1 className="text-4xl font-headline">{series?.name}</h1>
         <p className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto">
-          {loading ? <Skeleton className="h-6 w-80 mx-auto" /> : (series?.description || '给这些预先设计的角色一个家。')}
+          {series?.description || '给这些预先设计的角色一个家。'}
         </p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {loading ? (
-          [...Array(5)].map((_, i) => <CharacterCardSkeleton key={i} />)
-        ) : characters.length > 0 ? (
+        {characters.length > 0 ? (
           characters.map((char) => (
             <Card key={char.id} className="overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col text-sm">
               <CardHeader className="p-0">
@@ -108,9 +80,9 @@ export default function AdoptionCharacterListPage() {
               </CardContent>
               <CardFooter className="p-3 bg-muted/50 flex justify-between items-center">
                 <p className="text-base font-bold text-primary">{char.price}</p>
-                <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}/apply`} passHref>
-                  <Button size="sm">
-                    <Heart className="mr-1 h-3 w-3" /> 领养
+                 <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
+                   <Button size="sm">
+                    <Heart className="mr-1 h-3 w-3" /> 详情
                   </Button>
                 </Link>
               </CardFooter>

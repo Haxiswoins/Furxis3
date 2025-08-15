@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { chinaDivisions } from '@/lib/china-divisions';
 import { useAuth } from '@/context/AuthContext';
-import { getCharacterByName, createAdoptionApplication, getSiteContent } from '@/lib/data-service';
+import { createAdoptionApplication, getSiteContent, getCharacterByName } from '@/lib/data-service';
 import type { Character, SiteContent } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -24,7 +24,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
 
 export default function AdoptionApplyPage() {
   const params = useParams();
@@ -46,7 +45,7 @@ export default function AdoptionApplyPage() {
 
   useEffect(() => {
     async function fetchData() {
-        if (!characterName) return;
+        if (!characterName || !user) return;
         try {
             const [char, content] = await Promise.all([
                 getCharacterByName(characterName),
@@ -66,8 +65,13 @@ export default function AdoptionApplyPage() {
             setLoading(false);
         }
     }
-    fetchData();
-  }, [characterName]);
+    if (user) {
+        fetchData();
+    } else {
+        setLoading(false);
+        router.push(`/login?redirect=${window.location.pathname}`);
+    }
+  }, [characterName, user, router]);
 
   const handleProvinceChange = (province: string) => {
     setSelectedProvince(province);
