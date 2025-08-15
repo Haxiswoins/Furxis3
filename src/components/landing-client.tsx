@@ -104,6 +104,7 @@ export function LandingPageClient() {
 
         points = new THREE.Points(geometry, material);
         points.rotation.x = Math.PI * 0.2; // Tilt the galaxy
+        points.position.y = 5; // Move the galaxy up
         scene.add(points);
     }
     
