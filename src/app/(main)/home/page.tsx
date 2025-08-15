@@ -12,7 +12,10 @@ import { cn } from '@/lib/utils';
 
 function HomeCardSkeleton({ className }: { className?: string }) {
   return (
-     <div className={`relative rounded-2xl overflow-hidden shadow-2xl bg-muted ${className}`}>
+     <div className={cn(
+       "relative rounded-2xl overflow-hidden shadow-2xl bg-muted aspect-[4/5]",
+       className
+      )}>
        <Skeleton className="w-full h-full" />
        <div className="absolute inset-0 flex flex-col justify-end p-8">
            <Skeleton className="h-10 w-3/4" />
@@ -29,11 +32,16 @@ export default function HomePage() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    // This delay ensures the transition from the landing page is smooth
+    // before the content starts to fade in.
+    const mountTimer = setTimeout(() => setIsMounted(true), 100);
+    
     getSiteContent().then(data => {
       setContent(data);
       setLoading(false);
     });
+
+    return () => clearTimeout(mountTimer);
   }, []);
 
   const cardLinkClass = "group block";

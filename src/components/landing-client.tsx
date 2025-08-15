@@ -13,7 +13,6 @@ export function LandingPageClient() {
   const [isInitialAnimationDone, setIsInitialAnimationDone] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouse = useRef({ x: 0, y: 0 });
 
   // Timer for initial "The Stars Arriving" text fade out
   useEffect(() => {
@@ -38,8 +37,7 @@ export function LandingPageClient() {
     let animationFrameId: number;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.z = 1;
-    camera.rotation.x = Math.PI / 2;
+    camera.position.z = 5;
 
     const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -48,21 +46,21 @@ export function LandingPageClient() {
     const starCount = 6000;
     const positions = new Float32Array(starCount * 3);
     const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
     for (let i = 0; i < starCount; i++) {
         const i3 = i * 3;
-        positions[i3] = (Math.random() - 0.5) * 50;
-        positions[i3 + 1] = (Math.random() - 0.5) * 50;
-        positions[i3 + 2] = Math.random() * -1000;
+        positions[i3] = (Math.random() - 0.5) * 100;
+        positions[i3 + 1] = (Math.random() - 0.5) * 100;
+        positions[i3 + 2] = (Math.random() - 0.5) * 1000;
     }
 
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    
     const material = new THREE.PointsMaterial({
-        size: 0.03,
+        size: 0.05,
         color: 0xffffff,
         transparent: true,
         blending: THREE.AdditiveBlending,
+        sizeAttenuation: true,
     });
 
     const stars = new THREE.Points(geometry, material);
@@ -80,18 +78,17 @@ export function LandingPageClient() {
 
     const animate = () => {
       const delta = clock.getDelta();
-
-      if (isWarping) {
-        stars.material.size = 0.01;
-        stars.position.z += delta * 250;
-      } else {
-        stars.material.size = 0.03;
-        stars.position.z += delta * 0.2;
-      }
+      const positions = stars.geometry.attributes.position.array as Float32Array;
+      const speed = isWarping ? 250 : 0.2;
       
-      if (stars.position.z > camera.position.z) {
-        stars.position.z = -1000;
+      for (let i = 0; i < starCount; i++) {
+        const i3 = i * 3;
+        positions[i3 + 2] += delta * speed;
+        if(positions[i3 + 2] > camera.position.z) {
+            positions[i3 + 2] = (Math.random() - 1) * 500;
+        }
       }
+      stars.geometry.attributes.position.needsUpdate = true;
 
       renderer.render(scene, camera);
       animationFrameId = requestAnimationFrame(animate);
@@ -106,7 +103,7 @@ export function LandingPageClient() {
       material.dispose();
       renderer.dispose();
     };
-  }, [isWarping]); // Re-run effect if isWarping changes to adjust speed
+  }, [isWarping]);
 
   const handleWarp = () => {
     setIsWarping(true);
@@ -118,20 +115,20 @@ export function LandingPageClient() {
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
       {/* WebGL Starfield Canvas */}
-      <canvas ref={canvasRef} className={cn("absolute inset-0 z-0 transition-opacity duration-1000", isWarping ? "opacity-30" : "opacity-100")}></canvas>
+      <canvas ref={canvasRef} className={cn("absolute inset-0 z-0")}></canvas>
       
-       {/* Warp Tunnel Effect */}
+       {/* Warp Tunnel Effect - more subtle with just gradient */}
       <div className={cn(
         "pointer-events-none fixed inset-0 z-10",
-        "bg-[radial-gradient(ellipse_at_center,_transparent_40%,_black_90%)]",
-        "transition-all duration-500 ease-in-out",
-        isWarping ? "opacity-100 scale-150" : "opacity-0 scale-100"
+        "bg-[radial-gradient(ellipse_at_center,_transparent_60%,_black)]",
+        "transition-opacity duration-1000 ease-in-out",
+        isWarping ? "opacity-100" : "opacity-0"
       )}></div>
 
-       {/* White Flash Effect */}
+       {/* White Flash Effect for transition */}
       <div className={cn(
         "pointer-events-none fixed inset-0 z-40 bg-white",
-        "transition-opacity duration-300 ease-in-out",
+        "transition-opacity duration-500 ease-in-out delay-700",
          isWarping ? "opacity-100" : "opacity-0"
       )}></div>
 
@@ -164,6 +161,13 @@ export function LandingPageClient() {
           </button>
         </div>
       </div>
+
+       <div className={cn(
+            "absolute bottom-8 w-full text-center text-xs text-white/40 transition-opacity duration-1000 ease-in-out",
+            (isContentVisible && !isWarping) ? "opacity-100" : "opacity-0"
+        )}>
+           <p>Developed by Haxis</p>
+        </div>
     </div>
   );
 }
