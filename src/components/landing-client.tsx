@@ -17,7 +17,7 @@ export function LandingPageClient() {
   useEffect(() => {
     const contentTimer = setTimeout(() => {
       setIsContentVisible(true);
-    }, 500); // Faster appearance for better UX
+    }, 500);
 
     return () => {
       clearTimeout(contentTimer);
