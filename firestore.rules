@@ -3,42 +3,26 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Default-deny all reads and writes
-    match /{document=**} {
-      allow read, write: if false;
+
+    // Helper function to check for admin
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'haxiswoins@qq.com';
     }
 
-    // Allow public read access to all collections
-    // This is necessary for site content to be visible to all users.
-    match /{collection}/{doc} {
+    // Site content, character info, commission info, and works should be publicly readable
+    match /{collection}/{docId}
+      where collection in ['site', 'characters', 'characterSeries', 'commissionOptions', 'commissionStyles', 'works'] {
       allow read: if true;
-    }
-    
-    // Site content can only be written by an admin
-    match /site/content {
-      // Read is already covered by the public rule above
-      allow write: if request.auth != null && request.auth.token.email == 'haxiswoins@qq.com';
+      allow write: if isAdmin();
     }
 
-    // Orders have special, more secure rules
+    // Orders can only be read by their owner or an admin.
+    // Orders can only be created by a logged-in user.
+    // Orders can only be updated/deleted by an admin.
     match /orders/{orderId} {
-      // Users can read their own orders, Admins can read any order.
-      allow read: if request.auth != null && (request.auth.uid == resource.data.userId || request.auth.token.email == 'haxiswoins@qq.com');
-      
-      // Users can create their own orders.
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
-      
-      // Only admins can update or delete orders.
-      allow update, delete: if request.auth != null && request.auth.token.email == 'haxiswoins@qq.com';
-    }
-
-    // Any other write operations (characters, works, etc.) are restricted to admins.
-    // This rule overrides the public read rule for write operations.
-    match /{collection}/{docId} {
-        // Read is allowed publicly from the rule above.
-        // We only need to define specific write rules here.
-        allow create, update, delete: if request.auth != null && request.auth.token.email == 'haxiswoins@qq.com';
+      allow read: if (request.auth != null && request.auth.uid == resource.data.userId) || isAdmin();
+      allow create: if request.auth != null;
+      allow update, delete: if isAdmin();
     }
   }
 }
