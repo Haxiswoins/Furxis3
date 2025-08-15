@@ -15,29 +15,6 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import type { SiteContent } from '@/types';
-import { motion, AnimatePresence } from 'framer-motion';
-
-const pageVariants = {
-  initial: {
-    opacity: 0,
-    y: 20,
-  },
-  in: {
-    opacity: 1,
-    y: 0,
-  },
-  out: {
-    opacity: 0,
-    y: -20,
-  },
-};
-
-const pageTransition = {
-  type: "tween",
-  ease: "anticipate",
-  duration: 0.4,
-};
-
 
 // This new component handles the client-side logic for the background
 function MainContentWrapper({
@@ -67,18 +44,7 @@ function MainContentWrapper({
       )}
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8 pt-24">
-         <AnimatePresence mode="wait">
-            <motion.div
-              key={pathname}
-              initial="initial"
-              animate="in"
-              exit="out"
-              variants={pageVariants}
-              transition={pageTransition}
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
+         {children}
       </main>
     </div>
   );
@@ -144,18 +110,7 @@ export function AppShell({
         </div>
         <main className="flex-1 md:ml-64">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={pathname}
-                initial="initial"
-                animate="in"
-                exit="out"
-                variants={pageVariants}
-                transition={pageTransition}
-              >
-                {children}
-              </motion.div>
-            </AnimatePresence>
+            {children}
           </div>
         </main>
       </div>
