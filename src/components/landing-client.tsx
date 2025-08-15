@@ -29,8 +29,7 @@ export function LandingPageClient() {
     let animationFrameId: number;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 30;
-
+    
     const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -138,17 +137,19 @@ export function LandingPageClient() {
         camera.position.z = Math.cos(cameraAngle) * 30;
         
         // Mouse parallax effect
-        const parallaxX = mouse.current.x * 0.5;
-        const parallaxY = -mouse.current.y * 0.5;
+        const parallaxX = mouse.current.x * 0.2;
+        const parallaxY = -mouse.current.y * 0.2;
         
-        // Use a temporary group to handle camera positioning including parallax
         const cameraGroup = new THREE.Group();
-        cameraGroup.position.copy(camera.position);
-        cameraGroup.position.x += parallaxX;
-        cameraGroup.position.y += parallaxY;
+        cameraGroup.add(camera);
+        scene.add(cameraGroup);
+        
+        camera.position.x += (parallaxX - camera.position.x) * 0.02;
+        camera.position.y += (parallaxY - camera.position.y) * 0.02;
 
-        camera.position.copy(cameraGroup.position);
-        camera.lookAt(galaxyGroup.position);
+        if (galaxyGroup) {
+            camera.lookAt(galaxyGroup.position);
+        }
 
         renderer.render(scene, camera);
         animationFrameId = requestAnimationFrame(animate);
