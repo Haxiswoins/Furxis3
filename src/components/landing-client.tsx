@@ -26,18 +26,15 @@ export function LandingPageClient() {
         const res = await fetch('/api/apod');
         if (!res.ok) throw new Error('Failed to fetch APOD');
         const data: ApodMedia = await res.json();
-        
-        // We only want images for the background
-        if (data.media_type === 'image') {
-          setMedia(data);
-        } else {
-          // Fallback to a placeholder if APOD is a video
-          setMedia({ url: 'https://placehold.co/1920x1080/000000/FFFFFF.png', title: 'Suitopia', media_type: 'image' });
-        }
+        setMedia(data);
       } catch (error) {
         console.error(error);
-        // Set a fallback image on error
-        setMedia({ url: 'https://placehold.co/1920x1080/000000/FFFFFF.png', title: 'Suitopia', media_type: 'image' });
+        // On error, set a fallback image to ensure the page is always functional
+        setMedia({ 
+          url: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop', 
+          title: 'Suitopia Fallback', 
+          media_type: 'image' 
+        });
       }
     }
 
@@ -45,17 +42,19 @@ export function LandingPageClient() {
   }, []);
 
   useEffect(() => {
-    if (!media) return;
-
+    // This timer ensures that the main content becomes visible after a short delay,
+    // regardless of how long the image takes to load. This addresses the 3-second timeout requirement.
     const contentTimer = setTimeout(() => {
       setIsContentVisible(true);
-    }, 500);
+    }, 2000); // Make content visible after 2 seconds
 
-    const img = new (window as any).Image();
-    img.src = media.url;
-    img.onload = () => {
-      setIsMediaLoaded(true);
-    };
+    if (media?.url) {
+        const img = new (window as any).Image();
+        img.src = media.url;
+        img.onload = () => {
+          setIsMediaLoaded(true);
+        };
+    }
     
     return () => clearTimeout(contentTimer);
   }, [media]);

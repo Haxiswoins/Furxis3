@@ -5,38 +5,36 @@ import fetch from 'node-fetch';
 const NASA_API_KEY = process.env.NASA_API_KEY || 'DEMO_KEY';
 const APOD_URL = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}`;
 
+// A high-quality fallback image in case APOD is a video or fails to load.
+const FALLBACK_IMAGE = {
+    title: 'Fallback Galaxy Image',
+    url: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop',
+    media_type: 'image'
+};
+
 export async function GET() {
   try {
     const response = await fetch(APOD_URL);
+
+    // If NASA API returns an error, log it and use the fallback.
     if (!response.ok) {
-      // Log the error from NASA's API for debugging
       const errorBody = await response.text();
       console.error(`NASA APOD API Error: ${response.status} ${errorBody}`);
-      throw new Error(`Failed to fetch data from NASA API. Status: ${response.status}`);
+      return NextResponse.json(FALLBACK_IMAGE);
     }
-    const data = await response.json();
     
-    // We only want to return image media types
+    const data = await response.json() as any;
+    
+    // If the media type is not an image, return the fallback image.
     if (data.media_type !== 'image') {
-        // You could fetch another day, but for simplicity, we'll return a placeholder
-        // This prevents the frontend from trying to render a video
-        return NextResponse.json({ 
-            title: 'Fallback Image',
-            url: 'https://placehold.co/1920x1080/000000/FFFFFF.png?text=Space',
-            media_type: 'image'
-        });
+        return NextResponse.json(FALLBACK_IMAGE);
     }
 
     return NextResponse.json(data);
+
   } catch (error) {
-    console.error('APOD route error:', error);
-    // In case of any error, return a standard placeholder
-    // to ensure the frontend still has an image to display.
-    const fallbackImage = {
-        title: 'Error Fetching Image',
-        url: 'https://placehold.co/1920x1080/000000/FFFFFF.png?text=Error',
-        media_type: 'image'
-    };
-    return NextResponse.json(fallbackImage, { status: 500 });
+    console.error('APOD route internal error:', error);
+    // In case of any other error (e.g., network issues), return the fallback.
+    return NextResponse.json(FALLBACK_IMAGE, { status: 500 });
   }
 }
