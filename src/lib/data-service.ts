@@ -12,6 +12,7 @@ import {
   orderBy,
   limit,
   runTransaction,
+  writeBatch,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, CharacterSeries, Work } from '@/types';
@@ -131,11 +132,9 @@ export async function getCommissionOptions(): Promise<CommissionOption[]> {
   const querySnapshot = await getDocs(collection(db, "commissionOptions"));
   const options = querySnapshot.docs.map(doc => docToType<CommissionOption>(doc));
   return options.sort((a, b) => {
-    // Attempt to parse a year or timestamp from the name for sorting
     const yearA = a.name.match(/\d{4}/)?.[0] || '0';
     const yearB = b.name.match(/\d{4}/)?.[0] || '0';
     if (yearA !== yearB) return parseInt(yearB) - parseInt(yearA);
-    // Fallback for names without years
     return b.name.localeCompare(a.name);
   });
 }
@@ -247,7 +246,8 @@ export async function deleteOrder(id: string): Promise<void> {
 export async function createAdoptionApplication(userId: string, character: Character, applicationData: ApplicationData): Promise<string> {
     const orderNumber = `S${new Date().toISOString().slice(0,10).replace(/-/g, '')}${Math.floor(100 + Math.random() * 900)}`;
 
-    const newOrderRef = doc(collection(db, 'orders')); // Create a reference with a new ID
+    const newOrderRef = doc(collection(db, 'orders'));
+    const charRef = doc(db, 'characters', character.id);
 
     const newOrderData: Omit<Order, 'id'> = {
       userId,
@@ -261,10 +261,8 @@ export async function createAdoptionApplication(userId: string, character: Chara
       shippingAddress: `${applicationData.province} ${applicationData.city} ${applicationData.district} ${applicationData.addressDetail}`,
       applicationData
     };
-    
-    // Use a transaction to ensure atomicity
+
     await runTransaction(db, async (transaction) => {
-        const charRef = doc(db, 'characters', character.id);
         const charDoc = await transaction.get(charRef);
         if (!charDoc.exists()) {
             throw "Character does not exist!";

@@ -1,8 +1,8 @@
-
 /** @type {import('next').NextConfig} */
 
 // Helper function to extract hostname from a URL
 const getHostnameFromUrl = (url) => {
+  if (!url) return null;
   try {
     const urlObj = new URL(url);
     // Return hostname, removing port if present
@@ -40,8 +40,9 @@ const remotePatterns = [
 
 // Add the production hostname only if it's valid and not localhost
 if (baseUrlHostname && baseUrlHostname !== 'localhost') {
+  const protocol = process.env.NEXT_PUBLIC_BASE_URL?.startsWith('https') ? 'https' : 'http';
   remotePatterns.push({
-    protocol: getHostnameFromUrl(process.env.NEXT_PUBLIC_BASE_URL)?.startsWith('https') ? 'https' : 'http',
+    protocol: protocol,
     hostname: baseUrlHostname,
   });
 }
@@ -60,7 +61,14 @@ const nextConfig = {
     NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     NEXT_PUBLIC_NASA_API_KEY: process.env.NEXT_PUBLIC_NASA_API_KEY,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
-  }
+    FIREBASE_SERVICE_ACCOUNT_KEY: process.env.FIREBASE_SERVICE_ACCOUNT_KEY,
+  },
+  // Adding experimental serverActions config
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '4mb', // Increase body size limit for file uploads if needed
+    },
+  },
 };
 
 export default nextConfig;
