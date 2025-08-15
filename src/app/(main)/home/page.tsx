@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { getSiteContent } from '@/lib/data-service';
@@ -20,7 +21,7 @@ export default async function HomePage() {
   const content = await getSiteContent();
 
   const cardLinkClass = "group block";
-  const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20";
+  const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]";
   
   const cardImageClass = "transition-transform duration-500 ease-in-out group-hover:scale-105";
   const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/70 via-black/40 to-transparent transition-all duration-500 ease-in-out";
@@ -49,17 +50,17 @@ export default async function HomePage() {
           </Link>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-6xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl">
             
-            {!content ? <HomeCardSkeleton className="aspect-[16/7] md:col-span-2" /> : (
-              <Link href="/commission" className={`${cardLinkClass} md:col-span-2`}>
-                <div className={`${cardDivClass} aspect-[16/7]`}>
+            {!content ? <HomeCardSkeleton /> : (
+              <Link href="/commission" className={cardLinkClass}>
+                <div className={cardDivClass}>
                   <Image
-                    src={content?.commissionImageUrl || "https://placehold.co/1600x700.png"}
+                    src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
                     alt="委托申请"
                     fill
                     priority
-                    sizes="(max-width: 768px) 100vw, 66vw"
+                    sizes="(max-width: 768px) 100vw, 33vw"
                     style={{objectFit: "cover"}}
                     className={cardImageClass}
                   />
@@ -71,11 +72,11 @@ export default async function HomePage() {
               </Link>
             )}
 
-            {!content ? <HomeCardSkeleton className="aspect-[4/3]" /> : (
+            {!content ? <HomeCardSkeleton /> : (
               <Link href="/adoption" className={cardLinkClass}>
-                <div className={`${cardDivClass} aspect-[4/3]`}>
+                <div className={cardDivClass}>
                   <Image
-                    src={content?.adoptionImageUrl || "https://placehold.co/800x600.png"}
+                    src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
                     alt="设定领养"
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
@@ -90,11 +91,11 @@ export default async function HomePage() {
               </Link>
             )}
 
-            {!content ? <HomeCardSkeleton className="aspect-[4/3]" /> : (
+            {!content ? <HomeCardSkeleton /> : (
               <Link href="/works" className={cardLinkClass}>
-                <div className={`${cardDivClass} aspect-[4/3]`}>
+                <div className={cardDivClass}>
                   <Image
-                    src={content?.workImageUrl || "https://placehold.co/800x600.png"}
+                    src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
                     alt="作品一览"
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
