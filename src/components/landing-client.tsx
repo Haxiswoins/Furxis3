@@ -8,29 +8,57 @@ import { Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import * as THREE from 'three';
 
+type ApodMedia = {
+  url: string;
+  title: string;
+  media_type: string;
+};
+
 export function LandingPageClient() {
+  const [media, setMedia] = useState<ApodMedia | null>(null);
   const [isMediaLoaded, setIsMediaLoaded] = useState(false);
   const [isContentVisible, setIsContentVisible] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Hardcoded media values since the API is not available
-  const mediaUrl = "https://placehold.co/1920x1080/000000/FFFFFF.png";
-  const mediaTitle = "Welcome to Suitopia";
+  useEffect(() => {
+    async function fetchApod() {
+      try {
+        const res = await fetch('/api/apod');
+        if (!res.ok) throw new Error('Failed to fetch APOD');
+        const data: ApodMedia = await res.json();
+        
+        // We only want images for the background
+        if (data.media_type === 'image') {
+          setMedia(data);
+        } else {
+          // Fallback to a placeholder if APOD is a video
+          setMedia({ url: 'https://placehold.co/1920x1080/000000/FFFFFF.png', title: 'Suitopia', media_type: 'image' });
+        }
+      } catch (error) {
+        console.error(error);
+        // Set a fallback image on error
+        setMedia({ url: 'https://placehold.co/1920x1080/000000/FFFFFF.png', title: 'Suitopia', media_type: 'image' });
+      }
+    }
+
+    fetchApod();
+  }, []);
 
   useEffect(() => {
+    if (!media) return;
+
     const contentTimer = setTimeout(() => {
       setIsContentVisible(true);
     }, 500);
 
-    // Simulate image loading
     const img = new (window as any).Image();
-    img.src = mediaUrl;
+    img.src = media.url;
     img.onload = () => {
       setIsMediaLoaded(true);
     };
     
     return () => clearTimeout(contentTimer);
-  }, [mediaUrl]);
+  }, [media]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -88,15 +116,17 @@ export function LandingPageClient() {
           isMediaLoaded ? 'opacity-100' : 'opacity-0'
         )}
       >
-        <Image
-          src={mediaUrl}
-          alt={mediaTitle}
-          fill
-          priority
-          sizes="100vw"
-          style={{objectFit: "cover"}}
-          data-ai-hint="space galaxy nebula"
-        />
+        {media && (
+           <Image
+            src={media.url}
+            alt={media.title}
+            fill
+            priority
+            sizes="100vw"
+            style={{objectFit: "cover"}}
+            data-ai-hint="space galaxy nebula"
+          />
+        )}
         {/* Always have a dark overlay */}
         <div className="absolute inset-0 bg-black/20 z-10" />
       </div>
