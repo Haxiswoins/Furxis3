@@ -13,6 +13,7 @@ export function LandingPageClient() {
   const [isInitialAnimationDone, setIsInitialAnimationDone] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mouse = useRef({ x: 0, y: 0 });
 
   // Timer for initial "The Stars Arriving" text fade out
   useEffect(() => {
@@ -39,24 +40,22 @@ export function LandingPageClient() {
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
     camera.position.z = 5;
 
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true });
+    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    const starCount = 3000; // Reduced star count for a less dense feel
+    const starCount = 3000;
     const positions = new Float32Array(starCount * 3);
     const geometry = new THREE.BufferGeometry();
     
-
     for (let i = 0; i < starCount; i++) {
         const i3 = i * 3;
-        positions[i3] = (Math.random() - 0.5) * 120; // Slightly wider spread
-        positions[i3 + 1] = (Math.random() - 0.5) * 120; // Slightly wider spread
+        positions[i3] = (Math.random() - 0.5) * 120;
+        positions[i3 + 1] = (Math.random() - 0.5) * 120;
         positions[i3 + 2] = (Math.random() - 0.5) * 1000;
     }
     
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
 
     const material = new THREE.PointsMaterial({
         size: 0.05,
@@ -74,24 +73,40 @@ export function LandingPageClient() {
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     };
+    
+    const handleMouseMove = (event: MouseEvent) => {
+        mouse.current.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    }
 
     window.addEventListener('resize', handleResize);
+    window.addEventListener('mousemove', handleMouseMove);
     
     const clock = new THREE.Clock();
 
     const animate = () => {
       const delta = clock.getDelta();
       const positions = stars.geometry.attributes.position.array as Float32Array;
-      const speed = isWarping ? 250 : 0.2;
       
+      // Use a much higher speed for warping, but keep the base speed subtle.
+      const speed = isWarping ? 250 : 0.2;
+
       for (let i = 0; i < starCount; i++) {
         const i3 = i * 3;
         positions[i3 + 2] += delta * speed;
-        if(positions[i3 + 2] > camera.position.z) {
+        
+        // When a star is behind the camera, reset its position to the far end.
+        if (positions[i3 + 2] > camera.position.z) {
             positions[i3 + 2] = -500 - Math.random() * 500;
         }
       }
       stars.geometry.attributes.position.needsUpdate = true;
+      
+      // Add subtle parallax effect based on mouse position if not warping
+      if (!isWarping) {
+        scene.rotation.y += (mouse.current.x * 0.1 - scene.rotation.y) * 0.05;
+        scene.rotation.x += (-mouse.current.y * 0.1 - scene.rotation.x) * 0.05;
+      }
 
       renderer.render(scene, camera);
       animationFrameId = requestAnimationFrame(animate);
@@ -101,6 +116,7 @@ export function LandingPageClient() {
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationFrameId);
       geometry.dispose();
       material.dispose();
