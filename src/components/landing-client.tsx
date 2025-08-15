@@ -81,25 +81,14 @@ export function LandingPageClient() {
 
     const animate = () => {
       const elapsedTime = clock.getElapsedTime();
-      const delta = clock.getDelta();
+      
+      // Particle movement logic for drift
       const positions = stars.geometry.attributes.position.array as Float32Array;
       const randoms = stars.geometry.attributes.aRandom.array as Float32Array;
-      
-      // Particle movement logic
       for (let i = 0; i < starCount; i++) {
         const i3 = i * 3;
-        
-        // Random drift
         positions[i3] += Math.sin(elapsedTime * 0.1 + randoms[i]) * 0.001;
         positions[i3 + 1] += Math.cos(elapsedTime * 0.1 + randoms[i]) * 0.001;
-
-        // Forward movement
-        positions[i3 + 2] += delta * 1.5;
-        
-        // Loop particles that move past the camera
-        if (positions[i3 + 2] > camera.position.z) {
-            positions[i3 + 2] = -500 - Math.random() * 400;
-        }
       }
       stars.geometry.attributes.position.needsUpdate = true;
       
