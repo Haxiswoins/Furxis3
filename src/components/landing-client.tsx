@@ -43,17 +43,20 @@ export function LandingPageClient() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    const starCount = 6000;
+    const starCount = 3000; // Reduced star count for a less dense feel
     const positions = new Float32Array(starCount * 3);
     const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    
 
     for (let i = 0; i < starCount; i++) {
         const i3 = i * 3;
-        positions[i3] = (Math.random() - 0.5) * 100;
-        positions[i3 + 1] = (Math.random() - 0.5) * 100;
+        positions[i3] = (Math.random() - 0.5) * 120; // Slightly wider spread
+        positions[i3 + 1] = (Math.random() - 0.5) * 120; // Slightly wider spread
         positions[i3 + 2] = (Math.random() - 0.5) * 1000;
     }
+    
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
 
     const material = new THREE.PointsMaterial({
         size: 0.05,
@@ -85,7 +88,7 @@ export function LandingPageClient() {
         const i3 = i * 3;
         positions[i3 + 2] += delta * speed;
         if(positions[i3 + 2] > camera.position.z) {
-            positions[i3 + 2] = (Math.random() - 1) * 500;
+            positions[i3 + 2] = -500 - Math.random() * 500;
         }
       }
       stars.geometry.attributes.position.needsUpdate = true;
