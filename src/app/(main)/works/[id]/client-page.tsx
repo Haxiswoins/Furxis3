@@ -20,8 +20,9 @@ export function WorkImages({ work }: WorkImagesProps) {
                         <Image
                             src={imgSrc}
                             alt={`${work.workName} - 视图 ${index + 1}`}
-                            width={500}
-                            height={750}
+                            width={0}
+                            height={0}
+                            sizes="100vw"
                             className="w-full h-auto"
                         />
                     </div>
