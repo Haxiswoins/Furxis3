@@ -12,6 +12,7 @@ import {
   orderBy,
   limit,
   writeBatch,
+  setDoc
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, CharacterSeries, Work } from '@/types';
@@ -40,18 +41,18 @@ export async function getSiteContent(): Promise<SiteContent | null> {
   try {
     const docRef = doc(db, 'site', 'content');
     const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      // Create a default object and merge the loaded data to ensure all keys exist
-      const defaults: SiteContent = {
+    
+    // Default content structure. This is now the single source of truth for defaults.
+    const defaults: SiteContent = {
         commissionTitle: "委托申请",
         commissionDescription: "为您量身定制。",
-        commissionImageUrl: "",
+        commissionImageUrl: "https://placehold.co/600x800.png",
         adoptionTitle: "设定领养",
         adoptionDescription: "领养一个预先设计的角色。",
-        adoptionImageUrl: "",
+        adoptionImageUrl: "https://placehold.co/600x800.png",
         workTitle: "作品一览",
         workDescription: "查看我们过往的精彩作品。",
-        workImageUrl: "",
+        workImageUrl: "https://placehold.co/600x800.png",
         adoptionPageDescription: "给这些预先设计的角色一个家。",
         commissionPageDescription: "选择一个基础套餐开始您的定制兽装之旅。",
         adminEmail: "",
@@ -59,24 +60,30 @@ export async function getSiteContent(): Promise<SiteContent | null> {
         sunriseHour: 6,
         sunsetHour: 18,
         contactInfo: "",
-        adoptionContractText: "",
-        commissionContractText: "",
+        adoptionContractText: "请在后台管理页面编辑合同条款。",
+        commissionContractText: "请在后台管理页面编辑合同条款。",
         confirmationEmailSubject: "恭喜！您的委托申请已中标！",
         confirmationEmailBody: "恭喜！您的前行无界 {commissionOptionName} - {productName} 委托申请已中标！请您及时前往工作室官网 -> 右上角个人信息图标 -> 我的订单 -> 订单详情页面阅读服务条款并确认委托申请。"
-      };
+    };
+
+    if (docSnap.exists()) {
+      // If content exists in Firestore, merge it with defaults to ensure all keys are present
       return { ...defaults, ...docSnap.data() };
     }
-     return null;
+    // If no content in Firestore, return the default structure.
+    // The frontend will prompt the admin to save this to initialize it.
+    return defaults;
   } catch (error) {
     console.error("Error fetching site content:", error);
-    return null;
+    return null; // Return null on error
   }
 }
 
+
 export async function saveSiteContent(content: Partial<SiteContent>): Promise<void> {
     const docRef = doc(db, 'site', 'content');
-    // Use set with merge:true to create the document if it doesn't exist, or update it if it does.
-    await updateDoc(docRef, content);
+    // Use setDoc with merge: true to create or update the document.
+    await setDoc(docRef, content, { merge: true });
 }
 
 
