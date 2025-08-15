@@ -29,6 +29,7 @@ export function LandingPageClient() {
     let animationFrameId: number;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 30;
     
     const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -60,6 +61,9 @@ export function LandingPageClient() {
 
         galaxyGroup = new THREE.Group();
         scene.add(galaxyGroup);
+        
+        galaxyGroup.position.y = 5; 
+        galaxyGroup.rotation.x = Math.PI * 0.2; 
 
         geometry = new THREE.BufferGeometry();
         const positions = new Float32Array(galaxyParameters.count * 3);
@@ -104,9 +108,6 @@ export function LandingPageClient() {
 
         points = new THREE.Points(geometry, material);
         galaxyGroup.add(points);
-        
-        galaxyGroup.rotation.x = Math.PI * 0.2;
-        galaxyGroup.position.y = 5;
     }
     
     generateGalaxy();
@@ -131,24 +132,21 @@ export function LandingPageClient() {
     const animate = () => {
         const elapsedTime = clock.getElapsedTime();
 
-        // Orbital camera movement
-        const cameraAngle = elapsedTime * 0.05;
-        camera.position.x = Math.sin(cameraAngle) * 30;
-        camera.position.z = Math.cos(cameraAngle) * 30;
-        
-        // Mouse parallax effect
+        // Galaxy self-rotation
+        if(galaxyGroup) {
+            galaxyGroup.rotation.y = elapsedTime * 0.1;
+        }
+
+        // Mouse parallax effect on camera
         const parallaxX = mouse.current.x * 0.2;
         const parallaxY = -mouse.current.y * 0.2;
-        
-        const cameraGroup = new THREE.Group();
-        cameraGroup.add(camera);
-        scene.add(cameraGroup);
         
         camera.position.x += (parallaxX - camera.position.x) * 0.02;
         camera.position.y += (parallaxY - camera.position.y) * 0.02;
 
+        // Keep camera focused on the galaxy's general position
         if (galaxyGroup) {
-            camera.lookAt(galaxyGroup.position);
+            camera.lookAt(new THREE.Vector3(0, galaxyGroup.position.y, 0));
         }
 
         renderer.render(scene, camera);
