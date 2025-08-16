@@ -96,7 +96,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
   }, [selectedProvince]);
 
   useEffect(() => {
-    if (selectedCity) {
+    if (selectedCity && selectedProvince) {
         const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
         const cityData = provinceData?.cities.find(c => c.name === selectedCity);
         const newDistricts = cityData?.districts || [];
@@ -106,15 +106,13 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
     }
   }, [selectedCity, selectedProvince]);
 
-  // Effect to initialize city and district dropdowns when the component mounts with existing order data
   useEffect(() => {
     const initialProvince = order.applicationData?.province;
-    const initialCity = order.applicationData?.city;
-
     if (initialProvince) {
         const provinceData = chinaDivisions.find(p => p.name === initialProvince);
         setCities(provinceData?.cities.map(c => c.name) || []);
     }
+    const initialCity = order.applicationData?.city;
     if (initialProvince && initialCity) {
         const provinceData = chinaDivisions.find(p => p.name === initialProvince);
         const cityData = provinceData?.cities.find(c => c.name === initialCity);
@@ -128,10 +126,9 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
     try {
         const { total, status, shippingTrackingId, ...appData } = values;
 
-        // Reconstruct applicationData and shippingAddress
         const updatedApplicationData = {
-            ...order.applicationData!, // Keep original non-editable fields
-            ...appData, // Add all editable fields from form
+            ...order.applicationData!,
+            ...appData,
         };
         
         const updatedShippingAddress = `${values.province} ${values.city} ${values.district} ${values.addressDetail}`;
@@ -166,13 +163,18 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
 
   const handleProvinceChange = (value: string) => {
     form.setValue('province', value, { shouldValidate: true });
-    form.setValue('city', '', { shouldValidate: true });
-    form.setValue('district', '', { shouldValidate: true });
+    form.setValue('city', '', { shouldValidate: false });
+    form.setValue('district', '', { shouldValidate: false });
+    setCities(chinaDivisions.find(p => p.name === value)?.cities.map(c => c.name) || []);
+    setDistricts([]);
   }
 
   const handleCityChange = (value: string) => {
     form.setValue('city', value, { shouldValidate: true });
-    form.setValue('district', '', { shouldValidate: true });
+    form.setValue('district', '', { shouldValidate: false });
+    const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
+    const cityData = provinceData?.cities.find(c => c.name === value);
+    setDistricts(cityData?.districts || []);
   }
 
   return (
@@ -359,5 +361,3 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
     </Form>
   );
 }
-    
-    

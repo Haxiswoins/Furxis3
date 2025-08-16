@@ -13,11 +13,10 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>('dark'); // Default to dark, will be updated
+  const [theme, setTheme] = useState<Theme>('dark'); 
   const [siteContent, setSiteContent] = useState<SiteContent | null>(null);
 
   useEffect(() => {
-    // Fetch site content from the new API endpoint
     async function fetchSiteContent() {
         try {
             const response = await fetch('/api/site-content');
@@ -34,17 +33,15 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const determineTheme = useCallback(() => {
-    if (!siteContent) return; // Guard clause if siteContent is not loaded
-
-    const sunriseHour = siteContent.sunriseHour ?? 6;
-    const sunsetHour = siteContent.sunsetHour ?? 18;
+    // Use default hours if siteContent is not yet loaded or doesn't have the properties
+    const sunriseHour = siteContent?.sunriseHour ?? 6;
+    const sunsetHour = siteContent?.sunsetHour ?? 18;
 
     const now = new Date();
     const currentHour = now.getHours();
     
     const newTheme = (currentHour >= sunriseHour && currentHour < sunsetHour) ? 'light' : 'dark';
     
-    // Only update if the theme has actually changed
     setTheme(prevTheme => {
       if (prevTheme !== newTheme) {
         return newTheme;
@@ -52,7 +49,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       return prevTheme;
     });
 
-  }, [siteContent]); // Dependency is siteContent
+  }, [siteContent]); 
 
   useEffect(() => {
     determineTheme();

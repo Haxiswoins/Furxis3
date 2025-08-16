@@ -77,6 +77,7 @@ export function Images({ images, name }: { images: string[]; name: string }) {
                 src={imgSrc}
                 alt={`${name} - 视图 ${index + 1}`}
                 fill
+                priority={index === 0}
                 sizes="(max-width: 768px) 90vw, 45vw"
                 style={{ objectFit: 'cover' }}
               />
