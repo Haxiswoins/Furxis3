@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense  } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,8 +12,16 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/context/AuthContext';
 
-
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>加载中...</div>}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+
+function LoginForm () {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, login } = useAuth();
