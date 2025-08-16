@@ -34,16 +34,17 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const determineTheme = useCallback(() => {
-    // Use defaults if site content is not yet loaded
-    const sunriseHour = siteContent?.sunriseHour ?? 6;
-    const sunsetHour = siteContent?.sunsetHour ?? 18;
+    if (!siteContent) return; // Guard clause if siteContent is not loaded
+
+    const sunriseHour = siteContent.sunriseHour ?? 6;
+    const sunsetHour = siteContent.sunsetHour ?? 18;
 
     const now = new Date();
     const currentHour = now.getHours();
     
-    // Theme is 'light' if current hour is between sunrise and sunset
     const newTheme = (currentHour >= sunriseHour && currentHour < sunsetHour) ? 'light' : 'dark';
-
+    
+    // Only update if the theme has actually changed
     setTheme(prevTheme => {
       if (prevTheme !== newTheme) {
         return newTheme;
@@ -51,17 +52,13 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       return prevTheme;
     });
 
-  }, [siteContent]);
+  }, [siteContent]); // Dependency is siteContent
 
   useEffect(() => {
-    // Determine theme immediately when siteContent is available or on initial load
     determineTheme();
-
-    // Re-check theme every minute
     const interval = setInterval(determineTheme, 60000);
-    
     return () => clearInterval(interval);
-  }, [determineTheme]); // Re-run this effect when siteContent changes
+  }, [determineTheme]);
 
   useEffect(() => {
     const root = window.document.documentElement;

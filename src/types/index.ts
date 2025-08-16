@@ -58,7 +58,7 @@ export type Order = {
   shippingTrackingId?: string | null;
   referenceImageUrl?: string | null;
   commissionOptionName?: string; // Storing parent option name for commission orders
-  hasFan: boolean; // Add hasFan property
+  hasFan?: boolean; 
 };
 
 export type ApplicationData = {
@@ -74,7 +74,7 @@ export type ApplicationData = {
     district: string;
     addressDetail: string;
     referenceImageUrl?: string | null;
-    hasFan: boolean; // Add hasFan property
+    hasFan: boolean; 
 }
 
 export type SiteContent = {
