@@ -59,8 +59,8 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '4mb',
     },
-    skipTrailingSlashRedirect: true,
   },
+  skipTrailingSlashRedirect: true,
 };
 
 export default nextConfig;
