@@ -26,7 +26,7 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.08,
     },
   },
 };
@@ -63,7 +63,11 @@ export default function AdoptionSeriesPage() {
 
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
       <div className="text-center mb-12">
         <h1 className="text-4xl font-headline">设定领养</h1>
         {loading ? (
@@ -114,6 +118,6 @@ export default function AdoptionSeriesPage() {
             )}
         </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

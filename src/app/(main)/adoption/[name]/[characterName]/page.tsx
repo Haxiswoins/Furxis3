@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { getCharacterByName } from '@/lib/data-service';
 import { CharacterDetailClient, Images } from './client-page';
+import { motion } from 'framer-motion';
 
 export default async function AdoptionDetailPage({ params }: { params: { name: string, characterName: string }}) {
   const characterName = decodeURIComponent(params.characterName as string);
@@ -22,7 +23,12 @@ export default async function AdoptionDetailPage({ params }: { params: { name: s
   ].filter(Boolean) as string[];
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <motion.div 
+        className="max-w-5xl mx-auto"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+    >
       <Card>
         <CardContent className="p-4 md:p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
@@ -43,7 +49,7 @@ export default async function AdoptionDetailPage({ params }: { params: { name: s
           </div>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 }
 

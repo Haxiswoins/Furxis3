@@ -31,7 +31,7 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.08,
     },
   },
 };
@@ -71,7 +71,11 @@ export default function WorksPage() {
   }, []);
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
       <div className="text-center mb-12">
         <h1 className="text-4xl font-headline">作品一览</h1>
         <p className="mt-2 text-lg text-muted-foreground">
@@ -130,6 +134,6 @@ export default function WorksPage() {
           ))}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

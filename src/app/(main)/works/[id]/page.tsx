@@ -1,20 +1,71 @@
 
-import { notFound } from 'next/navigation';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { notFound, useParams } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 import { getWorkById } from '@/lib/data-service';
-import { Card, CardContent } from '@/components/ui/card';
 import { WorkImages } from './client-page';
+import { motion } from 'framer-motion';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { Work } from '@/types';
 
-async function WorkDetailPage({ params }: { params: { id: string }}) {
-  const work = await getWorkById(params.id);
+function WorkDetailSkeleton() {
+    return (
+        <div className="max-w-6xl mx-auto space-y-8">
+            <div className="text-center space-y-2">
+                <Skeleton className="h-14 w-1/2 mx-auto" />
+                <Skeleton className="h-6 w-1/3 mx-auto" />
+                <Skeleton className="h-12 w-2/3 mx-auto mt-2" />
+            </div>
+            <Separator />
+            <div className="grid grid-cols-2 gap-4">
+                <Skeleton className="aspect-video" />
+                <Skeleton className="aspect-video" />
+                <Skeleton className="aspect-video" />
+                <Skeleton className="aspect-video" />
+            </div>
+        </div>
+    );
+}
+
+
+function WorkDetailPage() {
+  const params = useParams();
+  const workId = params.id as string;
+  const [work, setWork] = useState<Work | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (workId) {
+      setLoading(true);
+      getWorkById(workId).then(data => {
+        if (!data) {
+          notFound();
+        } else {
+          setWork(data);
+        }
+        setLoading(false);
+      });
+    }
+  }, [workId]);
+
+  if (loading) {
+    return <WorkDetailSkeleton />;
+  }
 
   if (!work) {
-    notFound();
+    // This will be caught by notFound() in useEffect, but as a safeguard.
+    return null;
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      {/* Header Section */}
+    <motion.div 
+        className="max-w-6xl mx-auto space-y-8"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+    >
       <div className="text-center space-y-2">
         <h1 className="text-5xl font-headline font-bold">{work.workName}</h1>
         <p className="text-muted-foreground">
@@ -29,9 +80,8 @@ async function WorkDetailPage({ params }: { params: { id: string }}) {
 
       <Separator />
 
-      {/* Image Grid Section */}
       <WorkImages work={work} />
-    </div>
+    </motion.div>
   );
 }
 
