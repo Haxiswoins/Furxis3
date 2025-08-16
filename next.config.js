@@ -27,14 +27,6 @@ const remotePatterns = [
   },
   {
     protocol: 'https',
-    hostname: 'apod.nasa.gov',
-  },
-  {
-    protocol: 'https',
-    hostname: 'www.nasa.gov',
-  },
-  {
-    protocol: 'https',
     hostname: 'firebasestorage.googleapis.com'
   }
 ];
@@ -62,7 +54,6 @@ const nextConfig = {
     NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     FIREBASE_SERVICE_ACCOUNT_KEY: process.env.FIREBASE_SERVICE_ACCOUNT_KEY,
-    NASA_API_KEY: process.env.NASA_API_KEY,
   },
   experimental: {
     serverActions: {

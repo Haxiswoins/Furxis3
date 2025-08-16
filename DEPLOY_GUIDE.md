@@ -86,13 +86,8 @@ RESEND_API_KEY="re_..."
 # 例如: FIREBASE_SERVICE_ACCOUNT_KEY='{"type": "service_account", "project_id": "...", ...}'
 FIREBASE_SERVICE_ACCOUNT_KEY=''
 
-# NASA API Key for APOD (获取地址: https://api.nasa.gov/)
-# 这个密钥是网站封面“每日天文一图”功能所必需的。
-# 您可以使用 'DEMO_KEY' 作为测试，但它有严格的频率限制。推荐注册您自己的免费密钥。
-NASA_API_KEY='DEMO_KEY'
-
     ```
-    > **重要提示**: 这些密钥是应用正常运行所必需的。特别是 Firebase 的密钥，它们将您的应用与您的 Firebase 认证服务连接起来。`RESEND_API_KEY` 是邮件通知功能的核心。`FIREBASE_SERVICE_ACCOUNT_KEY` 是图片上传功能所必需的。`NASA_API_KEY` 是封面背景图功能的核心。
+    > **重要提示**: 这些密钥是应用正常运行所必需的。特别是 Firebase 的密钥，它们将您的应用与您的 Firebase 认证服务连接起来。`RESEND_API_KEY` 是邮件通知功能的核心。`FIREBASE_SERVICE_ACCOUNT_KEY` 是图片上传功能所必需的。
 
 4.  保存并关闭文件 (在 `nano` 中，按 `Ctrl+X`，然后按 `Y`，最后按 `Enter`)。
 
