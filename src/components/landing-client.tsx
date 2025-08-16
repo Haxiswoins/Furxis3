@@ -10,7 +10,7 @@ import * as THREE from 'three';
 const galaxyParameters = {
     count: 50000,
     size: 0.015,
-    radius: 15,
+    radius: 18,
     branches: 5,
     spin: 1.5,
     randomness: 0.5,
