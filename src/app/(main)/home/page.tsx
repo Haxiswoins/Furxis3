@@ -9,8 +9,7 @@ import { ContactInfo } from '@/components/contact-info';
 import { useEffect, useState } from 'react';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
-import { AnimatePresence, motion } from 'framer-motion';
-import { usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function HomeCardSkeleton({ className }: { className?: string }) {
   return (
@@ -26,6 +25,29 @@ function HomeCardSkeleton({ className }: { className?: string }) {
     </div>
   )
 }
+
+const cardContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+      delayChildren: 0.1,
+    }
+  }
+};
+
+const cardVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: { 
+    y: 0, 
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut"
+    }
+  }
+};
 
 
 export default function HomePage() {
@@ -68,66 +90,83 @@ export default function HomePage() {
             </Link>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl">
-            
-            {loading ? <HomeCardSkeleton /> : (
-                <Link href="/commission" className={cardLinkClass}>
-                <div className={cardDivClass}>
-                    <Image
-                    src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
-                    alt="委托申请"
-                    fill
-                    priority
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    style={{objectFit: "cover"}}
-                    className={cardImageClass}
-                    />
-                    <div className={cardTextDivClass}>
-                    <h2 className={cardTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
-                    <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
+        <AnimatePresence>
+            {!loading && (
+              <motion.div 
+                className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl"
+                variants={cardContainerVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                <motion.div variants={cardVariants}>
+                  <Link href="/commission" className={cardLinkClass}>
+                    <div className={cardDivClass}>
+                        <Image
+                        src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
+                        alt="委托申请"
+                        fill
+                        priority
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        style={{objectFit: "cover"}}
+                        className={cardImageClass}
+                        />
+                        <div className={cardTextDivClass}>
+                        <h2 className={cardTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
+                        <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
+                        </div>
                     </div>
-                </div>
-                </Link>
-            )}
+                  </Link>
+                </motion.div>
 
-            {loading ? <HomeCardSkeleton /> : (
-                <Link href="/adoption" className={cardLinkClass}>
-                <div className={cardDivClass}>
-                    <Image
-                    src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
-                    alt="设定领养"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    style={{objectFit: "cover"}}
-                    className={cardImageClass}
-                    />
-                    <div className={cardTextDivClass}>
-                    <h2 className={cardTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
-                    <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
+                <motion.div variants={cardVariants}>
+                  <Link href="/adoption" className={cardLinkClass}>
+                    <div className={cardDivClass}>
+                        <Image
+                        src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
+                        alt="设定领养"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        style={{objectFit: "cover"}}
+                        className={cardImageClass}
+                        />
+                        <div className={cardTextDivClass}>
+                        <h2 className={cardTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
+                        <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
+                        </div>
                     </div>
-                </div>
-                </Link>
+                  </Link>
+                </motion.div>
+                
+                <motion.div variants={cardVariants}>
+                  <Link href="/works" className={cardLinkClass}>
+                    <div className={cardDivClass}>
+                        <Image
+                        src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
+                        alt="作品一览"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        style={{objectFit: "cover"}}
+                        className={cardImageClass}
+                        />
+                        <div className={cardTextDivClass}>
+                        <h2 className={cardTitleClass}>{content?.workTitle || '作品一览'}</h2>
+                        <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
+                        </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              </motion.div>
             )}
+        </AnimatePresence>
 
-            {loading ? <HomeCardSkeleton /> : (
-                <Link href="/works" className={cardLinkClass}>
-                <div className={cardDivClass}>
-                    <Image
-                    src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
-                    alt="作品一览"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    style={{objectFit: "cover"}}
-                    className={cardImageClass}
-                    />
-                    <div className={cardTextDivClass}>
-                    <h2 className={cardTitleClass}>{content?.workTitle || '作品一览'}</h2>
-                    <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
-                    </div>
-                </div>
-                </Link>
-            )}
-        </div>
+        {loading && (
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl">
+              <HomeCardSkeleton />
+              <HomeCardSkeleton />
+              <HomeCardSkeleton />
+           </div>
+        )}
+
         </div>
         <div className="w-full mt-16 pb-8 text-center">
         <ContactInfo content={content} />
