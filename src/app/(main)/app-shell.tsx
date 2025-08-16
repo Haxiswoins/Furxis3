@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState, useEffect } from 'react';
 import Header from '@/components/header';
 import { usePathname } from 'next/navigation';
 import AdminSidebar from '@/components/admin-sidebar';
@@ -66,6 +67,12 @@ export function AppShell({
   const isLandingPage = pathname === '/';
   
   const isAdmin = user?.isAdmin;
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
 
   if (loading) {
     return (
@@ -115,7 +122,7 @@ export function AppShell({
               <motion.div
                 key={pathname}
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                animate={{ opacity: isMounted ? 1 : 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
@@ -135,7 +142,7 @@ export function AppShell({
               <motion.div
                 key={pathname}
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                animate={{ opacity: isMounted ? 1 : 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
