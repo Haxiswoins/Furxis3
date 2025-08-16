@@ -15,6 +15,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import type { SiteContent } from '@/types';
+import { AnimatePresence, motion } from 'framer-motion';
 
 // This new component handles the client-side logic for the background
 function MainContentWrapper({
@@ -44,7 +45,17 @@ function MainContentWrapper({
       )}
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8 pt-24">
-         {children}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={pathname}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </main>
     </div>
   );
@@ -110,7 +121,17 @@ export function AppShell({
         </div>
         <main className="flex-1 md:ml-64">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {children}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={pathname}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {children}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </main>
       </div>
