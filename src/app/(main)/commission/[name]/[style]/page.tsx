@@ -22,6 +22,7 @@ import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { motion } from 'framer-motion';
 
 export default function CommissionApplicationPage() {
   const params = useParams();
@@ -244,7 +245,12 @@ export default function CommissionApplicationPage() {
   const contractText = siteContent?.commissionContractText;
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <motion.div 
+        className="max-w-4xl mx-auto"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+    >
       <Card>
         <CardHeader>
             <CardTitle className="text-3xl font-headline">{commissionOption.name} - {commissionStyle.name}</CardTitle>
@@ -383,6 +389,6 @@ export default function CommissionApplicationPage() {
             </CardFooter>
           </form>
       </Card>
-    </div>
+    </motion.div>
   );
 }

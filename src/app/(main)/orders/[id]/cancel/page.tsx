@@ -12,6 +12,7 @@ import { getOrderById, cancelOrder } from '@/lib/data-service';
 import { useAuth } from '@/context/AuthContext';
 import type { Order } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import { motion } from 'framer-motion';
 
 export default function CancelOrderPage() {
   const router = useRouter();
@@ -104,7 +105,12 @@ export default function CancelOrderPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-8">
+    <motion.div 
+        className="max-w-2xl mx-auto py-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+    >
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-headline">取消订单：{order.productName}</CardTitle>
@@ -133,6 +139,6 @@ export default function CancelOrderPage() {
           </form>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 }
