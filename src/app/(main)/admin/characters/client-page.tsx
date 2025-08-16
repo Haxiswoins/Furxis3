@@ -75,7 +75,7 @@ export function AdminCharactersClient({ characters: initialCharacters }: AdminCh
                   </TableCell>
                   <TableCell className="font-medium">{char.name}</TableCell>
                   <TableCell>{char.species}</TableCell>
-                  <TableCell>{char.price}</TableCell>
+                  <TableCell>¥{char.price}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="icon" onClick={() => router.push(`/admin/characters/edit/${char.id}`)}>
                       <Edit className="h-4 w-4" />

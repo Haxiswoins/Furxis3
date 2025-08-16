@@ -79,7 +79,7 @@ export function AdminCommissionStylesClient({ styles: initialStyles, options }: 
                   </TableCell>
                   <TableCell className="font-medium">{style.name}</TableCell>
                   <TableCell>{getOptionName(style.commissionOptionId)}</TableCell>
-                  <TableCell>{style.price}</TableCell>
+                  <TableCell>¥{style.price}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="icon" onClick={() => router.push(`/admin/commission-styles/edit/${style.id}`)}>
                       <Edit className="h-4 w-4" />

@@ -21,7 +21,7 @@ import { Upload } from 'lucide-react';
 const formSchema = z.object({
   commissionOptionId: z.string().min(1, '必须选择一个所属委托'),
   name: z.string().min(2, { message: '名称至少需要2个字符。' }),
-  price: z.string().min(1, { message: '价格描述不能为空。' }),
+  price: z.string().regex(/^\d+(\.\d{1,2})?$/, { message: '请输入有效的价格数字。' }),
   description: z.string().min(10, { message: '描述至少需要10个字符。' }),
   tags: z.string(),
 });
@@ -135,7 +135,7 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
             )}
         />
         <FormField control={form.control} name="name" render={({ field }) => ( <FormItem> <FormLabel>样式名称</FormLabel> <FormControl><Input placeholder="例如：标准全身" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-        <FormField control={form.control} name="price" render={({ field }) => ( <FormItem> <FormLabel>价格描述</FormLabel> <FormControl><Input placeholder="例如：￥15000 起" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+        <FormField control={form.control} name="price" render={({ field }) => ( <FormItem> <FormLabel>价格 (元)</FormLabel> <FormControl><Input placeholder="例如：15000" {...field} /></FormControl> <FormDescription>如果价格不固定，可填写“起”或“需估价”，展示时会自动拼接。</FormDescription> <FormMessage /> </FormItem> )}/>
         <FormField control={form.control} name="description" render={({ field }) => ( <FormItem> <FormLabel>描述</FormLabel> <FormControl><Textarea placeholder="关于这个样式的详细说明..." {...field} rows={5} /></FormControl> <FormMessage /> </FormItem> )}/>
         <FormField control={form.control} name="tags" render={({ field }) => ( <FormItem> <FormLabel>标签</FormLabel> <FormControl><Input placeholder="例如：标准, 全包" {...field} /></FormControl> <FormDescription>使用逗号分隔不同的标签。</FormDescription> <FormMessage /> </FormItem> )}/>
         

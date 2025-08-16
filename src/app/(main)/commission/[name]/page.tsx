@@ -90,7 +90,7 @@ export default function CommissionStylePage() {
                 </div>
               </CardContent>
               <CardFooter className="p-4 bg-muted/50 flex justify-between items-center">
-                <p className="text-lg font-bold text-primary">{style.price}</p>
+                <p className="text-lg font-bold text-primary">¥{style.price}</p>
                 <Link href={`/commission/${encodeURIComponent(commissionName)}/${encodeURIComponent(style.name)}`} passHref>
                   <Button size="sm" disabled={!canApply} aria-disabled={!canApply}>
                     选择此样式 <ChevronRight className="h-4 w-4" />

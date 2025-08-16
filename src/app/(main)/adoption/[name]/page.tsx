@@ -55,7 +55,7 @@ export default async function AdoptionCharacterListPage({ params }: { params: { 
                 </div>
               </CardContent>
               <CardFooter className="p-3 bg-muted/50 flex justify-between items-center">
-                <p className="text-base font-bold text-primary">{char.price}</p>
+                <p className="text-base font-bold text-primary">¥{char.price}</p>
                  <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
                    <Button size="sm">
                     <Heart className="mr-1 h-3 w-3" /> 详情
