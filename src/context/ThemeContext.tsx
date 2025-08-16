@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import type { SiteContent } from '@/types';
 
 type Theme = 'dark' | 'light';
@@ -33,23 +33,27 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     fetchSiteContent();
   }, []);
 
-  useEffect(() => {
-    const determineTheme = () => {
-      // Use defaults if site content is not yet loaded
-      const sunriseHour = siteContent?.sunriseHour ?? 6;
-      const sunsetHour = siteContent?.sunsetHour ?? 18;
+  const determineTheme = useCallback(() => {
+    // Use defaults if site content is not yet loaded
+    const sunriseHour = siteContent?.sunriseHour ?? 6;
+    const sunsetHour = siteContent?.sunsetHour ?? 18;
 
-      const now = new Date();
-      const currentHour = now.getHours();
-      
-      // Theme is 'light' if current hour is between sunrise and sunset
-      if (currentHour >= sunriseHour && currentHour < sunsetHour) {
-        setTheme('light');
-      } else {
-        setTheme('dark');
+    const now = new Date();
+    const currentHour = now.getHours();
+    
+    // Theme is 'light' if current hour is between sunrise and sunset
+    const newTheme = (currentHour >= sunriseHour && currentHour < sunsetHour) ? 'light' : 'dark';
+
+    setTheme(prevTheme => {
+      if (prevTheme !== newTheme) {
+        return newTheme;
       }
-    };
+      return prevTheme;
+    });
 
+  }, [siteContent]);
+
+  useEffect(() => {
     // Determine theme immediately when siteContent is available or on initial load
     determineTheme();
 
@@ -57,7 +61,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     const interval = setInterval(determineTheme, 60000);
     
     return () => clearInterval(interval);
-  }, [siteContent]); // Re-run this effect when siteContent changes
+  }, [determineTheme]); // Re-run this effect when siteContent changes
 
   useEffect(() => {
     const root = window.document.documentElement;
