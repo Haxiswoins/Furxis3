@@ -1,4 +1,4 @@
-const type = require('tailwindcss/plugin');
+
 import type {Config} from 'tailwindcss';
 
 const config: Config = {
@@ -86,12 +86,12 @@ const config: Config = {
           },
         },
         'content-show': {
-          from: { opacity: '0', transform: 'scale(0.98)' },
-          to: { opacity: '1', transform: 'scale(1)' },
+          from: { opacity: '0', transform: 'translate(-50%, -48%) scale(0.96)' },
+          to: { opacity: '1', transform: 'translate(-50%, -50%) scale(1)' },
         },
         'content-hide': {
-            from: { opacity: '1', transform: 'scale(1)' },
-            to: { opacity: '0', transform: 'scale(0.98)' },
+            from: { opacity: '1', transform: 'translate(-50%, -50%) scale(1)' },
+            to: { opacity: '0', transform: 'translate(-50%, -48%) scale(0.96)' },
         },
         'overlay-show': {
             from: { opacity: '0' },
