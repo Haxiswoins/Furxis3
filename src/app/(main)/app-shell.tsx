@@ -45,17 +45,7 @@ function MainContentWrapper({
       )}
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8 pt-24">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={pathname}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+        {children}
       </main>
     </div>
   );
@@ -141,7 +131,17 @@ export function AppShell({
   // For all other main routes, we use the wrapper
   return (
     <MainContentWrapper siteContent={siteContent}>
-      {children}
+        <AnimatePresence mode="wait">
+              <motion.div
+                key={pathname}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {children}
+              </motion.div>
+        </AnimatePresence>
     </MainContentWrapper>
   );
 }
