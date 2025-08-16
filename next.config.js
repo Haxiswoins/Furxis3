@@ -59,6 +59,7 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '4mb',
     },
+    skipTrailingSlashRedirect: true,
   },
 };
 
