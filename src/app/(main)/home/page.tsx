@@ -31,8 +31,7 @@ const cardContainerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.2,
-      delayChildren: 0.1,
+      // staggerChildren is removed to make cards appear simultaneously
     }
   }
 };
