@@ -1,11 +1,4 @@
-
 [
-  {
-    "id": "series_1723282278917",
-    "name": "赛博纪元",
-    "description": "融合了未来科技感与生物形态的机械生物系列。",
-    "imageUrl": "https://placehold.co/600x800.png"
-  },
   {
     "id": "series_1723282303884",
     "name": "山海异兽",
@@ -13,9 +6,9 @@
     "imageUrl": "https://placehold.co/600x800.png"
   },
   {
-    "id": "series_1723282321857",
-    "name": "糖果甜心",
-    "description": "色彩鲜艳，造型可爱，仿佛从童话糖果屋走出的甜蜜伙伴。",
+    "id": "series_1723282278917",
+    "name": "赛博纪元",
+    "description": "融合了未来科技感与生物形态的机械生物系列。",
     "imageUrl": "https://placehold.co/600x800.png"
   }
 ]

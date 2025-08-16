@@ -1,3 +1,4 @@
+
 'use server';
 
 import fs from 'fs/promises';
@@ -81,8 +82,17 @@ export async function saveCharacterSeries(seriesData: Omit<CharacterSeries, 'id'
 
 export async function deleteCharacterSeries(id: string): Promise<void> {
     let allSeries = await getCharacterSeries();
+    let allCharacters = await getCharacters();
+
+    // Filter out the series to be deleted
     allSeries = allSeries.filter(s => s.id !== id);
+    
+    // Filter out the characters associated with the deleted series
+    allCharacters = allCharacters.filter(c => c.seriesId !== id);
+
+    // Write both updated lists back to their files
     await writeData('characterSeries.json', allSeries);
+    await writeData('characters.json', allCharacters);
 }
 
 // Characters (Adoption)
