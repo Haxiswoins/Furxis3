@@ -85,27 +85,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
   const selectedProvince = form.watch('province');
   const selectedCity = form.watch('city');
 
-  useEffect(() => {
-    if (selectedProvince) {
-      const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
-      const newCities = provinceData?.cities.map(c => c.name) || [];
-      setCities(newCities);
-    } else {
-      setCities([]);
-    }
-  }, [selectedProvince]);
-
-  useEffect(() => {
-    if (selectedCity && selectedProvince) {
-        const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
-        const cityData = provinceData?.cities.find(c => c.name === selectedCity);
-        const newDistricts = cityData?.districts || [];
-        setDistricts(newDistricts);
-    } else {
-        setDistricts([]);
-    }
-  }, [selectedCity, selectedProvince]);
-
+  // Effect to run once on initial load to populate cities and districts
   useEffect(() => {
     const initialProvince = order.applicationData?.province;
     if (initialProvince) {
@@ -119,6 +99,29 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
         setDistricts(cityData?.districts || []);
     }
   }, [order.applicationData]);
+
+  // Effect for when province changes
+  useEffect(() => {
+    if (selectedProvince) {
+      const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
+      setCities(provinceData?.cities.map(c => c.name) || []);
+      setDistricts([]);
+    } else {
+      setCities([]);
+      setDistricts([]);
+    }
+  }, [selectedProvince]);
+
+  // Effect for when city changes
+  useEffect(() => {
+    if (selectedCity && selectedProvince) {
+        const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
+        const cityData = provinceData?.cities.find(c => c.name === selectedCity);
+        setDistricts(cityData?.districts || []);
+    } else {
+        setDistricts([]);
+    }
+  }, [selectedCity, selectedProvince]);
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -356,3 +359,5 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
     </Form>
   );
 }
+
+    
