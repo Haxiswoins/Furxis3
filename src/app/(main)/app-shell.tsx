@@ -31,7 +31,7 @@ function MainContentWrapper({
   const hasHomeBg = isHomePage && siteContent?.homeBackgroundImageUrl;
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="flex flex-col min-h-screen bg-background">
       {hasHomeBg && (
         <div className="fixed inset-0 -z-10">
           <Image
@@ -45,7 +45,7 @@ function MainContentWrapper({
         </div>
       )}
       <Header />
-      <main className="flex-1 container mx-auto px-4 py-8 pt-24">
+      <main className="flex-1 flex flex-col container mx-auto px-4 py-8 pt-24">
         {children}
       </main>
     </div>

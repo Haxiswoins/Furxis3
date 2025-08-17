@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -12,7 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 function HomePageSkeleton() {
     return (
-        <div className="flex flex-col min-h-[calc(100vh-8rem)]">
+        <div className="flex flex-col flex-grow">
              <div className="flex-grow flex flex-col items-center justify-center">
                  <div className="text-center mb-12">
                      <Skeleton className="h-12 w-48" />
@@ -76,7 +77,7 @@ export default function HomePage() {
   
   return (
     <div className={cn(
-        "flex flex-col min-h-[calc(100vh-8rem)] transition-opacity duration-500",
+        "flex flex-col flex-grow transition-opacity duration-500",
         isTransitioning ? "opacity-0" : "opacity-100"
     )}>
         <div className="flex-grow flex flex-col items-center justify-center">
