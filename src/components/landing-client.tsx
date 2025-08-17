@@ -219,7 +219,7 @@ export function LandingPageClient() {
   };
   
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-black">
+    <div className="relative h-screen w-full overflow-hidden bg-black">
       <canvas ref={canvasRef} className="absolute inset-0 z-0"></canvas>
       <div id="warp-overlay" className="absolute inset-0 z-10 bg-white" style={{opacity: 0, pointerEvents: 'none'}}></div>
       
