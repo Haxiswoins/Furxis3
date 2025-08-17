@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -24,7 +23,7 @@ export function ContactInfo({ content }: ContactInfoProps) {
     : "联系方式暂未设置。管理员请前往后台“页面内容管理”页面进行配置。";
   
   return (
-    <AlertDialog>
+    <AlertDialog modal={false}>
       <AlertDialogTrigger asChild>
         <Button variant="secondary">联系我们</Button>
       </AlertDialogTrigger>
