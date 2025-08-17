@@ -1,64 +1,25 @@
 
-'use client';
-
-import { notFound, useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { getCharacterByName } from '@/lib/data-service';
 import { CharacterDetailClient, Images } from './client-page';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
 import type { Character } from '@/types';
-import { Skeleton } from '@/components/ui/skeleton';
 
+export const dynamic = 'force-dynamic';
 
-function CharacterDetailSkeleton() {
-    return (
-        <Card>
-            <CardContent className="p-4 md:p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                    <div className="sticky top-24 space-y-4">
-                        <Skeleton className="h-12 w-3/4" />
-                        <Skeleton className="h-6 w-1/4" />
-                        <Skeleton className="h-20 w-full" />
-                        <Skeleton className="h-5 w-24" />
-                        <Skeleton className="h-12 w-full" />
-                    </div>
-                    <div className="space-y-4">
-                       <Skeleton className="aspect-square w-full" />
-                       <Skeleton className="aspect-square w-full" />
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    )
-}
-
-
-export default function AdoptionDetailPage() {
-  const params = useParams();
-  const [character, setCharacter] = useState<Character | null>(null);
-  const [loading, setLoading] = useState(true);
-
+export default async function AdoptionDetailPage({ params }: { params: { characterName: string } }) {
   const characterName = decodeURIComponent(params.characterName as string);
 
-  useEffect(() => {
-    if (characterName) {
-        setLoading(true);
-        getCharacterByName(characterName).then(data => {
-            if (!data) {
-                notFound();
-            } else {
-                setCharacter(data);
-            }
-            setLoading(false);
-        });
-    }
-  }, [characterName]);
+  if (!characterName) {
+    notFound();
+  }
 
+  const character = await getCharacterByName(characterName);
 
-  if (loading) return <CharacterDetailSkeleton />;
-  if (!character) return null;
-
+  if (!character) {
+    notFound();
+  }
 
   const characterImages = [
     character.imageUrl,
@@ -98,3 +59,4 @@ export default function AdoptionDetailPage() {
     </motion.div>
   );
 }
+

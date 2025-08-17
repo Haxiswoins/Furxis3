@@ -1,48 +1,19 @@
 
-'use client';
-
-import { useState, useEffect } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
 import { getCommissionOptions, getSiteContent } from '@/lib/data-service';
 import { CommissionClientPage } from './client-page';
-import type { CommissionOption, SiteContent } from '@/types';
 import { motion } from 'framer-motion';
 
-function CommissionCardSkeleton() {
-  return (
-    <div className="overflow-hidden shadow-lg flex flex-col">
-      <div className="relative aspect-[3/4] bg-muted">
-        <Skeleton className="h-full w-full" />
-      </div>
-    </div>
-  );
-}
+export default async function CommissionPage() {
+  const [fetchedOptions, content] = await Promise.all([
+    getCommissionOptions(),
+    getSiteContent(),
+  ]);
 
-export default function CommissionPage() {
-  const [options, setOptions] = useState<CommissionOption[]>([]);
-  const [content, setContent] = useState<SiteContent | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      const [fetchedOptions, fetchedContent] = await Promise.all([
-        getCommissionOptions(),
-        getSiteContent(),
-      ]);
-
-      const sortedOptions = fetchedOptions.sort((a, b) => {
-        const timeA = parseInt(a.id.split('_')[1] || '0');
-        const timeB = parseInt(b.id.split('_')[1] || '0');
-        return timeB - timeA;
-      });
-
-      setOptions(sortedOptions);
-      setContent(fetchedContent);
-      setLoading(false);
-    }
-    fetchData();
-  }, []);
+  const sortedOptions = fetchedOptions.sort((a, b) => {
+    const timeA = parseInt(a.id.split('_')[1] || '0');
+    const timeB = parseInt(b.id.split('_')[1] || '0');
+    return timeB - timeA;
+  });
 
   return (
     <motion.div
@@ -52,21 +23,11 @@ export default function CommissionPage() {
     >
       <div className="text-center mb-12">
         <h1 className="text-4xl font-headline">委托申请</h1>
-        {loading ? (
-            <Skeleton className="h-6 w-96 mx-auto mt-4" />
-        ) : (
-            <p className="mt-2 text-lg text-muted-foreground">
-              {content?.commissionPageDescription || '选择一个基础套餐开始您的定制兽装之旅。'}
-            </p>
-        )}
+        <p className="mt-2 text-lg text-muted-foreground">
+          {content?.commissionPageDescription || '选择一个基础套餐开始您的定制兽装之旅。'}
+        </p>
       </div>
-      {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(3)].map((_, i) => <CommissionCardSkeleton key={i} />)}
-        </div>
-      ) : (
-        <CommissionClientPage commissionOptions={options} />
-      )}
+      <CommissionClientPage commissionOptions={sortedOptions} />
     </motion.div>
   );
 }

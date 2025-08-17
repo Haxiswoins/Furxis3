@@ -1,30 +1,10 @@
 
-'use client';
-
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { getWorks } from '@/lib/data-service';
 import type { Work } from '@/types';
 import { motion } from 'framer-motion';
-
-function WorkCardSkeleton() {
-  return (
-    <Card className="overflow-hidden shadow-lg flex flex-col text-sm">
-      <CardHeader className="p-0">
-        <div className="relative aspect-[3/4] bg-muted">
-          <Skeleton className="h-full w-full" />
-        </div>
-      </CardHeader>
-      <CardContent className="p-3 flex-grow">
-        <Skeleton className="h-6 w-3/4 mb-1" />
-        <Skeleton className="h-4 w-1/2 mb-2" />
-      </CardContent>
-    </Card>
-  );
-}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -48,27 +28,19 @@ const itemVariants = {
   },
 };
 
-export default function WorksPage() {
-  const [worksByYear, setWorksByYear] = useState<Record<string, Work[]>>({});
-  const [sortedYears, setSortedYears] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function WorksPage() {
+  const worksData = await getWorks();
 
-  useEffect(() => {
-    setLoading(true);
-    getWorks().then(worksData => {
-      const groupedWorks = worksData.reduce((acc, work) => {
-        const year = new Date(work.completionDate).getFullYear().toString();
-        if (!acc[year]) {
-          acc[year] = [];
-        }
-        acc[year].push(work);
-        return acc;
-      }, {} as Record<string, Work[]>);
-      setWorksByYear(groupedWorks);
-      setSortedYears(Object.keys(groupedWorks).sort((a, b) => parseInt(b) - parseInt(a)));
-      setLoading(false);
-    });
-  }, []);
+  const worksByYear = worksData.reduce((acc, work) => {
+    const year = new Date(work.completionDate).getFullYear().toString();
+    if (!acc[year]) {
+      acc[year] = [];
+    }
+    acc[year].push(work);
+    return acc;
+  }, {} as Record<string, Work[]>);
+  
+  const sortedYears = Object.keys(worksByYear).sort((a, b) => parseInt(b) - parseInt(a));
 
   return (
     <motion.div
@@ -83,20 +55,9 @@ export default function WorksPage() {
         </p>
       </div>
 
-      {loading ? (
-        <div className="space-y-12">
-            {[...Array(2)].map((_, i) => (
-                <div key={i}>
-                    <Skeleton className="h-10 w-32 mb-6" />
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        {[...Array(5)].map((_, j) => <WorkCardSkeleton key={j} />)}
-                    </div>
-                </div>
-            ))}
-        </div>
-      ) : (
-        <div className="space-y-12">
-          {sortedYears.map(year => (
+      <div className="space-y-12">
+        {sortedYears.length > 0 ? (
+          sortedYears.map(year => (
             <div key={year}>
               <h2 className="text-3xl font-headline mb-6 pl-4 border-l-4 border-primary">{year}</h2>
               <motion.div 
@@ -131,9 +92,14 @@ export default function WorksPage() {
                 ))}
               </motion.div>
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        ) : (
+          <div className="col-span-full text-center py-10">
+            <p className="text-muted-foreground">暂无作品展示。</p>
+          </div>
+        )}
+      </div>
     </motion.div>
   );
 }
+
