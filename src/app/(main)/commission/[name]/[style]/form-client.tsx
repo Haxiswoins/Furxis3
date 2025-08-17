@@ -288,28 +288,35 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
               </label>
             </div>
 
-            <div className="flex items-center space-x-2 pt-2">
-                <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} />
-                 <Dialog>
-                    <DialogTrigger asChild>
-                       <label
-                          htmlFor="terms"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                         我已阅读并同意 <span className="text-primary hover:underline cursor-pointer">服务条款</span>
-                      </label>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-3xl">
-                        <DialogHeader>
-                            <DialogTitle className="text-xl">服务条款</DialogTitle>
-                        </DialogHeader>
-                        <ScrollArea className="h-[60vh] pr-6">
-                            <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
-                                {contractText || "合同条款正在加载中..."}
-                            </div>
-                        </ScrollArea>
-                    </DialogContent>
-                </Dialog>
+            <div className="space-y-2 pt-2">
+                <div className="flex items-start space-x-2">
+                    <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} className="mt-1" />
+                    <div className="grid gap-1.5 leading-none">
+                         <Dialog>
+                            <DialogTrigger asChild>
+                               <label
+                                  htmlFor="terms"
+                                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                 我已阅读并同意 <span className="text-primary hover:underline cursor-pointer">服务条款</span>
+                              </label>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-3xl">
+                                <DialogHeader>
+                                    <DialogTitle className="text-xl">服务条款</DialogTitle>
+                                </DialogHeader>
+                                <ScrollArea className="h-[60vh] pr-6">
+                                    <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
+                                        {contractText || "合同条款正在加载中..."}
+                                    </div>
+                                </ScrollArea>
+                            </DialogContent>
+                        </Dialog>
+                        <p className="text-xs text-muted-foreground">
+                            勾选此框表示您已完全理解并同意上述所有条款，此行为具有与手写签名同等的法律效力。
+                        </p>
+                    </div>
+                </div>
             </div>
            </CardContent>
 

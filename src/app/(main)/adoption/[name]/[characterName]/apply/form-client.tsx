@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { createAdoptionApplication } from '@/lib/data-service';
+import { FormDescription } from '@/components/ui/form';
 
 type AdoptionApplicationFormProps = {
     character: Character;
@@ -180,29 +181,37 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
               </label>
             </div>
 
-            <div className="flex items-center space-x-2 pt-2">
-              <Checkbox id="terms" required />
-                <Dialog>
-                  <DialogTrigger asChild>
-                     <label
-                        htmlFor="terms"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                       我已阅读并同意 <span className="text-primary hover:underline cursor-pointer">领养条款和条件</span>
-                    </label>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-3xl">
-                    <DialogHeader>
-                      <DialogTitle className="text-xl">前行无界工作室兽装领养条款与条件</DialogTitle>
-                    </DialogHeader>
-                    <ScrollArea className="h-[60vh] pr-6">
-                        <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
-                            {siteContent?.adoptionContractText || '条款加载中...'}
-                        </div>
-                    </ScrollArea>
-                  </DialogContent>
-              </Dialog>
+            <div className="space-y-2 pt-2">
+                <div className="flex items-start space-x-2">
+                    <Checkbox id="terms" required className="mt-1" />
+                    <div className="grid gap-1.5 leading-none">
+                        <Dialog>
+                        <DialogTrigger asChild>
+                            <label
+                                htmlFor="terms"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                            我已阅读并同意 <span className="text-primary hover:underline cursor-pointer">领养条款和条件</span>
+                            </label>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-3xl">
+                            <DialogHeader>
+                            <DialogTitle className="text-xl">前行无界工作室兽装领养条款与条件</DialogTitle>
+                            </DialogHeader>
+                            <ScrollArea className="h-[60vh] pr-6">
+                                <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
+                                    {siteContent?.adoptionContractText || '条款加载中...'}
+                                </div>
+                            </ScrollArea>
+                        </DialogContent>
+                        </Dialog>
+                        <p className="text-xs text-muted-foreground">
+                            勾选此框表示您已完全理解并同意上述所有条款，此行为具有与手写签名同等的法律效力。
+                        </p>
+                    </div>
+                </div>
             </div>
+
             <div className="text-center pt-4">
                 <Button type="submit" size="lg" disabled={submitting}>
                     {submitting ? '提交中...' : '确认申请领养'}

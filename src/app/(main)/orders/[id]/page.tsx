@@ -189,7 +189,7 @@ export default function OrderDetailPage() {
   };
   
   const renderCancelButton = () => {
-    if (order.status === '处理中' || order.status === '已确认' || order.status === '待确认') {
+    if (order.status === '处理中' || order.status === '已确认' || order.status === '待确认' || order.status === '排队中' || order.status === '制作中') {
       return (
         <Button variant="destructive" onClick={handleCancelClick}>申请退养/取消</Button>
       );
@@ -329,29 +329,36 @@ export default function OrderDetailPage() {
                 <CardTitle>订单确认</CardTitle>
                 <CardDescription>请仔细阅读服务条款，并确认您的订单。</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="flex items-center space-x-2">
-                    <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} />
-                     <Dialog>
-                        <DialogTrigger asChild>
-                           <label
-                              htmlFor="terms"
-                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                             我已阅读并同意 <span className="text-primary hover:underline cursor-pointer">服务条款</span>
-                          </label>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-3xl">
-                            <DialogHeader>
-                                <DialogTitle className="text-xl">服务条款</DialogTitle>
-                            </DialogHeader>
-                            <ScrollArea className="h-[60vh] pr-6">
-                                <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
-                                    {contractText || "合同条款暂未配置，请联系管理员。"}
-                                </div>
-                            </ScrollArea>
-                        </DialogContent>
-                    </Dialog>
+            <CardContent>
+                 <div className="space-y-2 pt-2">
+                    <div className="flex items-start space-x-2">
+                        <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} className="mt-1" />
+                        <div className="grid gap-1.5 leading-none">
+                             <Dialog>
+                                <DialogTrigger asChild>
+                                   <label
+                                      htmlFor="terms"
+                                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    >
+                                     我已阅读并同意 <span className="text-primary hover:underline cursor-pointer">服务条款</span>
+                                  </label>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-3xl">
+                                    <DialogHeader>
+                                        <DialogTitle className="text-xl">服务条款</DialogTitle>
+                                    </DialogHeader>
+                                    <ScrollArea className="h-[60vh] pr-6">
+                                        <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
+                                            {contractText || "合同条款暂未配置，请联系管理员。"}
+                                        </div>
+                                    </ScrollArea>
+                                </DialogContent>
+                            </Dialog>
+                            <p className="text-xs text-muted-foreground">
+                                勾选此框表示您已完全理解并同意上述所有条款，此行为具有与手写签名同等的法律效力。
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </CardContent>
             <CardFooter>
