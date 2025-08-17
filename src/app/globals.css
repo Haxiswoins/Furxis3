@@ -68,7 +68,7 @@
     overflow-y: scroll;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-black text-foreground;
   }
 }
 
