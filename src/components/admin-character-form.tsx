@@ -214,7 +214,7 @@ export function AdminCharacterForm({ character }: AdminCharacterFormProps) {
                         id={`file-input-${index}`}
                     />
                     <Button type="button" variant="outline" onClick={() => fileInputRefs[index]?.current?.click()}>
-                        <Upload className="mr-2" />
+                        <Upload className="mr-2 h-4 w-4" />
                         {img.preview ? '更换图片' : '选择图片'}
                     </Button>
                 </div>

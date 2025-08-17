@@ -207,7 +207,7 @@ export function AdminCommissionForm({ commissionOption }: AdminCommissionFormPro
                     onChange={handleFileChange}
                 />
                  <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                    <Upload className="mr-2" />
+                    <Upload className="mr-2 h-4 w-4" />
                     {imagePreview ? '更换图片' : '选择图片'}
                 </Button>
             </div>

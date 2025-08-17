@@ -68,11 +68,23 @@ function LoginPageContent() {
       setLoading(false);
     }
   };
+  
+  const handleBack = () => {
+    // If there's a redirect param, it means the user was forced here.
+    // Navigating back might lead to a loop or error page.
+    // It's safer to go to the home page in this case.
+    if (redirectUrl) {
+      router.push('/home');
+    } else {
+      router.back();
+    }
+  };
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="absolute top-4 left-4">
-          <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-12 w-12 rounded-full">
+          <Button variant="ghost" size="icon" onClick={handleBack} className="h-12 w-12 rounded-full">
             <ChevronLeft className="h-6 w-6" />
           </Button>
       </div>
