@@ -77,9 +77,9 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="430525481988"
 NEXT_PUBLIC_FIREBASE_APP_ID="1:430525481988:web:e1ac745830fa0a02cae151"
 
 
-# Resend API Key for Email Notifications (获取地址: https://resend.com/)
-# 这个密钥是发送邮件通知功能（例如新订单提醒、中标通知）所必需的。
-# 您需要注册 Resend 账户并配置一个已验证的域名（例如: notification@yourdomain.com）才能发送邮件。
+# Resend API Key for Email Notifications
+# 邮件通知功能是网站的核心之一，详细配置请务必参考 RESEND_GUIDE.md
+# 请参考 RESEND_GUIDE.md 文档获取并配置此项。
 RESEND_API_KEY="re_..."
 
 # Firebase 服务账号密钥 (用于服务器端图片上传)
@@ -89,7 +89,7 @@ RESEND_API_KEY="re_..."
 FIREBASE_SERVICE_ACCOUNT_KEY=''
 
     ```
-    > **重要提示**: 这些密钥是应用正常运行所必需的。特别是 Firebase 的密钥，它们将您的应用与您的 Firebase 认证服务连接起来。`RESEND_API_KEY` 是邮件通知功能的核心。`FIREBASE_SERVICE_ACCOUNT_KEY` 是图片上传功能所必需的。
+    > **重要提示**: 这些密钥是应用正常运行所必需的。特别是 `FIREBASE_SERVICE_ACCOUNT_KEY` 和 `RESEND_API_KEY`，它们分别是图片上传和邮件通知功能的核心。
 
 4.  保存并关闭文件 (在 `nano` 中，按 `Ctrl+X`，然后按 `Y`，最后按 `Enter`)。
 
