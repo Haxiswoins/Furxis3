@@ -46,18 +46,7 @@ function MainContentWrapper({
       )}
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8 pt-24">
-         {/* AnimatePresence and motion.div will animate page transitions */}
-         <AnimatePresence mode="wait">
-            <motion.div
-              key={pathname} // Use pathname as key to trigger animation on route change
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -20, opacity: 0 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
+        {children}
       </main>
     </div>
   );
@@ -131,8 +120,18 @@ export function AppShell({
   }
 
   return (
-    <MainContentWrapper siteContent={siteContent}>
-        {children}
-    </MainContentWrapper>
+      <AnimatePresence mode="wait">
+        <motion.div
+            key={pathname}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
+            <MainContentWrapper siteContent={siteContent}>
+                {children}
+            </MainContentWrapper>
+        </motion.div>
+      </AnimatePresence>
   );
 }
