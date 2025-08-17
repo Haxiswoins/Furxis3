@@ -1,20 +1,40 @@
+
+'use client';
 import { getCommissionOptions, getSiteContent } from '@/lib/data-service';
-import { CommissionClientPage } from './client-page';
 import { CommissionPageClient } from './page-client';
+import type { CommissionOption, SiteContent } from '@/types';
+import { useState, useEffect } from 'react';
 
-export default async function CommissionPage() {
-  const [options, content] = await Promise.all([
-    getCommissionOptions(),
-    getSiteContent(),
-  ]);
+export default function CommissionPage() {
+  const [options, setOptions] = useState<CommissionOption[]>([]);
+  const [content, setContent] = useState<SiteContent | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const sortedOptions = options.sort((a, b) => {
-    const timeA = parseInt(a.id.split('_')[1] || '0');
-    const timeB = parseInt(b.id.split('_')[1] || '0');
-    return timeB - timeA;
-  });
+  useEffect(() => {
+    async function fetchData() {
+      const [optionsData, contentData] = await Promise.all([
+        getCommissionOptions(),
+        getSiteContent(),
+      ]);
+
+      const sortedOptions = optionsData.sort((a, b) => {
+        const timeA = parseInt(a.id.split('_')[1] || '0');
+        const timeB = parseInt(b.id.split('_')[1] || '0');
+        return timeB - timeA;
+      });
+      
+      setOptions(sortedOptions);
+      setContent(contentData);
+      setLoading(false);
+    }
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return null; // Or a skeleton loader
+  }
 
   return (
-    <CommissionPageClient options={sortedOptions} content={content} />
+    <CommissionPageClient options={options} content={content} />
   );
 }

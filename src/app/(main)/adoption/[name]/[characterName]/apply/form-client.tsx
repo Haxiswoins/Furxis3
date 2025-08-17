@@ -23,7 +23,6 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { createAdoptionApplication } from '@/lib/data-service';
-import { motion } from 'framer-motion';
 
 type AdoptionApplicationFormProps = {
     character: Character;
@@ -106,11 +105,7 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
   };
 
   return (
-    <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-    >
+    <div>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-headline">领养申请：{character.name}</CardTitle>
@@ -216,6 +211,6 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
           </form>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   )
 }

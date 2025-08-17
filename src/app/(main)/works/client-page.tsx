@@ -35,11 +35,7 @@ type WorksPageClientProps = {
 
 export function WorksPageClient({ worksByYear, sortedYears }: WorksPageClientProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-    >
+    <div>
       <div className="text-center mb-12">
         <h1 className="text-4xl font-headline">作品一览</h1>
         <p className="mt-2 text-lg text-muted-foreground">
@@ -91,6 +87,6 @@ export function WorksPageClient({ worksByYear, sortedYears }: WorksPageClientPro
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

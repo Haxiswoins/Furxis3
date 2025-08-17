@@ -6,7 +6,6 @@ import { Separator } from '@/components/ui/separator';
 import { X } from 'lucide-react';
 import type { Work } from '@/types';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
 
 type WorkImagesProps = {
     work: Work;
@@ -64,11 +63,8 @@ type WorkDetailPageClientProps = {
 
 export function WorkDetailPageClient({ work }: WorkDetailPageClientProps) {
     return (
-        <motion.div 
+        <div
             className="max-w-6xl mx-auto space-y-8"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
         >
         <div className="text-center space-y-2">
             <h1 className="text-5xl font-headline font-bold">{work.workName}</h1>
@@ -85,6 +81,6 @@ export function WorkDetailPageClient({ work }: WorkDetailPageClientProps) {
         <Separator />
 
         <WorkImages work={work} />
-        </motion.div>
+        </div>
     );
 }

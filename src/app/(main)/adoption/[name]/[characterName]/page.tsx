@@ -4,7 +4,6 @@ import { notFound, useParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { getCharacterByName } from '@/lib/data-service';
 import { CharacterDetailClient, Images } from './client-page';
-import { motion } from 'framer-motion';
 import type { Character } from '@/types';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -69,11 +68,8 @@ export default function AdoptionDetailPage() {
   ].filter(Boolean) as string[];
 
   return (
-    <motion.div 
+    <div
         className="max-w-5xl mx-auto"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
     >
       <Card>
         <CardContent className="p-4 md:p-6">
@@ -95,6 +91,6 @@ export default function AdoptionDetailPage() {
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

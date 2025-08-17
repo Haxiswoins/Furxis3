@@ -41,11 +41,7 @@ export function CommissionStylePageClient({ styles, commissionOption, commission
   const canApply = commissionOption?.status === '开放中' || commissionOption?.status === '即将开放';
 
   return (
-    <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-    >
+    <div>
       <div className="text-center mb-12">
         <h1 className="text-4xl font-headline">样式选择</h1>
         <p className="mt-2 text-lg text-muted-foreground">
@@ -88,6 +84,6 @@ export function CommissionStylePageClient({ styles, commissionOption, commission
           </div>
         )}
       </motion.div>
-    </motion.div>
+    </div>
   );
 }
