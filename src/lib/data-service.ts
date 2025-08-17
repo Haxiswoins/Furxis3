@@ -235,7 +235,7 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
   return allOrders.find(o => o.id === orderId) || null;
 }
 
-export async function updateOrder(orderId: string, data: Partial<Omit<Order, 'id' | 'applicationData'>> & { applicationData?: ApplicationData }): Promise<void> {
+export async function updateOrder(orderId: string, data: Partial<Order>): Promise<void> {
     const allOrders = await getAllOrders();
     const orderIndex = allOrders.findIndex(o => o.id === orderId);
     
@@ -245,15 +245,13 @@ export async function updateOrder(orderId: string, data: Partial<Omit<Order, 'id
 
     const originalOrder = allOrders[orderIndex];
     
-    const updatedApplicationData = {
-        ...originalOrder.applicationData,
-        ...data.applicationData,
-    };
-    
     const updatedOrder: Order = {
       ...originalOrder,
       ...data,
-      applicationData: updatedApplicationData,
+      applicationData: {
+        ...originalOrder.applicationData,
+        ...data.applicationData,
+      },
     };
 
     allOrders[orderIndex] = updatedOrder;

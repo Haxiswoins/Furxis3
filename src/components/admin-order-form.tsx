@@ -132,8 +132,8 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
         };
         
         const updatedShippingAddress = `${values.province} ${values.city} ${values.district} ${values.addressDetail}`;
-
-        const updatedData: Partial<Order> = {
+        
+        const updatedData = {
             total,
             status,
             shippingTrackingId: shippingTrackingId || null,

@@ -12,16 +12,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/context/AuthContext';
 
-export default function LoginPage() {
-  return (
-    <Suspense fallback={<div>加载中...</div>}>
-      <LoginForm />
-    </Suspense>
-  );
-}
-
-
-function LoginForm () {
+function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, login, loading: authLoading } = useAuth();
@@ -30,20 +21,19 @@ function LoginForm () {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const redirectUrl = searchParams.get('redirect');
 
   useEffect(() => {
     // If the user is already logged in, redirect them away from the login page.
     if (user && !authLoading) {
-      const redirectUrl = searchParams.get('redirect');
       router.replace(redirectUrl || '/home');
     }
-  }, [user, authLoading, router, searchParams]);
+  }, [user, authLoading, router, redirectUrl]);
 
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const redirectUrl = searchParams.get('redirect');
 
     try {
       const loggedInUser = await login(email, password);
@@ -137,5 +127,13 @@ function LoginForm () {
         </form>
       </Card>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>加载中...</div>}>
+      <LoginPageContent />
+    </Suspense>
   );
 }

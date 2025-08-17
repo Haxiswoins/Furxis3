@@ -120,14 +120,16 @@ export function OrdersClientPage() {
                 <Link key={order.id} href={`/orders/${order.id}`} passHref>
                   <div className="block border rounded-lg p-4 hover:bg-muted/50 transition-colors cursor-pointer">
                     <div className="flex items-center gap-4">
-                      <div className="relative w-24 h-24 rounded-md overflow-hidden flex-shrink-0">
-                        <Image
-                          src={order.imageUrl}
-                          alt={order.productName}
-                          fill
-                          style={{ objectFit: 'cover' }}
-                        />
-                      </div>
+                      {order.imageUrl && (
+                        <div className="relative w-24 h-24 rounded-md overflow-hidden flex-shrink-0">
+                          <Image
+                            src={order.imageUrl}
+                            alt={order.productName}
+                            fill
+                            style={{ objectFit: 'cover' }}
+                          />
+                        </div>
+                      )}
                       <div className="flex-grow">
                         <h3 className="font-semibold text-lg">{order.productName}</h3>
                         <p className="text-sm text-muted-foreground">订单号: {order.orderNumber}</p>

@@ -30,7 +30,7 @@ type AdoptionApplicationFormProps = {
     siteContent: SiteContent | null;
 }
 
-export function AdoptionApplicationForm({ character, siteContent }: AdoptionApplicationFormProps) {
+export function AdoptionApplicationFormClient({ character, siteContent }: AdoptionApplicationFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const { user } = useAuth();

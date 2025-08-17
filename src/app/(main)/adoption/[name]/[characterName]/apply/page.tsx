@@ -2,7 +2,7 @@
 import { notFound } from 'next/navigation';
 import type { Character, SiteContent } from '@/types';
 import { getCharacterByName, getSiteContent } from '@/lib/data-service';
-import { AdoptionApplicationForm } from './form-client';
+import { AdoptionApplicationFormClient } from './form-client';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +24,7 @@ export default async function AdoptionApplyPage({ params }: { params: { characte
   
   return (
     <div className="max-w-4xl mx-auto py-8">
-      <AdoptionApplicationForm
+      <AdoptionApplicationFormClient
         character={character}
         siteContent={siteContent}
       />
