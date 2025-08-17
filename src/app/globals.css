@@ -65,6 +65,7 @@
   }
   html {
     overflow-y: scroll;
+    scrollbar-gutter: stable;
   }
   body {
     @apply bg-black text-foreground;
@@ -90,22 +91,17 @@
     background-color: transparent;
   }
   .dark ::-webkit-scrollbar-thumb {
-    background-color: hsla(0, 0%, 50%, 0.5); /* Increased visibility */
+    background-color: hsla(0, 0%, 50%, 0.5);
     border-radius: 4px;
   }
   .dark ::-webkit-scrollbar-thumb:hover {
     background-color: hsla(0, 0%, 50%, 0.8);
   }
    :not(.dark) ::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.5); /* Increased visibility */
+    background-color: rgba(0, 0, 0, 0.5);
     border-radius: 4px;
   }
   :not(.dark) ::-webkit-scrollbar-thumb:hover {
     background-color: rgba(0, 0, 0, 0.8);
-  }
-
-  /* Prevent body scroll when dialog is open, without hiding the scrollbar */
-  .dialog-open-no-scroll {
-    overflow-y: scroll !important;
   }
 }
