@@ -33,7 +33,7 @@ import { chinaDivisions } from '@/lib/china-divisions';
 const formSchema = z.object({
   // Order status fields
   total: z.string().min(1, { message: '总价不能为空。' }),
-  status: z.enum(['处理中', '待确认', '已确认', '退养中', '已发货', '已完成', '已取消']),
+  status: z.enum(['处理中', '待确认', '已确认', '排队中', '制作中', '退养中', '已发货', '已完成', '已取消']),
   shippingTrackingId: z.string().optional(),
   
   // Application data fields
@@ -333,6 +333,8 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
                                     <SelectItem value="处理中">处理中</SelectItem>
                                     <SelectItem value="待确认">待确认</SelectItem>
                                     <SelectItem value="已确认">已确认</SelectItem>
+                                    <SelectItem value="排队中">排队中</SelectItem>
+                                    <SelectItem value="制作中">制作中</SelectItem>
                                     <SelectItem value="退养中">退养中</SelectItem>
                                     <SelectItem value="已发货">已发货</SelectItem>
                                     <SelectItem value="已完成">已完成</SelectItem>
@@ -359,5 +361,3 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
     </Form>
   );
 }
-
-    

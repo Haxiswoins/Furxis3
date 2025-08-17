@@ -23,6 +23,8 @@ const lightStatusStyles: { [key: string]: string } = {
   '处理中': 'bg-blue-100 text-blue-800 border-blue-200',
   '待确认': 'bg-purple-100 text-purple-800 border-purple-200',
   '已确认': 'bg-teal-100 text-teal-800 border-teal-200',
+  '排队中': 'bg-cyan-100 text-cyan-800 border-cyan-200',
+  '制作中': 'bg-indigo-100 text-indigo-800 border-indigo-200',
   '退养中': 'bg-orange-100 text-orange-800 border-orange-200',
   '已发货': 'bg-yellow-100 text-yellow-800 border-yellow-200',
   '已完成': 'bg-green-100 text-green-800 border-green-200',
@@ -33,6 +35,8 @@ const darkStatusStyles: { [key: string]: string } = {
   '处理中': 'bg-blue-500/20 text-blue-300 border-blue-500/30',
   '待确认': 'bg-purple-500/20 text-purple-300 border-purple-500/30',
   '已确认': 'bg-teal-500/20 text-teal-300 border-teal-500/30',
+  '排队中': 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
+  '制作中': 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
   '退养中': 'bg-orange-500/20 text-orange-300 border-orange-500/30',
   '已发货': 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
   '已完成': 'bg-green-500/20 text-green-300 border-green-500/30',
@@ -361,5 +365,3 @@ export default function OrderDetailPage() {
     </div>
   );
 }
-
-    
