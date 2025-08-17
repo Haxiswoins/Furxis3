@@ -260,9 +260,10 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
     
     // Side effect: Send confirmation email if status changes to '待确认'
     const shouldSendEmail = data.status === '待确认' && originalOrder.status !== '待确认';
-    if (shouldSendEmail && process.env.RESEND_API_KEY) {
+
+    if (shouldSendEmail && process.env.RESEND_API_KEY && updatedOrder.applicationData?.email) {
         const siteContent = await getSiteContent();
-        if(updatedOrder.applicationData?.email && siteContent) {
+        if(siteContent) {
             let emailBody = siteContent.confirmationEmailBody || '';
             emailBody = emailBody.replace('{productName}', updatedOrder.productName);
             emailBody = emailBody.replace('{commissionOptionName}', updatedOrder.commissionOptionName || '');
@@ -474,3 +475,5 @@ export async function deleteWork(id: string): Promise<void> {
     allWorks = allWorks.filter(w => w.id !== id);
     await writeData('works.json', allWorks);
 }
+
+    
