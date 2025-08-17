@@ -4,6 +4,7 @@ import { getCommissionOptionByName, getCommissionStylesByOptionId } from '@/lib/
 import { CommissionStylePageClient } from './client-page';
 import { useState, useEffect, useCallback } from 'react';
 import type { CommissionOption, CommissionStyle } from '@/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function CommissionStylePage() {
   const params = useParams();
@@ -42,7 +43,19 @@ export default function CommissionStylePage() {
 
 
   if (loading) {
-    return null; // Or a skeleton loader
+    return (
+        <div>
+            <div className="text-center mb-12">
+                <Skeleton className="h-10 w-1/3 mx-auto" />
+                <Skeleton className="h-6 w-2/3 mx-auto mt-4" />
+            </div>
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(3)].map((_, i) => (
+                    <CardSkeleton key={i} />
+                ))}
+            </div>
+        </div>
+    )
   }
 
   if (!commissionOption) {
@@ -57,4 +70,19 @@ export default function CommissionStylePage() {
       commissionName={commissionName} 
     />
   );
+}
+
+function CardSkeleton() {
+    return (
+        <div className="space-y-4 p-4 border rounded-lg">
+            <Skeleton className="h-6 w-1/2" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+            <div className="flex justify-between items-center pt-4">
+                <Skeleton className="h-7 w-1/4" />
+                <Skeleton className="h-9 w-1/3" />
+            </div>
+        </div>
+    )
 }
