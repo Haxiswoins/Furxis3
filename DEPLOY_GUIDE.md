@@ -69,12 +69,7 @@ NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 
 # Firebase 项目配置 (仅需要认证部分)
 # 您可以从 Firebase 控制台的项目设置中找到这些值
-NEXT_PUBLIC_FIREBASE_API_KEY="AIzaSyBrer2y0opAjDyQOjskwjlj4QCY2ouBRM8"
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="fursuit-commission-hub.firebaseapp.com"
-NEXT_PUBLIC_FIREBASE_PROJECT_ID="fursuit-commission-hub"
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="fursuit-commission-hub.firebasestorage.app"
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="430525481988"
-NEXT_PUBLIC_FIREBASE_APP_ID="1:430525481988:web:e1ac745830fa0a02cae151"
+
 
 
 # Resend API Key for Email Notifications

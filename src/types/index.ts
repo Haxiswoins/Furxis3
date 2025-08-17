@@ -62,19 +62,19 @@ export type Order = {
 };
 
 export type ApplicationData = {
-    userName: string;
-    age: string;
-    phone: string;
-    qq: string;
-    email: string;
-    height: string;
-    weight: string;
-    province: string;
-    city: string;
-    district: string;
-    addressDetail: string;
+    userName?: string;
+    age?: string;
+    phone?: string;
+    qq?: string;
+    email?: string;
+    height?: string;
+    weight?: string;
+    province?: string;
+    city?: string;
+    district?: string;
+    addressDetail?: string;
     referenceImageUrl?: string | null;
-    hasFan: boolean; 
+    hasFan?: boolean; 
 }
 
 export type SiteContent = {
