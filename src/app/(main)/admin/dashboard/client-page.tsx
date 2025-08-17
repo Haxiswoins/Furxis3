@@ -14,7 +14,7 @@ type AdminDashboardClientProps = {
 
 export function AdminDashboardClient({ characters, commissionOptions, orders, works }: AdminDashboardClientProps) {
 
-    const pendingOrders = orders.filter(o => o.status === '处理中' || o.status === '退养中').length;
+    const pendingOrders = orders.filter(o => o.status === '处理中' || o.status === '待确认' || o.status === '已确认').length;
 
     return (
         <div>
