@@ -64,7 +64,6 @@
     @apply border-border;
   }
   html {
-    /* Always show scrollbar to prevent layout shifts */
     overflow-y: scroll;
   }
   body {
@@ -72,7 +71,7 @@
   }
 }
 
-/* Hide number input arrows */
+/* Hide number input arrows and custom scrollbar styles */
 @layer utilities {
   input[type=number]::-webkit-inner-spin-button,
   input[type=number]::-webkit-outer-spin-button {
@@ -91,17 +90,22 @@
     background-color: transparent;
   }
   .dark ::-webkit-scrollbar-thumb {
-    background-color: hsla(0, 0%, 100%, 0.5);
+    background-color: hsla(0, 0%, 50%, 0.5); /* Increased visibility */
     border-radius: 4px;
   }
   .dark ::-webkit-scrollbar-thumb:hover {
-    background-color: hsla(0, 0%, 100%, 0.8);
+    background-color: hsla(0, 0%, 50%, 0.8);
   }
    :not(.dark) ::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5); /* Increased visibility */
     border-radius: 4px;
   }
   :not(.dark) ::-webkit-scrollbar-thumb:hover {
     background-color: rgba(0, 0, 0, 0.8);
+  }
+
+  /* Prevent body scroll when dialog is open, without hiding the scrollbar */
+  .dialog-open-no-scroll {
+    overflow-y: scroll !important;
   }
 }

@@ -22,9 +22,17 @@ export function ContactInfo({ content }: ContactInfoProps) {
   const infoText = content?.contactInfo 
     ? content.contactInfo 
     : "联系方式暂未设置。管理员请前往后台“页面内容管理”页面进行配置。";
+  
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      document.body.classList.add('dialog-open-no-scroll');
+    } else {
+      document.body.classList.remove('dialog-open-no-scroll');
+    }
+  }
 
   return (
-    <AlertDialog>
+    <AlertDialog onOpenChange={handleOpenChange}>
       <AlertDialogTrigger asChild>
         <Button variant="secondary">联系我们</Button>
       </AlertDialogTrigger>
