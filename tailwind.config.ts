@@ -18,8 +18,8 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        headline: ['"Playfair Display"', '"Noto Serif SC"', 'serif'],
-        body: ['"Source Code Pro"', 'monospace'],
+        headline: ['var(--font-headline)', 'var(--font-serif-sc)', 'serif'],
+        body: ['var(--font-body)', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",

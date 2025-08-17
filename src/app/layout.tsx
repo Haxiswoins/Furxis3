@@ -4,11 +4,33 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
+import { Playfair_Display, Noto_Serif_SC, Source_Code_Pro } from 'next/font/google';
+import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'Suitopia',
   description: 'A platform for Fursuit commissions and adoptions.',
 };
+
+const fontHeadline = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-headline',
+  display: 'swap',
+});
+
+const fontSerifSC = Noto_Serif_SC({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-serif-sc',
+  display: 'swap',
+});
+
+const fontBody = Source_Code_Pro({
+  subsets: ['latin'],
+  weight: ['200', '300', '400'],
+  variable: '--font-body',
+  display: 'swap',
+})
 
 export default function RootLayout({
   children,
@@ -17,12 +39,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Source+Code+Pro:wght@200;300;400&display=swap" rel="stylesheet" />
-      </head>
-      <body className="font-headline antialiased">
+      <body className={cn(
+        "font-headline antialiased",
+        fontHeadline.variable,
+        fontSerifSC.variable,
+        fontBody.variable
+      )}>
         <ThemeProvider>
           <AuthProvider>
             {children}
