@@ -5,34 +5,11 @@ import { getSiteContent } from '@/lib/data-service';
 import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+
 
 // This is now a Server Component.
 // The 'use client' directive has been removed.
 // Data fetching happens on the server before the page is sent to the client.
-
-const cardContainerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      // staggerChildren is removed to make cards appear simultaneously
-    }
-  }
-};
-
-const cardVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { 
-    y: 0, 
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut"
-    }
-  }
-};
-
 
 export default async function HomePage() {
   // Data is fetched directly on the server.
