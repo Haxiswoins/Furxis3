@@ -4,12 +4,9 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  PopoverClose,
 } from '@/components/ui/popover';
 import type { SiteContent } from '@/types';
 import { Button } from './ui/button';
-import { DialogHeader, DialogTitle, DialogDescription, DialogFooter } from './ui/dialog';
-import { X } from 'lucide-react';
 
 type ContactInfoProps = {
   content: SiteContent | null;
@@ -27,17 +24,12 @@ export function ContactInfo({ content }: ContactInfoProps) {
       </PopoverTrigger>
       <PopoverContent className="w-80">
         <div className="grid gap-4">
-          <DialogHeader>
-            <DialogTitle>联系方式</DialogTitle>
-            <DialogDescription>
-              {infoText}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <PopoverClose asChild>
-              <Button type="button">好的</Button>
-            </PopoverClose>
-          </DialogFooter>
+          <div className="space-y-2">
+            <h4 className="font-medium leading-none">联系方式</h4>
+            <p className="text-sm text-muted-foreground">
+               {infoText}
+            </p>
+          </div>
         </div>
       </PopoverContent>
     </Popover>
