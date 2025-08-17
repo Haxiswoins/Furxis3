@@ -1,30 +1,15 @@
 
-'use client';
-
 import Link from 'next/link';
 import Image from 'next/image';
 import { getSiteContent } from '@/lib/data-service';
-import { Skeleton } from '@/components/ui/skeleton';
 import { ContactInfo } from '@/components/contact-info';
-import { useEffect, useState } from 'react';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
-function HomeCardSkeleton({ className }: { className?: string }) {
-  return (
-     <div className={cn(
-       "relative rounded-2xl overflow-hidden shadow-2xl bg-muted aspect-[4/5]",
-       className
-      )}>
-       <Skeleton className="w-full h-full" />
-       <div className="absolute inset-0 flex flex-col justify-end p-8">
-           <Skeleton className="h-10 w-3/4" />
-           <Skeleton className="h-6 w-1/2 mt-3" />
-       </div>
-    </div>
-  )
-}
+// This is now a Server Component.
+// The 'use client' directive has been removed.
+// Data fetching happens on the server before the page is sent to the client.
 
 const cardContainerVariants = {
   hidden: { opacity: 0 },
@@ -49,16 +34,9 @@ const cardVariants = {
 };
 
 
-export default function HomePage() {
-  const [content, setContent] = useState<SiteContent | null>(null);
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    getSiteContent().then(data => {
-      setContent(data);
-      setLoading(false);
-    });
-  }, []);
+export default async function HomePage() {
+  // Data is fetched directly on the server.
+  const content: SiteContent | null = await getSiteContent();
 
   const cardLinkClass = "group block";
   const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]";
@@ -89,82 +67,71 @@ export default function HomePage() {
             </Link>
         </div>
         
-        <AnimatePresence>
-            {!loading && (
-              <motion.div 
-                className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl"
-                variants={cardContainerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                <motion.div variants={cardVariants}>
-                  <Link href="/commission" className={cardLinkClass}>
-                    <div className={cardDivClass}>
-                        <Image
-                        src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
-                        alt="委托申请"
-                        fill
-                        priority
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        style={{objectFit: "cover"}}
-                        className={cardImageClass}
-                        />
-                        <div className={cardTextDivClass}>
-                        <h2 className={cardTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
-                        <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
-                        </div>
-                    </div>
-                  </Link>
-                </motion.div>
+        {/*
+          Since data is available immediately, we no longer need the loading check or the AnimatePresence.
+          The parent layout's client component will handle the entrance animation.
+        */}
+        <div
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl"
+        >
+          <div>
+            <Link href="/commission" className={cardLinkClass}>
+              <div className={cardDivClass}>
+                  <Image
+                  src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
+                  alt="委托申请"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  style={{objectFit: "cover"}}
+                  className={cardImageClass}
+                  />
+                  <div className={cardTextDivClass}>
+                  <h2 className={cardTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
+                  <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
+                  </div>
+              </div>
+            </Link>
+          </div>
 
-                <motion.div variants={cardVariants}>
-                  <Link href="/adoption" className={cardLinkClass}>
-                    <div className={cardDivClass}>
-                        <Image
-                        src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
-                        alt="设定领养"
-                        fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        style={{objectFit: "cover"}}
-                        className={cardImageClass}
-                        />
-                        <div className={cardTextDivClass}>
-                        <h2 className={cardTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
-                        <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
-                        </div>
-                    </div>
-                  </Link>
-                </motion.div>
-                
-                <motion.div variants={cardVariants}>
-                  <Link href="/works" className={cardLinkClass}>
-                    <div className={cardDivClass}>
-                        <Image
-                        src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
-                        alt="作品一览"
-                        fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        style={{objectFit: "cover"}}
-                        className={cardImageClass}
-                        />
-                        <div className={cardTextDivClass}>
-                        <h2 className={cardTitleClass}>{content?.workTitle || '作品一览'}</h2>
-                        <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
-                        </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              </motion.div>
-            )}
-        </AnimatePresence>
-
-        {loading && (
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl">
-              <HomeCardSkeleton />
-              <HomeCardSkeleton />
-              <HomeCardSkeleton />
-           </div>
-        )}
+          <div>
+            <Link href="/adoption" className={cardLinkClass}>
+              <div className={cardDivClass}>
+                  <Image
+                  src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
+                  alt="设定领养"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  style={{objectFit: "cover"}}
+                  className={cardImageClass}
+                  />
+                  <div className={cardTextDivClass}>
+                  <h2 className={cardTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
+                  <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
+                  </div>
+              </div>
+            </Link>
+          </div>
+          
+          <div>
+            <Link href="/works" className={cardLinkClass}>
+              <div className={cardDivClass}>
+                  <Image
+                  src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
+                  alt="作品一览"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  style={{objectFit: "cover"}}
+                  className={cardImageClass}
+                  />
+                  <div className={cardTextDivClass}>
+                  <h2 className={cardTitleClass}>{content?.workTitle || '作品一览'}</h2>
+                  <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
+                  </div>
+              </div>
+            </Link>
+          </div>
+        </div>
 
         </div>
         <div className="w-full mt-16 pb-8 text-center">
