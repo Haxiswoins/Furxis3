@@ -312,9 +312,6 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                                 </ScrollArea>
                             </DialogContent>
                         </Dialog>
-                        <p className="text-xs text-muted-foreground">
-                            勾选此框表示您已完全理解并同意上述所有条款，此行为具有与手写签名同等的法律效力。
-                        </p>
                     </div>
                 </div>
             </div>
