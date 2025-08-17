@@ -21,7 +21,7 @@ import { Upload } from 'lucide-react';
 const formSchema = z.object({
   commissionOptionId: z.string().min(1, '必须选择一个所属委托'),
   name: z.string().min(2, { message: '名称至少需要2个字符。' }),
-  price: z.string().regex(/^\d+(\.\d{1,2})?$/, { message: '请输入有效的价格数字。' }),
+  price: z.string().min(1, { message: '价格不能为空。' }),
   description: z.string().min(10, { message: '描述至少需要10个字符。' }),
   tags: z.string(),
 });
@@ -41,20 +41,33 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
   const [commissionOptions, setCommissionOptions] = useState<CommissionOption[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      commissionOptionId: '',
+      name: '',
+      price: '',
+      description: '',
+      tags: '',
+    },
+  });
+  
   useEffect(() => {
     getCommissionOptions().then(setCommissionOptions);
   }, []);
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      commissionOptionId: commissionStyle?.commissionOptionId || '',
-      name: commissionStyle?.name || '',
-      price: commissionStyle?.price || '',
-      description: commissionStyle?.description || '',
-      tags: commissionStyle?.tags.join(', ') || '',
-    },
-  });
+  useEffect(() => {
+    if (commissionStyle) {
+      form.reset({
+        commissionOptionId: commissionStyle.commissionOptionId || '',
+        name: commissionStyle.name || '',
+        price: commissionStyle.price || '',
+        description: commissionStyle.description || '',
+        tags: commissionStyle.tags.join(', ') || '',
+      });
+      setImagePreview(commissionStyle.imageUrl);
+    }
+  }, [commissionStyle, form]);
 
   async function handleSave(values: FormValues) {
     if (!commissionStyle && !imageFile) {
@@ -173,3 +186,5 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
     </Form>
   );
 }
+
+    

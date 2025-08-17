@@ -253,13 +253,19 @@ export default function OrderDetailPage() {
         <CardContent>
           <div className="flex flex-col md:flex-row gap-8">
             <div className="md:w-1/3">
-              <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
-                <Image
-                  src={order.imageUrl}
-                  alt={order.productName}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
+              <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-muted">
+                {order.imageUrl ? (
+                    <Image
+                      src={order.imageUrl}
+                      alt={order.productName}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                    />
+                ) : (
+                    <div className="flex items-center justify-center h-full text-muted-foreground">
+                        无图
+                    </div>
+                )}
               </div>
             </div>
             <div className="md:w-2/3 space-y-4">
@@ -355,3 +361,5 @@ export default function OrderDetailPage() {
     </div>
   );
 }
+
+    
