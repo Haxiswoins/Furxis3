@@ -24,25 +24,22 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     try {
       await resetPassword(email);
+      // For security reasons, always show a generic success message
+      // to prevent user enumeration attacks.
       toast({
         title: "重置链接已发送",
         description: "如果该邮箱已注册，您将收到一封邮件。",
       });
       router.push('/login');
     } catch (error: any) {
-      let description = "发生未知错误，请稍后重试。";
-      if (error.code === 'auth/user-not-found') {
-        description = "该邮箱未注册，请输入正确的邮箱。";
-      } else if (error.code === 'auth/invalid-email') {
-        description = "请输入有效的邮箱地址。";
-      } else if (error.code === 'auth/missing-email') {
-        description = "请输入您的邮箱地址。";
-      }
+      // Even on error, we show a generic message to the user.
+      // We can log the specific error for debugging if needed.
+      console.error("Password reset error:", error.code);
       toast({
-        title: "发送失败",
-        description: description,
-        variant: "destructive",
+        title: "重置链接已发送",
+        description: "如果该邮箱已注册，您将收到一封邮件。",
       });
+      router.push('/login');
     } finally {
       setLoading(false);
     }
