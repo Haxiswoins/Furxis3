@@ -1,3 +1,4 @@
+'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -5,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { getWorks } from '@/lib/data-service';
 import type { Work } from '@/types';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -28,19 +31,59 @@ const itemVariants = {
   },
 };
 
-export default async function WorksPage() {
-  const worksData = await getWorks();
+function WorksPageSkeleton() {
+  return (
+    <div>
+      <div className="text-center mb-12">
+        <Skeleton className="h-10 w-40 mx-auto" />
+        <Skeleton className="h-6 w-80 mx-auto mt-4" />
+      </div>
+      <div className="space-y-12">
+        <div>
+          <Skeleton className="h-9 w-32 mb-6" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="overflow-hidden rounded-lg border">
+                <Skeleton className="w-full aspect-[3/4]" />
+                <div className="p-3">
+                  <Skeleton className="h-5 w-3/4 mb-1" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
-  const worksByYear = worksData.reduce((acc, work) => {
-    const year = new Date(work.completionDate).getFullYear().toString();
-    if (!acc[year]) {
-      acc[year] = [];
-    }
-    acc[year].push(work);
-    return acc;
-  }, {} as Record<string, Work[]>);
-  
-  const sortedYears = Object.keys(worksByYear).sort((a, b) => parseInt(b) - parseInt(a));
+export default function WorksPage() {
+  const [worksByYear, setWorksByYear] = useState<Record<string, Work[]>>({});
+  const [sortedYears, setSortedYears] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    getWorks().then(worksData => {
+      const groupedWorks = worksData.reduce((acc, work) => {
+        const year = new Date(work.completionDate).getFullYear().toString();
+        if (!acc[year]) {
+          acc[year] = [];
+        }
+        acc[year].push(work);
+        return acc;
+      }, {} as Record<string, Work[]>);
+      
+      setWorksByYear(groupedWorks);
+      setSortedYears(Object.keys(groupedWorks).sort((a, b) => parseInt(b) - parseInt(a)));
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return <WorksPageSkeleton />;
+  }
 
   return (
     <motion.div
@@ -102,4 +145,3 @@ export default async function WorksPage() {
     </motion.div>
   );
 }
-

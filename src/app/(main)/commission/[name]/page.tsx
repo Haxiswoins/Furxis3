@@ -1,22 +1,70 @@
+'use client';
 
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { getCommissionOptionByName, getCommissionStylesByOptionId } from '@/lib/data-service';
 import { CommissionStyleClientPage } from './client-page';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import type { CommissionOption, CommissionStyle } from '@/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default async function CommissionStylePage({ params }: { params: { name: string } }) {
+
+function StylePageSkeleton() {
+  return (
+    <div>
+      <div className="text-center mb-12">
+        <Skeleton className="h-10 w-48 mx-auto" />
+        <Skeleton className="h-6 w-80 mx-auto mt-4" />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[...Array(3)].map((_, i) => (
+           <div key={i} className="rounded-lg border bg-card text-card-foreground shadow-sm">
+             <div className="p-4 space-y-3">
+               <Skeleton className="h-6 w-3/4" />
+               <Skeleton className="h-10 w-full" />
+               <Skeleton className="h-5 w-1/3" />
+             </div>
+             <div className="flex items-center p-4 bg-muted/50 justify-between">
+                <Skeleton className="h-7 w-20" />
+                <Skeleton className="h-9 w-28" />
+             </div>
+           </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default function CommissionStylePage() {
+  const params = useParams();
   const commissionName = decodeURIComponent(params.name as string);
+  const [commissionOption, setCommissionOption] = useState<CommissionOption | null>(null);
+  const [styles, setStyles] = useState<CommissionStyle[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (!commissionName) {
-    notFound();
+  useEffect(() => {
+    if (!commissionName) {
+      notFound();
+      return;
+    }
+    setLoading(true);
+    getCommissionOptionByName(commissionName).then(option => {
+      if (!option) {
+        notFound();
+        return;
+      }
+      setCommissionOption(option);
+      getCommissionStylesByOptionId(option.id).then(styleData => {
+        setStyles(styleData);
+        setLoading(false);
+      });
+    });
+  }, [commissionName]);
+
+
+  if (loading || !commissionOption) {
+    return <StylePageSkeleton />;
   }
-
-  const commissionOption = await getCommissionOptionByName(commissionName);
-  if (!commissionOption) {
-    notFound();
-  }
-
-  const styles = await getCommissionStylesByOptionId(commissionOption.id);
   
   return (
     <motion.div
@@ -39,4 +87,3 @@ export default async function CommissionStylePage({ params }: { params: { name: 
     </motion.div>
   );
 }
-

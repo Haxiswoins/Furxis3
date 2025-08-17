@@ -1,19 +1,55 @@
+'use client';
 
 import { getCommissionOptions, getSiteContent } from '@/lib/data-service';
 import { CommissionClientPage } from './client-page';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import type { CommissionOption, SiteContent } from '@/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default async function CommissionPage() {
-  const [fetchedOptions, content] = await Promise.all([
-    getCommissionOptions(),
-    getSiteContent(),
-  ]);
+function CommissionPageSkeleton() {
+  return (
+    <div>
+      <div className="text-center mb-12">
+        <Skeleton className="h-10 w-40 mx-auto" />
+        <Skeleton className="h-6 w-96 mx-auto mt-4" />
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="relative aspect-[3/5] rounded-xl overflow-hidden bg-muted">
+            <Skeleton className="w-full h-full" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-  const sortedOptions = fetchedOptions.sort((a, b) => {
-    const timeA = parseInt(a.id.split('_')[1] || '0');
-    const timeB = parseInt(b.id.split('_')[1] || '0');
-    return timeB - timeA;
-  });
+export default function CommissionPage() {
+  const [options, setOptions] = useState<CommissionOption[]>([]);
+  const [content, setContent] = useState<SiteContent | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([
+      getCommissionOptions(),
+      getSiteContent(),
+    ]).then(([fetchedOptions, siteContent]) => {
+      const sortedOptions = fetchedOptions.sort((a, b) => {
+        const timeA = parseInt(a.id.split('_')[1] || '0');
+        const timeB = parseInt(b.id.split('_')[1] || '0');
+        return timeB - timeA;
+      });
+      setOptions(sortedOptions);
+      setContent(siteContent);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return <CommissionPageSkeleton />;
+  }
 
   return (
     <motion.div
@@ -27,7 +63,7 @@ export default async function CommissionPage() {
           {content?.commissionPageDescription || '选择一个基础套餐开始您的定制兽装之旅。'}
         </p>
       </div>
-      <CommissionClientPage commissionOptions={sortedOptions} />
+      <CommissionClientPage commissionOptions={options} />
     </motion.div>
   );
 }

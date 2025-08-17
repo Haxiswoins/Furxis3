@@ -1,8 +1,13 @@
+'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
 import { getCharacterSeries, getSiteContent } from '@/lib/data-service';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import type { CharacterSeries, SiteContent } from '@/types';
+import { Skeleton } from '@/components/ui/skeleton';
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -26,12 +31,45 @@ const itemVariants = {
   },
 };
 
+function SeriesPageSkeleton() {
+  return (
+    <div>
+      <div className="text-center mb-12">
+        <Skeleton className="h-10 w-40 mx-auto" />
+        <Skeleton className="h-6 w-80 mx-auto mt-4" />
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+        {[...Array(4)].map((_, i) => (
+            <div key={i} className="relative aspect-[3/4] rounded-xl overflow-hidden bg-muted">
+              <Skeleton className="w-full h-full" />
+            </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
-export default async function AdoptionSeriesPage() {
-  const [seriesData, content] = await Promise.all([
-    getCharacterSeries(),
-    getSiteContent(),
-  ]);
+
+export default function AdoptionSeriesPage() {
+  const [seriesData, setSeriesData] = useState<CharacterSeries[]>([]);
+  const [content, setContent] = useState<SiteContent | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([
+      getCharacterSeries(),
+      getSiteContent(),
+    ]).then(([series, siteContent]) => {
+      setSeriesData(series);
+      setContent(siteContent);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return <SeriesPageSkeleton />;
+  }
 
   return (
     <motion.div
