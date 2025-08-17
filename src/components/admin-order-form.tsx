@@ -163,18 +163,13 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
 
   const handleProvinceChange = (value: string) => {
     form.setValue('province', value, { shouldValidate: true });
-    form.setValue('city', '', { shouldValidate: false });
-    form.setValue('district', '', { shouldValidate: false });
-    setCities(chinaDivisions.find(p => p.name === value)?.cities.map(c => c.name) || []);
-    setDistricts([]);
+    form.setValue('city', '', { shouldValidate: true });
+    form.setValue('district', '', { shouldValidate: true });
   }
 
   const handleCityChange = (value: string) => {
     form.setValue('city', value, { shouldValidate: true });
-    form.setValue('district', '', { shouldValidate: false });
-    const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
-    const cityData = provinceData?.cities.find(c => c.name === value);
-    setDistricts(cityData?.districts || []);
+    form.setValue('district', '', { shouldValidate: true });
   }
 
   return (
@@ -214,7 +209,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
                               name="province"
                               render={({ field }) => (
                                   <FormItem>
-                                      <Select onValueChange={handleProvinceChange} value={field.value}>
+                                      <Select onValueChange={(value) => handleProvinceChange(value)} value={field.value}>
                                           <FormControl>
                                               <SelectTrigger><SelectValue placeholder="选择省份" /></SelectTrigger>
                                           </FormControl>
@@ -231,7 +226,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
                               name="city"
                               render={({ field }) => (
                                   <FormItem>
-                                      <Select onValueChange={handleCityChange} value={field.value} disabled={cities.length === 0}>
+                                      <Select onValueChange={(value) => handleCityChange(value)} value={field.value} disabled={cities.length === 0}>
                                           <FormControl>
                                               <SelectTrigger><SelectValue placeholder="选择城市" /></SelectTrigger>
                                           </FormControl>

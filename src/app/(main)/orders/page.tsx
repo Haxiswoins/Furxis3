@@ -1,4 +1,3 @@
-
 import { OrdersClientPage } from './client-page';
 
 // The responsibility of checking auth and fetching data is now

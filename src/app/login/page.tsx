@@ -16,7 +16,7 @@ import { useAuth } from '@/context/AuthContext';
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, login } = useAuth();
+  const { user, login, loading: authLoading } = useAuth();
   const { toast } = useToast();
   
   const [email, setEmail] = useState('');
@@ -25,10 +25,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     // If the user is already logged in, redirect them away from the login page.
-    if (user) {
-      router.replace('/home');
+    if (user && !authLoading) {
+      const redirectUrl = searchParams.get('redirect');
+      router.replace(redirectUrl || '/home');
     }
-  }, [user, router]);
+  }, [user, authLoading, router, searchParams]);
 
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -39,10 +40,7 @@ export default function LoginPage() {
     try {
       const loggedInUser = await login(email, password);
       
-      // The isAdmin flag is now set in the AuthContext, so we just check for it.
-      // We create a temporary user object from the login response to check the email.
-      const tempUser = { email: loggedInUser.email };
-      const isAdmin = tempUser.email === 'haxiswoins@qq.com';
+      const isAdmin = loggedInUser.email === 'haxiswoins@qq.com';
 
       if (isAdmin) {
         toast({
@@ -51,7 +49,6 @@ export default function LoginPage() {
         });
         router.push('/admin/dashboard');
       } else {
-        // Redirect to the previous page or profile page for regular users
         toast({
           title: "登录成功",
         });
@@ -112,8 +109,8 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
              <div className="flex w-full gap-2">
-                 <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                    {loading ? '登录中...' : <><LogIn className="mr-2" />登录</>}
+                 <Button type="submit" className="w-full" size="lg" disabled={loading || authLoading}>
+                    {loading || authLoading ? '登录中...' : <><LogIn className="mr-2" />登录</>}
                 </Button>
                 <Link href="/register" passHref className="w-full">
                     <Button variant="secondary" className="w-full" size="lg">

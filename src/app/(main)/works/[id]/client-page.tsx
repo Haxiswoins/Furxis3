@@ -2,15 +2,17 @@
 
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from '@/components/ui/dialog';
+import { Separator } from '@/components/ui/separator';
 import { X } from 'lucide-react';
 import type { Work } from '@/types';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 type WorkImagesProps = {
     work: Work;
 }
 
-export function WorkImages({ work }: WorkImagesProps) {
+function WorkImages({ work }: WorkImagesProps) {
     const imageCount = work.imageUrls.length;
 
     // Dynamically determine grid layout based on image count
@@ -53,5 +55,36 @@ export function WorkImages({ work }: WorkImagesProps) {
             </Dialog>
             ))}
         </div>
+    );
+}
+
+type WorkDetailPageClientProps = {
+    work: Work;
+}
+
+export function WorkDetailPageClient({ work }: WorkDetailPageClientProps) {
+    return (
+        <motion.div 
+            className="max-w-6xl mx-auto space-y-8"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+        <div className="text-center space-y-2">
+            <h1 className="text-5xl font-headline font-bold">{work.workName}</h1>
+            <p className="text-muted-foreground">
+            委托人: {work.clientName} | 完成于: {new Date(work.completionDate).toLocaleDateString()}
+            </p>
+            {work.description && (
+                <p className="text-lg text-foreground/80 max-w-3xl mx-auto pt-2">
+                    {work.description}
+                </p>
+            )}
+        </div>
+
+        <Separator />
+
+        <WorkImages work={work} />
+        </motion.div>
     );
 }

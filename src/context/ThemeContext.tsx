@@ -3,6 +3,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import type { SiteContent } from '@/types';
+import { getSiteContent } from '@/lib/data-service';
 
 type Theme = 'dark' | 'light';
 
@@ -19,11 +20,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     async function fetchSiteContent() {
         try {
-            const response = await fetch('/api/site-content');
-            if (!response.ok) {
-                throw new Error('Failed to fetch site content');
-            }
-            const data: SiteContent = await response.json();
+            const data = await getSiteContent();
             setSiteContent(data);
         } catch (error) {
             console.error("Error fetching site content:", error);

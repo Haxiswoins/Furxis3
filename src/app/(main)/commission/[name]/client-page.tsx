@@ -1,10 +1,7 @@
-
 'use client';
 
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronRight } from 'lucide-react';
@@ -33,17 +30,29 @@ const itemVariants = {
   },
 };
 
-type CommissionStyleClientPageProps = {
+type CommissionStylePageClientProps = {
     styles: CommissionStyle[];
     commissionOption: CommissionOption;
     commissionName: string;
 }
 
-export function CommissionStyleClientPage({ styles, commissionOption, commissionName }: CommissionStyleClientPageProps) {
+export function CommissionStylePageClient({ styles, commissionOption, commissionName }: CommissionStylePageClientProps) {
   const router = useRouter();
   const canApply = commissionOption?.status === '开放中' || commissionOption?.status === '即将开放';
 
   return (
+    <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+    >
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-headline">样式选择</h1>
+        <p className="mt-2 text-lg text-muted-foreground">
+          {`请为 “${commissionOption.name}” 选择您感兴趣的具体样式`}
+        </p>
+      </div>
+
       <motion.div 
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         variants={containerVariants}
@@ -63,11 +72,11 @@ export function CommissionStyleClientPage({ styles, commissionOption, commission
                 </CardContent>
                 <CardFooter className="p-4 bg-muted/50 flex justify-between items-center">
                   <p className="text-lg font-bold text-primary">¥{style.price}</p>
-                  <Link href={`/commission/${encodeURIComponent(commissionName)}/${encodeURIComponent(style.name)}`} passHref>
-                    <Button size="sm" disabled={!canApply} aria-disabled={!canApply}>
+                  <Button asChild size="sm" disabled={!canApply} aria-disabled={!canApply}>
+                    <a href={`/commission/${encodeURIComponent(commissionName)}/${encodeURIComponent(style.name)}`}>
                       选择此样式 <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
+                    </a>
+                  </Button>
                 </CardFooter>
               </Card>
             </motion.div>
@@ -79,6 +88,6 @@ export function CommissionStyleClientPage({ styles, commissionOption, commission
           </div>
         )}
       </motion.div>
+    </motion.div>
   );
 }
-
