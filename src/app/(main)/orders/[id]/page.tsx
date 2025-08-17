@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -60,11 +59,6 @@ export default function OrderDetailPage() {
   const statusStyles = theme === 'dark' ? darkStatusStyles : lightStatusStyles;
 
   const fetchOrderAndContent = useCallback(async () => {
-    if (!orderId || !user?.uid) {
-      if(!authLoading && !user) router.push('/login');
-      return;
-    }
-    
     setIsPageLoading(true);
     try {
       const [orderData, contentData] = await Promise.all([
@@ -72,7 +66,7 @@ export default function OrderDetailPage() {
         getSiteContent()
       ]);
 
-      if (orderData && orderData.userId === user.uid) {
+      if (orderData && orderData.userId === user!.uid) {
         setOrder(orderData);
         setSiteContent(contentData);
       } else {
@@ -84,14 +78,17 @@ export default function OrderDetailPage() {
     } finally {
       setIsPageLoading(false);
     }
-  }, [orderId, user?.uid, authLoading, router]);
+  }, [orderId, user]);
 
 
   useEffect(() => {
-    if (!authLoading) {
-      fetchOrderAndContent();
+    if (authLoading) return;
+    if (!user) {
+      router.push('/login');
+      return;
     }
-  }, [authLoading, fetchOrderAndContent]);
+    fetchOrderAndContent();
+  }, [authLoading, user, router, fetchOrderAndContent]);
 
   const handleConfirmOrder = async () => {
     if (!order) return;
@@ -173,7 +170,7 @@ export default function OrderDetailPage() {
   }
 
   const handleCancelClick = () => {
-    if (order.status === '处理中' || order.status === '已确认' || order.status === '待确认') {
+    if (order.status === '处理中' || order.status === '已确认' || order.status === '待确认' || order.status === '排队中' || order.status === '制作中') {
       router.push(`/orders/${order.id}/cancel`);
     }
   };

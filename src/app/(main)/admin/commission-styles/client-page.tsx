@@ -49,7 +49,8 @@ export function AdminCommissionStylesClient({ styles: initialStyles, options }: 
   };
 
   const getOptionName = (optionId: string) => {
-    return options.find(opt => opt.id === optionId)?.name || '未知';
+    const option = options.find(opt => opt.id === optionId);
+    return option?.name || '未知';
   }
 
   return (

@@ -1,4 +1,3 @@
-
 'use client';
 import { getCommissionOptions, getSiteContent } from '@/lib/data-service';
 import { CommissionPageClient } from './page-client';
@@ -12,20 +11,20 @@ export default function CommissionPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const [optionsData, contentData] = await Promise.all([
-        getCommissionOptions(),
-        getSiteContent(),
-      ]);
-
-      const sortedOptions = optionsData.sort((a, b) => {
-        const timeA = parseInt(a.id.split('_')[1] || '0');
-        const timeB = parseInt(b.id.split('_')[1] || '0');
-        return timeB - timeA;
-      });
-      
-      setOptions(sortedOptions);
-      setContent(contentData);
-      setLoading(false);
+      setLoading(true);
+      try {
+        const [optionsData, contentData] = await Promise.all([
+          getCommissionOptions(),
+          getSiteContent(),
+        ]);
+        
+        setOptions(optionsData); // The sorting is now done in data-service
+        setContent(contentData);
+      } catch (error) {
+          console.error("Failed to fetch commission page data", error);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchData();
   }, []);

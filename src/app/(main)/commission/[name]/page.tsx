@@ -1,26 +1,25 @@
-
 'use client';
 import { notFound, useParams } from 'next/navigation';
 import { getCommissionOptionByName, getCommissionStylesByOptionId } from '@/lib/data-service';
 import { CommissionStylePageClient } from './client-page';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { CommissionOption, CommissionStyle } from '@/types';
 
 export default function CommissionStylePage() {
   const params = useParams();
-  const commissionName = decodeURIComponent(params.name as string);
-
   const [commissionOption, setCommissionOption] = useState<CommissionOption | null>(null);
   const [styles, setStyles] = useState<CommissionStyle[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const commissionName = decodeURIComponent(params.name as string);
+
+  const fetchData = useCallback(async () => {
     if (!commissionName) {
       notFound();
       return;
     }
-    async function fetchData() {
-      setLoading(true);
+    setLoading(true);
+    try {
       const option = await getCommissionOptionByName(commissionName);
       if (!option) {
         notFound();
@@ -29,10 +28,17 @@ export default function CommissionStylePage() {
       const stylesData = await getCommissionStylesByOptionId(option.id);
       setCommissionOption(option);
       setStyles(stylesData);
+    } catch (error) {
+      console.error("Failed to fetch commission data:", error);
+      notFound();
+    } finally {
       setLoading(false);
     }
-    fetchData();
   }, [commissionName]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
 
   if (loading) {

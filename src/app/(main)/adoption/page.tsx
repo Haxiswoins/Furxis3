@@ -1,4 +1,3 @@
-
 'use client';
 import { getCharacterSeries, getSiteContent } from '@/lib/data-service';
 import { AdoptionSeriesClientPage } from './client-page';
@@ -13,13 +12,18 @@ export default function AdoptionSeriesPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const [series, siteContent] = await Promise.all([
-        getCharacterSeries(),
-        getSiteContent(),
-      ]);
-      setSeriesData(series);
-      setContent(siteContent);
-      setLoading(false);
+      try {
+        const [series, siteContent] = await Promise.all([
+          getCharacterSeries(),
+          getSiteContent(),
+        ]);
+        setSeriesData(series);
+        setContent(siteContent);
+      } catch (error) {
+          console.error("Failed to fetch data for adoption series page", error);
+      } finally {
+          setLoading(false);
+      }
     }
     fetchData();
   }, []);

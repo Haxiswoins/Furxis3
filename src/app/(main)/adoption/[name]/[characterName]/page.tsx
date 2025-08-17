@@ -5,30 +5,40 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { getCharacterByName } from '@/lib/data-service';
 import { CharacterDetailClient, Images } from './client-page';
 import type { Character } from '@/types';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AdoptionDetailPage() {
   const params = useParams();
-  const characterName = decodeURIComponent(params.characterName as string);
   const [character, setCharacter] = useState<Character | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const characterName = decodeURIComponent(params.characterName as string);
+
+  const fetchCharacter = useCallback(async () => {
     if (!characterName) {
       notFound();
       return;
     }
     setLoading(true);
-    getCharacterByName(characterName).then(data => {
+    try {
+      const data = await getCharacterByName(characterName);
       if (!data) {
         notFound();
       } else {
         setCharacter(data);
-        setLoading(false);
       }
-    });
+    } catch (error) {
+      console.error("Failed to fetch character", error);
+      notFound();
+    } finally {
+      setLoading(false);
+    }
   }, [characterName]);
+
+  useEffect(() => {
+    fetchCharacter();
+  }, [fetchCharacter]);
 
   if (loading) {
     return (

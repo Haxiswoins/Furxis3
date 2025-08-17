@@ -1,4 +1,3 @@
-
 'use client';
 import { getWorks } from '@/lib/data-service';
 import type { Work } from '@/types';
@@ -12,22 +11,28 @@ export default function WorksPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const worksData = await getWorks();
-      
-      const groupedWorks = worksData.reduce((acc, work) => {
-        const year = new Date(work.completionDate).getFullYear().toString();
-        if (!acc[year]) {
-          acc[year] = [];
-        }
-        acc[year].push(work);
-        return acc;
-      }, {} as Record<string, Work[]>);
-      
-      const years = Object.keys(groupedWorks).sort((a, b) => parseInt(b) - parseInt(a));
+      setLoading(true);
+      try {
+        const worksData = await getWorks();
+        
+        const groupedWorks = worksData.reduce((acc, work) => {
+          const year = new Date(work.completionDate).getFullYear().toString();
+          if (!acc[year]) {
+            acc[year] = [];
+          }
+          acc[year].push(work);
+          return acc;
+        }, {} as Record<string, Work[]>);
+        
+        const years = Object.keys(groupedWorks).sort((a, b) => parseInt(b) - parseInt(a));
 
-      setWorksByYear(groupedWorks);
-      setSortedYears(years);
-      setLoading(false);
+        setWorksByYear(groupedWorks);
+        setSortedYears(years);
+      } catch (error) {
+        console.error("Failed to fetch works:", error);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchData();
   }, []);
