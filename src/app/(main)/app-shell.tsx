@@ -62,6 +62,21 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   const { user, loading } = useAuth();
+  const [isPop, setIsPop] = useState(false);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setIsPop(true);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  useEffect(() => {
+    // Reset isPop after a navigation event so it's fresh for the next one
+    setIsPop(false);
+  }, [pathname]);
+  
   const isAdminRoute = pathname.startsWith('/admin');
   const isAuthRoute = ['/login', '/register', '/forgot-password'].includes(pathname);
   const isLandingPage = pathname === '/';
@@ -123,7 +138,7 @@ export function AppShell({
       <AnimatePresence mode="wait">
         <motion.div
             key={pathname}
-            initial={{ opacity: 0 }}
+            initial={isPop ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
