@@ -114,7 +114,7 @@ export function AdminCharacterForm({ character }: AdminCharacterFormProps) {
 
   const handleSave = async (values: FormValues) => {
     if (!character && (!images[0].file || !images[1].file)) {
-        toast({ title: '图片缺失', description: '新增角色必须上传至少前两张图片。', variant: 'destructive' });
+        toast({ title: '图片缺失', description: '新增角色必须上传主图和至少一张详情图。', variant: 'destructive' });
         return;
     }
     
@@ -196,30 +196,34 @@ export function AdminCharacterForm({ character }: AdminCharacterFormProps) {
         <FormField control={form.control} name="description" render={({ field }) => ( <FormItem> <FormLabel>描述</FormLabel> <FormControl><Textarea placeholder="角色的详细背景故事和设定..." {...field} rows={5} /></FormControl> <FormMessage /> </FormItem> )}/>
         <FormField control={form.control} name="tags" render={({ field }) => ( <FormItem> <FormLabel>标签</FormLabel> <FormControl><Input placeholder="例如：可爱, 幻想, 蓝色" {...field} /></FormControl> <FormDescription>使用逗号分隔不同的标签。</FormDescription> <FormMessage /> </FormItem> )}/>
         
-        {images.map((img, index) => (
-             <div key={index} className="space-y-2 p-4 border rounded-md">
-                <FormLabel>图片 {index + 1} {index === 0 && "(主图)"} {index >= 1 && `(详情图 ${index})`}</FormLabel>
-                <div className="flex items-center gap-4">
-                    <div className="w-32 h-32 relative rounded-md border bg-muted flex-shrink-0">
-                        {img.preview && (
-                            <Image src={img.preview} alt={`图片 ${index+1} 预览`} fill style={{objectFit:'cover'}} className="rounded-md" />
-                        )}
+         <div className="space-y-2">
+            <FormLabel>作品图片 (最多5张)</FormLabel>
+            <FormDescription>新增角色必须上传主图和至少一张详情图。</FormDescription>
+            {images.map((img, index) => (
+                <div key={index} className="space-y-2 p-4 border rounded-md">
+                    <FormLabel className="text-xs text-muted-foreground">图片 {index + 1} {index === 0 && "(主图)"} {index >= 1 && `(详情图 ${index})`}</FormLabel>
+                    <div className="flex items-center gap-4">
+                        <div className="w-32 h-32 relative rounded-md border bg-muted flex-shrink-0">
+                            {img.preview && (
+                                <Image src={img.preview} alt={`图片 ${index+1} 预览`} fill style={{objectFit:'cover'}} className="rounded-md" />
+                            )}
+                        </div>
+                        <Input 
+                            type="file" 
+                            accept="image/*"
+                            onChange={(e) => handleFileChange(e, index)}
+                            className="hidden"
+                            ref={fileInputRefs[index]}
+                            id={`file-input-${index}`}
+                        />
+                        <Button type="button" variant="outline" onClick={() => fileInputRefs[index]?.current?.click()}>
+                            <Upload className="mr-2 h-4 w-4" />
+                            {img.preview ? '更换图片' : '选择图片'}
+                        </Button>
                     </div>
-                    <Input 
-                        type="file" 
-                        accept="image/*"
-                        onChange={(e) => handleFileChange(e, index)}
-                        className="hidden"
-                        ref={fileInputRefs[index]}
-                        id={`file-input-${index}`}
-                    />
-                    <Button type="button" variant="outline" onClick={() => fileInputRefs[index]?.current?.click()}>
-                        <Upload className="mr-2 h-4 w-4" />
-                        {img.preview ? '更换图片' : '选择图片'}
-                    </Button>
                 </div>
-            </div>
-        ))}
+            ))}
+        </div>
         
          <FormField
           control={form.control}
