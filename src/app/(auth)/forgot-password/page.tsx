@@ -24,24 +24,19 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     try {
       await resetPassword(email);
-      // For security reasons, always show a generic success message
-      // to prevent user enumeration attacks.
-      toast({
-        title: "重置链接已发送",
-        description: "如果该邮箱已注册，您将收到一封邮件。",
-      });
-      router.push('/login');
+      // For security reasons, we don't await the result and show a generic message.
     } catch (error: any) {
-      // Even on error, we show a generic message to the user.
+      // Even on error, we show a generic message to the user for security.
       // We can log the specific error for debugging if needed.
-      console.error("Password reset error:", error.code);
-      toast({
+      console.error("Password reset attempt for", email, "resulted in client-side error:", error.code);
+    } finally {
+      // Always show a generic success message to prevent user enumeration attacks.
+       toast({
         title: "重置链接已发送",
         description: "如果该邮箱已注册，您将收到一封邮件。",
       });
-      router.push('/login');
-    } finally {
       setLoading(false);
+      router.push('/login');
     }
   };
 
