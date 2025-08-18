@@ -2,7 +2,7 @@
 
 本文档将指导您如何将此 Next.js 应用程序部署到您自己的服务器。
 
-> **⚠️ 极其重要：** 您的服务器需要具备稳定访问国际互联网服务（如 Google Firebase）的能力。如果您的服务器位于无法稳定访问这些服务的区域，本应用的核心功能（如用户注册、登录、图片上传、邮件发送）将无法正常工作。
+> **⚠️ 极其重要：** 为了让用户认证（注册、登录）和邮件通知功能正常工作，您的服务器需要具备稳定访问国际互联网服务（如 Google Firebase、Resend）的能力。如果您的服务器位于无法稳定访问这些服务的区域，本应用的核心功能将无法正常工作。图片上传功能现在将在您自己的服务器上进行存储。
 
 ---
 
@@ -47,7 +47,7 @@ npm install
 
 ### **第 4 步：配置环境变量**
 
-为了让应用能够连接到 Firebase 用户认证、Resend 邮件服务以及云存储，您需要配置环境变量。这是**至关重要**的一步。
+为了让应用能够连接到 Firebase 用户认证和 Resend 邮件服务，您需要配置环境变量。这是**至关重要**的一步。
 
 1.  在项目根目录中，创建一个名为 `.env.local` 的文件：
 
@@ -65,11 +65,11 @@ npm install
 
     ```env
 # 网站基础URL (⚠️ 极其重要！)
-# 这个URL用于生成发送给管理员的邮件通知中的链接，并且是让您上传的图片在生产环境中正确显示所必需的。
+# 这个URL是让您上传的图片在生产环境中正确显示所必需的。
 # 请确保填写您网站的完整公网访问地址，例如：https://www.yourdomain.com 或 http://YOUR_SERVER_IP:3000
 NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 
-# --- Firebase 项目客户端配置 ---
+# --- Firebase 项目客户端配置 (用于用户认证) ---
 # 您可以从 Firebase 控制台 > 项目设置 > 常规 > 您的应用 > Firebase SDK snippet > 配置 (Config) 中找到以下所有值。
 # 这些是前端代码连接 Firebase 所必需的。
 NEXT_PUBLIC_FIREBASE_API_KEY="..."
@@ -84,15 +84,15 @@ NEXT_PUBLIC_FIREBASE_APP_ID="..."
 # 请参考 RESEND_GUIDE.md 文档获取并配置此项。
 RESEND_API_KEY="re_..."
 
-# --- Firebase 服务账号密钥 (用于服务器端操作) ---
-# 这是一个非常重要的 JSON 字符串，用于图片上传、用户认证代理等服务器端功能。
+# --- Firebase 服务账号密钥 (用于服务器端认证代理) ---
+# 这是一个非常重要的 JSON 字符串，用于用户认证代理等服务器端功能。
 # 获取方式: Firebase 控制台 > 项目设置 > 服务账号 > 生成新的私钥。
 # 获取后，请将下载的整个 JSON 文件的内容压缩成一行，并用英文单引号包裹起来。
 # 例如: FIREBASE_SERVICE_ACCOUNT_KEY='{"type": "service_account", "project_id": "...", ...}'
 FIREBASE_SERVICE_ACCOUNT_KEY=''
 
     ```
-    > **重要提示**: 这些密钥是应用正常运行所必需的。特别是 `FIREBASE_SERVICE_ACCOUNT_KEY` 和 `RESEND_API_KEY`，它们分别是图片上传、用户认证代理和邮件通知功能的核心。
+    > **重要提示**: 这些密钥是应用正常运行所必需的。特别是 `FIREBASE_SERVICE_ACCOUNT_KEY` 和 `RESEND_API_KEY`，它们分别是用户认证代理和邮件通知功能的核心。
 
 4.  保存并关闭文件 (在 `nano` 中，按 `Ctrl+X`，然后按 `Y`，最后按 `Enter`)。
 

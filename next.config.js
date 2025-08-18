@@ -24,14 +24,11 @@ const remotePatterns = [
   {
     protocol: 'https',
     hostname: 'images.unsplash.com',
-  },
-  {
-    protocol: 'https',
-    hostname: 'firebasestorage.googleapis.com'
   }
 ];
 
 // Add the production hostname only if it's valid and not localhost
+// This is now more important for serving self-hosted images via next/image
 if (baseUrlHostname && baseUrlHostname !== 'localhost') {
   const protocol = process.env.NEXT_PUBLIC_BASE_URL?.startsWith('https') ? 'https' : 'http';
   remotePatterns.push({
