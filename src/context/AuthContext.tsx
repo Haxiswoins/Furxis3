@@ -8,6 +8,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
+  signInWithCustomToken,
   User as FirebaseUser,
 } from 'firebase/auth';
 import { app } from '@/lib/firebase'; 
@@ -24,7 +25,7 @@ interface AuthContextType {
   user: CustomUser | null;
   loading: boolean;
   register: (email: string, pass: string) => Promise<any>;
-  login: (email: string, pass: string) => Promise<FirebaseUser>;
+  login: (email: string, pass: string) => Promise<CustomUser>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
 }
@@ -57,37 +58,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (email: string, pass: string): Promise<any> => {
     const response = await fetch('/api/auth/register', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password: pass }),
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-        // Create an error object that mimics Firebase client-side errors
         const error: any = new Error(data.error || 'Registration failed.');
         error.code = data.code || 'auth/unknown-error';
         throw error;
     }
 
-    // After a successful server-side registration, we sign the user in on the client
-    // so they get jejich session immediately. onAuthStateChanged will then fire.
-    await signInWithEmailAndPassword(auth, email, pass);
+    // After a successful server-side registration, we attempt a server-side login
+    // to get a custom token, making the initial sign-in reliable in China.
+    await login(email, pass);
     
     return data;
   };
 
-  const login = async (email: string, pass: string): Promise<FirebaseUser> => {
-    const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+  const login = async (email: string, pass: string): Promise<CustomUser> => {
+    const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pass }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        const error: any = new Error(data.error || 'Login failed.');
+        error.code = data.code || 'auth/unknown-error';
+        throw error;
+    }
+    
+    // Sign in on the client using the custom token from the server
+    const userCredential = await signInWithCustomToken(auth, data.token);
+    
     const loggedInUser: CustomUser = {
       uid: userCredential.user.uid,
       email: userCredential.user.email,
-      isAdmin: userCredential.user.email === ADMIN_EMAIL
+      isAdmin: data.user.isAdmin
     };
+
     setUser(loggedInUser);
-    return userCredential.user;
+    return loggedInUser;
   };
 
   const logout = () => {

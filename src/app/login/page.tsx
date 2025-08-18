@@ -38,7 +38,7 @@ function LoginPageContent() {
     try {
       const loggedInUser = await login(email, password);
       
-      const isAdmin = loggedInUser.email === 'haxiswoins@qq.com';
+      const isAdmin = loggedInUser.isAdmin;
 
       if (isAdmin) {
         toast({
@@ -54,10 +54,9 @@ function LoginPageContent() {
       }
     } catch (error: any) {
       let description = "邮箱或密码错误，或用户未注册。";
-      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+      // These error codes are now coming from our custom API
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
         description = "邮箱或密码错误，请重试。";
-      } else if (error.code === 'auth/invalid-email') {
-        description = "请输入有效的邮箱地址。";
       }
       toast({
         title: "登录失败",
@@ -149,5 +148,3 @@ export default function LoginPage() {
     </Suspense>
   );
 }
-
-    
