@@ -118,7 +118,9 @@ export function OrdersClientPage() {
         <CardContent>
           <div className="space-y-4">
             {orders.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">您还没有任何订单。</p>
+              <div className="flex items-center justify-center min-h-[20rem] text-center">
+                <p className="text-muted-foreground">您还没有任何订单。</p>
+              </div>
             ) : (
               orders.map((order) => (
                 <Link key={order.id} href={`/orders/${order.id}`} passHref>
