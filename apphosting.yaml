@@ -10,7 +10,5 @@ scheduledJobs:
   - schedule: "0 21 * * *" # Runs every day at 21:00 (9 PM) UTC.
     timeZone: "Asia/Shanghai"
     httpTarget:
-      # This is an example of an httpTarget.
-      # You can copy this and change the path and method to run your own scheduled jobs.
       path: /__run/notifyAdminOfPendingOrders
       method: "GET"
