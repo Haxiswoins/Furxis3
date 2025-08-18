@@ -11,13 +11,15 @@
 首先，请通过 SSH 登录到您的服务器，然后运行以下命令将代码克隆到服务器上：
 
 ```bash
-git clone https://github.com/Haxiswoins/Suittopia.git
+# 请将下面的 URL 替换为您自己的项目仓库地址
+git clone https://github.com/YourUsername/YourRepository.git
 ```
 
-这会在当前目录下创建一个名为 `Suittopia` 的文件夹。接下来，请进入这个文件夹：
+这会在当前目录下创建一个与您仓库同名的文件夹。接下来，请进入这个文件夹：
 
 ```bash
-cd Suittopia
+# 请将 "YourRepository" 替换为您的文件夹名
+cd YourRepository
 ```
 
 后续的所有操作都将在这个项目文件夹中进行。
@@ -45,7 +47,7 @@ npm install
 
 ### **第 4 步：配置环境变量**
 
-为了让应用能够连接到 Firebase 用户认证和 Resend 邮件服务，您需要配置环境变量。这是**至关重要**的一步。
+为了让应用能够连接到 Firebase 用户认证、Resend 邮件服务以及云存储，您需要配置环境变量。这是**至关重要**的一步。
 
 1.  在项目根目录中，创建一个名为 `.env.local` 的文件：
 
@@ -61,30 +63,36 @@ npm install
 
 3.  将您的真实密钥和配置信息添加到文件中。文件内容应如下所示，请将 `...` 替换为您的实际值：
 
-    ```
+    ```env
 # 网站基础URL (⚠️ 极其重要！)
 # 这个URL用于生成发送给管理员的邮件通知中的链接，并且是让您上传的图片在生产环境中正确显示所必需的。
 # 请确保填写您网站的完整公网访问地址，例如：https://www.yourdomain.com 或 http://YOUR_SERVER_IP:3000
 NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 
-# Firebase 项目配置 (仅需要认证部分)
-# 您可以从 Firebase 控制台的项目设置中找到这些值
+# --- Firebase 项目客户端配置 ---
+# 您可以从 Firebase 控制台 > 项目设置 > 常规 > 您的应用 > Firebase SDK snippet > 配置 (Config) 中找到以下所有值。
+# 这些是前端代码连接 Firebase 所必需的。
+NEXT_PUBLIC_FIREBASE_API_KEY="..."
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="..."
+NEXT_PUBLIC_FIREBASE_PROJECT_ID="..."
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="..."
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="..."
+NEXT_PUBLIC_FIREBASE_APP_ID="..."
 
-
-
-# Resend API Key for Email Notifications
+# --- Resend API Key (用于邮件通知) ---
 # 邮件通知功能是网站的核心之一，详细配置请务必参考 RESEND_GUIDE.md
 # 请参考 RESEND_GUIDE.md 文档获取并配置此项。
 RESEND_API_KEY="re_..."
 
-# Firebase 服务账号密钥 (用于服务器端图片上传)
-# 这是一个非常重要的 JSON 字符串，请从 Firebase 控制台 > 项目设置 > 服务账号 > 生成新的私钥处获取。
-# 获取后，请将整个 JSON 文件的内容压缩成一行，并用引号包裹起来。
+# --- Firebase 服务账号密钥 (用于服务器端操作) ---
+# 这是一个非常重要的 JSON 字符串，用于图片上传、用户认证代理等服务器端功能。
+# 获取方式: Firebase 控制台 > 项目设置 > 服务账号 > 生成新的私钥。
+# 获取后，请将下载的整个 JSON 文件的内容压缩成一行，并用英文单引号包裹起来。
 # 例如: FIREBASE_SERVICE_ACCOUNT_KEY='{"type": "service_account", "project_id": "...", ...}'
 FIREBASE_SERVICE_ACCOUNT_KEY=''
 
     ```
-    > **重要提示**: 这些密钥是应用正常运行所必需的。特别是 `FIREBASE_SERVICE_ACCOUNT_KEY` 和 `RESEND_API_KEY`，它们分别是图片上传和邮件通知功能的核心。
+    > **重要提示**: 这些密钥是应用正常运行所必需的。特别是 `FIREBASE_SERVICE_ACCOUNT_KEY` 和 `RESEND_API_KEY`，它们分别是图片上传、用户认证代理和邮件通知功能的核心。
 
 4.  保存并关闭文件 (在 `nano` 中，按 `Ctrl+X`，然后按 `Y`，最后按 `Enter`)。
 
