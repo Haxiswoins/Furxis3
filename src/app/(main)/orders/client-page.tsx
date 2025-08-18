@@ -92,7 +92,7 @@ export function OrdersClientPage() {
 
   if (loading || authLoading) {
     return (
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <Card>
           <CardHeader>
             <Skeleton className="h-9 w-40" />
@@ -109,7 +109,7 @@ export function OrdersClientPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-5xl mx-auto">
       <Card>
         <CardHeader>
           <CardTitle className="text-3xl font-headline">我的订单</CardTitle>
