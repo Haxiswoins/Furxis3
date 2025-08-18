@@ -5,18 +5,15 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import {
   getAuth,
   onAuthStateChanged,
-  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
   User as FirebaseUser,
 } from 'firebase/auth';
-import { app } from '@/lib/firebase'; // Ensure you have this file with Firebase initialization
+import { app } from '@/lib/firebase'; 
 
-// Define the administrator's email address as a constant
 const ADMIN_EMAIL = 'haxiswoins@qq.com';
 
-// Define our custom user type, which can include an isAdmin flag
 interface CustomUser {
     uid: string;
     email: string | null;
@@ -26,7 +23,7 @@ interface CustomUser {
 interface AuthContextType {
   user: CustomUser | null;
   loading: boolean;
-  register: (email: string, pass: string) => Promise<FirebaseUser>;
+  register: (email: string, pass: string) => Promise<any>;
   login: (email: string, pass: string) => Promise<FirebaseUser>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
@@ -43,11 +40,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        // Create our custom user object
         const customUser: CustomUser = {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
-          // Check if the logged-in user is the admin
           isAdmin: firebaseUser.email === ADMIN_EMAIL,
         };
         setUser(customUser);
@@ -56,28 +51,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       setLoading(false);
     });
-
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
 
-  const register = async (email: string, pass: string): Promise<FirebaseUser> => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-    // After registration, Firebase automatically signs the user in,
-    // so onAuthStateChanged will fire and set the user state.
-    return userCredential.user;
+  const register = async (email: string, pass: string): Promise<any> => {
+    const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password: pass }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        // Create an error object that mimics Firebase client-side errors
+        const error: any = new Error(data.error || 'Registration failed.');
+        error.code = data.code || 'auth/unknown-error';
+        throw error;
+    }
+
+    // After a successful server-side registration, we sign the user in on the client
+    // so they get jejich session immediately. onAuthStateChanged will then fire.
+    await signInWithEmailAndPassword(auth, email, pass);
+    
+    return data;
   };
 
   const login = async (email: string, pass: string): Promise<FirebaseUser> => {
     const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-    // onAuthStateChanged will handle setting the user state.
-    // We explicitly create the user object here to include the UID for the new project
     const loggedInUser: CustomUser = {
       uid: userCredential.user.uid,
       email: userCredential.user.email,
       isAdmin: userCredential.user.email === ADMIN_EMAIL
     };
-    // The onAuthStateChanged listener will also fire, but setting it here can be useful for immediate actions post-login
     setUser(loggedInUser);
     return userCredential.user;
   };

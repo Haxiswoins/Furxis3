@@ -50,18 +50,21 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await register(email, password);
+      // Because the new register flow logs the user in, onAuthStateChanged in AuthContext
+      // will redirect to /home. We can show a toast here before that happens.
       toast({
         title: "注册成功！",
-        description: "已为您跳转到登录页面。",
+        description: "即将为您跳转到主页。",
       });
-      router.push('/login');
+      // The redirect is now handled by the auth state listener
     } catch (error: any) {
       let description = "发生未知错误，请重试。";
-      if (error.code === 'auth/email-already-in-use') {
+      // These error codes are now coming from our custom API
+      if (error.code === 'auth/email-already-exists') {
         description = "该邮箱已被注册，请尝试登录或使用其他邮箱。";
       } else if (error.code === 'auth/invalid-email') {
         description = "请输入一个有效的邮箱地址。";
-      } else if (error.code === 'auth/weak-password') {
+      } else if (error.code === 'auth/invalid-password') {
           description = "密码强度不足，请设置至少6位数的密码。";
       }
       toast({
