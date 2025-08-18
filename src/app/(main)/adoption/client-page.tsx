@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import type { CharacterSeries, SiteContent } from '@/types';
-import { Skeleton } from '@/components/ui/skeleton';
 
 
 const containerVariants = {
