@@ -32,7 +32,6 @@ export function LandingPageClient() {
       setIsContentVisible(true);
     }, 500);
 
-    // Three.js Scene Setup
     if (!canvasRef.current) return;
     
     const scene = new THREE.Scene();
@@ -130,6 +129,10 @@ export function LandingPageClient() {
 
         const elapsedTime = clock.getElapsedTime();
 
+        if (isWarping) {
+            camera.position.z -= 0.5; // The "warp speed" effect
+        }
+
         if(galaxyGroup) {
             (galaxyGroup.children[0] as THREE.Points).rotation.y = elapsedTime * 0.1;
         }
@@ -155,25 +158,23 @@ export function LandingPageClient() {
       renderer.dispose();
       clearTimeout(contentTimer);
     };
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once
 
 
   const handleNavigate = () => {
-    // Pre-fetch the home page for a faster transition
     router.prefetch('/home');
     setIsWarping(true);
     
-    // Set a timeout to match the CSS animation duration
     setTimeout(() => {
         router.push('/home');
-    }, 800); // Duration of the warp animation
+    }, 800); 
   };
   
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
       <canvas ref={canvasRef} className={cn(
-          "absolute inset-0 z-0 transition-all duration-1000 ease-in-out",
-          isWarping ? "opacity-0 scale-150" : "opacity-100 scale-100"
+          "absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out",
+          isWarping ? "opacity-0" : "opacity-100"
       )}></canvas>
       
       <div className={cn(
@@ -188,7 +189,7 @@ export function LandingPageClient() {
             className="group relative flex h-20 w-20 items-center justify-center rounded-full border border-primary/50 bg-black/30 text-white transition-all duration-300 ease-in-out hover:scale-110 hover:border-primary hover:shadow-[0_0_35px_rgba(255,97,47,0.7)] active:scale-100 backdrop-blur-sm"
           >
             <div className="absolute inset-0 rounded-full border-2 border-white/20 scale-125 group-hover:scale-150 group-hover:opacity-0 transition-all duration-500 animate-pulse"></div>
-            <Rocket className="h-10 w-10 text-primary/80 transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1 group-hover:scale-110" style={{ transform: 'rotate(-45deg)' }} />
+            <Rocket className="h-10 w-10 text-primary/80 transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1 group-hover:scale-110" />
           </button>
         </div>
       </div>
@@ -204,5 +205,3 @@ export function LandingPageClient() {
     </div>
   );
 }
-
-    
