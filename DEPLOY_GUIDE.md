@@ -1,3 +1,4 @@
+
 # 自定义服务器部署指南
 
 本文档将指导您如何将此 Next.js 应用程序部署到您自己的服务器。
@@ -71,23 +72,26 @@ NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 
 # --- Resend API Key (用于邮件通知) ---
 # 邮件通知功能是网站的核心之一，详细配置请务必参考 RESEND_GUIDE.md
-# 请参考 RESEND_GUIDE.md 文档获取并配置此项。
 RESEND_API_KEY="re_..."
 
 # --- Authing 应用配置 (用于用户认证) ---
-# 您可以从 Authing 控制台 > 选择您的应用 > 应用配置 中找到以下大部分值。
+# 您可以从 Authing 控制台 > 选择您的自建应用 > 应用配置 中找到以下大部分值。
 AUTHING_APP_ID="..."
 AUTHING_APP_SECRET="..."
+# Issuer URL, 通常格式为 https://<YOUR-SUBDOMAIN>.authing.cn/oidc
 AUTHING_ISSUER="..."
 
 # 登录回调URL, 必须与您在 Authing 应用配置中的 "登录回调 URL" 完全一致
 # 例如: https://www.yourdomain.com/api/auth/authing/callback 或 http://YOUR_SERVER_IP:3000/api/auth/authing/callback
 AUTHING_REDIRECT_URI="..."
 
-# 用于加密会话的密钥, 请生成一个足够复杂的随机字符串
-# 您可以使用 `openssl rand -base64 32` 命令在您的服务器或本地终端生成一个
+# 用于加密会话的密钥, 请生成一个足够复杂的随机字符串 (至少32位)
+# 您可以在您的服务器或本地终端使用 `openssl rand -base64 32` 命令生成一个
 AUTHING_SECRET="..."
 
+# 管理员邮箱地址
+# 拥有此邮箱的用户登录后将自动获得网站的管理员权限
+ADMIN_EMAIL="your-admin-email@example.com"
     ```
     > **重要提示**: 这些密钥是应用正常运行所必需的。特别是`AUTHING_SECRET`，它用于保护用户登录会话的安全，请务必使用一个足够强大的随机字符串，不要使用示例值。
 

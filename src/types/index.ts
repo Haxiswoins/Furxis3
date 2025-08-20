@@ -110,3 +110,12 @@ export type Work = {
   imageUrls: string[];
   description?: string;
 };
+
+// Represents the user object available throughout the app
+export interface CustomUser {
+    uid: string;
+    email: string | null;
+    name: string | null;
+    picture: string | null;
+    isAdmin?: boolean;
+}

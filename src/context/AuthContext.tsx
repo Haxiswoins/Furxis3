@@ -1,69 +1,66 @@
 
 'use client';
 
-import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
-
-const ADMIN_EMAIL = 'haxiswoins@qq.com';
-
-interface CustomUser {
-    uid: string;
-    email: string | null;
-    name: string | null;
-    picture: string | null;
-    isAdmin?: boolean;
-}
+import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import type { CustomUser } from '@/types';
 
 interface AuthContextType {
   user: CustomUser | null;
   loading: boolean;
   login: (returnTo?: string) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// This is a mock function. In a real app, you'd fetch this from your backend.
-async function fetchUserSession(): Promise<CustomUser | null> {
-    // This is where you would make an API call to your backend to verify the session
-    // For now, we'll return null as we don't have a real session management
-    return null;
-}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<CustomUser | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
-  useEffect(() => {
-    const checkSession = async () => {
-        setLoading(true);
-        // We'll replace this with a mock.
-        // In a real scenario with Authing, you'd have a server-side endpoint
-        // that validates the session cookie and returns user data.
-        const sessionUser = await fetchUserSession(); 
-        setUser(sessionUser);
-        setLoading(false);
-    };
-    checkSession();
+  const fetchUser = useCallback(async () => {
+    try {
+      const res = await fetch('/api/auth/me');
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data.user);
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user session", error);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
+
   const login = (returnTo?: string) => {
+    setLoading(true);
     let path = '/api/auth/authing/login';
-    const finalReturnTo = returnTo || window.location.pathname + window.location.search;
+    const finalReturnTo = returnTo || pathname;
     const params = new URLSearchParams();
     params.set('returnTo', finalReturnTo);
     router.push(`${path}?${params.toString()}`);
   };
 
-  const logout = () => {
-    // In a real app, this would call a backend endpoint to clear the session cookie.
-    const logoutUrl = new URL(process.env.NEXT_PUBLIC_BASE_URL || window.location.origin);
-    
-    // For now, we just clear the user state and redirect.
-    setUser(null);
-    router.push(logoutUrl.toString());
+  const logout = async () => {
+    setLoading(true);
+    try {
+        await fetch('/api/auth/logout');
+        setUser(null);
+    } catch (error) {
+        console.error("Logout failed:", error);
+    } finally {
+        setLoading(false);
+    }
   };
 
 

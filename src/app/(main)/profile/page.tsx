@@ -17,16 +17,12 @@ export default function ProfilePage() {
   const { toast } = useToast();
 
   const handleLogout = async () => {
-    try {
-      await logout();
-      router.push('/');
-    } catch (error: any) {
-        toast({
-            title: "退出失败",
-            description: error.message,
-            variant: "destructive",
-        });
-    }
+    await logout();
+    toast({
+        title: "已退出登录",
+        description: "您已成功退出。",
+    });
+    router.push('/');
   };
   
   if (loading) {
@@ -48,8 +44,9 @@ export default function ProfilePage() {
   }
 
   if (!user) {
-    router.push('/api/auth/authing/login');
-    return null;
+    // This should ideally not happen if AuthProvider redirects, but as a fallback:
+    router.push('/login');
+    return null; 
   }
 
   return (
