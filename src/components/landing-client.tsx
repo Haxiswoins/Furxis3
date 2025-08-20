@@ -28,6 +28,9 @@ export function LandingPageClient() {
   const mouse = useRef({ x: 0, y: 0 });
   
   useEffect(() => {
+    // Prefetch the home page as soon as the landing page is interactive
+    router.prefetch('/home');
+
     const contentTimer = setTimeout(() => {
       setIsContentVisible(true);
     }, 500);
@@ -158,11 +161,10 @@ export function LandingPageClient() {
       renderer.dispose();
       clearTimeout(contentTimer);
     };
-  }, [isWarping]);
+  }, [isWarping, router]);
 
 
   const handleNavigate = () => {
-    router.prefetch('/home');
     setIsWarping(true);
     
     setTimeout(() => {
