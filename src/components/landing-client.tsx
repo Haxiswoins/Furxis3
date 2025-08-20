@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -25,54 +26,37 @@ export function LandingPageClient() {
   const [isWarping, setIsWarping] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouse = useRef({ x: 0, y: 0 });
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const galaxyGroupRef = useRef<THREE.Group | null>(null);
-  const animationFrameIdRef = useRef<number | null>(null);
-  const clockRef = useRef<THREE.Clock | null>(null);
-
+  
   useEffect(() => {
     const contentTimer = setTimeout(() => {
       setIsContentVisible(true);
     }, 500);
 
-    return () => {
-      clearTimeout(contentTimer);
-    };
-  }, []);
-
-  useEffect(() => {
+    // Three.js Scene Setup
     if (!canvasRef.current) return;
     
-    // Ensure this effect runs only once
-    if (rendererRef.current) return;
-
     const scene = new THREE.Scene();
-    sceneRef.current = scene;
     
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 30;
-    cameraRef.current = camera;
     
     const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    rendererRef.current = renderer;
 
     let geometry: THREE.BufferGeometry | null = null;
     let material: THREE.PointsMaterial | null = null;
+    let galaxyGroup: THREE.Group | null = null;
     
     const generateGalaxy = () => {
-        if (galaxyGroupRef.current) {
+        if (galaxyGroup) {
             geometry?.dispose();
             material?.dispose();
-            scene.remove(galaxyGroupRef.current);
+            scene.remove(galaxyGroup);
         }
 
-        const galaxyGroup = new THREE.Group();
+        galaxyGroup = new THREE.Group();
         scene.add(galaxyGroup);
-        galaxyGroupRef.current = galaxyGroup;
         
         galaxyGroup.position.y = 5;
         galaxyGroup.rotation.x = Math.PI * 0.2; 
@@ -124,11 +108,10 @@ export function LandingPageClient() {
     generateGalaxy();
 
     const handleResize = () => {
-        if (!cameraRef.current || !rendererRef.current) return;
-        cameraRef.current.aspect = window.innerWidth / window.innerHeight;
-        cameraRef.current.updateProjectionMatrix();
-        rendererRef.current.setSize(window.innerWidth, window.innerHeight);
-        rendererRef.current.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     };
     
     const handleMouseMove = (event: MouseEvent) => {
@@ -139,96 +122,62 @@ export function LandingPageClient() {
     window.addEventListener('resize', handleResize);
     window.addEventListener('mousemove', handleMouseMove);
     
-    clockRef.current = new THREE.Clock();
-
-    const clock = clockRef.current;
-    let localIsWarping = false;
-    let warpFactor = 0;
-    
-    // We create a separate function to update the warping state to avoid re-triggering useEffect
-    const startWarping = () => {
-        localIsWarping = true;
-    }
-
-    // Assign to a ref so we can call it from the button's onClick
-    (canvasRef.current as any).startWarping = startWarping;
-    
+    const clock = new THREE.Clock();
+    let animationFrameId: number;
 
     const animate = () => {
-        animationFrameIdRef.current = requestAnimationFrame(animate);
+        animationFrameId = requestAnimationFrame(animate);
 
         const elapsedTime = clock.getElapsedTime();
 
-        if (localIsWarping) {
-            warpFactor = Math.min(warpFactor + 0.005, 1);
-            const easedWarp = 1 - Math.pow(1 - warpFactor, 5); // EaseOutQuint
-
-            // Move camera forward
-            if (cameraRef.current) {
-                cameraRef.current.position.z -= easedWarp * 0.5;
-            }
-
-            const overlay = document.getElementById('warp-overlay');
-            if (overlay) {
-                if (warpFactor >= 0.2) {
-                    overlay.style.opacity = `${(warpFactor - 0.2) / 0.8}`;
-                }
-                if (cameraRef.current && cameraRef.current.position.z <= 0) { // When camera passes the center
-                    if(animationFrameIdRef.current) cancelAnimationFrame(animationFrameIdRef.current);
-                    router.push('/home');
-                    return;
-                }
-            }
-        } else {
-            // Standard rotation and parallax
-            if(galaxyGroupRef.current) {
-                (galaxyGroupRef.current.children[0] as THREE.Points).rotation.y = elapsedTime * 0.1;
-            }
-            
-            const parallaxX = mouse.current.x * 0.2;
-            const parallaxY = -mouse.current.y * 0.2;
-            
-            if(cameraRef.current) {
-                cameraRef.current.position.x += (parallaxX - cameraRef.current.position.x) * 0.02;
-                cameraRef.current.position.y += (parallaxY - cameraRef.current.position.y) * 0.02;
-            }
+        if(galaxyGroup) {
+            (galaxyGroup.children[0] as THREE.Points).rotation.y = elapsedTime * 0.1;
         }
-        
-        if(rendererRef.current && sceneRef.current && cameraRef.current) {
-             rendererRef.current.render(sceneRef.current, cameraRef.current);
-        }
+            
+        const parallaxX = mouse.current.x * 0.2;
+        const parallaxY = -mouse.current.y * 0.2;
+            
+        camera.position.x += (parallaxX - camera.position.x) * 0.02;
+        camera.position.y += (parallaxY - camera.position.y) * 0.02;
+
+        renderer.render(scene, camera);
     };
+    
     animate();
 
 
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
-      if (animationFrameIdRef.current) {
-          cancelAnimationFrame(animationFrameIdRef.current);
-      }
+      cancelAnimationFrame(animationFrameId);
       geometry?.dispose();
       material?.dispose();
-      rendererRef.current?.dispose();
-      rendererRef.current = null;
+      renderer.dispose();
+      clearTimeout(contentTimer);
     };
-  }, [router]);
+  }, []);
 
 
   const handleNavigate = () => {
+    // Pre-fetch the home page for a faster transition
+    router.prefetch('/home');
     setIsWarping(true);
-    if(canvasRef.current && (canvasRef.current as any).startWarping) {
-        (canvasRef.current as any).startWarping();
-    }
+    
+    // Set a timeout to match the CSS animation duration
+    setTimeout(() => {
+        router.push('/home');
+    }, 800); // Duration of the warp animation
   };
   
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
-      <canvas ref={canvasRef} className="absolute inset-0 z-0"></canvas>
-      <div id="warp-overlay" className="absolute inset-0 z-10 bg-white" style={{opacity: 0, pointerEvents: 'none'}}></div>
+      <canvas ref={canvasRef} className={cn(
+          "absolute inset-0 z-0 transition-all duration-1000 ease-in-out",
+          isWarping ? "opacity-0 scale-150" : "opacity-100 scale-100"
+      )}></canvas>
       
       <div className={cn(
-        "absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-1000",
+        "absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-500",
         isContentVisible ? 'opacity-100' : 'opacity-0',
         isWarping ? 'opacity-0' : 'opacity-100'
       )}>
@@ -239,7 +188,7 @@ export function LandingPageClient() {
             className="group relative flex h-20 w-20 items-center justify-center rounded-full border border-primary/50 bg-black/30 text-white transition-all duration-300 ease-in-out hover:scale-110 hover:border-primary hover:shadow-[0_0_35px_rgba(255,97,47,0.7)] active:scale-100 backdrop-blur-sm"
           >
             <div className="absolute inset-0 rounded-full border-2 border-white/20 scale-125 group-hover:scale-150 group-hover:opacity-0 transition-all duration-500 animate-pulse"></div>
-            <Rocket className="h-10 w-10 text-primary/80 transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1 group-hover:scale-110" />
+            <Rocket className="h-10 w-10 text-primary/80 transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1 group-hover:scale-110" style={{ transform: 'rotate(-45deg)' }} />
           </button>
         </div>
       </div>
@@ -255,3 +204,5 @@ export function LandingPageClient() {
     </div>
   );
 }
+
+    
