@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -61,6 +62,7 @@ export default function OrderDetailPage() {
   const fetchOrderAndContent = useCallback(async () => {
     setIsPageLoading(true);
     try {
+      if (!user) return;
       const [orderData, contentData] = await Promise.all([
         getOrderById(orderId),
         getSiteContent()

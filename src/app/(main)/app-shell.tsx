@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -63,7 +64,7 @@ export function AppShell({
   const { user, loading } = useAuth();
   
   const isAdminRoute = pathname.startsWith('/admin');
-  const isAuthRoute = ['/login', '/register', '/forgot-password'].includes(pathname);
+  const isAuthRoute = ['/login', '/register', '/forgot-password'].includes(pathname) || pathname.startsWith('/api/auth/authing');
   const isLandingPage = pathname === '/';
   
   const isAdmin = user?.isAdmin;

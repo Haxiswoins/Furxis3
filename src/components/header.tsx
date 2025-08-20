@@ -90,7 +90,7 @@ export default function Header() {
               </Button>
           </Link>
         )}
-        <Link href={isLoggedIn ? "/profile" : "/login"} passHref>
+        <Link href={isLoggedIn ? "/profile" : "/api/auth/authing/login"} passHref>
            <Button
               variant="ghost"
               size="icon"

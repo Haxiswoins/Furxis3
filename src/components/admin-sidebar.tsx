@@ -7,7 +7,6 @@ import { Home, PawPrint, ShoppingCart, LogOut, LayoutDashboard, Settings, Packag
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/admin/dashboard', label: '仪表盘', icon: LayoutDashboard },

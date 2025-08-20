@@ -23,7 +23,6 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { createAdoptionApplication } from '@/lib/data-service';
-import { FormDescription } from '@/components/ui/form';
 
 type AdoptionApplicationFormProps = {
     character: Character;
@@ -64,7 +63,7 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
     e.preventDefault();
     if (!user || !character) {
         if(!user) {
-            router.push(`/login?redirect=${window.location.pathname}`);
+            router.push(`/api/auth/authing/login?returnTo=${window.location.pathname}`);
         }
         return;
     };

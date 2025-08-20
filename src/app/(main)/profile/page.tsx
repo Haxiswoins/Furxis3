@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,16 +9,17 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const { toast } = useToast();
 
   const handleLogout = async () => {
     try {
       await logout();
-      router.push('/login');
+      router.push('/');
     } catch (error: any) {
         toast({
             title: "退出失败",
@@ -27,26 +29,38 @@ export default function ProfilePage() {
     }
   };
   
-  if (!user) {
-    // This can be a loading spinner or null
-    // Or redirect to login if you want to protect this route
-    return null;
+  if (loading) {
+    return (
+       <div className="max-w-2xl mx-auto w-full">
+         <Card>
+            <CardHeader className="text-center">
+               <Skeleton className="w-24 h-24 mx-auto rounded-full" />
+               <Skeleton className="h-8 w-32 mx-auto mt-4" />
+               <Skeleton className="h-5 w-48 mx-auto mt-2" />
+            </CardHeader>
+             <CardContent className="mt-4 flex flex-col gap-4">
+               <Skeleton className="h-12 w-full" />
+               <Skeleton className="h-12 w-full" />
+            </CardContent>
+         </Card>
+       </div>
+    )
   }
 
-  const avatarUrl = user.email 
-    ? `https://source.boringavatars.com/beam/120/${encodeURIComponent(user.email)}?colors=264653,2a9d8f,e9c46a,f4a261,e76f51`
-    : 'https://placehold.co/100x100.png';
-
+  if (!user) {
+    router.push('/api/auth/authing/login');
+    return null;
+  }
 
   return (
     <div className="max-w-2xl mx-auto w-full">
       <Card>
         <CardHeader className="text-center">
           <Avatar className="w-24 h-24 mx-auto mb-4 border-4 border-primary/50">
-            <AvatarImage src={avatarUrl} alt={user.email || 'User'} />
-            <AvatarFallback>{user.email ? user.email.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
+            {user.picture && <AvatarImage src={user.picture} alt={user.name || 'User'} />}
+            <AvatarFallback>{user.name ? user.name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : 'U')}</AvatarFallback>
           </Avatar>
-          <CardTitle className="text-3xl font-headline">{user.email?.split('@')[0] || '用户'}</CardTitle>
+          <CardTitle className="text-3xl font-headline">{user.name || '用户'}</CardTitle>
           <CardDescription>{user.email}</CardDescription>
         </CardHeader>
         <CardContent className="mt-4 flex flex-col gap-4">

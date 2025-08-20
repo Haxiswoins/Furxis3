@@ -48,7 +48,7 @@ export function CharacterDetailClient({ character }: { character: Character }) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>取消</AlertDialogCancel>
-          <AlertDialogAction onClick={() => router.push(`/login?redirect=${pathname}`)}>
+          <AlertDialogAction onClick={() => router.push(`/api/auth/authing/login?returnTo=${pathname}`)}>
             登录
           </AlertDialogAction>
         </AlertDialogFooter>

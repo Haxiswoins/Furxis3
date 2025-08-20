@@ -1,80 +1,29 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from '@/context/AuthContext';
+
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { user, register } = useAuth();
-  const { toast } = useToast();
+  const { user, loading, login } = useAuth();
   
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-
   useEffect(() => {
-    if (user) {
+    if (user && !loading) {
       router.replace('/home');
     }
-  }, [user, router]);
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      toast({
-        title: "注册失败",
-        description: "两次输入的密码不一致。",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (password.length < 6) {
-      toast({
-        title: "注册失败",
-        description: "密码强度不足，请设置至少6位数的密码。",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await register(email, password);
-      // Because the new register flow logs the user in, onAuthStateChanged in AuthContext
-      // will redirect to /home. We can show a toast here before that happens.
-      toast({
-        title: "注册成功！",
-        description: "即将为您跳转到主页。",
-      });
-      // The redirect is now handled by the auth state listener
-    } catch (error: any) {
-      let description = "发生未知错误，请重试。";
-      // These error codes are now coming from our custom API
-      if (error.code === 'auth/email-already-exists') {
-        description = "该邮箱已被注册，请尝试登录或使用其他邮箱。";
-      } else if (error.code === 'auth/invalid-email') {
-        description = "请输入一个有效的邮箱地址。";
-      } else if (error.code === 'auth/invalid-password') {
-          description = "密码强度不足，请设置至少6位数的密码。";
-      }
-      toast({
-        title: "注册失败",
-        description: description,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+  }, [user, loading, router]);
+  
+  const handleRegister = () => {
+    // The login function now redirects to Authing's hosted page
+    // which includes a tab for registration.
+    login();
   };
 
   return (
@@ -84,59 +33,27 @@ export default function RegisterPage() {
             <ChevronLeft className="h-6 w-6" />
           </Button>
       </div>
-      <Card className="w-full max-w-md shadow-2xl">
-        <form onSubmit={handleRegister}>
-          <CardHeader className="text-center">
+      <Card className="w-full max-w-md shadow-2xl text-center">
+          <CardHeader>
             <CardTitle className="text-3xl font-headline">创建账户</CardTitle>
             <CardDescription>加入我们，开启您的新旅程。</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">邮箱</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="you@example.com" 
-                required 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">密码</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
-                placeholder="请输入至少6位数的密码"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-             <div className="space-y-2">
-              <Label htmlFor="confirm-password">确认密码</Label>
-              <Input 
-                id="confirm-password" 
-                type="password" 
-                required 
-                placeholder="再次输入密码"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
+          <CardContent>
+             <p className="text-muted-foreground">
+                我们的注册和登录流程由 Authing 提供支持。点击下方按钮前往安全页面进行注册。
+             </p>
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" size="lg" disabled={loading}>
-              {loading ? '注册中...' : '注册'}
+          <CardFooter className="flex-col gap-4">
+            <Button onClick={handleRegister} className="w-full" size="lg" disabled={loading}>
+              {loading ? '加载中...' : '前往注册'}
             </Button>
-             <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               已有账户？{' '}
-              <Link href="/login" className="text-primary hover:underline">
+              <Link href="/api/auth/authing/login" className="text-primary hover:underline">
                 登录
               </Link>
             </p>
           </CardFooter>
-        </form>
       </Card>
     </div>
   );

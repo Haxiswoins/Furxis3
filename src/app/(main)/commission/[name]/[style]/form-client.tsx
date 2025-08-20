@@ -32,7 +32,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const isLoggedIn = !!user;
 
   const [formSubmitting, setFormSubmitting] = useState(false);
@@ -160,7 +160,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>取消</AlertDialogCancel>
-          <AlertDialogAction onClick={() => router.push(`/login?redirect=${pathname}`)}>
+          <AlertDialogAction onClick={() => login()}>
             登录
           </AlertDialogAction>
         </AlertDialogFooter>

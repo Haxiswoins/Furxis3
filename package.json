@@ -40,8 +40,6 @@
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.1.5",
-    "firebase": "^12.1.0",
-    "firebase-admin": "^12.2.0",
     "framer-motion": "^11.2.12",
     "genkit": "^1.0.0",
     "lucide-react": "^0.395.0",
