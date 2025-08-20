@@ -82,11 +82,10 @@ AUTHING_APP_SECRET="..."
 AUTHING_ISSUER="..."
 
 # 登录回调URL, 必须与您在 Authing 应用配置中的 "登录回调 URL" 完全一致
-# 例如: https://www.yourdomain.com/api/auth/authing/callback 或 http://YOUR_SERVER_IP:3000/api/auth/authing/callback
 #
 # ⚠️ 注意：本地开发时，您需要将 "http://localhost:3000/api/auth/authing/callback" 添加到 Authing 白名单。
 #         线上部署后，您需要将 "https://您的域名/api/auth/authing/callback" 添加到 Authing 白名单。
-AUTHING_REDIRECT_URI="..."
+AUTHING_REDIRECT_URI="http://localhost:3000/api/auth/authing/callback"
 
 # 用于加密会话的密钥, 请生成一个足够复杂的随机字符串 (至少32位)
 # 您可以在您的服务器或本地终端使用 `openssl rand -base64 32` 命令生成一个
@@ -102,7 +101,24 @@ ADMIN_EMAIL="your-admin-email@example.com"
 
 ---
 
-### **第 5 步：构建并启动应用**
+### **第 5 步：在 Authing 中配置回调 URL (部署后必须操作)**
+
+为了让 Authing 知道在用户登录成功后应该将他们安全地送回您网站的哪个地址，您**必须**配置回调 URL。
+
+1.  **登录到您的 Authing 控制台**。
+2.  进入您的应用，找到 **应用配置** 页面。
+3.  找到名为 **“登录回调 URL”** 的配置项。
+4.  将您部署后的网站回调地址完整地粘贴进去。地址的格式为：**`您网站的公网域名/api/auth/authing/callback`**。
+
+    例如：
+    *   如果您的域名是 `https://www.suitopia.club`，您需要填写：`https://www.suitopia.club/api/auth/authing/callback`
+    *   如果您的访问地址是 `http://123.45.67.89:3000`，您需要填写：`http://123.45.67.89:3000/api/auth/authing/callback`
+
+    > **本地开发提示**：如果您在自己的电脑上运行此项目进行开发，您也需要将 `http://localhost:3000/api/auth/authing/callback` 这个地址添加到 Authing 的回调 URL 列表中，这样才能在本地正常登录。
+
+---
+
+### **第 6 步：构建并启动应用**
 
 现在，您的应用已经准备好在生产模式下运行了。
 
@@ -122,7 +138,7 @@ ADMIN_EMAIL="your-admin-email@example.com"
 
 ---
 
-### **(可选) 第 6 步：使用 PM2 保持应用持续运行**
+### **(可选) 第 7 步：使用 PM2 保持应用持续运行**
 
 直接使用 `npm start` 启动的应用在您关闭终端后会停止。为了让您的网站在后台持续运行，推荐使用进程管理器，如 `PM2`。
 
@@ -148,7 +164,7 @@ ADMIN_EMAIL="your-admin-email@example.com"
 
 ---
 
-### **(可选) 第 7 步：配置反向代理（如 Nginx）**
+### **(可选) 第 8 步：配置反向代理（如 Nginx）**
 
 为了使用域名（例如 `www.yourdomain.com`）并通过标准的 80 (HTTP) 和 443 (HTTPS) 端口访问您的网站，您需要设置一个反向代理。Nginx 是一个非常流行的选择。
 
