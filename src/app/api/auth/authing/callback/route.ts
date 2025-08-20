@@ -9,13 +9,14 @@ export async function GET(req: NextRequest) {
   const code = searchParams.get('code');
   const state = searchParams.get('state');
   
-  if (!code) {
-    return NextResponse.json({ error: 'Authorization code is missing' }, { status: 400 });
+  const issuer = process.env.AUTHING_ISSUER;
+  if (!code || !issuer) {
+    return NextResponse.json({ error: 'Authorization code or issuer is missing' }, { status: 400 });
   }
 
   try {
     // Exchange authorization code for tokens
-    const tokenUrl = new URL(`${process.env.AUTHING_ISSUER}/oidc/token`);
+    const tokenUrl = new URL(issuer + '/oidc/token');
     const tokenResponse = await fetch(tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -34,7 +35,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Fetch user info with the access token
-    const userInfoUrl = new URL(`${process.env.AUTHING_ISSUER}/oidc/me`);
+    const userInfoUrl = new URL(issuer + '/oidc/me');
     const userInfoResponse = await fetch(userInfoUrl, {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
