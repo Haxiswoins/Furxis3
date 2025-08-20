@@ -1,25 +1,17 @@
 
 'use server';
 /**
- * @fileOverview A flow to check for pending orders and notify the admin.
+ * @fileOverview A function to check for pending orders and notify the admin.
  * 
  * - notifyAdminOfPendingOrders - Checks for pending orders and sends an email if any are found.
  */
 
-import { ai } from '@/ai/genkit';
 import { getAllOrders, getSiteContent } from '@/lib/data-service';
 import { sendEmail } from './send-email-flow';
-import { z } from 'zod';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
-export const notifyAdminOfPendingOrders = ai.defineFlow(
-  {
-    name: 'notifyAdminOfPendingOrders',
-    inputSchema: z.void(),
-    outputSchema: z.string(),
-  },
-  async () => {
+export async function notifyAdminOfPendingOrders(): Promise<string> {
     console.log("Running daily check for pending orders...");
 
     const allOrders = await getAllOrders();
@@ -80,5 +72,4 @@ export const notifyAdminOfPendingOrders = ai.defineFlow(
       console.error(errorMsg);
       throw new Error(errorMsg);
     }
-  }
-);
+}

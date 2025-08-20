@@ -1,18 +1,14 @@
 
 'use server';
 /**
- * @fileOverview An email sending flow.
+ * @fileOverview An email sending utility.
  *
  * - sendEmail - A function that handles sending emails.
  * - EmailPayload - The input type for the sendEmail function.
  */
 
-import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { Resend } from 'resend';
-
-// This flow is defined but not yet used.
-// It will be integrated into the application logic later.
 
 const EmailPayloadSchema = z.object({
   to: z.string().email().describe('The recipient email address.'),
@@ -22,39 +18,31 @@ const EmailPayloadSchema = z.object({
 });
 export type EmailPayload = z.infer<typeof EmailPayloadSchema>;
 
-const sendEmailFlow = ai.defineFlow(
-  {
-    name: 'sendEmailFlow',
-    inputSchema: EmailPayloadSchema,
-    outputSchema: z.void(),
-  },
-  async (payload) => {
+
+export async function sendEmail(payload: EmailPayload): Promise<void> {
+    // Validate payload with Zod
+    const validatedPayload = EmailPayloadSchema.parse(payload);
+    
     // Ensure the API key is available
     if (!process.env.RESEND_API_KEY) {
         console.error("Resend API Key is not configured. Cannot send email.");
-        // In a real app, you might want to throw an error
-        // or handle this more gracefully.
-        return;
+        // Throw an error to make the calling function aware of the failure.
+        throw new Error("Resend API Key is not configured.");
     }
     
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     try {
       await resend.emails.send({
-        from: payload.from,
-        to: payload.to,
-        subject: payload.subject,
-        html: payload.html,
+        from: validatedPayload.from,
+        to: validatedPayload.to,
+        subject: validatedPayload.subject,
+        html: validatedPayload.html,
       });
-      console.log(`Email sent successfully to ${payload.to}`);
+      console.log(`Email sent successfully to ${validatedPayload.to}`);
     } catch (error) {
       console.error("Failed to send email:", error);
-      // Optionally re-throw the error if you want the caller to handle it
-      // throw error;
+      // Re-throw the error to allow the caller to handle it
+      throw error;
     }
-  }
-);
-
-export async function sendEmail(payload: EmailPayload): Promise<void> {
-  return sendEmailFlow(payload);
 }

@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: true, message: result });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-    console.error('Error running notifyAdminOfPendingOrders flow:', errorMessage);
+    console.error('Error running notifyAdminOfPendingOrders function:', errorMessage);
     return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
 }
