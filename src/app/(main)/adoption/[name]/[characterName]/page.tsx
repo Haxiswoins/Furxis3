@@ -27,7 +27,7 @@ export default async function AdoptionDetailPage({ params }: { params: { charact
     character.imageUrl2,
     character.imageUrl3,
     character.imageUrl4
-  ].filter(Boolean) as string[];
+  ].filter((url): url is string => !!url);
 
   return (
     <div

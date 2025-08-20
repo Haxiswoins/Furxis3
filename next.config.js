@@ -43,7 +43,6 @@ const nextConfig = {
       bodySizeLimit: '4mb',
     },
   },
-  skipTrailingSlashRedirect: true,
 };
 
 export default nextConfig;

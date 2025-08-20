@@ -136,7 +136,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
         
         const updatedShippingAddress = `${values.province} ${values.city} ${values.district} ${values.addressDetail}`;
         
-        const updatedData = {
+        const updatedData: Partial<Order> = {
             total,
             status,
             shippingTrackingId: shippingTrackingId || null,
@@ -341,6 +341,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
                                     <SelectItem value="已取消">已取消</SelectItem>
                                 </SelectContent>
                             </Select>
+                            <FormDescription>将状态改为“待确认”会自动向用户发送邮件，提醒他们去网站确认合同。</FormDescription>
                             <FormMessage />
                             </FormItem>
                         )}

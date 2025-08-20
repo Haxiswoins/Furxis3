@@ -59,6 +59,7 @@ export default function OrderDetailPage() {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(true);
+  const [isActionLoading, setIsActionLoading] = useState(false);
 
   const statusStyles = theme === 'dark' ? darkStatusStyles : lightStatusStyles;
 
@@ -184,19 +185,22 @@ export default function OrderDetailPage() {
   };
 
   const handleUndoCancel = async () => {
+    setIsActionLoading(true);
     try {
       await reinstateOrder(order.id);
       fetchOrderAndContent(); // Refetch order to get latest state
       toast({ title: "操作成功", description: "订单已恢复处理中状态。" });
     } catch (error) {
       toast({ title: "操作失败", description: "恢复订单时出错，请稍后再试。", variant: 'destructive' });
+    } finally {
+        setIsActionLoading(false);
     }
   };
   
   const renderCancelButton = () => {
     if (['处理中', '已确认', '待确认', '排队中', '制作中'].includes(order.status)) {
       return (
-        <Button variant="destructive" onClick={handleCancelClick}>申请退养/取消</Button>
+        <Button variant="destructive" onClick={handleCancelClick} disabled={isActionLoading}>申请退养/取消</Button>
       );
     }
     if (order.status === '退养中') {
@@ -204,7 +208,9 @@ export default function OrderDetailPage() {
         <>
            <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="outline">我不想退养了</Button>
+              <Button variant="outline" disabled={isActionLoading}>
+                {isActionLoading ? '处理中...' : '我不想退养了'}
+              </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -224,11 +230,7 @@ export default function OrderDetailPage() {
       );
     }
     return (
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="destructive" disabled>申请退养/取消</Button>
-        </AlertDialogTrigger>
-      </AlertDialog>
+      <Button variant="destructive" disabled>申请退养/取消</Button>
     );
   };
   
