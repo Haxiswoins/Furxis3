@@ -142,6 +142,55 @@ export function LandingPageClient() {
     
     clockRef.current = new THREE.Clock();
 
+    const clock = clockRef.current;
+    let warpFactor = 0;
+
+    const animate = () => {
+        animationFrameIdRef.current = requestAnimationFrame(animate);
+
+        const elapsedTime = clock.getElapsedTime();
+
+        if (isWarping) {
+            warpFactor = Math.min(warpFactor + 0.005, 1);
+            const easedWarp = 1 - Math.pow(1 - warpFactor, 5); // EaseOutQuint
+
+            // Move camera forward
+            if (cameraRef.current) {
+                cameraRef.current.position.z -= easedWarp * 0.5;
+            }
+
+            const overlay = document.getElementById('warp-overlay');
+            if (overlay) {
+                if (warpFactor >= 0.2) {
+                    overlay.style.opacity = `${(warpFactor - 0.2) / 0.8}`;
+                }
+                if (cameraRef.current && cameraRef.current.position.z <= 0) { // When camera passes the center
+                    router.push('/home');
+                    return;
+                }
+            }
+        } else {
+            // Standard rotation and parallax
+            if(galaxyGroupRef.current) {
+                (galaxyGroupRef.current.children[0] as THREE.Points).rotation.y = elapsedTime * 0.1;
+            }
+            
+            const parallaxX = mouse.current.x * 0.2;
+            const parallaxY = -mouse.current.y * 0.2;
+            
+            if(cameraRef.current) {
+                cameraRef.current.position.x += (parallaxX - cameraRef.current.position.x) * 0.02;
+                cameraRef.current.position.y += (parallaxY - cameraRef.current.position.y) * 0.02;
+            }
+        }
+        
+        if(rendererRef.current && sceneRef.current && cameraRef.current) {
+             rendererRef.current.render(sceneRef.current, cameraRef.current);
+        }
+    };
+    animate();
+
+
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
@@ -153,64 +202,6 @@ export function LandingPageClient() {
       rendererRef.current?.dispose();
       rendererRef.current = null;
     };
-  }, []);
-
-  useEffect(() => {
-    const clock = clockRef.current;
-    const renderer = rendererRef.current;
-    const scene = sceneRef.current;
-    const camera = cameraRef.current;
-    const galaxyGroup = galaxyGroupRef.current;
-    let warpFactor = 0;
-
-    const animate = () => {
-        if (!clock || !renderer || !scene || !camera || !galaxyGroup) {
-            animationFrameIdRef.current = requestAnimationFrame(animate);
-            return;
-        }
-
-        const elapsedTime = clock.getElapsedTime();
-
-        if (isWarping) {
-            warpFactor = Math.min(warpFactor + 0.005, 1); 
-            const easedWarp = 1 - Math.pow(1 - warpFactor, 5); // EaseOutQuint
-            
-            // Move camera forward
-            camera.position.z -= easedWarp * 0.5;
-
-            const overlay = document.getElementById('warp-overlay');
-            if(overlay) {
-                 if (warpFactor >= 0.2) {
-                     overlay.style.opacity = `${(warpFactor - 0.2) / 0.8}`;
-                 }
-                 if (camera.position.z <= 0) { // When camera passes the center
-                     router.push('/home');
-                     return; 
-                 }
-            }
-
-        } else {
-            // Standard rotation and parallax
-            (galaxyGroup.children[0] as THREE.Points).rotation.y = elapsedTime * 0.1;
-            
-            const parallaxX = mouse.current.x * 0.2;
-            const parallaxY = -mouse.current.y * 0.2;
-            
-            camera.position.x += (parallaxX - camera.position.x) * 0.02;
-            camera.position.y += (parallaxY - camera.position.y) * 0.02;
-        }
-        
-        renderer.render(scene, camera);
-        animationFrameIdRef.current = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-        if(animationFrameIdRef.current) {
-            cancelAnimationFrame(animationFrameIdRef.current);
-        }
-    }
   }, [isWarping, router]);
 
 
