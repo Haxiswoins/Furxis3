@@ -3,7 +3,16 @@
 
 本文档将指导您如何将此 Next.js 应用程序部署到您自己的服务器。
 
-> **⚠️ 极其重要：** 为了让邮件通知和用户认证等核心功能正常工作，您的服务器需要具备稳定访问国际互联网服务（如 Resend、Authing）的能力。图片上传功能将在您自己的服务器上进行存储。
+> **⚠️ 极其重要：网络连接要求**
+> 为了让邮件通知和用户认证等核心功能正常工作，您的服务器**必须**具备稳定访问以下国际互联网服务的能力：
+> *   **Authing (认证服务)**: 用于所有用户登录、注册流程。
+> *   **Resend (邮件服务)**: 用于发送所有系统通知邮件。
+>
+> 图片上传功能将在您自己的服务器上进行存储，不依赖外部服务。
+>
+> **关于Google服务**：
+> *   **Google Fonts**：已在项目构建时自动下载并自托管，**运行时不依赖Google**。
+> *   **Google AI (Genkit)**：项目预置了Google AI功能，但目前未激活。如未来使用，需确保服务器能访问Google AI的API。
 
 ---
 
@@ -68,24 +77,24 @@ npm install
 # 网站基础URL (⚠️ 极其重要！)
 # 这个URL是让您上传的图片在生产环境中正确显示所必需的。
 # 请确保填写您网站的完整公网访问地址，例如：https://www.yourdomain.com 或 http://YOUR_SERVER_IP:3000
-NEXT_PUBLIC_BASE_URL="http://localhost:3000"
+NEXT_PUBLIC_BASE_URL="..."
 
 # --- Resend API Key (用于邮件通知) ---
 # 邮件通知功能是网站的核心之一，详细配置请务必参考 RESEND_GUIDE.md
-RESEND_API_KEY="re_..."
+RESEND_API_KEY="..."
 
 # --- Authing 应用配置 (用于用户认证) ---
 # 您可以从 Authing 控制台 > 选择您的自建应用 > 应用配置 中找到以下大部分值。
 AUTHING_APP_ID="..."
 AUTHING_APP_SECRET="..."
-# Issuer URL, 通常格式为 https://<YOUR-SUBDOMAIN>.authing.cn/oidc
+# Issuer URL, 通常格式为 https://<YOUR-SUBDOMAIN>.authing.cn
 AUTHING_ISSUER="..."
 
 # 登录回调URL, 必须与您在 Authing 应用配置中的 "登录回调 URL" 完全一致
 #
 # ⚠️ 注意：本地开发时，您需要将 "http://localhost:3000/api/auth/authing/callback" 添加到 Authing 白名单。
 #         线上部署后，您需要将 "https://您的域名/api/auth/authing/callback" 添加到 Authing 白名单。
-AUTHING_REDIRECT_URI="http://localhost:3000/api/auth/authing/callback"
+AUTHING_REDIRECT_URI="http://localhost:3000/api/auth/authing/callback" #!<- 本地开发请使用此值
 
 # 用于加密会话的密钥, 请生成一个足够复杂的随机字符串 (至少32位)
 # 您可以在您的服务器或本地终端使用 `openssl rand -base64 32` 命令生成一个
@@ -93,7 +102,7 @@ AUTHING_SECRET="..."
 
 # 管理员邮箱地址
 # 拥有此邮箱的用户登录后将自动获得网站的管理员权限
-ADMIN_EMAIL="your-admin-email@example.com"
+ADMIN_EMAIL="..."
     ```
     > **重要提示**: 这些密钥是应用正常运行所必需的。特别是`AUTHING_SECRET`，它用于保护用户登录会话的安全，请务必使用一个足够强大的随机字符串，不要使用示例值。
 
@@ -127,6 +136,7 @@ ADMIN_EMAIL="your-admin-email@example.com"
     ```bash
     npm run build
     ```
+    > **注意**: 构建过程需要连接网络以下载一些依赖和Node.js模块。
 
 2.  **启动应用**: 构建完成后，使用以下命令启动服务器：
 
