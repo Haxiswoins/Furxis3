@@ -5,25 +5,24 @@ import { Suspense, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronLeft, LogIn } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import Link from 'next/link';
 
 function LoginPageContent() {
   const router = useRouter();
   const { user, loading, login } = useAuth();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get('returnTo') || '/home';
 
   useEffect(() => {
     // If the user is somehow logged in, redirect them away.
     if (user && !loading) {
-      router.replace(user.isAdmin ? '/admin/dashboard' : '/home');
+      router.replace(user.isAdmin ? '/admin/dashboard' : returnTo);
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, returnTo]);
 
-
-  const handleLogin = async () => {
-    // This now shows a toast message that the feature is disabled
-    await login();
+  const handleLogin = () => {
+    login(returnTo);
   };
   
   return (
@@ -35,17 +34,17 @@ function LoginPageContent() {
       </div>
       <Card className="w-full max-w-md shadow-2xl text-center">
           <CardHeader>
-            <CardTitle className="text-3xl font-headline">登录/注册</CardTitle>
-            <CardDescription>用户认证功能当前已临时禁用。</CardDescription>
+            <CardTitle className="text-3xl font-headline">需要登录</CardTitle>
+            <CardDescription>请登录或注册以继续。</CardDescription>
           </CardHeader>
           <CardContent>
               <p className="text-muted-foreground">
-                  由于一个持续存在的依赖项安装问题，用户认证系统已被临时禁用。我们正在努力解决这个问题。
+                  您需要一个账户才能访问此页面。点击下方按钮前往登录或注册。
               </p>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button onClick={handleLogin} className="w-full" size="lg" disabled={loading}>
-                {loading ? '加载中...' : <><LogIn className="mr-2" /> 尝试登录</>}
+                {loading ? '加载中...' : <><LogIn className="mr-2" /> 前往登录</>}
             </Button>
           </CardFooter>
       </Card>

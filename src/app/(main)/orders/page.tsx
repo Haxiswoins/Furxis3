@@ -1,8 +1,8 @@
 
 import { OrdersClientPage } from './client-page';
 
-// The responsibility of checking auth and fetching data is now
-// handled by the client component.
+// This page now only needs to render the client component.
+// The client component will handle auth checks and data fetching.
 export default function OrdersPage() {
   return <OrdersClientPage />;
 }

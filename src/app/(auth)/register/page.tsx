@@ -1,29 +1,29 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 
 
-export default function RegisterPage() {
+function RegisterPageContent() {
   const router = useRouter();
   const { user, loading, login } = useAuth();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get('returnTo') || '/home';
   
   useEffect(() => {
     if (user && !loading) {
-      router.replace('/home');
+      router.replace(returnTo);
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, returnTo]);
   
   const handleRegister = () => {
-    // The login function now redirects to Authing's hosted page
-    // which includes a tab for registration.
-    login();
+    login(returnTo);
   };
 
   return (
@@ -45,16 +45,24 @@ export default function RegisterPage() {
           </CardContent>
           <CardFooter className="flex-col gap-4">
             <Button onClick={handleRegister} className="w-full" size="lg" disabled={loading}>
-              {loading ? '加载中...' : '前往注册'}
+              {loading ? '加载中...' : '前往注册或登录'}
             </Button>
             <p className="text-xs text-muted-foreground">
               已有账户？{' '}
-              <Link href="/api/auth/authing/login" className="text-primary hover:underline">
+              <a onClick={handleRegister} className="text-primary hover:underline cursor-pointer">
                 登录
-              </Link>
+              </a>
             </p>
           </CardFooter>
       </Card>
     </div>
   );
+}
+
+export default function RegisterPage() {
+    return (
+        <Suspense fallback={<div>加载中...</div>}>
+            <RegisterPageContent />
+        </Suspense>
+    )
 }

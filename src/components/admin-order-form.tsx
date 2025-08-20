@@ -186,7 +186,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
                 <CardContent className="space-y-6">
                     {/* User Info */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <FormField control={form.control} name="userName" render={({ field }) => ( <FormItem> <FormLabel>用户名称</FormLabel> <FormControl><Input {...field} disabled /></FormControl> <FormMessage /> </FormItem> )}/>
+                        <FormField control={form.control} name="userName" render={({ field }) => ( <FormItem> <FormLabel>用户名称</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
                         <FormField control={form.control} name="email" render={({ field }) => ( <FormItem> <FormLabel>邮箱</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
                         <FormField control={form.control} name="phone" render={({ field }) => ( <FormItem> <FormLabel>电话</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
                         <FormField control={form.control} name="qq" render={({ field }) => ( <FormItem> <FormLabel>QQ号</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>

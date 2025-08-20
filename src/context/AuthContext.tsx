@@ -1,10 +1,9 @@
 
 'use client';
 
-import { createContext, useContext, ReactNode } from 'react';
-// import { useUser, useAuthentication } from '@authing/nextjs';
+import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const ADMIN_EMAIL = 'haxiswoins@qq.com';
 
@@ -19,53 +18,58 @@ interface CustomUser {
 interface AuthContextType {
   user: CustomUser | null;
   loading: boolean;
-  login: () => Promise<void>;
-  logout: () => Promise<void>;
+  login: (returnTo?: string) => void;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// This is a mock function. In a real app, you'd fetch this from your backend.
+async function fetchUserSession(): Promise<CustomUser | null> {
+    // This is where you would make an API call to your backend to verify the session
+    // For now, we'll return null as we don't have a real session management
+    return null;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // const { user: authingUser, isLoading: loading } = useUser();
-  // const { loginWithRedirect, logout: authingLogout } = useAuthentication();
-  const { toast } = useToast();
-  const loading = false;
-  const authingUser = null;
+  const [user, setUser] = useState<CustomUser | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
+  useEffect(() => {
+    const checkSession = async () => {
+        setLoading(true);
+        // We'll replace this with a mock.
+        // In a real scenario with Authing, you'd have a server-side endpoint
+        // that validates the session cookie and returns user data.
+        const sessionUser = await fetchUserSession(); 
+        setUser(sessionUser);
+        setLoading(false);
+    };
+    checkSession();
+  }, []);
 
-  const user: CustomUser | null = authingUser ? {
-      // uid: authingUser.sub,
-      // email: authingUser.email || null,
-      // name: authingUser.name || authingUser.preferred_username || null,
-      // picture: authingUser.picture || null,
-      // isAdmin: authingUser.email === ADMIN_EMAIL,
-  } as CustomUser : null;
-
-  const showDisabledToast = () => {
-    toast({
-        title: "功能暂时禁用",
-        description: "由于依赖项问题，用户认证功能已被临时禁用。",
-        variant: "destructive",
-    });
-  }
-
-
-  const login = async () => {
-    // Redirects to Authing's hosted login page
-    // await loginWithRedirect();
-    showDisabledToast();
+  const login = (returnTo?: string) => {
+    let path = '/api/auth/authing/login';
+    const finalReturnTo = returnTo || window.location.pathname + window.location.search;
+    const params = new URLSearchParams();
+    params.set('returnTo', finalReturnTo);
+    router.push(`${path}?${params.toString()}`);
   };
 
-  const logout = async () => {
-    // Redirects to Authing and then back to the application
-    // await authingLogout({
-    //   returnTo: window.location.origin
-    // });
-    showDisabledToast();
+  const logout = () => {
+    // In a real app, this would call a backend endpoint to clear the session cookie.
+    const logoutUrl = new URL(process.env.NEXT_PUBLIC_BASE_URL || window.location.origin);
+    
+    // For now, we just clear the user state and redirect.
+    setUser(null);
+    router.push(logoutUrl.toString());
   };
+
 
   const value = {
-    user: null, // Temporarily disable user
+    user,
     loading,
     login,
     logout,

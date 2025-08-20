@@ -1,10 +1,32 @@
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-// The @authing/nextjs dependency is currently broken, causing installation and build failures.
-// This route handler is a temporary measure to prevent the app from crashing when auth routes are accessed.
-// It redirects the user to a more user-friendly page instead of showing a JSON error.
-export async function GET() {
-    const loginUrl = new URL('/login', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000');
+export function GET(req: NextRequest) {
+    const { searchParams } = new URL(req.url);
+    const returnTo = searchParams.get('returnTo');
+    
+    let loginUrl = new URL(process.env.AUTHING_ISSUER + '/login');
+    
+    const clientId = process.env.AUTHING_APP_ID;
+    const redirectUri = process.env.AUTHING_REDIRECT_URI;
+
+    if (clientId && redirectUri) {
+        loginUrl.searchParams.set('client_id', clientId);
+        loginUrl.searchParams.set('redirect_uri', redirectUri);
+        loginUrl.searchParams.set('response_type', 'code');
+        loginUrl.searchParams.set('scope', 'openid profile email phone');
+        if (returnTo) {
+            loginUrl.searchParams.set('state', Buffer.from(JSON.stringify({ returnTo })).toString('base64'));
+        }
+    } else {
+        // Fallback to a simpler login page if config is missing
+        const fallbackLoginUrl = new URL('/login', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000');
+        return NextResponse.redirect(fallbackLoginUrl);
+    }
+    
     return NextResponse.redirect(loginUrl);
+}
+
+export async function POST(req: NextRequest) {
+  return GET(req);
 }

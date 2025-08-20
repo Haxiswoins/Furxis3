@@ -54,12 +54,20 @@ function ShareButton() {
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const isLoggedIn = !!user;
   const isAdmin = user?.isAdmin || false;
 
   // Show back button on all pages except for the main landing page and home.
   const showBackButton = !['/', '/home'].includes(pathname) && !pathname.startsWith('/admin');
+
+  const handleUserClick = () => {
+    if (isLoggedIn) {
+      router.push('/profile');
+    } else {
+      login();
+    }
+  }
 
   return (
     <header className="fixed top-4 left-4 right-4 z-50 flex justify-between items-center">
@@ -90,16 +98,15 @@ export default function Header() {
               </Button>
           </Link>
         )}
-        <Link href={isLoggedIn ? "/profile" : "/login"} passHref>
-           <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full h-12 w-12 bg-card/30 backdrop-blur-md hover:bg-card/50"
-              aria-label="个人资料"
-            >
-              <User className="h-6 w-6" />
-            </Button>
-        </Link>
+        <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full h-12 w-12 bg-card/30 backdrop-blur-md hover:bg-card/50"
+            aria-label="个人资料"
+            onClick={handleUserClick}
+        >
+            <User className="h-6 w-6" />
+        </Button>
       </div>
     </header>
   );

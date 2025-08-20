@@ -1,4 +1,6 @@
 
+// This page must be a client component to use hooks like `useAuth` and `useRouter`
+// for authentication checks and dynamic user-specific data fetching.
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -18,6 +20,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 const lightStatusStyles: { [key: string]: string } = {
   '处理中': 'bg-blue-100 text-blue-800 border-blue-200',
@@ -46,7 +49,7 @@ const darkStatusStyles: { [key: string]: string } = {
 export default function OrderDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, login } = useAuth();
   const { toast } = useToast();
   const orderId = params.id as string;
   const { theme } = useTheme();
@@ -60,18 +63,20 @@ export default function OrderDetailPage() {
   const statusStyles = theme === 'dark' ? darkStatusStyles : lightStatusStyles;
 
   const fetchOrderAndContent = useCallback(async () => {
+    if (!user || !orderId) return;
+
     setIsPageLoading(true);
     try {
-      if (!user) return;
       const [orderData, contentData] = await Promise.all([
         getOrderById(orderId),
         getSiteContent()
       ]);
 
-      if (orderData && orderData.userId === user!.uid) {
+      if (orderData && orderData.userId === user.uid) {
         setOrder(orderData);
         setSiteContent(contentData);
       } else {
+        // If the order doesn't belong to the user, treat as not found.
         notFound();
       }
     } catch (error) {
@@ -86,11 +91,12 @@ export default function OrderDetailPage() {
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
-      router.push('/login');
+      // Redirect to login but keep the current path to return to after login
+      login(`/orders/${orderId}`);
       return;
     }
     fetchOrderAndContent();
-  }, [authLoading, user, router, fetchOrderAndContent]);
+  }, [authLoading, user, login, orderId, fetchOrderAndContent]);
 
   const handleConfirmOrder = async () => {
     if (!order) return;
@@ -172,7 +178,7 @@ export default function OrderDetailPage() {
   }
 
   const handleCancelClick = () => {
-    if (order.status === '处理中' || order.status === '已确认' || order.status === '待确认' || order.status === '排队中' || order.status === '制作中') {
+    if (['处理中', '已确认', '待确认', '排队中', '制作中'].includes(order.status)) {
       router.push(`/orders/${order.id}/cancel`);
     }
   };
@@ -188,7 +194,7 @@ export default function OrderDetailPage() {
   };
   
   const renderCancelButton = () => {
-    if (order.status === '处理中' || order.status === '已确认' || order.status === '待确认' || order.status === '排队中' || order.status === '制作中') {
+    if (['处理中', '已确认', '待确认', '排队中', '制作中'].includes(order.status)) {
       return (
         <Button variant="destructive" onClick={handleCancelClick}>申请退养/取消</Button>
       );
@@ -220,19 +226,8 @@ export default function OrderDetailPage() {
     return (
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="destructive">申请退养/取消</Button>
+          <Button variant="destructive" disabled>申请退养/取消</Button>
         </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>无法取消</AlertDialogTitle>
-            <AlertDialogDescription>
-              订单已开始制作或已完成，无法在线取消。如有需要，请联系管理员处理。
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction>好的</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
       </AlertDialog>
     );
   };
@@ -250,7 +245,7 @@ export default function OrderDetailPage() {
               <CardTitle className="text-3xl font-headline">订单详情</CardTitle>
               <CardDescription>订单号: {order.orderNumber}</CardDescription>
             </div>
-            <Badge variant="outline" className={statusStyles[order.status]}>{order.status}</Badge>
+            <Badge variant="outline" className={cn(statusStyles[order.status], "capitalize")}>{order.status}</Badge>
           </div>
         </CardHeader>
         <CardContent>
@@ -274,7 +269,7 @@ export default function OrderDetailPage() {
             <div className="md:w-2/3 space-y-4">
               <h2 className="text-2xl font-bold">{order.productName}</h2>
               <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-sm ${order.orderType === '领养订单' ? 'bg-orange-400' : 'bg-blue-400'}`}></div>
+                <div className={cn('w-3 h-3 rounded-sm', order.orderType === '领养订单' ? 'bg-orange-400' : 'bg-blue-400')}></div>
                 <span>{order.orderType}</span>
               </div>
               <Separator />
@@ -285,7 +280,7 @@ export default function OrderDetailPage() {
                 </div>
                  <div>
                   <p className="text-muted-foreground">总计</p>
-                  <p className="font-semibold">{order.total}</p>
+                  <p className="font-semibold text-lg text-primary">¥{order.total}</p>
                 </div>
               </div>
               <div>
