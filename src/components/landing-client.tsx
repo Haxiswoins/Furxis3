@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -143,14 +142,24 @@ export function LandingPageClient() {
     clockRef.current = new THREE.Clock();
 
     const clock = clockRef.current;
+    let localIsWarping = false;
     let warpFactor = 0;
+    
+    // We create a separate function to update the warping state to avoid re-triggering useEffect
+    const startWarping = () => {
+        localIsWarping = true;
+    }
+
+    // Assign to a ref so we can call it from the button's onClick
+    (canvasRef.current as any).startWarping = startWarping;
+    
 
     const animate = () => {
         animationFrameIdRef.current = requestAnimationFrame(animate);
 
         const elapsedTime = clock.getElapsedTime();
 
-        if (isWarping) {
+        if (localIsWarping) {
             warpFactor = Math.min(warpFactor + 0.005, 1);
             const easedWarp = 1 - Math.pow(1 - warpFactor, 5); // EaseOutQuint
 
@@ -165,6 +174,7 @@ export function LandingPageClient() {
                     overlay.style.opacity = `${(warpFactor - 0.2) / 0.8}`;
                 }
                 if (cameraRef.current && cameraRef.current.position.z <= 0) { // When camera passes the center
+                    if(animationFrameIdRef.current) cancelAnimationFrame(animationFrameIdRef.current);
                     router.push('/home');
                     return;
                 }
@@ -202,11 +212,14 @@ export function LandingPageClient() {
       rendererRef.current?.dispose();
       rendererRef.current = null;
     };
-  }, [isWarping, router]);
+  }, [router]);
 
 
   const handleNavigate = () => {
     setIsWarping(true);
+    if(canvasRef.current && (canvasRef.current as any).startWarping) {
+        (canvasRef.current as any).startWarping();
+    }
   };
   
   return (
