@@ -3,6 +3,8 @@
 
 import { createContext, useContext, ReactNode } from 'react';
 // import { useUser, useAuthentication } from '@authing/nextjs';
+import { useToast } from '@/hooks/use-toast';
+
 
 const ADMIN_EMAIL = 'haxiswoins@qq.com';
 
@@ -26,6 +28,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   // const { user: authingUser, isLoading: loading } = useUser();
   // const { loginWithRedirect, logout: authingLogout } = useAuthentication();
+  const { toast } = useToast();
   const loading = false;
   const authingUser = null;
 
@@ -38,10 +41,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // isAdmin: authingUser.email === ADMIN_EMAIL,
   } as CustomUser : null;
 
+  const showDisabledToast = () => {
+    toast({
+        title: "功能暂时禁用",
+        description: "由于依赖项问题，用户认证功能已被临时禁用。",
+        variant: "destructive",
+    });
+  }
+
+
   const login = async () => {
     // Redirects to Authing's hosted login page
     // await loginWithRedirect();
-    alert('登录功能暂时禁用，请在修复依赖问题后重试。');
+    showDisabledToast();
   };
 
   const logout = async () => {
@@ -49,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // await authingLogout({
     //   returnTo: window.location.origin
     // });
-    alert('登出功能暂时禁用。');
+    showDisabledToast();
   };
 
   const value = {

@@ -1,11 +1,10 @@
 
-// import { handleAuth } from '@authing/nextjs';
-
 import { NextResponse } from "next/server";
 
-// export const GET = handleAuth();
-
-// Temporarily disable the route to avoid errors
+// The @authing/nextjs dependency is currently broken, causing installation and build failures.
+// This route handler is a temporary measure to prevent the app from crashing when auth routes are accessed.
+// It redirects the user to a more user-friendly page instead of showing a JSON error.
 export async function GET() {
-    return NextResponse.json({ error: "Authentication is temporarily disabled." }, { status: 503 });
+    const loginUrl = new URL('/login', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000');
+    return NextResponse.redirect(loginUrl);
 }

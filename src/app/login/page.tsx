@@ -14,7 +14,7 @@ function LoginPageContent() {
   const { user, loading, login } = useAuth();
 
   useEffect(() => {
-    // If the user is already logged in, redirect them away from the login page.
+    // If the user is somehow logged in, redirect them away.
     if (user && !loading) {
       router.replace(user.isAdmin ? '/admin/dashboard' : '/home');
     }
@@ -22,7 +22,7 @@ function LoginPageContent() {
 
 
   const handleLogin = async () => {
-    // This will redirect to the Authing hosted login page
+    // This now shows a toast message that the feature is disabled
     await login();
   };
   
@@ -35,24 +35,18 @@ function LoginPageContent() {
       </div>
       <Card className="w-full max-w-md shadow-2xl text-center">
           <CardHeader>
-            <CardTitle className="text-3xl font-headline">欢迎回来</CardTitle>
-            <CardDescription>登录以继续您的旅程。</CardDescription>
+            <CardTitle className="text-3xl font-headline">登录/注册</CardTitle>
+            <CardDescription>用户认证功能当前已临时禁用。</CardDescription>
           </CardHeader>
           <CardContent>
               <p className="text-muted-foreground">
-                  我们的登录系统由 Authing 提供。点击下方按钮将跳转到安全的登录页面。
+                  由于一个持续存在的依赖项安装问题，用户认证系统已被临时禁用。我们正在努力解决这个问题。
               </p>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button onClick={handleLogin} className="w-full" size="lg" disabled={loading}>
-                {loading ? '加载中...' : <><LogIn className="mr-2" /> 前往登录</>}
+                {loading ? '加载中...' : <><LogIn className="mr-2" /> 尝试登录</>}
             </Button>
-            <p className="text-xs text-muted-foreground">
-              还没有账户？{' '}
-              <Link href="/register" className="text-primary hover:underline">
-                注册
-              </Link>
-            </p>
           </CardFooter>
       </Card>
     </div>
