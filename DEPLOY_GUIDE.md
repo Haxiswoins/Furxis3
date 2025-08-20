@@ -83,6 +83,9 @@ AUTHING_ISSUER="..."
 
 # 登录回调URL, 必须与您在 Authing 应用配置中的 "登录回调 URL" 完全一致
 # 例如: https://www.yourdomain.com/api/auth/authing/callback 或 http://YOUR_SERVER_IP:3000/api/auth/authing/callback
+#
+# ⚠️ 注意：本地开发时，您需要将 "http://localhost:3000/api/auth/authing/callback" 添加到 Authing 白名单。
+#         线上部署后，您需要将 "https://您的域名/api/auth/authing/callback" 添加到 Authing 白名单。
 AUTHING_REDIRECT_URI="..."
 
 # 用于加密会话的密钥, 请生成一个足够复杂的随机字符串 (至少32位)
