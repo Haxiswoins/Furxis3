@@ -2,7 +2,7 @@
 
 本文档将指导您如何将此 Next.js 应用程序部署到您自己的服务器。
 
-> **⚠️ 极其重要：** 为了让邮件通知功能正常工作，您的服务器需要具备稳定访问国际互联网服务（如 Resend）的能力。图片上传功能将在您自己的服务器上进行存储。用户认证功能已切换至 Authing 服务，请确保您的服务器可以访问 Authing 的服务地址。
+> **⚠️ 极其重要：** 为了让邮件通知和用户认证等核心功能正常工作，您的服务器需要具备稳定访问国际互联网服务（如 Resend、Authing）的能力。图片上传功能将在您自己的服务器上进行存储。
 
 ---
 
@@ -45,7 +45,7 @@ npm install
 
 ---
 
-### **第 4 步：配置环境变量**
+### **第 4 步：配置环境变量 (最关键的一步)**
 
 为了让应用能够正常运行，您需要配置环境变量。这是**至关重要**的一步。
 
@@ -61,7 +61,7 @@ npm install
     nano .env.local
     ```
 
-3.  将您的真实密钥和配置信息添加到文件中。文件内容应如下所示，请将 `...` 替换为您的实际值：
+3.  将您的真实密钥和配置信息添加到文件中。文件内容应如下所示，**请务必将所有 `...` 替换为您的实际值**：
 
     ```env
 # 网站基础URL (⚠️ 极其重要！)
@@ -75,21 +75,21 @@ NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 RESEND_API_KEY="re_..."
 
 # --- Authing 应用配置 (用于用户认证) ---
-# 您可以从 Authing 控制台 > 选择您的应用 > 配置 中找到以下值。
-AUTHING_APP_ID="68a539bd60ad89fcaeb3585f"
-AUTHING_APP_SECRET="750fdd113a91158818471993b3f46a6a"
-AUTHING_ISSUER="https://icwh5jsh38rx-demo.authing.cn"
+# 您可以从 Authing 控制台 > 选择您的应用 > 应用配置 中找到以下大部分值。
+AUTHING_APP_ID="..."
+AUTHING_APP_SECRET="..."
+AUTHING_ISSUER="..."
 
-# 登录回调URL, 必须与 Authing 应用配置中的回调 URL 完全一致
-# 例如: https://www.yourdomain.com/api/auth/authing/callback
+# 登录回调URL, 必须与您在 Authing 应用配置中的 "登录回调 URL" 完全一致
+# 例如: https://www.yourdomain.com/api/auth/authing/callback 或 http://YOUR_SERVER_IP:3000/api/auth/authing/callback
 AUTHING_REDIRECT_URI="..."
 
 # 用于加密会话的密钥, 请生成一个足够复杂的随机字符串
-# 您可以使用 `openssl rand -base64 32` 命令生成
+# 您可以使用 `openssl rand -base64 32` 命令在您的服务器或本地终端生成一个
 AUTHING_SECRET="..."
 
     ```
-    > **重要提示**: 这些密钥是应用正常运行所必需的。特别是`AUTHING_SECRET`，它用于保护用户登录会话的安全，请务必使用一个足够强大的随机字符串。
+    > **重要提示**: 这些密钥是应用正常运行所必需的。特别是`AUTHING_SECRET`，它用于保护用户登录会话的安全，请务必使用一个足够强大的随机字符串，不要使用示例值。
 
 4.  保存并关闭文件 (在 `nano` 中，按 `Ctrl+X`，然后按 `Y`，最后按 `Enter`)。
 
