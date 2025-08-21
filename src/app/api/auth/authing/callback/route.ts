@@ -75,7 +75,9 @@ export async function GET(req: NextRequest) {
         }
     }
     
-    return NextResponse.redirect(new URL(returnTo, req.nextUrl.origin));
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || req.nextUrl.origin;
+
+    return NextResponse.redirect(new URL(returnTo, baseUrl));
 
   } catch (error) {
     console.error('Authentication callback error:', error);

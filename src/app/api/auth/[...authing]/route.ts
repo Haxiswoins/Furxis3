@@ -29,7 +29,7 @@ export function GET(req: NextRequest) {
     } else {
         // Fallback to a simpler login page if config is missing
         console.error("Authing client ID or redirect URI is missing.");
-        const fallbackLoginUrl = new URL('/login', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000');
+        const fallbackLoginUrl = new URL('/login', process.env.NEXT_PUBLIC_BASE_URL);
         return NextResponse.redirect(fallbackLoginUrl);
     }
     
