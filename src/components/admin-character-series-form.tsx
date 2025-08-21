@@ -28,6 +28,7 @@ import { Upload } from 'lucide-react';
 const formSchema = z.object({
   name: z.string().min(2, { message: '系列名称至少需要2个字符。' }),
   description: z.string().min(10, { message: '系列描述至少需要10个字符。' }),
+  imageUrl: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -49,31 +50,34 @@ export function AdminCharacterSeriesForm({ series }: AdminCharacterSeriesFormPro
     defaultValues: {
       name: series?.name || '',
       description: series?.description || '',
+      imageUrl: series?.imageUrl || '',
     },
   });
 
+  const imageUrlValue = form.watch('imageUrl');
+
   async function handleSave(values: FormValues) {
-    if (!series && !imageFile) {
-        toast({ title: '图片缺失', description: '新增系列必须上传封面图片。', variant: 'destructive' });
+    if (!series && !imageFile && !values.imageUrl) {
+        toast({ title: '图片缺失', description: '新增系列必须上传封面图片或提供URL。', variant: 'destructive' });
         return;
     }
 
     setLoading(true);
     try {
-      let imageUrl = series?.imageUrl; 
+      let finalImageUrl = values.imageUrl || series?.imageUrl; 
 
-      if (imageFile) {
-        imageUrl = await uploadImage(imageFile, `series/${values.name}_${Date.now()}`);
+      if (imageFile && !values.imageUrl) { // Prioritize URL input over file upload
+        finalImageUrl = await uploadImage(imageFile, `series/${values.name}_${Date.now()}`);
       }
 
-      if (!imageUrl) {
-        throw new Error("图片上传失败或未提供。");
+      if (!finalImageUrl) {
+        throw new Error("图片未提供。");
       }
 
       const seriesData: Omit<CharacterSeries, 'id'> = {
         name: values.name,
         description: values.description,
-        imageUrl,
+        imageUrl: finalImageUrl,
       };
       
       await saveCharacterSeries(seriesData, series?.id);
@@ -101,6 +105,7 @@ export function AdminCharacterSeriesForm({ series }: AdminCharacterSeriesFormPro
     if (file) {
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
+      form.setValue('imageUrl', ''); // Clear URL if a file is chosen
     }
   };
 
@@ -133,23 +138,37 @@ export function AdminCharacterSeriesForm({ series }: AdminCharacterSeriesFormPro
             <FormLabel>封面图片</FormLabel>
             <div className="flex items-center gap-4">
                 <div className="w-48 h-32 relative rounded-md border bg-muted flex-shrink-0">
-                  {imagePreview && (
-                      <Image src={imagePreview} alt="图片预览" fill style={{objectFit:'cover'}} className="rounded-md" />
-                  )}
+                  <Image src={imageUrlValue || imagePreview || "https://placehold.co/600x800.png"} alt="图片预览" fill style={{objectFit:'cover'}} className="rounded-md" />
                 </div>
-                <Input 
-                    type="file" 
-                    accept="image/*"
-                    className="hidden"
-                    ref={fileInputRef}
-                    onChange={handleFileChange} 
-                />
-                 <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                    <Upload className="mr-2 h-4 w-4" />
-                    {imagePreview ? '更换图片' : '选择图片'}
-                </Button>
+                <div className="space-y-2">
+                    <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                        <Upload className="mr-2 h-4 w-4" />
+                        本地上传
+                    </Button>
+                     <Input 
+                        type="file" 
+                        accept="image/*"
+                        className="hidden"
+                        ref={fileInputRef}
+                        onChange={handleFileChange} 
+                    />
+                    <FormField
+                        control={form.control}
+                        name="imageUrl"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <Input placeholder="或在此处粘贴图片URL" {...field} onChange={(e) => {
+                                        field.onChange(e);
+                                        if(e.target.value) setImageFile(null);
+                                    }}/>
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                </div>
             </div>
-            <FormDescription>这张图片将作为此系列的封面展示。</FormDescription>
+            <FormDescription>这张图片将作为此系列的封面展示。优先使用URL。</FormDescription>
         </div>
 
         <div className="flex items-center gap-4">

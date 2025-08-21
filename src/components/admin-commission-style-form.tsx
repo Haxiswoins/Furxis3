@@ -24,6 +24,7 @@ const formSchema = z.object({
   price: z.string().min(1, { message: '价格不能为空。' }),
   description: z.string().min(10, { message: '描述至少需要10个字符。' }),
   tags: z.string(),
+  imageUrl: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -49,6 +50,7 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
       price: '',
       description: '',
       tags: '',
+      imageUrl: '',
     },
   });
   
@@ -64,33 +66,39 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
         price: commissionStyle.price || '',
         description: commissionStyle.description || '',
         tags: commissionStyle.tags.join(', ') || '',
+        imageUrl: commissionStyle.imageUrl || '',
       });
       setImagePreview(commissionStyle.imageUrl);
     }
   }, [commissionStyle, form]);
 
+  const imageUrlValue = form.watch('imageUrl');
+
   async function handleSave(values: FormValues) {
-    if (!commissionStyle && !imageFile) {
-        toast({ title: '图片缺失', description: '新增委托样式必须上传图片。', variant: 'destructive' });
+    if (!commissionStyle && !imageFile && !values.imageUrl) {
+        toast({ title: '图片缺失', description: '新增委托样式必须上传图片或提供URL。', variant: 'destructive' });
         return;
     }
 
     setLoading(true);
     try {
-      let imageUrl = commissionStyle?.imageUrl;
+      let finalImageUrl = values.imageUrl || commissionStyle?.imageUrl;
 
-      if (imageFile) {
-        imageUrl = await uploadImage(imageFile, `commission-styles/${values.name}_${Date.now()}`);
+      if (imageFile && !values.imageUrl) {
+        finalImageUrl = await uploadImage(imageFile, `commission-styles/${values.name}_${Date.now()}`);
       }
 
-      if (!imageUrl) {
-        throw new Error("图片上传失败或未提供。");
+      if (!finalImageUrl) {
+        throw new Error("图片未提供。");
       }
 
       const styleData: Omit<CommissionStyle, 'id'> = {
-        ...values,
+        commissionOptionId: values.commissionOptionId,
+        name: values.name,
+        price: values.price,
+        description: values.description,
         tags: values.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-        imageUrl,
+        imageUrl: finalImageUrl,
       };
       
       await saveCommissionStyle(styleData, commissionStyle?.id);
@@ -118,6 +126,7 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
     if (file) {
         setImageFile(file);
         setImagePreview(URL.createObjectURL(file));
+        form.setValue('imageUrl', '');
     }
   };
 
@@ -156,22 +165,37 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
             <FormLabel>图片</FormLabel>
             <div className="flex items-center gap-4">
                 <div className="w-32 h-32 relative rounded-md border bg-muted flex-shrink-0">
-                    {imagePreview && (
-                        <Image src={imagePreview} alt="图片预览" fill style={{objectFit:'cover'}} className="rounded-md" />
-                    )}
+                    <Image src={imageUrlValue || imagePreview || "https://placehold.co/600x800.png"} alt="图片预览" fill style={{objectFit:'cover'}} className="rounded-md" />
                 </div>
-                <Input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                />
-                 <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                    <Upload className="mr-2 h-4 w-4" />
-                    {imagePreview ? '更换图片' : '选择图片'}
-                </Button>
+                <div className="space-y-2">
+                    <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                        <Upload className="mr-2 h-4 w-4" />
+                        本地上传
+                    </Button>
+                    <Input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="imageUrl"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <Input placeholder="或在此处粘贴图片URL" {...field} onChange={(e) => {
+                                        field.onChange(e);
+                                        if(e.target.value) setImageFile(null);
+                                    }}/>
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                </div>
             </div>
+             <FormDescription>优先使用URL。</FormDescription>
         </div>
         
         <div className="flex items-center gap-4">

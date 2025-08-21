@@ -41,6 +41,11 @@ const formSchema = z.object({
   sunsetHour: z.coerce.number().min(0, "小时不能小于0").max(23, "小时不能大于23"),
   contactInfo: z.string().optional(),
   fanPrice: z.coerce.number().min(0, "价格不能为负数"),
+  // Image URLs
+  commissionImageUrl: z.string().optional(),
+  adoptionImageUrl: z.string().optional(),
+  workImageUrl: z.string().optional(),
+  homeBackgroundImageUrl: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -141,6 +146,10 @@ export default function SiteContentPage() {
                 sunsetHour: loadedContent?.sunsetHour ?? 18,
                 contactInfo: loadedContent?.contactInfo || '',
                 fanPrice: loadedContent?.fanPrice ?? 150,
+                commissionImageUrl: loadedContent?.commissionImageUrl || '',
+                adoptionImageUrl: loadedContent?.adoptionImageUrl || '',
+                workImageUrl: loadedContent?.workImageUrl || '',
+                homeBackgroundImageUrl: loadedContent?.homeBackgroundImageUrl || '',
             }
         },
     });
@@ -164,6 +173,10 @@ export default function SiteContentPage() {
                   sunsetHour: loadedContent.sunsetHour ?? 18,
                   contactInfo: loadedContent.contactInfo || '',
                   fanPrice: loadedContent.fanPrice ?? 150,
+                  commissionImageUrl: loadedContent.commissionImageUrl,
+                  adoptionImageUrl: loadedContent.adoptionImageUrl,
+                  workImageUrl: loadedContent.workImageUrl,
+                  homeBackgroundImageUrl: loadedContent.homeBackgroundImageUrl || '',
                 });
                 setCommissionImagePreview(loadedContent.commissionImageUrl);
                 setAdoptionImagePreview(loadedContent.adoptionImageUrl);
@@ -175,11 +188,12 @@ export default function SiteContentPage() {
         loadContent();
     }, [form]);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setImageFile: Function, setPreview: Function) => {
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, setFile: React.Dispatch<React.SetStateAction<File | null>>, setPreview: React.Dispatch<React.SetStateAction<string | null>>, urlField: keyof FormValues) => {
         const file = e.target.files?.[0];
         if (file) {
-            setImageFile(file);
+            setFile(file);
             setPreview(URL.createObjectURL(file));
+            form.setValue(urlField, '');
         }
     };
 
@@ -188,24 +202,24 @@ export default function SiteContentPage() {
         try {
             const currentContent = await getSiteContent();
             
-            let newCommissionImageUrl = commissionImagePreview;
-            let newAdoptionImageUrl = adoptionImagePreview;
-            let newWorkImageUrl = workImagePreview;
-            let newHomeBgImageUrl = homeBgImagePreview;
+            let newCommissionImageUrl = values.commissionImageUrl || currentContent?.commissionImageUrl;
+            let newAdoptionImageUrl = values.adoptionImageUrl || currentContent?.adoptionImageUrl;
+            let newWorkImageUrl = values.workImageUrl || currentContent?.workImageUrl;
+            let newHomeBgImageUrl = values.homeBackgroundImageUrl || currentContent?.homeBackgroundImageUrl;
             
-            if (commissionImageFile) {
+            if (commissionImageFile && !values.commissionImageUrl) {
                 newCommissionImageUrl = await uploadImage(commissionImageFile, `site/commission_home_${Date.now()}`);
             }
 
-            if (adoptionImageFile) {
+            if (adoptionImageFile && !values.adoptionImageUrl) {
                 newAdoptionImageUrl = await uploadImage(adoptionImageFile, `site/adoption_home_${Date.now()}`);
             }
 
-            if (workImageFile) {
+            if (workImageFile && !values.workImageUrl) {
               newWorkImageUrl = await uploadImage(workImageFile, `site/work_home_${Date.now()}`);
             }
 
-            if (homeBgImageFile) {
+            if (homeBgImageFile && !values.homeBackgroundImageUrl) {
                  newHomeBgImageUrl = await uploadImage(homeBgImageFile, `site/home_bg_${Date.now()}`);
             }
 
@@ -238,6 +252,11 @@ export default function SiteContentPage() {
              setLoading(false);
         }
     };
+
+    const commissionUrlValue = form.watch('commissionImageUrl');
+    const adoptionUrlValue = form.watch('adoptionImageUrl');
+    const workUrlValue = form.watch('workImageUrl');
+    const homeBgUrlValue = form.watch('homeBackgroundImageUrl');
 
 
     if (initialLoading) {
@@ -326,31 +345,39 @@ export default function SiteContentPage() {
                             <div className="space-y-2">
                                 <FormLabel>首页背景图</FormLabel>
                                 <div className="flex items-center gap-4">
-                                    {homeBgImagePreview && (
-                                        <div className="w-48 h-32 relative rounded-md border bg-muted flex-shrink-0">
-                                            <Image src={homeBgImagePreview} alt="首页背景预览" fill style={{objectFit:'cover'}} className="rounded-md"/>
-                                            <Button type="button" variant="ghost" size="icon" className="absolute top-0 right-0 bg-black/50 hover:bg-black/70 text-white rounded-full h-6 w-6" onClick={() => {
-                                                setHomeBgImageFile(null);
-                                                setHomeBgImagePreview(null);
-                                            }}>
-                                                <X className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    )}
-                                    <Input
-                                        id="homeBgImageFile"
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => handleFileChange(e, setHomeBgImageFile, setHomeBgImagePreview)}
-                                        ref={homeBgFileInputRef}
-                                        className="hidden"
-                                    />
-                                    <Button type="button" variant="outline" onClick={() => homeBgFileInputRef.current?.click()}>
-                                        <Upload className="mr-2 h-4 w-4" />
-                                        {homeBgImagePreview ? '更换图片' : '选择图片'}
-                                    </Button>
+                                     <div className="w-48 h-32 relative rounded-md border bg-muted flex-shrink-0">
+                                        <Image src={homeBgUrlValue || homeBgImagePreview || "https://placehold.co/600x400.png"} alt="首页背景预览" fill style={{objectFit:'cover'}} className="rounded-md"/>
+                                     </div>
+                                     <div className="space-y-2">
+                                        <Button type="button" variant="outline" onClick={() => homeBgFileInputRef.current?.click()}>
+                                            <Upload className="mr-2 h-4 w-4" />
+                                            本地上传
+                                        </Button>
+                                        <Input
+                                            id="homeBgImageFile"
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleFileChange(e, setHomeBgImageFile, setHomeBgImagePreview, 'homeBackgroundImageUrl')}
+                                            ref={homeBgFileInputRef}
+                                            className="hidden"
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="homeBackgroundImageUrl"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <Input placeholder="或在此处粘贴图片URL" {...field} onChange={(e) => {
+                                                            field.onChange(e);
+                                                            if (e.target.value) setHomeBgImageFile(null);
+                                                        }}/>
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                     </div>
                                 </div>
-                                <FormDescription>这张图片将作为/home页面的全屏背景。如果留空，则不显示背景图。</FormDescription>
+                                <FormDescription>这张图片将作为/home页面的全屏背景。如果留空，则不显示背景图。优先使用URL。</FormDescription>
                             </div>
                         </CardContent>
                     </Card>
@@ -362,60 +389,45 @@ export default function SiteContentPage() {
                                <CardDescription>修改“委托申请”相关的内容。</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                <FormField
-                                    control={form.control}
-                                    name="commissionTitle"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>首页卡片标题</FormLabel>
-                                            <FormControl><Input {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="commissionDescription"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>首页卡片描述</FormLabel>
-                                            <FormControl><Input {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                 <FormField
-                                    control={form.control}
-                                    name="commissionPageDescription"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>委托列表页描述</FormLabel>
-                                            <FormControl><Textarea {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <FormField control={form.control} name="commissionTitle" render={({ field }) => ( <FormItem> <FormLabel>首页卡片标题</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                                <FormField control={form.control} name="commissionDescription" render={({ field }) => ( <FormItem> <FormLabel>首页卡片描述</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                                 <FormField control={form.control} name="commissionPageDescription" render={({ field }) => ( <FormItem> <FormLabel>委托列表页描述</FormLabel> <FormControl><Textarea {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
                                 <div className="space-y-2">
                                     <FormLabel>首页卡片背景图</FormLabel>
-                                     <div className="flex items-center gap-4">
-                                        {commissionImagePreview && (
-                                            <div className="w-32 h-48 relative rounded-md border bg-muted flex-shrink-0">
-                                                <Image src={commissionImagePreview} alt="委托卡片预览" fill style={{objectFit:'cover'}} className="rounded-md"/>
-                                            </div>
-                                        )}
-                                        <Input
-                                            id="commissionImageFile"
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleFileChange(e, setCommissionImageFile, setCommissionImagePreview)}
-                                            ref={commissionFileInputRef}
-                                            className="hidden"
-                                        />
-                                        <Button type="button" variant="outline" onClick={() => commissionFileInputRef.current?.click()}>
-                                            <Upload className="mr-2 h-4 w-4" />
-                                            {commissionImagePreview ? '更换图片' : '选择图片'}
-                                        </Button>
+                                     <div className="flex items-start gap-4">
+                                        <div className="w-32 h-48 relative rounded-md border bg-muted flex-shrink-0">
+                                            <Image src={commissionUrlValue || commissionImagePreview || "https://placehold.co/600x800.png"} alt="委托卡片预览" fill style={{objectFit:'cover'}} className="rounded-md"/>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Button type="button" variant="outline" onClick={() => commissionFileInputRef.current?.click()}>
+                                                <Upload className="mr-2 h-4 w-4" />
+                                                上传
+                                            </Button>
+                                            <Input
+                                                id="commissionImageFile"
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => handleFileChange(e, setCommissionImageFile, setCommissionImagePreview, 'commissionImageUrl')}
+                                                ref={commissionFileInputRef}
+                                                className="hidden"
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="commissionImageUrl"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <Input placeholder="或粘贴URL" {...field} onChange={(e) => {
+                                                                field.onChange(e);
+                                                                if (e.target.value) setCommissionImageFile(null);
+                                                            }}/>
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
                                     </div>
+                                    <FormDescription>优先使用URL。</FormDescription>
                                 </div>
                             </CardContent>
                         </Card>
@@ -426,60 +438,45 @@ export default function SiteContentPage() {
                                <CardDescription>修改“设定领养”相关的内容。</CardDescription>
                             </CardHeader>
                              <CardContent className="space-y-6">
-                                <FormField
-                                    control={form.control}
-                                    name="adoptionTitle"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>首页卡片标题</FormLabel>
-                                            <FormControl><Input {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="adoptionDescription"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>首页卡片描述</FormLabel>
-                                            <FormControl><Input {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                 <FormField
-                                    control={form.control}
-                                    name="adoptionPageDescription"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>领养列表页描述</FormLabel>
-                                            <FormControl><Textarea {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <FormField control={form.control} name="adoptionTitle" render={({ field }) => ( <FormItem> <FormLabel>首页卡片标题</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                                <FormField control={form.control} name="adoptionDescription" render={({ field }) => ( <FormItem> <FormLabel>首页卡片描述</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                                 <FormField control={form.control} name="adoptionPageDescription" render={({ field }) => ( <FormItem> <FormLabel>领养列表页描述</FormLabel> <FormControl><Textarea {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
                                  <div className="space-y-2">
                                     <FormLabel>首页卡片背景图</FormLabel>
-                                    <div className="flex items-center gap-4">
-                                        {adoptionImagePreview && (
-                                            <div className="w-32 h-48 relative rounded-md border bg-muted flex-shrink-0">
-                                                <Image src={adoptionImagePreview} alt="领养卡片预览" fill style={{objectFit:'cover'}} className="rounded-md" />
-                                            </div>
-                                        )}
-                                        <Input
-                                            id="adoptionImageFile"
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleFileChange(e, setAdoptionImageFile, setAdoptionImagePreview)}
-                                            ref={adoptionFileInputRef}
-                                            className="hidden"
-                                        />
-                                         <Button type="button" variant="outline" onClick={() => adoptionFileInputRef.current?.click()}>
-                                            <Upload className="mr-2 h-4 w-4" />
-                                            {adoptionImagePreview ? '更换图片' : '选择图片'}
-                                        </Button>
+                                    <div className="flex items-start gap-4">
+                                        <div className="w-32 h-48 relative rounded-md border bg-muted flex-shrink-0">
+                                            <Image src={adoptionUrlValue || adoptionImagePreview || "https://placehold.co/600x800.png"} alt="领养卡片预览" fill style={{objectFit:'cover'}} className="rounded-md" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Button type="button" variant="outline" onClick={() => adoptionFileInputRef.current?.click()}>
+                                                <Upload className="mr-2 h-4 w-4" />
+                                                上传
+                                            </Button>
+                                            <Input
+                                                id="adoptionImageFile"
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => handleFileChange(e, setAdoptionImageFile, setAdoptionImagePreview, 'adoptionImageUrl')}
+                                                ref={adoptionFileInputRef}
+                                                className="hidden"
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="adoptionImageUrl"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <Input placeholder="或粘贴URL" {...field} onChange={(e) => {
+                                                                field.onChange(e);
+                                                                if (e.target.value) setAdoptionImageFile(null);
+                                                            }}/>
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
                                     </div>
+                                    <FormDescription>优先使用URL。</FormDescription>
                                 </div>
                             </CardContent>
                         </Card>
@@ -490,49 +487,44 @@ export default function SiteContentPage() {
                                <CardDescription>修改“作品一览”相关的内容。</CardDescription>
                             </CardHeader>
                              <CardContent className="space-y-6">
-                                <FormField
-                                    control={form.control}
-                                    name="workTitle"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>首页卡片标题</FormLabel>
-                                            <FormControl><Input {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="workDescription"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>首页卡片描述</FormLabel>
-                                            <FormControl><Input {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <FormField control={form.control} name="workTitle" render={({ field }) => ( <FormItem> <FormLabel>首页卡片标题</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                                <FormField control={form.control} name="workDescription" render={({ field }) => ( <FormItem> <FormLabel>首页卡片描述</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
                                  <div className="space-y-2">
                                     <FormLabel>首页卡片背景图</FormLabel>
-                                    <div className="flex items-center gap-4">
-                                        {workImagePreview && (
-                                            <div className="w-32 h-48 relative rounded-md border bg-muted flex-shrink-0">
-                                                <Image src={workImagePreview} alt="作品卡片预览" fill style={{objectFit:'cover'}} className="rounded-md" />
-                                            </div>
-                                        )}
-                                        <Input
-                                            id="workImageFile"
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleFileChange(e, setWorkImageFile, setWorkImagePreview)}
-                                            ref={workFileInputRef}
-                                            className="hidden"
-                                        />
-                                         <Button type="button" variant="outline" onClick={() => workFileInputRef.current?.click()}>
-                                            <Upload className="mr-2 h-4 w-4" />
-                                            {workImagePreview ? '更换图片' : '选择图片'}
-                                        </Button>
+                                    <div className="flex items-start gap-4">
+                                        <div className="w-32 h-48 relative rounded-md border bg-muted flex-shrink-0">
+                                            <Image src={workUrlValue || workImagePreview || "https://placehold.co/600x800.png"} alt="作品卡片预览" fill style={{objectFit:'cover'}} className="rounded-md" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Button type="button" variant="outline" onClick={() => workFileInputRef.current?.click()}>
+                                                <Upload className="mr-2 h-4 w-4" />
+                                                上传
+                                            </Button>
+                                            <Input
+                                                id="workImageFile"
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => handleFileChange(e, setWorkImageFile, setWorkImagePreview, 'workImageUrl')}
+                                                ref={workFileInputRef}
+                                                className="hidden"
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="workImageUrl"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <Input placeholder="或粘贴URL" {...field} onChange={(e) => {
+                                                                field.onChange(e);
+                                                                if (e.target.value) setWorkImageFile(null);
+                                                            }}/>
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
                                     </div>
+                                     <FormDescription>优先使用URL。</FormDescription>
                                 </div>
                             </CardContent>
                         </Card>

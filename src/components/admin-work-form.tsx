@@ -35,6 +35,7 @@ const formSchema = z.object({
   clientCity: z.string().min(1, '委托人城市不能为空'),
   completionDate: z.date({ required_error: '必须选择一个完成日期' }),
   description: z.string().optional(),
+  imageUrls: z.array(z.string().optional()).default([]),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -71,8 +72,11 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
       clientCity: work?.clientCity || '',
       completionDate: work ? new Date(work.completionDate) : new Date(),
       description: work?.description || '',
+      imageUrls: work?.imageUrls || [],
     },
   });
+
+  const imageUrls = form.watch('imageUrls');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0];
@@ -80,31 +84,40 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
         const newImages = [...images];
         newImages[index] = { file, preview: URL.createObjectURL(file) };
         setImages(newImages);
+
+        const newUrls = [...imageUrls];
+        newUrls[index] = '';
+        form.setValue('imageUrls', newUrls);
     }
   };
 
   const handleSave = async (values: FormValues) => {
-    if (!images[0].file && !work?.imageUrls[0]) {
-        toast({ title: '图片缺失', description: '新增作品必须上传至少一张图片。', variant: 'destructive' });
+    const finalImageUrls = await Promise.all(
+        values.imageUrls.map(async (url, index) => {
+            if (url) return url;
+            if (images[index].file) {
+                return await uploadImage(images[index].file!, `works/${values.workName}_${index}_${Date.now()}`);
+            }
+            return work?.imageUrls[index]; // Keep original if no new URL or file
+        })
+    );
+
+    const filteredUrls = finalImageUrls.filter((url): url is string => !!url);
+    
+    if (filteredUrls.length === 0) {
+        toast({ title: '图片缺失', description: '新增作品必须上传至少一张图片或提供URL。', variant: 'destructive' });
         return;
     }
     
     setLoading(true);
     try {
-      const uploadedImageUrls = await Promise.all(
-        images.map(async (img, index) => {
-          if (img.file) {
-            return await uploadImage(img.file, `works/${values.workName}_${index}_${Date.now()}`);
-          }
-          return img.preview; // Keep existing URL if no new file
-        })
-      );
-      
       const workData: Omit<Work, 'id'> = {
-        ...values,
+        workName: values.workName,
+        clientName: values.clientName,
+        clientCity: values.clientCity,
         completionDate: values.completionDate.toISOString(),
-        imageUrls: uploadedImageUrls.filter((url): url is string => !!url),
         description: values.description || '',
+        imageUrls: filteredUrls,
       };
       
       await saveWork(workData, work?.id);
@@ -183,29 +196,45 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
         
         <div className="space-y-4">
             <FormLabel>作品图片 (最多5张)</FormLabel>
-            {images.map((img, index) => (
-                <div key={index} className="space-y-2 p-4 border rounded-md">
-                    <FormLabel className="text-xs text-muted-foreground">图片 {index + 1} {index === 0 && "(主图)"}</FormLabel>
-                    <div className="flex items-center gap-4">
-                        <div className="w-32 h-32 relative rounded-md border bg-muted flex-shrink-0">
-                            {img.preview && (
-                                <Image src={img.preview} alt={`图片 ${index+1} 预览`} fill style={{objectFit:'cover'}} className="rounded-md" />
-                            )}
-                        </div>
-                        <Input 
-                            type="file" 
-                            accept="image/*"
-                            onChange={(e) => handleFileChange(e, index)}
-                            className="hidden"
-                            ref={fileInputRefs[index]}
-                            id={`file-input-${index}`}
-                        />
-                        <Button type="button" variant="outline" onClick={() => fileInputRefs[index]?.current?.click()}>
-                            <Upload className="mr-2 h-4 w-4" />
-                            {img.preview ? '更换图片' : '选择图片'}
-                        </Button>
-                    </div>
-                </div>
+            <FormDescription>优先使用URL。</FormDescription>
+            {Array.from({ length: 5 }).map((_, index) => (
+                <FormField
+                    key={index}
+                    control={form.control}
+                    name={`imageUrls.${index}`}
+                    render={({ field }) => (
+                        <FormItem className="space-y-2 p-4 border rounded-md">
+                            <FormLabel className="text-xs text-muted-foreground">图片 {index + 1} {index === 0 && "(主图)"}</FormLabel>
+                            <div className="flex items-center gap-4">
+                                <div className="w-32 h-32 relative rounded-md border bg-muted flex-shrink-0">
+                                    <Image src={field.value || images[index].preview || "https://placehold.co/600x800.png"} alt={`图片 ${index+1} 预览`} fill style={{objectFit:'cover'}} className="rounded-md" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Button type="button" variant="outline" onClick={() => fileInputRefs[index].current?.click()}>
+                                        <Upload className="mr-2 h-4 w-4" />
+                                        本地上传
+                                    </Button>
+                                    <Input 
+                                        type="file" 
+                                        accept="image/*"
+                                        onChange={(e) => handleFileChange(e, index)}
+                                        className="hidden"
+                                        ref={fileInputRefs[index]}
+                                        id={`file-input-${index}`}
+                                    />
+                                    <FormControl>
+                                        <Input placeholder="或在此处粘贴图片URL" {...field} onChange={(e) => {
+                                            field.onChange(e);
+                                            const newImages = [...images];
+                                            if (newImages[index]) newImages[index].file = null;
+                                            setImages(newImages);
+                                        }}/>
+                                    </FormControl>
+                                </div>
+                            </div>
+                        </FormItem>
+                    )}
+                />
             ))}
         </div>
         
