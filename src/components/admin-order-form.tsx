@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -300,6 +301,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
                                         </div>
                                     </DialogContent>
                                 </Dialog>
+                                <p className="text-xs text-muted-foreground">点击图片可查看大图并下载。</p>
                             </div>
                         )}
                         <div>
