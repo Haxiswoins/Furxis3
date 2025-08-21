@@ -108,7 +108,7 @@ export default function OrderDetailPage() {
         title: "确认成功！",
         description: "您的订单已确认，我们会尽快开始制作。",
       });
-      fetchOrderAndContent(); // Refresh order details
+      await fetchOrderAndContent(); // Refresh order details
     } catch (error) {
        console.error("确认失败:", error);
       toast({
@@ -188,7 +188,7 @@ export default function OrderDetailPage() {
     setIsActionLoading(true);
     try {
       await reinstateOrder(order.id);
-      fetchOrderAndContent(); // Refetch order to get latest state
+      await fetchOrderAndContent(); // Refetch order to get latest state
       toast({ title: "操作成功", description: "订单已恢复处理中状态。" });
     } catch (error) {
       toast({ title: "操作失败", description: "恢复订单时出错，请稍后再试。", variant: 'destructive' });
@@ -221,7 +221,9 @@ export default function OrderDetailPage() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>点错了</AlertDialogCancel>
-                <AlertDialogAction onClick={handleUndoCancel}>确定</AlertDialogAction>
+                <AlertDialogAction onClick={handleUndoCancel} disabled={isActionLoading}>
+                    {isActionLoading ? '处理中...' : '确定'}
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

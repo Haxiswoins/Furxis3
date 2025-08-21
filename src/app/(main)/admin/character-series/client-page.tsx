@@ -32,18 +32,22 @@ type AdminCharacterSeriesClientProps = {
     series: CharacterSeries[];
 }
 
-export function AdminCharacterSeriesClient({ series: initialSeries }: AdminCharacterSeriesClientProps) {
+export function AdminCharacterSeriesClient({ series }: AdminCharacterSeriesClientProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [series, setSeries] = useState<CharacterSeries[]>(initialSeries);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   const handleDelete = async (id: string) => {
+    setIsDeleting(true);
     try {
         await deleteCharacterSeries(id);
-        toast({ title: '删除成功', description: '系列已从数据库中移除。' });
-        setSeries(currentSeries => currentSeries.filter(s => s.id !== id));
+        toast({ title: '删除成功', description: '系列已从数据库中移除。页面即将刷新...' });
+        // Refresh the page to ensure data consistency from the server
+        router.refresh();
     } catch (error) {
         toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
+    } finally {
+        setIsDeleting(false);
     }
   };
 
@@ -80,7 +84,7 @@ export function AdminCharacterSeriesClient({ series: initialSeries }: AdminChara
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500">
+                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" disabled={isDeleting}>
                            <Trash2 className="h-4 w-4" />
                          </Button>
                       </AlertDialogTrigger>
@@ -88,12 +92,14 @@ export function AdminCharacterSeriesClient({ series: initialSeries }: AdminChara
                         <AlertDialogHeader>
                           <AlertDialogTitle>确定要删除吗?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            此操作无法撤销。这将永久删除系列 "{item.name}"。
+                            此操作无法撤销。这将永久删除系列 "{item.name}" 及其下所有角色。
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>取消</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(item.id)}>确认删除</AlertDialogAction>
+                          <AlertDialogAction onClick={() => handleDelete(item.id)} disabled={isDeleting}>
+                            {isDeleting ? '删除中...' : '确认删除'}
+                          </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>

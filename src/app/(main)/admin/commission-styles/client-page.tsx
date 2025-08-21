@@ -33,24 +33,27 @@ type AdminCommissionStylesClientProps = {
     options: CommissionOption[];
 }
 
-export function AdminCommissionStylesClient({ styles: initialStyles, options }: AdminCommissionStylesClientProps) {
+export function AdminCommissionStylesClient({ styles, options }: AdminCommissionStylesClientProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [styles, setStyles] = useState<CommissionStyle[]>(initialStyles);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async (id: string) => {
+    setIsDeleting(true);
     try {
       await deleteCommissionStyle(id);
-      toast({ title: '删除成功', description: '委托样式已从数据库中移除。' });
-      setStyles(currentStyles => currentStyles.filter(s => s.id !== id));
+      toast({ title: '删除成功', description: '委托样式已从数据库中移除。页面即将刷新...' });
+      router.refresh();
     } catch (error) {
       toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
+    } finally {
+        setIsDeleting(false);
     }
   };
 
   const getOptionName = (optionId: string) => {
     const option = options.find(opt => opt.id === optionId);
-    return option?.name || '未知';
+    return option?.name || '未关联';
   }
 
   return (
@@ -87,7 +90,7 @@ export function AdminCommissionStylesClient({ styles: initialStyles, options }: 
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500">
+                        <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" disabled={isDeleting}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </AlertDialogTrigger>
@@ -100,7 +103,9 @@ export function AdminCommissionStylesClient({ styles: initialStyles, options }: 
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>取消</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(style.id)}>确认删除</AlertDialogAction>
+                          <AlertDialogAction onClick={() => handleDelete(style.id)} disabled={isDeleting}>
+                            {isDeleting ? '删除中...' : '确认删除'}
+                          </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>

@@ -32,18 +32,21 @@ type AdminWorksClientProps = {
     works: Work[];
 }
 
-export function AdminWorksClient({ works: initialWorks }: AdminWorksClientProps) {
+export function AdminWorksClient({ works }: AdminWorksClientProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [works, setWorks] = useState<Work[]>(initialWorks);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   const handleDelete = async (id: string) => {
+    setIsDeleting(true);
     try {
         await deleteWork(id);
-        toast({ title: '删除成功', description: '作品已从数据库中移除。' });
-        setWorks(currentWorks => currentWorks.filter(w => w.id !== id));
+        toast({ title: '删除成功', description: '作品已从数据库中移除。页面即将刷新...' });
+        router.refresh();
     } catch (error) {
         toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
+    } finally {
+        setIsDeleting(false);
     }
   };
 
@@ -81,7 +84,7 @@ export function AdminWorksClient({ works: initialWorks }: AdminWorksClientProps)
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500">
+                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" disabled={isDeleting}>
                            <Trash2 className="h-4 w-4" />
                          </Button>
                       </AlertDialogTrigger>
@@ -94,7 +97,9 @@ export function AdminWorksClient({ works: initialWorks }: AdminWorksClientProps)
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>取消</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(item.id)}>确认删除</AlertDialogAction>
+                          <AlertDialogAction onClick={() => handleDelete(item.id)} disabled={isDeleting}>
+                            {isDeleting ? '删除中...' : '确认删除'}
+                          </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>

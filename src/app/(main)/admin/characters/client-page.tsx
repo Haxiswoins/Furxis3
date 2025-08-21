@@ -32,18 +32,21 @@ type AdminCharactersClientProps = {
     characters: Character[];
 }
 
-export function AdminCharactersClient({ characters: initialCharacters }: AdminCharactersClientProps) {
+export function AdminCharactersClient({ characters }: AdminCharactersClientProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [characters, setCharacters] = useState<Character[]>(initialCharacters);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   const handleDelete = async (id: string) => {
+    setIsDeleting(true);
     try {
         await deleteCharacter(id);
-        toast({ title: '删除成功', description: '角色已从数据库中移除。' });
-        setCharacters(currentChars => currentChars.filter(c => c.id !== id));
+        toast({ title: '删除成功', description: '角色已从数据库中移除。页面即将刷新...' });
+        router.refresh();
     } catch (error) {
         toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
+    } finally {
+        setIsDeleting(false);
     }
   };
 
@@ -82,7 +85,7 @@ export function AdminCharactersClient({ characters: initialCharacters }: AdminCh
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500">
+                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" disabled={isDeleting}>
                            <Trash2 className="h-4 w-4" />
                          </Button>
                       </AlertDialogTrigger>
@@ -95,7 +98,9 @@ export function AdminCharactersClient({ characters: initialCharacters }: AdminCh
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>取消</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(char.id)}>确认删除</AlertDialogAction>
+                          <AlertDialogAction onClick={() => handleDelete(char.id)} disabled={isDeleting}>
+                            {isDeleting ? '删除中...' : '确认删除'}
+                          </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
