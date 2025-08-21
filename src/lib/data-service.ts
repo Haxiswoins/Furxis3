@@ -6,7 +6,7 @@ import path from 'path';
 import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, Work, CharacterSeries } from '@/types';
 import { sendEmail } from '@/ai/flows/send-email-flow';
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 // Helper to get the path to our JSON data file
 const getDataPath = (fileName: string) => path.join(process.cwd(), 'src', 'data', fileName);

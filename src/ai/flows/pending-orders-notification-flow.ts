@@ -9,7 +9,7 @@
 import { getAllOrders, getSiteContent } from '@/lib/data-service';
 import { sendEmail } from './send-email-flow';
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export async function notifyAdminOfPendingOrders(): Promise<string> {
     console.log("Running daily check for pending orders...");
