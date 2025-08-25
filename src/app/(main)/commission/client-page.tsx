@@ -60,7 +60,7 @@ export function CommissionClientPage({ commissionOptions }: CommissionClientPage
       {commissionOptions.length > 0 ? (
         commissionOptions.map((item) => (
           <motion.div key={item.id} variants={itemVariants}>
-            <Link href={`/commission/${encodeURIComponent(item.name)}`} className="group block relative aspect-[16/9] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <Link href={`/commission/${encodeURIComponent(item.name)}`} className="group block relative aspect-[16/4] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
               <Image
                 src={item.imageUrl}
                 alt={item.name}
