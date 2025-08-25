@@ -1,3 +1,4 @@
+
 // This page must be a client component to use hooks like `useAuth` and `useRouter`
 // for authentication checks and dynamic user-specific data fetching.
 'use client';

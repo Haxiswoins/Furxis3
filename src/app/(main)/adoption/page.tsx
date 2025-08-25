@@ -1,3 +1,4 @@
+
 import { getCharacterSeries, getSiteContent } from '@/lib/data-service';
 import { AdoptionSeriesClientPage } from './client-page';
 import type { CharacterSeries, SiteContent } from '@/types';
@@ -11,6 +12,8 @@ export default async function AdoptionSeriesPage() {
   ]);
 
   return (
-    <AdoptionSeriesClientPage seriesData={seriesData} content={content} />
+    <div className="container mx-auto">
+        <AdoptionSeriesClientPage seriesData={seriesData} content={content} />
+    </div>
   );
 }

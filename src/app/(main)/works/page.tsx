@@ -20,6 +20,8 @@ export default async function WorksPage() {
   const sortedYears = Object.keys(worksByYear).sort((a, b) => parseInt(b) - parseInt(a));
 
   return (
-    <WorksPageClient worksByYear={worksByYear} sortedYears={sortedYears} />
+    <div className="container mx-auto">
+        <WorksPageClient worksByYear={worksByYear} sortedYears={sortedYears} />
+    </div>
   );
 }

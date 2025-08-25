@@ -22,6 +22,8 @@ export default async function AdoptionCharacterListPage({ params }: { params: { 
   const charactersData = await getCharactersBySeriesId(seriesData.id);
 
   return (
-    <CharacterListPageClient series={seriesData} characters={charactersData} />
+    <div className="container mx-auto">
+        <CharacterListPageClient series={seriesData} characters={charactersData} />
+    </div>
   );
 }

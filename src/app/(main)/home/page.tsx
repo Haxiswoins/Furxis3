@@ -1,3 +1,4 @@
+
 import { getSiteContent } from '@/lib/data-service';
 import { HomeClient } from '@/components/home-client';
 import type { SiteContent } from '@/types';
@@ -7,6 +8,8 @@ export default async function HomePage() {
   const content: SiteContent | null = await getSiteContent();
 
   return (
-    <HomeClient content={content} />
+    <div className="container mx-auto">
+        <HomeClient content={content} />
+    </div>
   );
 }

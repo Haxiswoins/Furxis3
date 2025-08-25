@@ -22,10 +22,12 @@ export default async function CommissionStylePage({ params }: { params: { name: 
   const styles = await getCommissionStylesByOptionId(commissionOption.id);
 
   return (
-    <CommissionStylePageClient 
-      styles={styles} 
-      commissionOption={commissionOption} 
-      commissionName={commissionName} 
-    />
+    <div className="container mx-auto">
+        <CommissionStylePageClient 
+            styles={styles} 
+            commissionOption={commissionOption} 
+            commissionName={commissionName} 
+        />
+    </div>
   );
 }

@@ -177,9 +177,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
   const contractText = siteContent?.commissionContractText;
 
   return (
-    <div
-        className="max-w-4xl mx-auto"
-    >
+    <div className="max-w-4xl mx-auto">
       <Card>
         <CardHeader>
             <CardTitle className="text-3xl font-headline">{commissionOption.name} - {commissionStyle.name}</CardTitle>

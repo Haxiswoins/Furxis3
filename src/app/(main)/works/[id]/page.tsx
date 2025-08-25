@@ -18,6 +18,8 @@ export default async function WorkDetailPage({ params }: { params: { id: string 
   }
 
   return (
-    <WorkDetailPageClient work={work} />
+    <div className="container mx-auto">
+        <WorkDetailPageClient work={work} />
+    </div>
   );
 }

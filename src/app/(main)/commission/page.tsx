@@ -36,10 +36,12 @@ export default async function CommissionPage() {
   });
 
   return (
-    <CommissionPageClient
-      commissionOptionsByYear={commissionOptionsByYear}
-      sortedYears={sortedYears}
-      content={content}
-    />
+    <div className="container mx-auto">
+        <CommissionPageClient
+            commissionOptionsByYear={commissionOptionsByYear}
+            sortedYears={sortedYears}
+            content={content}
+        />
+    </div>
   );
 }

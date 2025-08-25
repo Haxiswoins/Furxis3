@@ -50,7 +50,7 @@ export default function CancelOrderPage() {
 
   if (loading || !order) {
     return (
-      <div className="max-w-2xl mx-auto py-8">
+      <div className="max-w-2xl mx-auto">
         <Card>
           <CardHeader className="text-center">
             <Skeleton className="h-9 w-3/4 mx-auto" />
@@ -105,7 +105,7 @@ export default function CancelOrderPage() {
 
   return (
     <div 
-        className="max-w-2xl mx-auto py-8"
+        className="max-w-2xl mx-auto"
     >
       <Card>
         <CardHeader className="text-center">
