@@ -32,12 +32,12 @@ function MainContentWrapper({
   const hasHomeBg = isHomePage && siteContent?.homeBackgroundImageUrl;
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen">
       {isHomePage && (
          <div className="fixed inset-0 z-0">
-            <div className="aurora-border-container absolute inset-0 z-[1]"></div>
+            <div className="aurora-border-container absolute inset-0 z-[2]"></div>
             {hasHomeBg && (
-                <div className="absolute inset-0 z-[0]">
+                <div className="absolute inset-0 z-[3]">
                     <Image
                     src={siteContent.homeBackgroundImageUrl!}
                     alt="Homepage Background"
@@ -48,6 +48,7 @@ function MainContentWrapper({
                     <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
                 </div>
             )}
+             <div className="absolute inset-0 z-[1] bg-background"></div>
          </div>
       )}
       <div className="relative z-10 flex flex-col flex-1">
@@ -120,7 +121,7 @@ export function AppShell({
       );
     } else {
        return (
-            <div className="flex flex-col items-center justify-center min-h-screen text-center">
+            <div className="flex flex-col items-center justify-center min-h-screen text-center bg-background">
                 <h1 className="text-3xl font-bold">无权访问</h1>
                 <p className="mt-2 text-muted-foreground">您必须是管理员才能访问此页面。</p>
             </div>
@@ -134,6 +135,7 @@ export function AppShell({
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: 'easeInOut' }}
+          className="bg-background"
       >
           <MainContentWrapper siteContent={siteContent}>
               {children}
