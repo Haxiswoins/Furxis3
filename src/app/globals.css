@@ -115,7 +115,8 @@
     background: linear-gradient(
       115deg,
       hsl(var(--primary) / 0.5),
-      transparent 50%,
+      transparent 25%,
+      transparent 75%,
       hsl(var(--accent) / 0.4)
     );
     z-index: 0; /* Sits behind the content */
