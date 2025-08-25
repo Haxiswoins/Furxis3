@@ -35,8 +35,9 @@ function MainContentWrapper({
     <>
       {/* Background Effects Layer */}
       <div className="fixed inset-0 z-0">
-        {hasHomeBg ? (
-          <div className="absolute inset-0 z-0">
+        {isHomePage && <div className="absolute inset-0 z-0 wavy-background"></div>}
+        {hasHomeBg && (
+          <div className="absolute inset-0 z-10">
               <Image
                   src={siteContent.homeBackgroundImageUrl!}
                   alt="Homepage Background"
@@ -46,13 +47,11 @@ function MainContentWrapper({
               />
               <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
           </div>
-        ) : isHomePage && (
-           <div className="absolute inset-0 z-0 wavy-background"></div>
         )}
       </div>
 
       {/* Content Layer */}
-      <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
+      <div className="relative z-20 flex flex-col min-h-screen bg-transparent">
         <Header />
         <main className="flex-1 flex flex-col px-4 py-8 pt-24">
           {children}
