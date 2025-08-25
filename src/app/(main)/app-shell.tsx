@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Header from '@/components/header';
 import { usePathname } from 'next/navigation';
 import AdminSidebar from '@/components/admin-sidebar';
@@ -18,6 +18,7 @@ import Image from 'next/image';
 import type { SiteContent } from '@/types';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { AmbientLightBackground } from '@/components/ambient-light-background';
 
 
 function MainContentWrapper({
@@ -29,24 +30,12 @@ function MainContentWrapper({
 }) {
   const pathname = usePathname();
   const isHomePage = pathname === '/home';
-  const hasHomeBg = isHomePage && siteContent?.homeBackgroundImageUrl;
-
+  
   return (
     <>
       {/* Background Effects Layer */}
       <div className="fixed inset-0 z-0 overflow-hidden">
-        {hasHomeBg && (
-          <div className="absolute inset-0 z-5">
-              <Image
-                  src={siteContent.homeBackgroundImageUrl!}
-                  alt="Homepage Background"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  className="opacity-20"
-              />
-              <div className="absolute inset-0 bg-background/50"></div>
-          </div>
-        )}
+        {isHomePage && <AmbientLightBackground />}
       </div>
 
       {/* Content Layer */}
