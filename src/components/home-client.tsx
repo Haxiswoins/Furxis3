@@ -41,7 +41,7 @@ export function HomeClient({ content }: HomeClientProps) {
         "flex flex-col transition-opacity duration-500",
         isTransitioning ? "opacity-0" : "opacity-100"
     )}>
-        <div>
+        <div className="pt-12">
         <div className="text-center mb-12">
             <a href="/" onClick={handleNavigate}>
                 <div className="relative inline-block cursor-pointer group">
