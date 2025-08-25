@@ -118,7 +118,7 @@ const config: Config = {
         'overlay-show': 'overlay-show 0.2s ease-out',
         'overlay-hide': 'overlay-hide 0.2s ease-in',
         'warp': 'warp 1s ease-out forwards',
-        'meteor': 'meteor 2s linear infinite',
+        'meteor': 'meteor var(--meteor-duration, 2s) cubic-bezier(0.7, 0, 0.84, 0) infinite',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

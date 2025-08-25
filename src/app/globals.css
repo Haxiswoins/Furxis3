@@ -111,8 +111,7 @@
   
   /* Shooting Star Effect */
   .shooting-star {
-    @apply absolute h-[2px] w-[150px] bg-gradient-to-l from-primary/50 to-transparent;
-    animation: meteor 2s linear infinite;
+    @apply absolute h-[1px] w-[150px] bg-gradient-to-l from-primary/50 to-transparent;
     transform: rotate(-45deg);
   }
   .shooting-star::before {
