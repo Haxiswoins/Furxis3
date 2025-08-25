@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -52,7 +53,7 @@ export function CommissionClientPage({ commissionOptions }: CommissionClientPage
 
   return (
     <motion.div 
-      className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -86,7 +87,7 @@ export function CommissionClientPage({ commissionOptions }: CommissionClientPage
         ))
       ) : (
         <div className="col-span-full text-center py-10">
-          <p className="text-muted-foreground">暂无委托选项。</p>
+          <p className="text-muted-foreground">该年份下暂无委托选项。</p>
         </div>
       )}
     </motion.div>
