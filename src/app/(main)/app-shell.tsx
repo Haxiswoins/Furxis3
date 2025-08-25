@@ -34,7 +34,7 @@ function MainContentWrapper({
   return (
     <>
       {/* Background Effects Layer */}
-      <div className="fixed inset-0 z-0">
+      <div className="fixed inset-0 z-0 overflow-hidden">
         {hasHomeBg && (
           <div className="absolute inset-0 z-5">
               <Image
@@ -47,13 +47,26 @@ function MainContentWrapper({
               <div className="absolute inset-0 bg-background/50"></div>
           </div>
         )}
+         {isHomePage && (
+          <div className="absolute inset-0">
+            {/* Shooting Stars */}
+            <span className="shooting-star" style={{ top: '0px', right: '0px', animationDelay: '0s', animationDuration: '2s' }}></span>
+            <span className="shooting-star" style={{ top: '0px', right: '80px', animationDelay: '0.2s', animationDuration: '2.2s' }}></span>
+            <span className="shooting-star" style={{ top: '80px', right: '0px', animationDelay: '0.4s', animationDuration: '1.8s' }}></span>
+            <span className="shooting-star" style={{ top: '0px', right: '180px', animationDelay: '0.6s', animationDuration: '2.5s' }}></span>
+            <span className="shooting-star" style={{ top: '0px', right: '300px', animationDelay: '0.8s', animationDuration: '1.9s' }}></span>
+            <span className="shooting-star" style={{ top: '200px', right: '0px', animationDelay: '1s', animationDuration: '2.1s' }}></span>
+             <span className="shooting-star" style={{ top: '0px', right: '450px', animationDelay: '1.2s', animationDuration: '3s' }}></span>
+            <span className="shooting-star" style={{ top: '300px', right: '0px', animationDelay: '1.4s', animationDuration: '2.6s' }}></span>
+          </div>
+        )}
       </div>
 
       {/* Content Layer */}
       <div className="relative z-20 flex flex-col min-h-screen">
         <Header />
         <main className={cn(
-          "flex-1 flex flex-col px-4 py-8 pt-24"
+          "flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]"
         )}>
           {children}
         </main>

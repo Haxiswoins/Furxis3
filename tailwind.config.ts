@@ -104,6 +104,11 @@ const config: Config = {
           from: { transform: 'translateX(-100%) scaleX(0)', opacity: '0.7' },
           to: { transform: 'translateX(200vw) scaleX(1)', opacity: '0' }
         },
+        meteor: {
+          '0%': { transform: 'rotate(-45deg) translateX(0)', opacity: '1' },
+          '70%': { opacity: '1' },
+          '100%': { transform: 'rotate(-45deg) translateX(-1500px)', opacity: '0' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -113,6 +118,7 @@ const config: Config = {
         'overlay-show': 'overlay-show 0.2s ease-out',
         'overlay-hide': 'overlay-hide 0.2s ease-in',
         'warp': 'warp 1s ease-out forwards',
+        'meteor': 'meteor 2s linear infinite',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
