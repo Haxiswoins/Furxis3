@@ -18,7 +18,6 @@ import Image from 'next/image';
 import type { SiteContent } from '@/types';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { AmbientLightBackground } from '@/components/ambient-light-background';
 
 
 function MainContentWrapper({
@@ -35,7 +34,17 @@ function MainContentWrapper({
     <>
       {/* Background Effects Layer */}
       <div className="fixed inset-0 z-0 overflow-hidden">
-        {isHomePage && <AmbientLightBackground />}
+        {isHomePage && siteContent?.homeBackgroundImageUrl && (
+          <Image
+            src={siteContent.homeBackgroundImageUrl}
+            alt="Background"
+            fill
+            sizes="100vw"
+            style={{ objectFit: 'cover' }}
+            className="opacity-20"
+            priority
+          />
+        )}
       </div>
 
       {/* Content Layer */}
