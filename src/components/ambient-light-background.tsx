@@ -44,8 +44,8 @@ const AestheticFluidBackground = () => {
               speed: 1,
               st_scale: 1,
               curl_scale: 0.2,
-              darkness: 0,
-              brightness: 1,
+              darkness: 1,
+              brightness: 0.2,
             });
           } else {
               console.error('AmbientLightBg library not found on window.Color4Bg');
