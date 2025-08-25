@@ -34,8 +34,12 @@ function MainContentWrapper({
     <div className="flex flex-col min-h-screen bg-background">
       {isHomePage && (
         <div className="fixed inset-0 -z-10">
-           {/* Aurora gradient effect */}
-          <div className="aurora-background absolute inset-0 z-[2]"></div>
+           {/* Background Container */}
+          <div className="aurora-background absolute inset-0 z-[2]">
+            {/* These two divs are the animated blobs */}
+            <div className="animate-aurora"></div>
+            <div className="animate-aurora"></div>
+          </div>
           {/* Background image */}
           {hasHomeBg && (
             <div className="absolute inset-0 z-[1]">
