@@ -14,8 +14,6 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  // Initialize theme to null to avoid hydration mismatch.
-  // The actual theme will be set on the client after mount.
   const [theme, setTheme] = useState<Theme | null>(null);
   const [siteContent, setSiteContent] = useState<SiteContent | null>(null);
 
@@ -32,8 +30,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const determineTheme = useCallback(() => {
-    // This function will only run on the client, so window is safe to use.
-    if (!siteContent) return; // Wait until site content is loaded
+    if (!siteContent) return; 
 
     const sunriseHour = siteContent?.sunriseHour ?? 6;
     const sunsetHour = siteContent?.sunsetHour ?? 18;
@@ -47,24 +44,31 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   }, [siteContent]); 
 
-  // Run theme determination once on mount and then on an interval.
   useEffect(() => {
     determineTheme();
     const interval = setInterval(determineTheme, 60000);
     return () => clearInterval(interval);
   }, [determineTheme]);
 
-  // Apply the theme class to the document root when theme state changes.
   useEffect(() => {
     if (theme) {
         const root = window.document.documentElement;
-        root.classList.remove('light', 'dark');
-        root.classList.add(theme);
+        const isThemeSet = root.classList.contains('light') || root.classList.contains('dark');
+        const currentThemeOnDoc = root.classList.contains('dark') ? 'dark' : 'light';
+
+        // Only reload if the theme has been set before and is changing
+        if (isThemeSet && currentThemeOnDoc !== theme) {
+            // Add the new theme class before reloading to avoid a flash of unstyled content
+            root.classList.remove('light', 'dark');
+            root.classList.add(theme);
+            window.location.reload();
+        } else if (!isThemeSet) {
+             root.classList.remove('light', 'dark');
+             root.classList.add(theme);
+        }
     }
   }, [theme]);
   
-  // Render children, but provide a default 'dark' theme value
-  // to prevent errors in consuming components before the client-side theme is determined.
   return (
     <ThemeContext.Provider value={{ theme: theme || 'dark' }}>
       {children}
