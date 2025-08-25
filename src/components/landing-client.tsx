@@ -27,15 +27,17 @@ function Starfield() {
     const posArray = new Float32Array(starCount * 3);
 
     for (let i = 0; i < starCount * 3; i++) {
-        posArray[i] = (Math.random() - 0.5) * 10;
+        // Assign random positions for stars
+        posArray[i] = (Math.random() - 0.5) * 20;
     }
 
     starGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 
     const starMaterial = new THREE.PointsMaterial({
-        size: 0.005,
-        color: 0xffa0e0,
+        size: 0.008,
+        color: 0xffffff,
         transparent: true,
+        blending: THREE.AdditiveBlending,
     });
 
     const starMesh = new THREE.Points(starGeometry, starMaterial);
@@ -45,8 +47,8 @@ function Starfield() {
     let mouseY = 0;
 
     const onMouseMove = (event: MouseEvent) => {
-        mouseX = event.clientX;
-        mouseY = event.clientY;
+        mouseX = event.clientX - window.innerWidth / 2;
+        mouseY = event.clientY - window.innerHeight / 2;
     };
     window.addEventListener('mousemove', onMouseMove);
 
@@ -62,11 +64,11 @@ function Starfield() {
     const animate = () => {
       const elapsedTime = clock.getElapsedTime();
       
-      starMesh.rotation.y = elapsedTime * 0.1;
-      starMesh.rotation.x = elapsedTime * 0.05;
-
-      camera.position.x += (mouseX - camera.position.x) * 0.0001;
-      camera.position.y += (-mouseY - camera.position.y) * 0.0001;
+      starMesh.rotation.y = elapsedTime * 0.05;
+      
+      camera.position.x += (mouseX - camera.position.x) * 0.0005;
+      camera.position.y += (-mouseY - camera.position.y) * 0.0005;
+      camera.lookAt(scene.position);
       
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
@@ -82,6 +84,7 @@ function Starfield() {
 
   return <canvas ref={canvasRef} className="absolute inset-0 z-0"></canvas>;
 }
+
 
 function EnterButton({ onClick }: { onClick: () => void }) {
   return (
