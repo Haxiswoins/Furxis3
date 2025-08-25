@@ -32,17 +32,23 @@ function MainContentWrapper({
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-       {isHomePage && <div className="aurora-background fixed inset-0 -z-20"></div>}
-      {hasHomeBg && (
+      {isHomePage && (
         <div className="fixed inset-0 -z-10">
-          <Image
-            src={siteContent.homeBackgroundImageUrl!}
-            alt="Homepage Background"
-            fill
-            style={{ objectFit: 'cover' }}
-            className="opacity-20"
-          />
-          <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
+           {/* Aurora gradient effect */}
+          <div className="aurora-background absolute inset-0 z-[2]"></div>
+          {/* Background image */}
+          {hasHomeBg && (
+            <div className="absolute inset-0 z-[1]">
+              <Image
+                src={siteContent.homeBackgroundImageUrl!}
+                alt="Homepage Background"
+                fill
+                style={{ objectFit: 'cover' }}
+                className="opacity-20"
+              />
+              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
+            </div>
+          )}
         </div>
       )}
       <Header />
