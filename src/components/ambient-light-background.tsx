@@ -3,15 +3,18 @@
 
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 
 type AestheticFluidBackgroundProps = {
   onReady?: () => void;
 };
 
 const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) => {
+  const { theme } = useTheme();
   const [isAnimationReady, setIsAnimationReady] = useState(false);
 
   useEffect(() => {
+    // This effect now depends on the theme, and will re-run when it changes.
     const containerId = 'box';
 
     let container = document.getElementById(containerId);
@@ -19,10 +22,23 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
       console.error('Container element for background not found.');
       return;
     }
+    
+    // Clear previous canvas if it exists, to prevent multiple canvases from running
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
+    
+    // Determine script and colors based on theme
+    const isDarkMode = theme === 'dark';
+    const scriptSrc = isDarkMode ? '/AestheticFluidBg2.min.js' : '/AestheticFluidBg.min.js';
+    const colors = isDarkMode
+      ? ["#001533","#131249","#000000","#000000","#212832","#090e1a"]
+      : ["#ff7300","#ffffff","#ededed","#0055ff","#ffffff","#ffffff"];
 
     const mainScriptId = 'ambient-light-bg-script';
     const initScriptId = 'ambient-light-init-script';
     
+    // Clean up old scripts before adding new ones
     const existingMainScript = document.getElementById(mainScriptId);
     if (existingMainScript && existingMainScript.parentNode) {
       existingMainScript.parentNode.removeChild(existingMainScript);
@@ -34,7 +50,7 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
     
     const mainScript = document.createElement('script');
     mainScript.id = mainScriptId;
-    mainScript.src = '/AestheticFluidBg.min.js';
+    mainScript.src = scriptSrc;
     mainScript.async = true;
 
     mainScript.onload = () => {
@@ -45,7 +61,7 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
           if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
             new window.Color4Bg.AestheticFluidBg({
               dom: "${containerId}",
-              colors: ["#ffffff","#ffffff","#004fa3","#ffffff","#ff6600","#ffffff"],
+              colors: ${JSON.stringify(colors)},
               loop: true,
               gauss: 0.24
             });
@@ -61,7 +77,7 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
     };
     
     mainScript.onerror = () => {
-        console.error('Failed to load AestheticFluidBg.min.js script.');
+        console.error(`Failed to load ${scriptSrc} script.`);
     };
     
     const handleBackgroundReady = () => {
@@ -83,11 +99,11 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
         script2.parentNode.removeChild(script2);
       }
     };
-  }, [onReady]);
+  }, [theme, onReady]);
 
   return (
     <div className="relative w-full h-full">
-        {/* Static placeholder background */}
+        {/* Static placeholder background - updated to use a dark color that fits both themes */}
         <div className={cn(
             "absolute inset-0 z-0 bg-[#00001a] transition-opacity duration-1000 ease-in-out",
             isAnimationReady ? 'opacity-0' : 'opacity-100'
