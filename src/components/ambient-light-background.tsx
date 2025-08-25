@@ -29,7 +29,8 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
     const scriptSrc = isDarkMode ? '/AestheticFluidBg2.min.js' : '/AestheticFluidBg.min.js';
     const colors = isDarkMode
       ? ["#001533","#131249","#000000","#000000","#212832","#090e1a"]
-      : ["#ff7300","#ffffff","#ededed","#0055ff","#ffffff","#ffffff"];
+      : ["#ffffff","#ffffff","#004fa3","#ffffff","#ff6600","#ffffff"];
+    const gaussValue = 2; // Updated blur level
 
     const mainScriptId = 'ambient-light-bg-script';
     const initScriptId = 'ambient-light-init-script';
@@ -76,7 +77,7 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
                   dom: "${containerId}",
                   colors: ${JSON.stringify(colors)},
                   loop: true,
-                  gauss: 0.24
+                  gauss: ${gaussValue}
                 });
                 window.dispatchEvent(new Event('backgroundReady'));
               } else {
