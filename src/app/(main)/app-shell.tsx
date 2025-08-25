@@ -47,30 +47,14 @@ function MainContentWrapper({
               <div className="absolute inset-0 bg-background/50"></div>
           </div>
         )}
-         {isHomePage && (
-          <div className="absolute inset-0">
-            {/* Shooting Stars */}
-            <span className="shooting-star animate-meteor" style={{ top: '0px', right: '0px', animationDelay: '0s', animationDuration: '1.2s' }}></span>
-            <span className="shooting-star animate-meteor" style={{ top: '0px', right: '80px', animationDelay: '0.2s', animationDuration: '1.4s' }}></span>
-            <span className="shooting-star animate-meteor" style={{ top: '80px', right: '0px', animationDelay: '0.4s', animationDuration: '1s' }}></span>
-            <span className="shooting-star animate-meteor" style={{ top: '0px', right: '180px', animationDelay: '0.6s', animationDuration: '1.6s' }}></span>
-            <span className="shooting-star animate-meteor" style={{ top: '0px', right: '300px', animationDelay: '0.8s', animationDuration: '1.1s' }}></span>
-            <span className="shooting-star animate-meteor" style={{ top: '200px', right: '0px', animationDelay: '1s', animationDuration: '1.3s' }}></span>
-             <span className="shooting-star animate-meteor" style={{ top: '0px', right: '450px', animationDelay: '1.2s', animationDuration: '2s' }}></span>
-            <span className="shooting-star animate-meteor" style={{ top: '300px', right: '0px', animationDelay: '1.4s', animationDuration: '1.7s' }}></span>
-          </div>
-        )}
       </div>
 
       {/* Content Layer */}
-      <div className="relative z-20 flex flex-col min-h-screen">
-        <Header />
-        <main className={cn(
-          "flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]"
+      <main className={cn(
+          "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]"
         )}>
           {children}
         </main>
-      </div>
     </>
   );
 }
