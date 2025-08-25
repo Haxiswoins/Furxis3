@@ -51,7 +51,7 @@ export function HomeClient({ content }: HomeClientProps) {
                 <a href="/" onClick={handleNavigate}>
                     <div className="relative inline-block cursor-pointer group">
                         <h1 
-                          className="text-4xl md:text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary"
+                          className="text-4xl md:text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary drop-shadow-lg"
                         >
                         前行无界
                         </h1>
