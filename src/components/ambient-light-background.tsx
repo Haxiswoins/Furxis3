@@ -30,7 +30,7 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
     const colors = isDarkMode
       ? ["#001533","#131249","#000000","#000000","#212832","#090e1a"]
       : ["#ffffff","#ffffff","#004fa3","#ffffff","#ff6600","#ffffff"];
-    const gaussValue = 2; // Updated blur level
+    const gaussValue = isDarkMode ? 2 : 0.24; // Use 2 for dark mode, keep original for light
 
     const mainScriptId = 'ambient-light-bg-script';
     const initScriptId = 'ambient-light-init-script';
