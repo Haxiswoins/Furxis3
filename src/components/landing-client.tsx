@@ -1,98 +1,144 @@
 
 'use client';
-import { Suspense, useRef, useState, useEffect } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Points, PointMaterial } from '@react-three/drei';
-import * as random from 'maath/random/dist/maath-random.esm';
+
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Rocket } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import * as THREE from 'three';
 
-function Starfield(props: any) {
-  const ref = useRef<any>();
-  const [sphere] = useState(() => random.inSphere(new Float32Array(5000), { radius: 1.5 }));
+function Starfield() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useFrame((state, delta) => {
-    if (ref.current) {
-      ref.current.rotation.x -= delta / 10;
-      ref.current.rotation.y -= delta / 15;
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 5;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const starGeometry = new THREE.BufferGeometry();
+    const starCount = 5000;
+    const posArray = new Float32Array(starCount * 3);
+
+    for (let i = 0; i < starCount * 3; i++) {
+        posArray[i] = (Math.random() - 0.5) * 10;
     }
-  });
 
-  return (
-    <group rotation={[0, 0, Math.PI / 4]}>
-      <Points ref={ref} positions={sphere} stride={3} frustumCulled={false} {...props}>
-        <PointMaterial
-          transparent
-          color="#ffa0e0"
-          size={0.005}
-          sizeAttenuation={true}
-          depthWrite={false}
-        />
-      </Points>
-    </group>
-  );
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+    const starMaterial = new THREE.PointsMaterial({
+        size: 0.005,
+        color: 0xffa0e0,
+        transparent: true,
+    });
+
+    const starMesh = new THREE.Points(starGeometry, starMaterial);
+    scene.add(starMesh);
+    
+    let mouseX = 0;
+    let mouseY = 0;
+
+    const onMouseMove = (event: MouseEvent) => {
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+    };
+    window.addEventListener('mousemove', onMouseMove);
+
+    const onResize = () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    };
+    window.addEventListener('resize', onResize);
+
+    const clock = new THREE.Clock();
+    const animate = () => {
+      const elapsedTime = clock.getElapsedTime();
+      
+      starMesh.rotation.y = elapsedTime * 0.1;
+      starMesh.rotation.x = elapsedTime * 0.05;
+
+      camera.position.x += (mouseX - camera.position.x) * 0.0001;
+      camera.position.y += (-mouseY - camera.position.y) * 0.0001;
+      
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('resize', onResize);
+    }
+  }, []);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 z-0"></canvas>;
 }
 
 function EnterButton({ onClick }: { onClick: () => void }) {
   return (
-    <button
-      onClick={onClick}
-      className="group absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-4 text-white hover:text-primary transition-colors duration-300"
-    >
-      <div className="relative">
-        <Rocket className="h-16 w-16 transition-transform duration-500 ease-in-out group-hover:-translate-y-2 group-hover:scale-110" />
-        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary/50 rounded-full blur-sm transition-all duration-500 ease-in-out group-hover:w-16 group-hover:bg-primary" />
-      </div>
-      <span className="font-headline text-2xl tracking-widest transition-all duration-300 group-hover:text-primary group-hover:tracking-[0.2em]">
-        进入
-      </span>
-    </button>
+    <div className="absolute bottom-[20%]">
+      <button
+        onClick={onClick}
+        aria-label="进入网站"
+        className="group relative flex h-20 w-20 items-center justify-center rounded-full border border-primary/50 bg-black/30 text-white transition-all duration-300 ease-in-out hover:scale-110 hover:border-primary hover:shadow-[0_0_35px_rgba(255,97,47,0.7)] active:scale-100 backdrop-blur-sm"
+      >
+        <div className="absolute inset-0 rounded-full border-2 border-white/20 scale-125 group-hover:scale-150 group-hover:opacity-0 transition-all duration-500 animate-pulse"></div>
+        <Rocket 
+            className="h-10 w-10 text-primary/80 transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1 group-hover:scale-110"
+            style={{ transform: 'rotate(-45deg)' }}
+        />
+      </button>
+    </div>
   );
 }
 
 export function LandingPageClient() {
   const router = useRouter();
-  const [isNavigating, setIsNavigating] = useState(false);
+  const [isContentVisible, setIsContentVisible] = useState(false);
+  const [isWarping, setIsWarping] = useState(false);
+  
+  useEffect(() => {
+    router.prefetch('/home');
+    const timer = setTimeout(() => setIsContentVisible(true), 500);
+    return () => clearTimeout(timer);
+  }, [router]);
 
-  const handleEnter = () => {
-    setIsNavigating(true);
+  const handleNavigate = () => {
+    setIsWarping(true);
     setTimeout(() => {
       router.push('/home');
-    }, 1500); // Match this with warp animation duration
+    }, 800); 
   };
-
-  return (
-    <div className={`w-screen h-screen bg-black transition-opacity duration-1000 ${isNavigating ? 'opacity-0' : 'opacity-100'}`}>
-      <Canvas camera={{ position: [0, 0, 1] }}>
-        <Suspense fallback={null}>
-          <Starfield />
-        </Suspense>
-      </Canvas>
-      {!isNavigating && <EnterButton onClick={handleEnter} />}
-      {isNavigating && <WarpEffect />}
-    </div>
-  );
-}
-
-function WarpEffect() {
-  const { size } = useThree();
-  const lineCount = 100;
   
   return (
-    <div className="absolute inset-0 z-20 overflow-hidden">
-      {Array.from({ length: lineCount }).map((_, i) => (
-        <div
-          key={i}
-          className="absolute h-1 bg-white/50 animate-warp"
-          style={{
-            top: `${Math.random() * 100}%`,
-            width: `${Math.random() * 30 + 30}%`,
-            animationDuration: `${Math.random() * 0.5 + 0.5}s`,
-            animationDelay: `${Math.random() * 0.2}s`,
-          }}
-        />
-      ))}
+    <div className="relative h-screen w-full overflow-hidden bg-black">
+      <Starfield />
+      
+      <div className={cn(
+        "absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-500",
+        isContentVisible ? 'opacity-100' : 'opacity-0',
+        isWarping ? 'opacity-0' : 'opacity-100'
+      )}>
+        <EnterButton onClick={handleNavigate} />
+      </div>
+
+      <div className={cn(
+        "absolute bottom-8 w-full text-center text-xs text-white/40 transition-opacity duration-1000 ease-in-out",
+        isContentVisible ? "opacity-100" : "opacity-0",
+        isWarping ? 'opacity-0' : 'opacity-100'
+      )}>
+         <p>Developed by Haxis and Mark</p>
+      </div>
+
     </div>
   );
 }
-

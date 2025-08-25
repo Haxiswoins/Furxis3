@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -24,7 +25,7 @@ export function HomeClient({ content }: HomeClientProps) {
     setIsTransitioning(true);
     setTimeout(() => {
         router.push(href);
-    }, 500); // Corresponds to the duration of the fade-out animation
+    }, 500); 
   }
 
   const cardLinkClass = "group block";
@@ -37,7 +38,7 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <div className={cn(
-        "flex flex-col justify-center transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
+        "flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
         isTransitioning ? "opacity-0" : "opacity-100"
     )}>
         <div className="flex-grow flex flex-col items-center justify-center py-12">
@@ -63,7 +64,7 @@ export function HomeClient({ content }: HomeClientProps) {
           className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl"
         >
           <div>
-            <Link href="/commission" className={cardLinkClass}>
+            <Link href="/commission" className={cardLinkClass} onClick={handleNavigate}>
               <div className={cardDivClass}>
                   <Image
                   src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
@@ -84,7 +85,7 @@ export function HomeClient({ content }: HomeClientProps) {
           </div>
 
           <div>
-            <Link href="/adoption" className={cardLinkClass}>
+            <Link href="/adoption" className={cardLinkClass} onClick={handleNavigate}>
               <div className={cardDivClass}>
                   <Image
                   src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
@@ -104,7 +105,7 @@ export function HomeClient({ content }: HomeClientProps) {
           </div>
           
           <div>
-            <Link href="/works" className={cardLinkClass}>
+            <Link href="/works" className={cardLinkClass} onClick={handleNavigate}>
               <div className={cardDivClass}>
                   <Image
                   src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
