@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -69,7 +70,9 @@ export function WorkDetailPageClient({ work }: WorkDetailPageClientProps) {
         <div className="text-center space-y-2">
             <h1 className="text-5xl font-headline font-bold">{work.workName}</h1>
             <p className="text-muted-foreground">
-            委托人: {work.clientName} | 完成于: {new Date(work.completionDate).toLocaleDateString()}
+            委托人: {work.clientName}
+            {work.makerName && ` | 装师: ${work.makerName}`}
+            {' | '}完成于: {new Date(work.completionDate).toLocaleDateString()}
             </p>
             {work.description && (
                 <p className="text-lg text-foreground/80 max-w-3xl mx-auto pt-2">

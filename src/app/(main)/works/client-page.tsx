@@ -3,11 +3,9 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Work } from '@/types';
 import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { UserSquare } from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -76,16 +74,11 @@ export function WorksPageClient({ worksByYear, sortedYears }: WorksPageClientPro
                         </Link>
                         <CardContent className="p-3 flex-grow">
                           <CardTitle className="text-base font-headline mb-1 truncate">{work.workName}</CardTitle>
-                          <CardDescription className="text-xs text-muted-foreground">委托人: {work.clientName}</CardDescription>
+                          <CardDescription className="text-xs text-muted-foreground">
+                            委托人: {work.clientName}
+                            {work.makerName && ` | 装师: ${work.makerName}`}
+                          </CardDescription>
                         </CardContent>
-                         {work.makerName && (
-                            <CardFooter className="p-3 pt-0">
-                                <Badge variant="secondary" className="font-normal">
-                                    <UserSquare className="mr-1 h-3 w-3" />
-                                    {work.makerName}
-                                </Badge>
-                            </CardFooter>
-                        )}
                       </Card>
                   </motion.div>
                 ))}
