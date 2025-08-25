@@ -24,12 +24,9 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
       return;
     }
 
-    // Determine script and colors based on theme
-    const isDarkMode = theme === 'dark';
+    // Configuration is now fixed and does not depend on the theme.
     const scriptSrc = '/AestheticFluidBg.min.js';
-    const colors = isDarkMode
-      ? ["#001533","#2d2b91","#000000","#000000","#212832","#090e1a"]
-      : ["#ffffff","#ffffff","#004fa3","#ffffff","#ff6600","#ffffff"];
+    const colors = ["#ff7300", "#ffffff", "#ededed", "#0055ff", "#ffffff", "#ffffff"];
     const gaussValue = 0.24;
 
     const mainScriptId = 'ambient-light-bg-script';
@@ -81,7 +78,7 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
                 });
                 window.dispatchEvent(new Event('backgroundReady'));
               } else {
-                  console.error('AestheticFluidBg library not found on window.Color4Bg for theme ${theme}');
+                  console.error('AestheticFluidBg library not found on window.Color4Bg');
               }
             } catch (error) {
               console.error('Error initializing AestheticFluidBg:', error);
@@ -105,7 +102,7 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
       isCancelled = true;
       cleanup();
     };
-  }, [theme, onReady]);
+  }, [theme, onReady]); // Keep theme dependency to re-trigger on theme change if necessary, e.g., after forced reload.
 
   return (
     <div className="relative w-full h-full">
