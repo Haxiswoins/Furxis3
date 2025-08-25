@@ -9,10 +9,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 
-type HomeClientProps = {
-    content: SiteContent | null;
-}
-
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
