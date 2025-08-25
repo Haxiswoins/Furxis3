@@ -30,31 +30,30 @@ function MainContentWrapper({
   const isHomePage = pathname === '/home';
   const hasHomeBg = isHomePage && siteContent?.homeBackgroundImageUrl;
 
-  const wrapperClasses = cn(
-    "flex flex-col min-h-screen bg-background",
-    isHomePage && 'aurora-border-container' // Apply aurora effect only on home
-  );
-
   return (
-    <div className={wrapperClasses}>
-      {hasHomeBg && (
-         <div className="fixed inset-0 -z-10">
-          <div className="absolute inset-0 z-[1]">
-              <Image
-              src={siteContent.homeBackgroundImageUrl!}
-              alt="Homepage Background"
-              fill
-              style={{ objectFit: 'cover' }}
-              className="opacity-20"
-              />
-              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
-          </div>
-        </div>
+    <div className="flex flex-col min-h-screen bg-background">
+      {isHomePage && (
+         <div className="fixed inset-0 z-0 aurora-border-container">
+            {hasHomeBg && (
+                <div className="absolute inset-0 z-[1]">
+                    <Image
+                    src={siteContent.homeBackgroundImageUrl!}
+                    alt="Homepage Background"
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    className="opacity-20"
+                    />
+                    <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
+                </div>
+            )}
+         </div>
       )}
-      <Header />
-      <main className="flex-1 flex flex-col px-4 py-8 pt-24">
-        {children}
-      </main>
+      <div className="relative z-10 flex flex-col flex-1">
+        <Header />
+        <main className="flex-1 flex flex-col px-4 py-8 pt-24">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

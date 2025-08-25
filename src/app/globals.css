@@ -119,6 +119,6 @@
       transparent 75%,
       hsl(var(--accent) / 0.4)
     );
-    z-index: 0; /* Sits behind the content */
+    z-index: -1;
   }
 }
