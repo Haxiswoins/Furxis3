@@ -30,6 +30,7 @@ export type CommissionOption = {
   imageUrl: string;
   tags: string[];
   description:string;
+  commissionDate: string; // ISO String for year and month, e.g., "2025-08-01T00:00:00.000Z"
 };
 
 export type CommissionStyle = {

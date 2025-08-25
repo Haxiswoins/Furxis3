@@ -11,7 +11,8 @@
       "定制",
       "2025"
     ],
-    "imageUrl": "https://placehold.co/600x800.png"
+    "imageUrl": "https://placehold.co/600x800.png",
+    "commissionDate": "2025-03-01T00:00:00.000Z"
   },
   {
     "id": "comm_1723282061321",
@@ -23,6 +24,7 @@
       "历史档期",
       "2024"
     ],
-    "imageUrl": "https://placehold.co/600x800.png"
+    "imageUrl": "https://placehold.co/600x800.png",
+    "commissionDate": "2024-09-01T00:00:00.000Z"
   }
 ]

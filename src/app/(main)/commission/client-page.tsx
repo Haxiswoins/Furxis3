@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -53,7 +52,7 @@ export function CommissionClientPage({ commissionOptions }: CommissionClientPage
 
   return (
     <motion.div 
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+      className="flex flex-col gap-8"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -61,22 +60,22 @@ export function CommissionClientPage({ commissionOptions }: CommissionClientPage
       {commissionOptions.length > 0 ? (
         commissionOptions.map((item) => (
           <motion.div key={item.id} variants={itemVariants}>
-            <Link href={`/commission/${encodeURIComponent(item.name)}`} className="group block relative aspect-[3/5] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <Link href={`/commission/${encodeURIComponent(item.name)}`} className="group block relative aspect-[16/9] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
               <Image
                 src={item.imageUrl}
                 alt={item.name}
                 fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 50vw"
                 style={{ objectFit: 'cover' }}
-                className="transition-transform duration-500 group-hover:scale-110"
+                className="transition-transform duration-500 group-hover:scale-105"
               />
-              <div className="absolute inset-0 flex flex-col justify-center items-center p-6 text-white bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-                <div className="text-center space-y-2">
-                  <h3 className="font-headline text-2xl font-bold" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.8)' }}>{item.name}</h3>
+              <div className="absolute inset-0 flex flex-row items-center p-8 text-white bg-gradient-to-r from-black/80 via-black/50 to-transparent">
+                <div className="w-2/3 space-y-3">
+                  <h3 className="font-headline text-2xl md:text-3xl font-bold" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.8)' }}>{item.name}</h3>
                   <p className="text-sm opacity-90" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.category}</p>
-                  <p className="text-xs opacity-80 mt-2 line-clamp-2" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.description}</p>
+                  <p className="text-xs opacity-80 mt-2 line-clamp-3" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.description}</p>
                 </div>
-                <div className="absolute bottom-6 flex flex-col items-center gap-3">
+                 <div className="absolute top-6 right-6">
                   <Badge variant="outline" className={cn("text-xs font-semibold backdrop-blur-sm", statusStyles[item.status])}>
                     {item.status}
                   </Badge>

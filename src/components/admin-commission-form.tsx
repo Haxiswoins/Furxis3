@@ -30,7 +30,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import Image from 'next/image';
-import { Upload } from 'lucide-react';
+import { CalendarIcon, Upload } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Calendar } from './ui/calendar';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+
 
 const formSchema = z.object({
   name: z.string().min(2, { message: '名称至少需要2个字符。' }),
@@ -38,6 +43,7 @@ const formSchema = z.object({
   description: z.string().min(10, { message: '描述至少需要10个字符。' }),
   tags: z.string(),
   status: z.enum(['开放中', '已结束', '即将开放']),
+  commissionDate: z.date({ required_error: '必须选择一个年月' }),
   imageUrl: z.string().optional(),
 });
 
@@ -63,6 +69,7 @@ export function AdminCommissionForm({ commissionOption }: AdminCommissionFormPro
       description: commissionOption?.description || '',
       tags: commissionOption?.tags.join(', ') || '',
       status: commissionOption?.status || '开放中',
+      commissionDate: commissionOption?.commissionDate ? new Date(commissionOption.commissionDate) : new Date(),
       imageUrl: commissionOption?.imageUrl || '',
     },
   });
@@ -93,6 +100,7 @@ export function AdminCommissionForm({ commissionOption }: AdminCommissionFormPro
         status: values.status,
         description: values.description,
         tags: values.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+        commissionDate: values.commissionDate.toISOString(),
         imageUrl: finalImageUrl,
       };
       
@@ -134,7 +142,7 @@ export function AdminCommissionForm({ commissionOption }: AdminCommissionFormPro
           render={({ field }) => (
             <FormItem>
               <FormLabel>选项名称</FormLabel>
-              <FormControl><Input placeholder="例如：2025年秋季委托" {...field} /></FormControl>
+              <FormControl><Input placeholder="例如：2025年春季委托" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -149,6 +157,41 @@ export function AdminCommissionForm({ commissionOption }: AdminCommissionFormPro
               <FormMessage />
             </FormItem>
           )}
+        />
+        <FormField
+            control={form.control}
+            name="commissionDate"
+            render={({ field }) => (
+                <FormItem className="flex flex-col">
+                    <FormLabel>委托年月</FormLabel>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                        <FormControl>
+                            <Button
+                            variant={"outline"}
+                            className={cn(
+                                "w-[240px] pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                            )}
+                            >
+                            {field.value ? format(field.value, "yyyy年 M月") : <span>选择年月</span>}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                        </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                        />
+                        </PopoverContent>
+                    </Popover>
+                    <FormDescription>设置该委托所属的年份和月份，用于前台排序。</FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )}
         />
         <FormField
           control={form.control}

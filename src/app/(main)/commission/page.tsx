@@ -5,8 +5,6 @@ import type { CommissionOption } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
-// This is now a Server Component for better performance.
-// The page will be statically generated at build time.
 export default async function CommissionPage() {
   const [options, content] = await Promise.all([
     getCommissionOptions(),
@@ -14,14 +12,22 @@ export default async function CommissionPage() {
   ]);
 
   const commissionOptionsByYear = options.reduce((acc, option) => {
-    const yearMatch = option.name.match(/\d{4}/);
-    const year = yearMatch ? yearMatch[0] : '未知年份';
+    const year = option.commissionDate ? option.commissionDate.substring(0, 4) : '未知年份';
     if (!acc[year]) {
       acc[year] = [];
     }
     acc[year].push(option);
     return acc;
   }, {} as Record<string, CommissionOption[]>);
+
+  // Sort commissions within each year by month, descending
+  for (const year in commissionOptionsByYear) {
+    commissionOptionsByYear[year].sort((a, b) => {
+      const dateA = new Date(a.commissionDate || 0).getTime();
+      const dateB = new Date(b.commissionDate || 0).getTime();
+      return dateB - dateA;
+    });
+  }
 
   const sortedYears = Object.keys(commissionOptionsByYear).sort((a, b) => {
      if (a === '未知年份') return 1;
