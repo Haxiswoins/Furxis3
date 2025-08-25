@@ -133,7 +133,8 @@ export function LandingPageClient() {
         const elapsedTime = clock.getElapsedTime();
 
         if (isWarping) {
-            camera.position.z -= 0.5;
+            // Speed up the warp effect for a more impactful transition
+            camera.position.z -= 1.5;
         }
 
         if(galaxyGroup) {
@@ -167,9 +168,10 @@ export function LandingPageClient() {
   const handleNavigate = () => {
     setIsWarping(true);
     
+    // Shorten the timeout to make the transition feel faster
     setTimeout(() => {
         router.push('/home');
-    }, 800); 
+    }, 600); 
   };
   
   return (
@@ -177,7 +179,7 @@ export function LandingPageClient() {
       <canvas ref={canvasRef} className="absolute inset-0 z-0"></canvas>
       
       <div className={cn(
-        "absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-500",
+        "absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-300",
         isContentVisible ? 'opacity-100' : 'opacity-0',
         isWarping ? 'opacity-0' : 'opacity-100'
       )}>
@@ -197,7 +199,7 @@ export function LandingPageClient() {
       </div>
 
       <div className={cn(
-        "absolute bottom-8 w-full text-center text-xs text-white/40 transition-opacity duration-1000 ease-in-out",
+        "absolute bottom-8 w-full text-center text-xs text-white/40 transition-opacity duration-300 ease-in-out",
         isContentVisible ? "opacity-100" : "opacity-0",
         isWarping ? 'opacity-0' : 'opacity-100'
       )}>
