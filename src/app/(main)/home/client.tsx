@@ -13,6 +13,30 @@ type HomeClientProps = {
     content: SiteContent | null;
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: 'easeOut',
+    },
+  },
+};
+
+
 export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
   const [isExiting, setIsExiting] = useState(false);
@@ -69,10 +93,13 @@ export function HomeClient({ content }: HomeClientProps) {
                 </a>
             </div>
             
-            <div
+            <motion.div
               className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 w-full max-w-7xl mx-auto"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
             >
-              <div>
+              <motion.div variants={cardVariants}>
                 <Link href="/commission" className={cardLinkClass} onClick={handleNavigate}>
                   <div className={cardDivClass}>
                       <Image
@@ -91,9 +118,9 @@ export function HomeClient({ content }: HomeClientProps) {
                       </div>
                   </div>
                 </Link>
-              </div>
+              </motion.div>
 
-              <div>
+              <motion.div variants={cardVariants}>
                 <Link href="/adoption" className={cardLinkClass} onClick={handleNavigate}>
                   <div className={cardDivClass}>
                       <Image
@@ -111,9 +138,9 @@ export function HomeClient({ content }: HomeClientProps) {
                       </div>
                   </div>
                 </Link>
-              </div>
+              </motion.div>
               
-              <div>
+              <motion.div variants={cardVariants}>
                 <Link href="/works" className={cardLinkClass} onClick={handleNavigate}>
                   <div className={cardDivClass}>
                       <Image
@@ -131,8 +158,8 @@ export function HomeClient({ content }: HomeClientProps) {
                       </div>
                   </div>
                 </Link>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
             </div>
             <div className="w-full py-8 text-center mt-auto">
