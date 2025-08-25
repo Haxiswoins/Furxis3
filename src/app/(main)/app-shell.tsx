@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -33,9 +34,10 @@ function MainContentWrapper({
   return (
     <div className="flex flex-col min-h-screen bg-background">
       {isHomePage && (
-         <div className="fixed inset-0 z-0 aurora-border-container">
+         <div className="fixed inset-0 z-0">
+            <div className="aurora-border-container absolute inset-0 z-[1]"></div>
             {hasHomeBg && (
-                <div className="absolute inset-0 z-[1]">
+                <div className="absolute inset-0 z-[0]">
                     <Image
                     src={siteContent.homeBackgroundImageUrl!}
                     alt="Homepage Background"
