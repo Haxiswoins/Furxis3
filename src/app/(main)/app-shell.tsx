@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/sheet"
 import { Skeleton } from '@/components/ui/skeleton';
 import type { SiteContent } from '@/types';
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import AestheticFluidBackground from '@/components/ambient-light-background';
 
@@ -122,19 +121,11 @@ export function AppShell({
   }
 
   return (
-    <AnimatePresence mode="wait">
-        <motion.div
-            key={pathname}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 15 }}
-            transition={{ duration: 0.4, ease: 'easeInOut' }}
-        >
-            <Header />
-            <MainContentWrapper>
-                {children}
-            </MainContentWrapper>
-        </motion.div>
-    </AnimatePresence>
+    <>
+      <Header />
+      <MainContentWrapper>
+          {children}
+      </MainContentWrapper>
+    </>
   );
 }

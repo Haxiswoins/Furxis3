@@ -5,10 +5,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
-import { cn } from '@/lib/utils';
 
 type HomeClientProps = {
     content: SiteContent | null;
@@ -38,104 +37,109 @@ export function HomeClient({ content }: HomeClientProps) {
   const cardDescriptionClass = "mt-2 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base";
 
   return (
-    <motion.div
-        initial={{ opacity: 1 }}
-        animate={{ opacity: isExiting ? 0 : 1 }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-col min-h-[calc(100vh-theme(spacing.24))]"
-    >
-        <div className="pt-12">
-        <div className="text-center mb-12">
-            <a href="/" onClick={handleNavigate}>
-                <div className="relative inline-block cursor-pointer group">
-                    <h1 
-                      className="text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary"
-                    >
-                    前行无界
-                    </h1>
-                    <div
-                    className="absolute inset-0 flex items-center justify-center text-primary opacity-80"
-                    style={{ zIndex: 5 }}
-                    >
-                    <span 
-                      className="font-body text-4xl font-extralight tracking-[0.3em] whitespace-nowrap px-4 mt-12"
-                    >
-                        FORWARD INFINITY
-                    </span>
-                    </div>
-                </div>
-            </a>
-        </div>
-        
-        <div
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl mx-auto"
+    <AnimatePresence onExitComplete={() => window.scrollTo(0, 0)}>
+      {!isExiting && (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col min-h-[calc(100vh-theme(spacing.24))]"
         >
-          <div>
-            <Link href="/commission" className={cardLinkClass} onClick={handleNavigate}>
-              <div className={cardDivClass}>
-                  <Image
-                  src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
-                  alt="委托申请"
-                  fill
-                  priority
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  style={{objectFit: "cover"}}
-                  className={cardImageClass}
-                  data-ai-hint="commission custom"
-                  />
-                  <div className={cardTextDivClass}>
-                  <h2 className={cardTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
-                  <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
+            <div className="pt-12">
+            <div className="text-center mb-12">
+                <a href="/" onClick={handleNavigate}>
+                    <div className="relative inline-block cursor-pointer group">
+                        <h1 
+                          className="text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary"
+                        >
+                        前行无界
+                        </h1>
+                        <div
+                        className="absolute inset-0 flex items-center justify-center text-primary opacity-80"
+                        style={{ zIndex: 5 }}
+                        >
+                        <span 
+                          className="font-body text-4xl font-extralight tracking-[0.3em] whitespace-nowrap px-4 mt-12"
+                        >
+                            FORWARD INFINITY
+                        </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <div
+              className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl mx-auto"
+            >
+              <div>
+                <Link href="/commission" className={cardLinkClass} onClick={handleNavigate}>
+                  <div className={cardDivClass}>
+                      <Image
+                      src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
+                      alt="委托申请"
+                      fill
+                      priority
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      style={{objectFit: "cover"}}
+                      className={cardImageClass}
+                      data-ai-hint="commission custom"
+                      />
+                      <div className={cardTextDivClass}>
+                      <h2 className={cardTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
+                      <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
+                      </div>
                   </div>
+                </Link>
               </div>
-            </Link>
-          </div>
 
-          <div>
-            <Link href="/adoption" className={cardLinkClass} onClick={handleNavigate}>
-              <div className={cardDivClass}>
-                  <Image
-                  src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
-                  alt="设定领养"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  style={{objectFit: "cover"}}
-                  className={cardImageClass}
-                  data-ai-hint="character design"
-                  />
-                  <div className={cardTextDivClass}>
-                  <h2 className={cardTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
-                  <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
+              <div>
+                <Link href="/adoption" className={cardLinkClass} onClick={handleNavigate}>
+                  <div className={cardDivClass}>
+                      <Image
+                      src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
+                      alt="设定领养"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      style={{objectFit: "cover"}}
+                      className={cardImageClass}
+                      data-ai-hint="character design"
+                      />
+                      <div className={cardTextDivClass}>
+                      <h2 className={cardTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
+                      <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
+                      </div>
                   </div>
+                </Link>
               </div>
-            </Link>
-          </div>
-          
-          <div>
-            <Link href="/works" className={cardLinkClass} onClick={handleNavigate}>
-              <div className={cardDivClass}>
-                  <Image
-                  src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
-                  alt="作品一览"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  style={{objectFit: "cover"}}
-                  className={cardImageClass}
-                  data-ai-hint="portfolio gallery"
-                  />
-                  <div className={cardTextDivClass}>
-                  <h2 className={cardTitleClass}>{content?.workTitle || '作品一览'}</h2>
-                  <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
+              
+              <div>
+                <Link href="/works" className={cardLinkClass} onClick={handleNavigate}>
+                  <div className={cardDivClass}>
+                      <Image
+                      src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
+                      alt="作品一览"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      style={{objectFit: "cover"}}
+                      className={cardImageClass}
+                      data-ai-hint="portfolio gallery"
+                      />
+                      <div className={cardTextDivClass}>
+                      <h2 className={cardTitleClass}>{content?.workTitle || '作品一览'}</h2>
+                      <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
+                      </div>
                   </div>
+                </Link>
               </div>
-            </Link>
-          </div>
-        </div>
+            </div>
 
-        </div>
-        <div className="w-full py-8 text-center mt-auto">
-        <ContactInfo content={content} />
-        </div>
-    </motion.div>
+            </div>
+            <div className="w-full py-8 text-center mt-auto">
+            <ContactInfo content={content} />
+            </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
