@@ -26,11 +26,11 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
 
     // Determine script and colors based on theme
     const isDarkMode = theme === 'dark';
-    const scriptSrc = isDarkMode ? '/AestheticFluidBg2.min.js' : '/AestheticFluidBg.min.js';
+    const scriptSrc = isDarkMode ? '/AAestheticFluidBg.min.js' : '/AestheticFluidBg.min.js';
     const colors = isDarkMode
-      ? ["#001533","#131249","#000000","#000000","#212832","#090e1a"]
+      ? ["#001533","#2d2b91","#000000","#000000","#212832","#090e1a"]
       : ["#ffffff","#ffffff","#004fa3","#ffffff","#ff6600","#ffffff"];
-    const gaussValue = isDarkMode ? 2 : 0.24; // Use 2 for dark mode, keep original for light
+    const gaussValue = isDarkMode ? 2 : 0.24;
 
     const mainScriptId = 'ambient-light-bg-script';
     const initScriptId = 'ambient-light-init-script';
@@ -111,7 +111,7 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
     <div className="relative w-full h-full">
         {/* Static placeholder background - matches dark theme */}
         <div className={cn(
-            "absolute inset-0 z-0 bg-[#00001a] transition-opacity duration-1000 ease-in-out",
+            "absolute inset-0 z-0 bg-[#090e1a] transition-opacity duration-1000 ease-in-out",
             isAnimationReady ? 'opacity-0' : 'opacity-100'
         )} />
         {/* Dynamic background container */}
