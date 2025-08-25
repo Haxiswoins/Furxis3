@@ -34,7 +34,6 @@ function MainContentWrapper({
     <>
       {/* Background Effects Layer */}
       <div className="fixed inset-0 z-0">
-        {isHomePage && <div className="wavy-background" />}
         {hasHomeBg && (
           <div className="absolute inset-0 z-0">
               <Image
