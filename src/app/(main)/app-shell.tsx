@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -31,22 +30,9 @@ function MainContentWrapper({
   const isHomePage = pathname === '/home';
   const hasHomeBg = isHomePage && siteContent?.homeBackgroundImageUrl;
 
-  useEffect(() => {
-    if (isHomePage) {
-      document.body.classList.add('aurora-background');
-    } else {
-      document.body.classList.remove('aurora-background');
-    }
-    // Cleanup function to remove the class when the component unmounts
-    // or when the user navigates away from the home page.
-    return () => {
-      document.body.classList.remove('aurora-background');
-    };
-  }, [isHomePage, pathname]);
-
-
   return (
     <div className="flex flex-col min-h-screen bg-background">
+       {isHomePage && <div className="aurora-background fixed inset-0 -z-20"></div>}
       {hasHomeBg && (
         <div className="fixed inset-0 -z-10">
           <Image
