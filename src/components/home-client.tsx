@@ -38,21 +38,27 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <div className={cn(
-        "flex flex-col transition-opacity duration-500",
+        "flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
         isTransitioning ? "opacity-0" : "opacity-100"
     )}>
         <div className="pt-12">
         <div className="text-center mb-12">
             <a href="/" onClick={handleNavigate}>
                 <div className="relative inline-block cursor-pointer group">
-                    <h1 className="text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary">
+                    <h1 
+                      className="text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary"
+                      style={{ textShadow: '0px 2px 6px rgba(0, 0, 0, 0.5)' }}
+                    >
                     前行无界
                     </h1>
                     <div
                     className="absolute inset-0 flex items-center justify-center text-primary opacity-80"
                     style={{ zIndex: 5 }}
                     >
-                    <span className="font-body text-4xl font-extralight tracking-[0.3em] whitespace-nowrap px-4 mt-12">
+                    <span 
+                      className="font-body text-4xl font-extralight tracking-[0.3em] whitespace-nowrap px-4 mt-12"
+                      style={{ textShadow: '0px 1px 4px rgba(0, 0, 0, 0.4)' }}
+                    >
                         FORWARD INFINITY
                     </span>
                     </div>
