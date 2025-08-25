@@ -41,7 +41,7 @@ export function HomeClient({ content }: HomeClientProps) {
         "flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
         isTransitioning ? "opacity-0" : "opacity-100"
     )}>
-        <div className="flex-grow flex flex-col items-center justify-center py-12">
+        <div>
         <div className="text-center mb-12">
             <a href="/" onClick={handleNavigate}>
                 <div className="relative inline-block cursor-pointer group">
@@ -61,7 +61,7 @@ export function HomeClient({ content }: HomeClientProps) {
         </div>
         
         <div
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl"
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl mx-auto"
         >
           <div>
             <Link href="/commission" className={cardLinkClass} onClick={handleNavigate}>
@@ -126,7 +126,7 @@ export function HomeClient({ content }: HomeClientProps) {
         </div>
 
         </div>
-        <div className="w-full pb-8 text-center">
+        <div className="w-full py-8 text-center mt-auto">
         <ContactInfo content={content} />
         </div>
     </div>
