@@ -60,7 +60,7 @@ function MainContentWrapper({
       <div className="relative z-20 flex flex-col min-h-screen">
         <Header />
         <main className={cn(
-          "flex-1 flex flex-col px-4 py-8 pt-24"
+          "flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]"
         )}>
           {children}
         </main>
@@ -143,7 +143,7 @@ export function AppShell({
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: 'easeInOut' }}
-          className="bg-background"
+          className="bg-transparent"
       >
           <MainContentWrapper siteContent={siteContent}>
               {children}
