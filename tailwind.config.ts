@@ -100,6 +100,11 @@ const config: Config = {
             from: { opacity: '1' },
             to: { opacity: '0' },
         },
+        'wave': {
+          '0%': { transform: 'translate(-50%, 0) rotateZ(0deg)' },
+          '50%': { transform: 'translate(-50%, -2%) rotateZ(180deg)' },
+          '100%': { transform: 'translate(-50%, -4%) rotateZ(360deg)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',

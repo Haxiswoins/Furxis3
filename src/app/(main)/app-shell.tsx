@@ -31,26 +31,32 @@ function MainContentWrapper({
   const hasHomeBg = isHomePage && siteContent?.homeBackgroundImageUrl;
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      {isHomePage && hasHomeBg && (
-         <div className="fixed inset-0 z-0">
-            <Image
-            src={siteContent.homeBackgroundImageUrl!}
-            alt="Homepage Background"
-            fill
-            style={{ objectFit: 'cover' }}
-            className="opacity-20"
-            />
-            <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
-         </div>
-      )}
-      <div className="relative z-10 flex flex-col flex-1">
+    <>
+      {/* Background Effects Layer */}
+      <div className="fixed inset-0 z-0">
+        {isHomePage && <div className="wavy-background" />}
+        {hasHomeBg && (
+          <div className="absolute inset-0 z-0">
+              <Image
+                  src={siteContent.homeBackgroundImageUrl!}
+                  alt="Homepage Background"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  className="opacity-20"
+              />
+              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
+          </div>
+        )}
+      </div>
+
+      {/* Content Layer */}
+      <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
         <Header />
         <main className="flex-1 flex flex-col px-4 py-8 pt-24">
           {children}
         </main>
       </div>
-    </div>
+    </>
   );
 }
 
