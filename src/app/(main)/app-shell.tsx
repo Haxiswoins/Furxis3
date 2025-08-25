@@ -32,27 +32,19 @@ function MainContentWrapper({
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      {isHomePage && (
+      {hasHomeBg && (
         <div className="fixed inset-0 -z-10">
-           {/* Background Container */}
-          <div className="aurora-background absolute inset-0 z-[2]">
-            {/* These two divs are the animated blobs */}
-            <div className="animate-aurora"></div>
-            <div className="animate-aurora"></div>
-          </div>
           {/* Background image */}
-          {hasHomeBg && (
-            <div className="absolute inset-0 z-[1]">
-              <Image
-                src={siteContent.homeBackgroundImageUrl!}
-                alt="Homepage Background"
-                fill
-                style={{ objectFit: 'cover' }}
-                className="opacity-20"
-              />
-              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
-            </div>
-          )}
+          <div className="absolute inset-0 z-[1]">
+            <Image
+              src={siteContent.homeBackgroundImageUrl!}
+              alt="Homepage Background"
+              fill
+              style={{ objectFit: 'cover' }}
+              className="opacity-20"
+            />
+            <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
+          </div>
         </div>
       )}
       <Header />
