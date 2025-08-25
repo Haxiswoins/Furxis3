@@ -6,7 +6,8 @@ import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { Playfair_Display, Noto_Serif_SC, Noto_Sans_SC } from 'next/font/google';
 import { cn } from '@/lib/utils';
-// import { UserProvider } from '@authing/nextjs';
+import { AppShell } from './(main)/app-shell';
+import { getSiteContent } from '@/lib/data-service';
 
 export const metadata: Metadata = {
   title: 'Suitopia',
@@ -33,11 +34,13 @@ const fontBody = Noto_Sans_SC({
   display: 'swap',
 })
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const siteContent = await getSiteContent();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(
@@ -46,14 +49,14 @@ export default function RootLayout({
         fontSerifSC.variable,
         fontBody.variable
       )}>
-        {/* <UserProvider> */}
           <ThemeProvider>
             <AuthProvider>
-              {children}
+              <AppShell siteContent={siteContent}>
+                {children}
+              </AppShell>
             </AuthProvider>
             <Toaster />
           </ThemeProvider>
-        {/* </UserProvider> */}
       </body>
     </html>
   );
