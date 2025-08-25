@@ -3,20 +3,15 @@
 
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
-import { useTheme } from '@/context/ThemeContext';
 
 type AestheticFluidBackgroundProps = {
   onReady?: () => void;
 };
 
 const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) => {
-  const { theme } = useTheme();
   const [isAnimationReady, setIsAnimationReady] = useState(false);
 
   useEffect(() => {
-    // Do nothing until theme is determined client-side
-    if (!theme) return;
-
     const containerId = 'box';
     const container = document.getElementById(containerId);
     if (!container) {
@@ -24,7 +19,7 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
       return;
     }
 
-    // Configuration is now fixed and does not depend on the theme.
+    // --- Configuration is now fixed and does not depend on the theme. ---
     const scriptSrc = '/AestheticFluidBg.min.js';
     const colors = ["#ff7300", "#ffffff", "#ededed", "#0055ff", "#ffffff", "#ffffff"];
     const gaussValue = 0.24;
@@ -51,8 +46,8 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
     };
     
     const handleBackgroundReady = () => {
-        if (onReady && !isCancelled) {
-          onReady();
+        if (!isCancelled) {
+          if (onReady) onReady();
           setIsAnimationReady(true);
         }
     };
@@ -102,7 +97,7 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
       isCancelled = true;
       cleanup();
     };
-  }, [theme, onReady]); // Keep theme dependency to re-trigger on theme change if necessary, e.g., after forced reload.
+  }, [onReady]);
 
   return (
     <div className="relative w-full h-full">
