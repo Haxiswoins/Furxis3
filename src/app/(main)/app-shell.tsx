@@ -29,7 +29,8 @@ function MainContentWrapper({
   
   return (
     <main className={cn(
-        "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]"
+        "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]",
+        isHomePage && "bg-transparent" // Apply transparent background only on the home page
       )}>
         {children}
       </main>
