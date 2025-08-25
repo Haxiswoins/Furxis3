@@ -14,7 +14,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Skeleton } from '@/components/ui/skeleton';
-import Image from 'next/image';
 import type { SiteContent } from '@/types';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -23,13 +22,12 @@ import AestheticFluidBackground from '@/components/ambient-light-background';
 
 function MainContentWrapper({
   children,
-  siteContent
 }: {
   children: React.ReactNode;
-  siteContent: SiteContent | null;
 }) {
   const pathname = usePathname();
   const isHomePage = pathname === '/home';
+  const [isBackgroundReady, setIsBackgroundReady] = useState(false);
   
   return (
     <>
@@ -37,26 +35,19 @@ function MainContentWrapper({
       <div className="fixed inset-0 z-0 overflow-hidden">
         {isHomePage ? (
           <>
-            <AestheticFluidBackground />
+            <AestheticFluidBackground onReady={() => setIsBackgroundReady(true)} />
           </>
         ) : (
-          siteContent?.homeBackgroundImageUrl && (
-            <Image
-              src={siteContent.homeBackgroundImageUrl}
-              alt="Background"
-              fill
-              sizes="100vw"
-              style={{ objectFit: 'cover' }}
-              className="opacity-20"
-              priority
-            />
-          )
+          <div className="fixed inset-0 bg-background" />
         )}
       </div>
 
       {/* Content Layer */}
       <main className={cn(
-          "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]"
+          "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]",
+           // Apply fade-in transition only on the home page
+          isHomePage ? "transition-opacity duration-1000 ease-in-out" : "",
+          isHomePage && !isBackgroundReady ? "opacity-0" : "opacity-100"
         )}>
           {children}
         </main>
@@ -140,9 +131,10 @@ export function AppShell({
           transition={{ duration: 0.4, ease: 'easeInOut' }}
       >
           <Header />
-          <MainContentWrapper siteContent={siteContent}>
+          <MainContentWrapper>
               {children}
           </MainContentWrapper>
       </motion.div>
   );
 }
+

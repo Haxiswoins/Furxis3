@@ -3,7 +3,11 @@
 
 import { useEffect } from 'react';
 
-const AestheticFluidBackground = () => {
+type AestheticFluidBackgroundProps = {
+  onReady?: () => void;
+};
+
+const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) => {
   useEffect(() => {
     const containerId = 'box';
 
@@ -46,6 +50,8 @@ const AestheticFluidBackground = () => {
               loop: true,
               gauss: 0.24
             });
+            // Signal that the background is ready
+            window.dispatchEvent(new Event('backgroundReady'));
           } else {
               console.error('AestheticFluidBg library not found on window.Color4Bg');
           }
@@ -59,11 +65,20 @@ const AestheticFluidBackground = () => {
     mainScript.onerror = () => {
         console.error('Failed to load AestheticFluidBg.min.js script.');
     };
+    
+    // Listen for the custom event to call the onReady callback
+    const handleBackgroundReady = () => {
+        if (onReady) {
+            onReady();
+        }
+    };
+    window.addEventListener('backgroundReady', handleBackgroundReady);
 
     document.body.appendChild(mainScript);
    
-    // Cleanup function to remove scripts when component unmounts
+    // Cleanup function to remove scripts and event listener when component unmounts
     return () => {
+      window.removeEventListener('backgroundReady', handleBackgroundReady);
       const script1 = document.getElementById(mainScriptId);
       if (script1 && script1.parentNode) {
         script1.parentNode.removeChild(script1);
@@ -73,7 +88,7 @@ const AestheticFluidBackground = () => {
         script2.parentNode.removeChild(script2);
       }
     };
-  }, []);
+  }, [onReady]);
 
   return <div id="box" className="absolute inset-0 z-0" />;
 };
