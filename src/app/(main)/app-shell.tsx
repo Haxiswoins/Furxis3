@@ -17,6 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import type { SiteContent } from '@/types';
 import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 
 function MainContentWrapper({
@@ -29,6 +30,20 @@ function MainContentWrapper({
   const pathname = usePathname();
   const isHomePage = pathname === '/home';
   const hasHomeBg = isHomePage && siteContent?.homeBackgroundImageUrl;
+
+  useEffect(() => {
+    if (isHomePage) {
+      document.body.classList.add('aurora-background');
+    } else {
+      document.body.classList.remove('aurora-background');
+    }
+    // Cleanup function to remove the class when the component unmounts
+    // or when the user navigates away from the home page.
+    return () => {
+      document.body.classList.remove('aurora-background');
+    };
+  }, [isHomePage]);
+
 
   return (
     <div className="flex flex-col min-h-screen bg-background">

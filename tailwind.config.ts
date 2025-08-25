@@ -101,6 +101,13 @@ const config: Config = {
             from: { opacity: '1' },
             to: { opacity: '0' },
         },
+        aurora: {
+          '0%': { transform: 'translate(-50%, -50%) rotate(0deg) scale(1.0)' },
+          '25%': { transform: 'translate(-25%, -75%) rotate(90deg) scale(1.2)' },
+          '50%': { transform: 'translate(0%, -50%) rotate(180deg) scale(1.0)' },
+          '75%': { transform: 'translate(-25%, -25%) rotate(270deg) scale(1.2)' },
+          '100%': { transform: 'translate(-50%, -50%) rotate(360deg) scale(1.0)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -109,6 +116,7 @@ const config: Config = {
         'content-hide': 'content-hide 0.2s ease-in',
         'overlay-show': 'overlay-show 0.2s ease-out',
         'overlay-hide': 'overlay-hide 0.2s ease-in',
+        'aurora': 'aurora 20s linear infinite',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
