@@ -38,7 +38,7 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <div className={cn(
-        "flex flex-col transition-opacity duration-500",
+        "flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
         isTransitioning ? "opacity-0" : "opacity-100"
     )}>
         <div>

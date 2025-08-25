@@ -35,13 +35,6 @@ function MainContentWrapper({
     <>
       {/* Background Effects Layer */}
       <div className="fixed inset-0 z-0">
-        {isHomePage && (
-          <div className="wave-container">
-            <div className="wave-line" style={{ animation: 'wave-line-1 15s linear infinite' }}></div>
-            <div className="wave-line" style={{ animation: 'wave-line-2 20s linear infinite' }}></div>
-            <div className="wave-line" style={{ animation: 'wave-line-3 25s linear infinite alternate' }}></div>
-          </div>
-        )}
         {hasHomeBg && (
           <div className="absolute inset-0 z-5">
               <Image
@@ -60,7 +53,7 @@ function MainContentWrapper({
       <div className="relative z-20 flex flex-col min-h-screen">
         <Header />
         <main className={cn(
-          "flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]"
+          "flex-1 flex flex-col px-4 py-8 pt-24"
         )}>
           {children}
         </main>
@@ -143,7 +136,6 @@ export function AppShell({
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: 'easeInOut' }}
-          className="bg-transparent"
       >
           <MainContentWrapper siteContent={siteContent}>
               {children}
