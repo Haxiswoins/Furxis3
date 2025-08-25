@@ -18,6 +18,7 @@ import Image from 'next/image';
 import type { SiteContent } from '@/types';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { FluidBackground } from '@/components/fluid-background';
 
 
 function MainContentWrapper({
@@ -35,6 +36,7 @@ function MainContentWrapper({
     <>
       {/* Background Effects Layer */}
       <div className="fixed inset-0 z-0 overflow-hidden">
+        {isHomePage && <FluidBackground />}
         {hasHomeBg && (
           <div className="absolute inset-0 z-5">
               <Image
@@ -134,6 +136,7 @@ export function AppShell({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: 'easeInOut' }}
       >
+          <Header />
           <MainContentWrapper siteContent={siteContent}>
               {children}
           </MainContentWrapper>
