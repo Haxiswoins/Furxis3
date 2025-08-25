@@ -16,7 +16,7 @@ function WorkImages({ work }: WorkImagesProps) {
     // Using a multi-column layout for a masonry/pinterest-style effect.
     // This is a simpler CSS-only approach.
     return (
-        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
             {work.imageUrls.map((imgSrc, index) => (
             <Dialog key={index}>
                 <DialogTrigger asChild>
@@ -26,7 +26,7 @@ function WorkImages({ work }: WorkImagesProps) {
                             alt={`${work.workName} - 视图 ${index + 1}`}
                             width={500} // Provide a base width, height will be auto
                             height={0} // Height is auto to maintain aspect ratio
-                            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                             className="w-full h-auto"
                         />
                     </div>
@@ -55,8 +55,8 @@ export function WorkDetailPageClient({ work }: WorkDetailPageClientProps) {
             className="max-w-6xl mx-auto space-y-8"
         >
         <div className="text-center space-y-2">
-            <h1 className="text-5xl font-headline font-bold">{work.workName}</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-4xl md:text-5xl font-headline font-bold">{work.workName}</h1>
+            <p className="text-muted-foreground text-sm md:text-base">
             委托人: {work.clientName}
             {work.makerName && ` | 装师: ${work.makerName}`}
             {' | '}完成于: {new Date(work.completionDate).toLocaleDateString()}

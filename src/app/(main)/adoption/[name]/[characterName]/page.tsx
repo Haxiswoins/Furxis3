@@ -36,10 +36,10 @@ export default async function AdoptionDetailPage({ params }: { params: { charact
       <Card>
         <CardContent className="p-4 md:p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-            <div className="sticky top-24 md:col-span-1">
+            <div className="md:sticky top-24 md:col-span-1">
               <CardHeader className="px-0 pt-0">
-                <CardTitle className="text-4xl font-headline">{character.name}</CardTitle>
-                <CardDescription className="text-lg text-muted-foreground pt-1">{character.species}</CardDescription>
+                <CardTitle className="text-3xl md:text-4xl font-headline">{character.name}</CardTitle>
+                <CardDescription className="text-md md:text-lg text-muted-foreground pt-1">{character.species}</CardDescription>
               </CardHeader>
               <p className="text-foreground/90 mb-4 whitespace-pre-wrap">{character.description}</p>
               <div className="text-sm text-muted-foreground mb-6">
