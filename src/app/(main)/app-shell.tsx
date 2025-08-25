@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -34,7 +35,7 @@ function MainContentWrapper({
     <>
       {/* Background Effects Layer */}
       <div className="fixed inset-0 z-0">
-        {hasHomeBg && (
+        {hasHomeBg ? (
           <div className="absolute inset-0 z-0">
               <Image
                   src={siteContent.homeBackgroundImageUrl!}
@@ -45,6 +46,14 @@ function MainContentWrapper({
               />
               <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
           </div>
+        ) : isHomePage && (
+           <div className={cn(
+                "absolute inset-0 z-0 opacity-40",
+                "bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-500 via-rose-500 to-primary",
+                "animate-aurora"
+           )}>
+            <div className="absolute inset-0 bg-background/70 backdrop-blur-md"></div>
+           </div>
         )}
       </div>
 
