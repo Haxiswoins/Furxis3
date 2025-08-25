@@ -20,8 +20,8 @@ const AestheticFluidBackground = () => {
     // Avoid appending the script multiple times
     if (document.getElementById(mainScriptId)) {
         const existingInitScript = document.getElementById(initScriptId);
-        if (existingInitScript) {
-            document.body.removeChild(existingInitScript);
+        if (existingInitScript && existingInitScript.parentNode) {
+            existingInitScript.parentNode.removeChild(existingInitScript);
         }
     }
     
@@ -40,7 +40,12 @@ const AestheticFluidBackground = () => {
             new window.Color4Bg.AmbientLightBg({
               dom: "${containerId}",
               colors: ["#406391","#ffa200","#ffffff","#ffffff","#ffffff","#ff6c0a"],
-              loop: true
+              loop: true,
+              speed: 1,
+              st_scale: 1,
+              curl_scale: 0.2,
+              darkness: 0,
+              brightness: 1,
             });
           } else {
               console.error('AmbientLightBg library not found on window.Color4Bg');
