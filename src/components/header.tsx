@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ChevronLeft, User, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
+import { ShareButton } from './share-button';
 
 export default function Header() {
   const router = useRouter();
@@ -41,6 +42,7 @@ export default function Header() {
         )}
       </div>
       <div className="flex items-center gap-2">
+        <ShareButton />
         {isAdmin && (
            <Link href="/admin/dashboard" passHref>
              <Button
