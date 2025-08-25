@@ -30,7 +30,7 @@ function MainContentWrapper({
   return (
     <main className={cn(
         "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]",
-        isHomePage && "bg-transparent" // Apply transparent background only on the home page
+        isHomePage && "bg-transparent"
       )}>
         {children}
       </main>
@@ -50,7 +50,9 @@ export function AppShell({
 
   const isAdminRoute = pathname.startsWith('/admin');
   const isAuthRoute = ['/login', '/register', '/forgot-password'].includes(pathname) || pathname.startsWith('/api/auth');
-  const isLandingPage = pathname === '/';
+  
+  // The root page now redirects, so it is no longer considered part of the App Shell.
+  const isSpecialRoute = isAuthRoute || pathname === '/';
   
   const isHomePage = pathname === '/home';
   
@@ -66,7 +68,7 @@ export function AppShell({
     );
   }
 
-  if (isLandingPage || isAuthRoute) {
+  if (isSpecialRoute) {
      return <>{children}</>;
   }
 

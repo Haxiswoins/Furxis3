@@ -1,13 +1,8 @@
 
-'use client';
-
-import { Suspense } from 'react';
-import { LandingPageClient } from '@/components/landing-client';
+import { redirect } from 'next/navigation';
 
 export default function WelcomePage() {
-  return (
-    <Suspense fallback={<div className="bg-black w-screen h-screen"></div>}>
-      <LandingPageClient />
-    </Suspense>
-  );
+  // The root page now redirects to the functional home page.
+  // The previous landing page with the galaxy animation is no longer needed.
+  redirect('/home');
 }
