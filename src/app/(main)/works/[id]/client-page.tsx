@@ -13,34 +13,21 @@ type WorkImagesProps = {
 }
 
 function WorkImages({ work }: WorkImagesProps) {
-    const imageCount = work.imageUrls.length;
-
-    // Dynamically determine grid layout based on image count
-    const gridClasses = cn('grid gap-4', {
-      'grid-cols-1': imageCount === 1,
-      'grid-cols-2': imageCount === 2,
-      'grid-cols-1 md:grid-cols-3': imageCount === 3,
-      'grid-cols-1 sm:grid-cols-2': imageCount >= 4,
-    });
-
+    // Using a multi-column layout for a masonry/pinterest-style effect.
+    // This is a simpler CSS-only approach.
     return (
-        <div className={gridClasses}>
+        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
             {work.imageUrls.map((imgSrc, index) => (
             <Dialog key={index}>
                 <DialogTrigger asChild>
-                    <div className={cn(
-                        "relative aspect-video rounded-lg overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02]",
-                        {
-                            "md:col-span-2 md:row-span-2 aspect-square": imageCount === 3 && index === 0, // Make first image larger for 3-image layout
-                             "col-span-1": imageCount !== 1,
-                        }
-                    )}>
+                    <div className="break-inside-avoid rounded-lg overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02] block">
                         <Image
                             src={imgSrc}
                             alt={`${work.workName} - 视图 ${index + 1}`}
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            className="object-cover"
+                            width={500} // Provide a base width, height will be auto
+                            height={0} // Height is auto to maintain aspect ratio
+                            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                            className="w-full h-auto"
                         />
                     </div>
                 </DialogTrigger>
