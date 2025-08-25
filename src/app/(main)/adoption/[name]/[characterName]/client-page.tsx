@@ -3,8 +3,8 @@
 
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { PawPrint } from 'lucide-react';
+import { Dialog, DialogContent, DialogTrigger, DialogClose } from '@/components/ui/dialog';
+import { PawPrint, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import type { Character } from '@/types';
@@ -83,7 +83,10 @@ export function Images({ images, name }: { images: string[]; name: string }) {
               />
             </div>
           </DialogTrigger>
-          <DialogContent className="max-w-[90vw] md:max-w-4xl h-auto p-2 bg-transparent border-none shadow-none">
+          <DialogContent className="max-w-[90vw] md:max-w-4xl h-auto p-2 bg-transparent border-none shadow-none" showCloseButton={false}>
+             <DialogClose className="absolute -top-2 -right-2 z-50 bg-background/50 rounded-full p-1 text-foreground hover:bg-background/80">
+                <X className="h-5 w-5" />
+            </DialogClose>
              <div className="relative aspect-video w-full h-full">
                 <Image src={imgSrc} alt={`${name} - 视图 ${index + 1}`} fill style={{ objectFit: 'contain' }} />
              </div>
