@@ -105,9 +105,9 @@ const config: Config = {
           to: { transform: 'translateX(200vw) scaleX(1)', opacity: '0' }
         },
         meteor: {
-          '0%': { transform: 'rotate(-45deg) translateX(0)', opacity: '1' },
+          '0%': { transform: 'rotate(-45deg) translateX(0) translateY(0)', opacity: '1' },
           '70%': { opacity: '1' },
-          '100%': { transform: 'rotate(-45deg) translateX(-1500px)', opacity: '0' },
+          '100%': { transform: 'rotate(-45deg) translateX(-1500px) translateY(700px)', opacity: '0' },
         }
       },
       animation: {
