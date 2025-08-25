@@ -51,7 +51,7 @@ function MainContentWrapper({
                   style={{ objectFit: 'cover' }}
                   className="opacity-20"
               />
-              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
+              <div className="absolute inset-0 bg-background/50"></div>
           </div>
         )}
       </div>
