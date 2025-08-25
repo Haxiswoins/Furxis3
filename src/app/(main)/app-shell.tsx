@@ -18,6 +18,7 @@ import Image from 'next/image';
 import type { SiteContent } from '@/types';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { AestheticFluidBackground } from '@/components/aesthetic-fluid-background';
 
 
 function MainContentWrapper({
@@ -35,6 +36,7 @@ function MainContentWrapper({
     <>
       {/* Background Effects Layer */}
       <div className="fixed inset-0 z-0 overflow-hidden">
+         {isHomePage && <AestheticFluidBackground />}
         {hasHomeBg && (
           <div className="absolute inset-0 z-5">
               <Image
