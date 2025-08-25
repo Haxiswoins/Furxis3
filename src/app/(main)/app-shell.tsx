@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/sheet"
 import { Skeleton } from '@/components/ui/skeleton';
 import type { SiteContent } from '@/types';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import AestheticFluidBackground from '@/components/ambient-light-background';
 
@@ -34,9 +34,7 @@ function MainContentWrapper({
       {/* Background Effects Layer */}
       <div className="fixed inset-0 z-0 overflow-hidden">
         {isHomePage ? (
-          <>
-            <AestheticFluidBackground onReady={() => setIsBackgroundReady(true)} />
-          </>
+          <AestheticFluidBackground onReady={() => setIsBackgroundReady(true)} />
         ) : (
           <div className="fixed inset-0 bg-background" />
         )}
@@ -47,7 +45,7 @@ function MainContentWrapper({
           "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]",
            // Apply fade-in transition only on the home page
           isHomePage ? "transition-opacity duration-1000 ease-in-out" : "",
-          isHomePage && !isBackgroundReady ? "opacity-0" : "opacity-100"
+          isHomePage && !isBackgroundReady ? "opacity-0 invisible" : "opacity-100 visible"
         )}>
           {children}
         </main>
@@ -124,17 +122,19 @@ export function AppShell({
   }
 
   return (
-      <motion.div
-          key={pathname}
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: 'easeInOut' }}
-      >
-          <Header />
-          <MainContentWrapper>
-              {children}
-          </MainContentWrapper>
-      </motion.div>
+    <AnimatePresence mode="wait">
+        <motion.div
+            key={pathname}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 15 }}
+            transition={{ duration: 0.4, ease: 'easeInOut' }}
+        >
+            <Header />
+            <MainContentWrapper>
+                {children}
+            </MainContentWrapper>
+        </motion.div>
+    </AnimatePresence>
   );
 }
-
