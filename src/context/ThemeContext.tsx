@@ -32,8 +32,11 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const determineTheme = useCallback(() => {
     if (!siteContent) return; 
 
-    // Force light mode for preview
-    const newTheme: Theme = 'light';
+    const now = new Date();
+    const currentHour = now.getHours();
+    const sunrise = siteContent.sunriseHour ?? 6;
+    const sunset = siteContent.sunsetHour ?? 18;
+    const newTheme: Theme = currentHour >= sunrise && currentHour < sunset ? 'light' : 'dark';
     
     setTheme(newTheme);
 
@@ -48,20 +51,8 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (theme) {
         const root = window.document.documentElement;
-        const isThemeSet = root.classList.contains('light') || root.classList.contains('dark');
-        const currentThemeOnDoc = root.classList.contains('dark') ? 'dark' : 'light';
-
-        // Only reload if the theme has been set before and is changing
-        if (isThemeSet && currentThemeOnDoc !== theme) {
-            // Add the new theme class before reloading to avoid a flash of unstyled content
-            root.classList.remove('light', 'dark');
-            root.classList.add(theme);
-            // Temporarily disable reload to allow for preview without refresh loop
-            // window.location.reload(); 
-        } else if (!isThemeSet) {
-             root.classList.remove('light', 'dark');
-             root.classList.add(theme);
-        }
+        root.classList.remove('light', 'dark');
+        root.classList.add(theme);
     }
   }, [theme]);
   
