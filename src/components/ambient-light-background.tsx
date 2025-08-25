@@ -27,7 +27,7 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
     const scriptSrc = isDarkMode ? '/AmbientLightBg.min.js' : '/AestheticFluidBg.min.js';
     const colors = isDarkMode
       ? ["#1C1450","#332D71","#7D709A","#1E5286","#143671","#031D34"]
-      : ["#ff7300","#ffffff","#ededed","#0055ff","#ffffff","#ffffff"];
+      : ["#ff7300","#ffffff","#ededed","#0d2868","#ffffff","#ffffff"];
     const gaussValue = 0.1; // Only for AestheticFluidBg
 
     const mainScriptId = 'ambient-light-bg-script';
