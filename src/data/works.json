@@ -5,6 +5,7 @@
     "workName": "青风",
     "clientName": "匿名委托人A",
     "clientCity": "上海",
+    "makerName": "工作室A",
     "completionDate": "2024-05-20T00:00:00.000Z",
     "imageUrls": [
       "https://placehold.co/600x800.png",
@@ -17,6 +18,7 @@
     "workName": "赤炎",
     "clientName": "匿名委托人B",
     "clientCity": "北京",
+    "makerName": "工作室B",
     "completionDate": "2024-03-15T00:00:00.000Z",
     "imageUrls": [
       "https://placehold.co/600x800.png"

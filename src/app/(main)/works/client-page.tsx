@@ -1,10 +1,13 @@
+
 'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Work } from '@/types';
 import { motion } from 'framer-motion';
+import { Badge } from '@/components/ui/badge';
+import { UserSquare } from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -56,26 +59,34 @@ export function WorksPageClient({ worksByYear, sortedYears }: WorksPageClientPro
               >
                 {worksByYear[year].map((work) => (
                   <motion.div key={work.id} variants={itemVariants}>
-                    <Link href={`/works/${work.id}`} passHref>
                       <Card className="overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col text-sm h-full group hover:-translate-y-1">
-                        <CardHeader className="p-0">
-                          <div className="relative aspect-[3/4] overflow-hidden">
-                              <Image
-                                src={work.imageUrls[0]}
-                                alt={work.workName}
-                                fill
-                                sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-                                style={{objectFit: 'cover'}}
-                                className="transition-transform duration-300 group-hover:scale-105"
-                              />
-                          </div>
-                        </CardHeader>
+                        <Link href={`/works/${work.id}`} passHref>
+                          <CardHeader className="p-0">
+                            <div className="relative aspect-[3/4] overflow-hidden">
+                                <Image
+                                  src={work.imageUrls[0]}
+                                  alt={work.workName}
+                                  fill
+                                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                                  style={{objectFit: 'cover'}}
+                                  className="transition-transform duration-300 group-hover:scale-105"
+                                />
+                            </div>
+                          </CardHeader>
+                        </Link>
                         <CardContent className="p-3 flex-grow">
                           <CardTitle className="text-base font-headline mb-1 truncate">{work.workName}</CardTitle>
-                          <CardDescription className="text-xs text-muted-foreground">{work.clientName}</CardDescription>
+                          <CardDescription className="text-xs text-muted-foreground">委托人: {work.clientName}</CardDescription>
                         </CardContent>
+                         {work.makerName && (
+                            <CardFooter className="p-3 pt-0">
+                                <Badge variant="secondary" className="font-normal">
+                                    <UserSquare className="mr-1 h-3 w-3" />
+                                    {work.makerName}
+                                </Badge>
+                            </CardFooter>
+                        )}
                       </Card>
-                    </Link>
                   </motion.div>
                 ))}
               </motion.div>

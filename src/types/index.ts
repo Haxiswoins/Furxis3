@@ -106,6 +106,7 @@ export type Work = {
   workName: string;
   clientName: string;
   clientCity: string;
+  makerName?: string;
   completionDate: string; // ISO String
   imageUrls: string[];
   description?: string;

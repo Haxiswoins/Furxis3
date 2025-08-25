@@ -33,6 +33,7 @@ const formSchema = z.object({
   workName: z.string().min(1, '作品名称不能为空'),
   clientName: z.string().min(1, '委托人名称不能为空'),
   clientCity: z.string().min(1, '委托人城市不能为空'),
+  makerName: z.string().optional(),
   completionDate: z.date({ required_error: '必须选择一个完成日期' }),
   description: z.string().optional(),
   imageUrls: z.array(z.string().optional()).default([]),
@@ -66,6 +67,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
       workName: work?.workName || '',
       clientName: work?.clientName || '',
       clientCity: work?.clientCity || '',
+      makerName: work?.makerName || '',
       completionDate: work ? new Date(work.completionDate) : new Date(),
       description: work?.description || '',
       imageUrls: work?.imageUrls || [],
@@ -132,6 +134,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
             workName: values.workName,
             clientName: values.clientName,
             clientCity: values.clientCity,
+            makerName: values.makerName,
             completionDate: values.completionDate.toISOString(),
             description: values.description || '',
             imageUrls: filteredUrls,
@@ -164,6 +167,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
         <FormField control={form.control} name="workName" render={({ field }) => ( <FormItem> <FormLabel>作品名称</FormLabel> <FormControl><Input placeholder="例如：青风" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
         <FormField control={form.control} name="clientName" render={({ field }) => ( <FormItem> <FormLabel>委托人名称</FormLabel> <FormControl><Input placeholder="例如：匿名委托人" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
         <FormField control={form.control} name="clientCity" render={({ field }) => ( <FormItem> <FormLabel>委托人城市</FormLabel> <FormControl><Input placeholder="例如：上海" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+        <FormField control={form.control} name="makerName" render={({ field }) => ( <FormItem> <FormLabel>装师名称</FormLabel> <FormControl><Input placeholder="例如：工作室A" {...field} /></FormControl> <FormDescription>选填，如果填写会在作品卡片上展示。</FormDescription><FormMessage /> </FormItem> )}/>
         
         <FormField
           control={form.control}
