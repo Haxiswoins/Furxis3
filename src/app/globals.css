@@ -64,7 +64,7 @@
     @apply border-border;
   }
   html {
-    overflow-y: scroll;
+    /* Always reserve space for the scrollbar to prevent layout shifts */
     scrollbar-gutter: stable;
   }
   body {
