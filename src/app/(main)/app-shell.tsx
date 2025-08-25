@@ -35,7 +35,6 @@ function MainContentWrapper({
     <>
       {/* Background Effects Layer */}
       <div className="fixed inset-0 z-0">
-        {isHomePage && <div className="absolute inset-0 z-10 wavy-background"></div>}
         {hasHomeBg && (
           <div className="absolute inset-0 z-5">
               <Image
@@ -54,8 +53,7 @@ function MainContentWrapper({
       <div className="relative z-20 flex flex-col min-h-screen">
         <Header />
         <main className={cn(
-          "flex-1 flex flex-col px-4 py-8 pt-24",
-          isHomePage && "bg-background/80 backdrop-blur-sm"
+          "flex-1 flex flex-col px-4 py-8 pt-24"
         )}>
           {children}
         </main>

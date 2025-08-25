@@ -104,13 +104,6 @@ const config: Config = {
           from: { transform: 'translateX(-100%) scaleX(0)', opacity: '0.7' },
           to: { transform: 'translateX(200vw) scaleX(1)', opacity: '0' }
         },
-        'wave': {
-          '0%': { transform: 'translate(20vw, 10vh) rotate(0deg)' },
-          '25%': { transform: 'translate(60vw, 40vh) rotate(90deg)' },
-          '50%': { transform: 'translate(30vw, 80vh) rotate(180deg)' },
-          '75%': { transform: 'translate(-20vw, 50vh) rotate(270deg)' },
-          '100%': { transform: 'translate(20vw, 10vh) rotate(360deg)' },
-        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -120,7 +113,6 @@ const config: Config = {
         'overlay-show': 'overlay-show 0.2s ease-out',
         'overlay-hide': 'overlay-hide 0.2s ease-in',
         'warp': 'warp 1s ease-out forwards',
-        'wave': 'wave 15s infinite linear',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

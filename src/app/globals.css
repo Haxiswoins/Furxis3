@@ -108,34 +108,6 @@
   .animate-warp {
     animation: warp 1s ease-out forwards;
   }
-
-  .wavy-background {
-    @apply relative overflow-hidden;
-  }
-
-  .wavy-background::before,
-  .wavy-background::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    opacity: 0.5; /* Increased opacity */
-    filter: blur(60px); /* Decreased blur */
-    z-index: -1;
-  }
-
-  .wavy-background::before {
-    width: 500px; /* Increased size */
-    height: 500px;
-    background-color: theme('colors.primary');
-    animation: wave 15s infinite linear;
-  }
-
-  .wavy-background::after {
-    width: 400px; /* Increased size */
-    height: 400px;
-    background-color: theme('colors.accent'); /* Changed to accent color */
-    animation: wave 20s infinite linear reverse;
-  }
 }
 
 @keyframes warp {
@@ -147,12 +119,4 @@
     transform: translateX(200vw) scaleX(1);
     opacity: 0;
   }
-}
-
-@keyframes wave {
-  0% { transform: translate(20vw, 10vh) rotate(0deg) scale(1); }
-  25% { transform: translate(60vw, 40vh) rotate(90deg) scale(1.1); }
-  50% { transform: translate(30vw, 80vh) rotate(180deg) scale(1); }
-  75% { transform: translate(-20vw, 50vh) rotate(270deg) scale(1.2); }
-  100% { transform: translate(20vw, 10vh) rotate(360deg) scale(1); }
 }
