@@ -18,11 +18,15 @@ const AestheticFluidBackground = () => {
     const initScriptId = 'ambient-light-init-script';
     
     // Avoid appending the script multiple times
-    if (document.getElementById(mainScriptId)) {
-        const existingInitScript = document.getElementById(initScriptId);
-        if (existingInitScript && existingInitScript.parentNode) {
-            existingInitScript.parentNode.removeChild(existingInitScript);
-        }
+    const existingMainScript = document.getElementById(mainScriptId);
+    const existingInitScript = document.getElementById(initScriptId);
+
+    if (existingMainScript && existingInitScript) {
+      if (existingInitScript.parentNode) {
+          existingInitScript.parentNode.removeChild(existingInitScript);
+      }
+    } else if (existingMainScript && existingMainScript.parentNode) {
+        existingMainScript.parentNode.removeChild(existingMainScript);
     }
     
     const mainScript = document.createElement('script');
@@ -39,7 +43,7 @@ const AestheticFluidBackground = () => {
           if (window.Color4Bg && typeof window.Color4Bg.AmbientLightBg === 'function') {
             new window.Color4Bg.AmbientLightBg({
               dom: "${containerId}",
-              colors: ["#000000","#ffa200","#ffffff","#ffffff","#ffffff","#ff6c0a"],
+              colors: ["#000000","#ffa200","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ff6c0a"],
               loop: true,
               speed: 1,
               st_scale: 1,
@@ -65,13 +69,13 @@ const AestheticFluidBackground = () => {
    
     // Cleanup function to remove scripts when component unmounts
     return () => {
-      const existingMainScript = document.getElementById(mainScriptId);
-      if (existingMainScript && existingMainScript.parentNode) {
-        existingMainScript.parentNode.removeChild(existingMainScript);
+      const script1 = document.getElementById(mainScriptId);
+      if (script1 && script1.parentNode) {
+        script1.parentNode.removeChild(script1);
       }
-      const existingInitScript = document.getElementById(initScriptId);
-        if (existingInitScript && existingInitScript.parentNode) {
-        existingInitScript.parentNode.removeChild(existingInitScript);
+      const script2 = document.getElementById(initScriptId);
+        if (script2 && script2.parentNode) {
+        script2.parentNode.removeChild(script2);
       }
     };
   }, []);
