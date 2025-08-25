@@ -29,8 +29,8 @@ const AestheticFluidBackground = () => {
     
     const mainScript = document.createElement('script');
     mainScript.id = mainScriptId;
-    // Directly load the script from the official source to ensure consistency
-    mainScript.src = 'https://www.color4bg.com/script/AmbientLightBg.min.js';
+    // Load the new script provided by the user
+    mainScript.src = '/BlurGradientBg.min.js';
     mainScript.async = true;
 
     mainScript.onload = () => {
@@ -39,29 +39,24 @@ const AestheticFluidBackground = () => {
       initScript.id = initScriptId;
       initScript.innerHTML = `
         try {
-          if (window.Color4Bg && typeof window.Color4Bg.AmbientLightBg === 'function') {
-            new window.Color4Bg.AmbientLightBg({
+          if (window.Color4Bg && typeof window.Color4Bg.BlurGradientBg === 'function') {
+            new window.Color4Bg.BlurGradientBg({
               dom: "${containerId}",
-              colors: ["#000000","#ffa200","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ff6c0a"],
+              colors: ["#ffffff","#3d64a4","#ff7b0f","#ffffff"],
               loop: true,
-              speed: 1,
-              st_scale: 1,
-              curl_scale: 0.2,
-              darkness: 1,
-              brightness: 0.2,
             });
           } else {
-              console.error('AmbientLightBg library not found on window.Color4Bg');
+              console.error('BlurGradientBg library not found on window.Color4Bg');
           }
         } catch (error) {
-          console.error('Error initializing AmbientLightBg:', error);
+          console.error('Error initializing BlurGradientBg:', error);
         }
       `;
       document.body.appendChild(initScript);
     };
     
     mainScript.onerror = () => {
-        console.error('Failed to load AmbientLightBg.min.js script.');
+        console.error('Failed to load BlurGradientBg.min.js script.');
     };
 
     document.body.appendChild(mainScript);
