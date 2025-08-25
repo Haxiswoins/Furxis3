@@ -50,14 +50,14 @@ function MainContentWrapper({
          {isHomePage && (
           <div className="absolute inset-0">
             {/* Shooting Stars */}
-            <span className="shooting-star" style={{ top: '0px', right: '0px', animationDelay: '0s', animationDuration: '2s' }}></span>
-            <span className="shooting-star" style={{ top: '0px', right: '80px', animationDelay: '0.2s', animationDuration: '2.2s' }}></span>
-            <span className="shooting-star" style={{ top: '80px', right: '0px', animationDelay: '0.4s', animationDuration: '1.8s' }}></span>
-            <span className="shooting-star" style={{ top: '0px', right: '180px', animationDelay: '0.6s', animationDuration: '2.5s' }}></span>
-            <span className="shooting-star" style={{ top: '0px', right: '300px', animationDelay: '0.8s', animationDuration: '1.9s' }}></span>
-            <span className="shooting-star" style={{ top: '200px', right: '0px', animationDelay: '1s', animationDuration: '2.1s' }}></span>
-             <span className="shooting-star" style={{ top: '0px', right: '450px', animationDelay: '1.2s', animationDuration: '3s' }}></span>
-            <span className="shooting-star" style={{ top: '300px', right: '0px', animationDelay: '1.4s', animationDuration: '2.6s' }}></span>
+            <span className="shooting-star animate-meteor" style={{ top: '0px', right: '0px', animationDelay: '0s', animationDuration: '2s' }}></span>
+            <span className="shooting-star animate-meteor" style={{ top: '0px', right: '80px', animationDelay: '0.2s', animationDuration: '2.2s' }}></span>
+            <span className="shooting-star animate-meteor" style={{ top: '80px', right: '0px', animationDelay: '0.4s', animationDuration: '1.8s' }}></span>
+            <span className="shooting-star animate-meteor" style={{ top: '0px', right: '180px', animationDelay: '0.6s', animationDuration: '2.5s' }}></span>
+            <span className="shooting-star animate-meteor" style={{ top: '0px', right: '300px', animationDelay: '0.8s', animationDuration: '1.9s' }}></span>
+            <span className="shooting-star animate-meteor" style={{ top: '200px', right: '0px', animationDelay: '1s', animationDuration: '2.1s' }}></span>
+             <span className="shooting-star animate-meteor" style={{ top: '0px', right: '450px', animationDelay: '1.2s', animationDuration: '3s' }}></span>
+            <span className="shooting-star animate-meteor" style={{ top: '300px', right: '0px', animationDelay: '1.4s', animationDuration: '2.6s' }}></span>
           </div>
         )}
       </div>
