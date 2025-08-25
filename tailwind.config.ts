@@ -100,6 +100,10 @@ const config: Config = {
             from: { opacity: '1' },
             to: { opacity: '0' },
         },
+        aurora: {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -108,6 +112,7 @@ const config: Config = {
         'content-hide': 'content-hide 0.2s ease-in',
         'overlay-show': 'overlay-show 0.2s ease-out',
         'overlay-hide': 'overlay-hide 0.2s ease-in',
+        aurora: 'aurora 8s linear infinite',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
