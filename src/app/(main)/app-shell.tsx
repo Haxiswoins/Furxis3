@@ -25,12 +25,12 @@ function MainContentWrapper({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isHomePage = pathname === '/home';
+  const isMainPage = pathname === '/' || pathname === '/home';
   
   return (
     <main className={cn(
         "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]",
-        isHomePage && "bg-transparent"
+        isMainPage && "bg-transparent"
       )}>
         {children}
       </main>
@@ -51,10 +51,7 @@ export function AppShell({
   const isAdminRoute = pathname.startsWith('/admin');
   const isAuthRoute = ['/login', '/register', '/forgot-password'].includes(pathname) || pathname.startsWith('/api/auth');
   
-  // The root page now redirects, so it is no longer considered part of the App Shell.
-  const isSpecialRoute = isAuthRoute || pathname === '/';
-  
-  const isHomePage = pathname === '/home';
+  const isMainPage = pathname === '/' || pathname === '/home';
   
   if (loading) {
     return (
@@ -68,7 +65,7 @@ export function AppShell({
     );
   }
 
-  if (isSpecialRoute) {
+  if (isAuthRoute) {
      return <>{children}</>;
   }
 
@@ -114,7 +111,7 @@ export function AppShell({
       {/* Persistent Background Layer */}
       <div className={cn(
         "fixed inset-0 z-0 overflow-hidden transition-opacity duration-500 ease-in-out",
-        isHomePage ? "opacity-100" : "opacity-0 pointer-events-none"
+        isMainPage ? "opacity-100" : "opacity-0 pointer-events-none"
       )}>
         <AestheticFluidBackground />
       </div>
