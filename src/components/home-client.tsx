@@ -18,9 +18,12 @@ export function HomeClient({ content }: HomeClientProps) {
 
   const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
+    const href = e.currentTarget.getAttribute('href');
+    if (!href) return;
+
     setIsTransitioning(true);
     setTimeout(() => {
-        router.push('/');
+        router.push(href);
     }, 500); // Corresponds to the duration of the fade-out animation
   }
 
@@ -34,10 +37,10 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <div className={cn(
-        "flex flex-col flex-grow transition-opacity duration-500",
+        "flex flex-col justify-center transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
         isTransitioning ? "opacity-0" : "opacity-100"
     )}>
-        <div className="flex-grow flex flex-col items-center justify-center">
+        <div className="flex-grow flex flex-col items-center justify-center py-12">
         <div className="text-center mb-12">
             <a href="/" onClick={handleNavigate}>
                 <div className="relative inline-block cursor-pointer group">
@@ -70,6 +73,7 @@ export function HomeClient({ content }: HomeClientProps) {
                   sizes="(max-width: 768px) 100vw, 33vw"
                   style={{objectFit: "cover"}}
                   className={cardImageClass}
+                  data-ai-hint="commission custom"
                   />
                   <div className={cardTextDivClass}>
                   <h2 className={cardTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
@@ -89,6 +93,7 @@ export function HomeClient({ content }: HomeClientProps) {
                   sizes="(max-width: 768px) 100vw, 33vw"
                   style={{objectFit: "cover"}}
                   className={cardImageClass}
+                  data-ai-hint="character design"
                   />
                   <div className={cardTextDivClass}>
                   <h2 className={cardTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
@@ -108,6 +113,7 @@ export function HomeClient({ content }: HomeClientProps) {
                   sizes="(max-width: 768px) 100vw, 33vw"
                   style={{objectFit: "cover"}}
                   className={cardImageClass}
+                  data-ai-hint="portfolio gallery"
                   />
                   <div className={cardTextDivClass}>
                   <h2 className={cardTitleClass}>{content?.workTitle || '作品一览'}</h2>
@@ -119,7 +125,7 @@ export function HomeClient({ content }: HomeClientProps) {
         </div>
 
         </div>
-        <div className="w-full mt-16 pb-8 text-center">
+        <div className="w-full pb-8 text-center">
         <ContactInfo content={content} />
         </div>
     </div>
