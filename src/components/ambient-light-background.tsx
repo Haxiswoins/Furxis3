@@ -26,7 +26,8 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
 
     // Determine script and colors based on theme
     const isDarkMode = theme === 'dark';
-    const scriptSrc = isDarkMode ? '/AAestheticFluidBg.min.js' : '/AestheticFluidBg.min.js';
+    // Both modes now use the same script file.
+    const scriptSrc = '/AestheticFluidBg.min.js';
     const colors = isDarkMode
       ? ["#001533","#2d2b91","#000000","#000000","#212832","#090e1a"]
       : ["#ffffff","#ffffff","#004fa3","#ffffff","#ff6600","#ffffff"];
