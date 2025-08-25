@@ -72,7 +72,7 @@ export function Images({ images, name }: { images: string[]; name: string }) {
       {images.map((imgSrc, index) => (
         <Dialog key={index}>
           <DialogTrigger asChild>
-            <div className="relative aspect-square rounded-lg overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-shadow">
+            <div className="relative aspect-[4/3] rounded-lg overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-shadow">
               <Image
                 src={imgSrc}
                 alt={`${name} - 视图 ${index + 1}`}
