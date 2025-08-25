@@ -108,6 +108,22 @@
   .animate-warp {
     animation: warp 1s ease-out forwards;
   }
+
+  /* Wavy Lines Effect */
+  .wave-container {
+      @apply absolute top-0 left-0 w-full h-1/2 overflow-hidden pointer-events-none;
+  }
+  .wave-line {
+      @apply absolute;
+      width: 200%;
+      height: 200px;
+      left: -50%;
+      background: linear-gradient(90deg, hsl(var(--primary) / 0.8), hsl(var(--accent) / 0.7), transparent);
+      border-radius: 9999px;
+      filter: blur(50px);
+      opacity: 0.6;
+      transform-origin: center;
+  }
 }
 
 @keyframes warp {

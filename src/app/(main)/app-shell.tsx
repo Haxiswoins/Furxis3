@@ -35,6 +35,13 @@ function MainContentWrapper({
     <>
       {/* Background Effects Layer */}
       <div className="fixed inset-0 z-0">
+        {isHomePage && (
+          <div className="wave-container">
+            <div className="wave-line" style={{ animation: 'wave-line-1 15s linear infinite' }}></div>
+            <div className="wave-line" style={{ animation: 'wave-line-2 20s linear infinite' }}></div>
+            <div className="wave-line" style={{ animation: 'wave-line-3 25s linear infinite alternate' }}></div>
+          </div>
+        )}
         {hasHomeBg && (
           <div className="absolute inset-0 z-5">
               <Image

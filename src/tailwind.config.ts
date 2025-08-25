@@ -100,10 +100,23 @@ const config: Config = {
             from: { opacity: '1' },
             to: { opacity: '0' },
         },
-        'wave': {
-          '0%': { transform: 'translate(-50%, 0) rotateZ(0deg)' },
-          '50%': { transform: 'translate(-50%, -2%) rotateZ(180deg)' },
-          '100%': { transform: 'translate(-50%, -4%) rotateZ(360deg)' },
+        'warp': {
+          from: { transform: 'translateX(-100%) scaleX(0)', opacity: '0.7' },
+          to: { transform: 'translateX(200vw) scaleX(1)', opacity: '0' }
+        },
+        'wave-line-1': {
+          '0%': { transform: 'translateY(-20%) translateX(0%) rotate(-15deg) scale(1.1)' },
+          '50%': { transform: 'translateY(20%) translateX(5%) rotate(0deg) scale(1)' },
+          '100%': { transform: 'translateY(-20%) translateX(0%) rotate(-15deg) scale(1.1)' },
+        },
+        'wave-line-2': {
+          '0%': { transform: 'translateY(10%) translateX(-5%) rotate(20deg) scale(1.2)' },
+          '50%': { transform: 'translateY(-10%) translateX(0%) rotate(5deg) scale(1)' },
+          '100%': { transform: 'translateY(10%) translateX(-5%) rotate(20deg) scale(1.2)' },
+        },
+        'wave-line-3': {
+          '0%': { transform: 'translateY(-5%) translateX(2%) rotate(-5deg) scale(1)' },
+          '100%': { transform: 'translateY(5%) translateX(-2%) rotate(10deg) scale(1.1)' },
         },
       },
       animation: {
@@ -113,6 +126,10 @@ const config: Config = {
         'content-hide': 'content-hide 0.2s ease-in',
         'overlay-show': 'overlay-show 0.2s ease-out',
         'overlay-hide': 'overlay-hide 0.2s ease-in',
+        'warp': 'warp 1s ease-out forwards',
+        'wave-line-1': 'wave-line-1 15s ease-in-out infinite',
+        'wave-line-2': 'wave-line-2 20s ease-in-out infinite',
+        'wave-line-3': 'wave-line-3 25s ease-in-out infinite alternate',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
