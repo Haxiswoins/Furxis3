@@ -112,13 +112,12 @@
   .aurora-border-container::before {
     content: '';
     @apply absolute -top-1/2 -left-1/2 h-[200%] w-[200%] animate-aurora;
-    background: conic-gradient(
-      from 180deg at 50% 50%,
-      hsl(var(--primary) / 0.7) 0deg,
-      hsl(var(--accent) / 0.5) 60deg,
-      hsl(var(--primary) / 0.4) 120deg,
-      transparent 180deg,
-      transparent 360deg
+    background: linear-gradient(
+      115deg,
+      transparent 20%,
+      hsl(var(--primary) / 0.5),
+      hsl(var(--accent) / 0.4),
+      transparent 80%
     );
     z-index: 0; /* Sits behind the content */
   }

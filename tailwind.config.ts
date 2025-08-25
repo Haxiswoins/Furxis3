@@ -112,7 +112,7 @@ const config: Config = {
         'content-hide': 'content-hide 0.2s ease-in',
         'overlay-show': 'overlay-show 0.2s ease-out',
         'overlay-hide': 'overlay-hide 0.2s ease-in',
-        aurora: 'aurora 8s linear infinite',
+        aurora: 'aurora 16s linear infinite',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
