@@ -38,7 +38,6 @@ function MainContentWrapper({
         {isHomePage ? (
           <>
             <AestheticFluidBackground />
-            <div className="fixed inset-0 z-10 bg-white/10 backdrop-blur-sm"></div>
           </>
         ) : (
           siteContent?.homeBackgroundImageUrl && (
