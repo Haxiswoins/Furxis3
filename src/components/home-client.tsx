@@ -47,7 +47,6 @@ export function HomeClient({ content }: HomeClientProps) {
                 <div className="relative inline-block cursor-pointer group">
                     <h1 
                       className="text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary"
-                      style={{ textShadow: '0px 2px 6px rgba(0, 0, 0, 0.5)' }}
                     >
                     前行无界
                     </h1>
@@ -57,7 +56,6 @@ export function HomeClient({ content }: HomeClientProps) {
                     >
                     <span 
                       className="font-body text-4xl font-extralight tracking-[0.3em] whitespace-nowrap px-4 mt-12"
-                      style={{ textShadow: '0px 1px 4px rgba(0, 0, 0, 0.4)' }}
                     >
                         FORWARD INFINITY
                     </span>
