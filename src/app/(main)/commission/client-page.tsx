@@ -9,16 +9,17 @@ import type { CommissionOption } from '@/types';
 import { motion } from 'framer-motion';
 
 const lightStatusStyles: { [key: string]: string } = {
-  '开放中': 'bg-green-100 text-green-800 border-green-200',
-  '已结束': 'bg-zinc-100 text-zinc-800 border-zinc-200',
-  '即将开放': 'bg-blue-100 text-blue-800 border-blue-200',
+  '开放中': 'bg-primary/10 text-primary border-primary/20',
+  '已结束': 'bg-muted text-muted-foreground border-border',
+  '即将开放': 'bg-accent text-accent-foreground border-accent-foreground/20',
 };
 
 const darkStatusStyles: { [key: string]: string } = {
-  '开放中': 'bg-green-500/20 text-green-300 border-green-500/30',
-  '已结束': 'bg-zinc-500/20 text-zinc-300 border-zinc-500/30',
-  '即将开放': 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+  '开放中': 'bg-primary/20 text-primary border-primary/30',
+  '已结束': 'bg-muted/80 text-muted-foreground border-border',
+  '即将开放': 'bg-accent/80 text-accent-foreground border-accent-foreground/30',
 };
+
 
 type CommissionClientPageProps = {
   commissionOptions: CommissionOption[];

@@ -1,4 +1,3 @@
-
 // This page must be a client component to use hooks like `useAuth` and `useRouter`
 // for authentication checks and dynamic user-specific data fetching.
 'use client';
@@ -249,7 +248,7 @@ export default function OrderDetailPage() {
               <CardTitle className="text-3xl font-headline">订单详情</CardTitle>
               <CardDescription>订单号: {order.orderNumber}</CardDescription>
             </div>
-            <Badge variant="outline" className={cn(statusStyles[order.status], "capitalize")}>{order.status}</Badge>
+            <Badge variant="outline" className={cn("text-xs", statusStyles[order.status])}>{order.status}</Badge>
           </div>
         </CardHeader>
         <CardContent>

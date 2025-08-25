@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -108,7 +107,7 @@ export function AdminOrdersClient({ orders }: AdminOrdersClientProps) {
                   <TableCell>
                       <Badge variant="outline" className={cn("text-xs", statusStyles[order.status])}>{order.status}</Badge>
                   </TableCell>
-                  <TableCell>{order.total}</TableCell>
+                  <TableCell>¥{order.total}</TableCell>
                   <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="icon" onClick={() => router.push(`/admin/orders/edit/${order.id}`)}>
