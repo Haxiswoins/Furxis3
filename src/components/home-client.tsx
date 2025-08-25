@@ -8,6 +8,30 @@ import { useRouter } from 'next/navigation';
 import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: 'easeOut',
+    },
+  },
+};
 
 type HomeClientProps = {
     content: SiteContent | null;
@@ -64,10 +88,13 @@ export function HomeClient({ content }: HomeClientProps) {
             </a>
         </div>
         
-        <div
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl mx-auto"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
         >
-          <div>
+          <motion.div variants={itemVariants}>
             <Link href="/commission" className={cardLinkClass} onClick={handleNavigate}>
               <div className={cardDivClass}>
                   <Image
@@ -86,9 +113,9 @@ export function HomeClient({ content }: HomeClientProps) {
                   </div>
               </div>
             </Link>
-          </div>
+          </motion.div>
 
-          <div>
+          <motion.div variants={itemVariants}>
             <Link href="/adoption" className={cardLinkClass} onClick={handleNavigate}>
               <div className={cardDivClass}>
                   <Image
@@ -106,9 +133,9 @@ export function HomeClient({ content }: HomeClientProps) {
                   </div>
               </div>
             </Link>
-          </div>
+          </motion.div>
           
-          <div>
+          <motion.div variants={itemVariants}>
             <Link href="/works" className={cardLinkClass} onClick={handleNavigate}>
               <div className={cardDivClass}>
                   <Image
@@ -126,8 +153,8 @@ export function HomeClient({ content }: HomeClientProps) {
                   </div>
               </div>
             </Link>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         </div>
         <div className="w-full py-8 text-center mt-auto">
