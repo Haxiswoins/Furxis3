@@ -42,7 +42,7 @@ function MainContentWrapper({
     return () => {
       document.body.classList.remove('aurora-background');
     };
-  }, [isHomePage]);
+  }, [isHomePage, pathname]);
 
 
   return (

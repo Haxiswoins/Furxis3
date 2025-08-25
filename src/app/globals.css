@@ -108,7 +108,7 @@
 
 @layer utilities {
   .aurora-background {
-    @apply relative overflow-hidden;
+    @apply relative;
     background-color: hsl(var(--background));
   }
 
