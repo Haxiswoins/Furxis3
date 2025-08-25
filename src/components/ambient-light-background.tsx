@@ -2,6 +2,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/context/ThemeContext';
 import { useEffect, useState } from 'react';
 
 type AestheticFluidBackgroundProps = {
@@ -9,6 +10,7 @@ type AestheticFluidBackgroundProps = {
 };
 
 const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) => {
+  const { theme } = useTheme();
   const [isAnimationReady, setIsAnimationReady] = useState(false);
 
   useEffect(() => {
@@ -19,10 +21,14 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
       return;
     }
 
-    // --- Configuration is now fixed and does not depend on the theme. ---
-    const scriptSrc = '/AestheticFluidBg.min.js';
-    const colors = ["#ff7300","#ffffff","#ededed","#0055ff","#ffffff","#ffffff"];
-    const gaussValue = 0.1;
+    const isDarkMode = theme === 'dark';
+
+    // Configuration based on theme
+    const scriptSrc = isDarkMode ? '/AmbientLightBg.min.js' : '/AestheticFluidBg.min.js';
+    const colors = isDarkMode
+      ? ["#1C1450","#332D71","#7D709A","#1E5286","#143671","#031D34"]
+      : ["#ff7300","#ffffff","#ededed","#0055ff","#ffffff","#ffffff"];
+    const gaussValue = 0.1; // Only for AestheticFluidBg
 
     const mainScriptId = 'ambient-light-bg-script';
     const initScriptId = 'ambient-light-init-script';
@@ -30,7 +36,7 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
     let isCancelled = false;
 
     const cleanup = () => {
-        // Clear previous canvas if it exists, to prevent multiple canvases from running
+        // Clear previous canvas if it exists
         while (container.firstChild) {
             container.removeChild(container.firstChild);
         }
@@ -62,23 +68,44 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
 
         const initScript = document.createElement('script');
         initScript.id = initScriptId;
-        initScript.innerHTML = `
-            try {
-              if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
-                new window.Color4Bg.AestheticFluidBg({
-                  dom: "${containerId}",
-                  colors: ${JSON.stringify(colors)},
-                  loop: true,
-                  gauss: ${gaussValue}
-                });
-                window.dispatchEvent(new Event('backgroundReady'));
-              } else {
-                  console.error('AestheticFluidBg library not found on window.Color4Bg');
-              }
-            } catch (error) {
-              console.error('Error initializing AestheticFluidBg:', error);
-            }
-        `;
+        
+        if (isDarkMode) {
+            initScript.innerHTML = `
+                try {
+                  if (window.Color4Bg && typeof window.Color4Bg.AmbientLightBg === 'function') {
+                    new window.Color4Bg.AmbientLightBg({
+                      dom: "${containerId}",
+                      colors: ${JSON.stringify(colors)},
+                      loop: true
+                    });
+                    window.dispatchEvent(new Event('backgroundReady'));
+                  } else {
+                      console.error('AmbientLightBg library not found on window.Color4Bg');
+                  }
+                } catch (error) {
+                  console.error('Error initializing AmbientLightBg:', error);
+                }
+            `;
+        } else {
+            initScript.innerHTML = `
+                try {
+                  if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
+                    new window.Color4Bg.AestheticFluidBg({
+                      dom: "${containerId}",
+                      colors: ${JSON.stringify(colors)},
+                      loop: true,
+                      gauss: ${gaussValue}
+                    });
+                    window.dispatchEvent(new Event('backgroundReady'));
+                  } else {
+                      console.error('AestheticFluidBg library not found on window.Color4Bg');
+                  }
+                } catch (error) {
+                  console.error('Error initializing AestheticFluidBg:', error);
+                }
+            `;
+        }
+        
         document.body.appendChild(initScript);
     };
     
@@ -97,13 +124,13 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
       isCancelled = true;
       cleanup();
     };
-  }, [onReady]);
+  }, [theme, onReady]);
 
   return (
     <div className="relative w-full h-full">
         {/* Static placeholder background - matches dark theme */}
         <div className={cn(
-            "absolute inset-0 z-0 bg-[#090e1a] transition-opacity duration-1000 ease-in-out",
+            "absolute inset-0 z-0 bg-background transition-opacity duration-1000 ease-in-out",
             isAnimationReady ? 'opacity-0' : 'opacity-100'
         )} />
         {/* Dynamic background container */}
