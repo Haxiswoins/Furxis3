@@ -28,10 +28,12 @@ export default async function CommissionApplicationPage({ params }: { params: { 
   }
 
   return (
-    <CommissionApplicationFormClient
-      commissionOption={commissionOption}
-      commissionStyle={commissionStyle}
-      siteContent={siteContent}
-    />
+    <div className="w-full max-w-4xl mx-auto">
+        <CommissionApplicationFormClient
+            commissionOption={commissionOption}
+            commissionStyle={commissionStyle}
+            siteContent={siteContent}
+        />
+    </div>
   );
 }
