@@ -42,7 +42,7 @@ const AestheticFluidBackground = () => {
           if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
             new window.Color4Bg.AestheticFluidBg({
               dom: "${containerId}",
-              colors: ["#ff7300","#ffffff","#ededed","#0055ff","#ffffff","#ffffff"],
+              colors: ["#ffffff","#ffffff","#004fa3","#ffffff","#ff6600","#ffffff"],
               loop: true,
               gauss: 0.24
             });
