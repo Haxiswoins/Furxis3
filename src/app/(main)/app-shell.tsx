@@ -35,9 +35,9 @@ function MainContentWrapper({
     <>
       {/* Background Effects Layer */}
       <div className="fixed inset-0 z-0">
-        {isHomePage && <div className="absolute inset-0 z-0 wavy-background"></div>}
+        {isHomePage && <div className="absolute inset-0 z-10 wavy-background"></div>}
         {hasHomeBg && (
-          <div className="absolute inset-0 z-10">
+          <div className="absolute inset-0 z-5">
               <Image
                   src={siteContent.homeBackgroundImageUrl!}
                   alt="Homepage Background"
