@@ -21,20 +21,15 @@ import AestheticFluidBackground from '@/components/ambient-light-background';
 
 function MainContentWrapper({
   children,
-  isBackgroundReady,
 }: {
   children: React.ReactNode;
-  isBackgroundReady: boolean;
 }) {
   const pathname = usePathname();
   const isHomePage = pathname === '/home';
   
   return (
     <main className={cn(
-        "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]",
-        // Apply fade-in transition only on the home page and when background is ready
-        isHomePage ? "transition-opacity duration-1000 ease-in-out" : "",
-        isHomePage && !isBackgroundReady ? "opacity-0 invisible" : "opacity-100 visible"
+        "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]"
       )}>
         {children}
       </main>
@@ -51,13 +46,11 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   const { user, loading } = useAuth();
-  const [isBackgroundReady, setIsBackgroundReady] = useState(false);
 
   const isAdminRoute = pathname.startsWith('/admin');
   const isAuthRoute = ['/login', '/register', '/forgot-password'].includes(pathname) || pathname.startsWith('/api/auth');
   const isLandingPage = pathname === '/';
   
-  // This state now lives in the AppShell and applies to the whole main layout
   const isHomePage = pathname === '/home';
   
   if (loading) {
@@ -120,14 +113,14 @@ export function AppShell({
         "fixed inset-0 z-0 overflow-hidden transition-opacity duration-500 ease-in-out",
         isHomePage ? "opacity-100" : "opacity-0 pointer-events-none"
       )}>
-        <AestheticFluidBackground onReady={() => setIsBackgroundReady(true)} />
+        <AestheticFluidBackground />
       </div>
       
       {/* Fallback solid background for non-home pages */}
       <div className="fixed inset-0 z-[-1] bg-background" />
 
       <Header />
-      <MainContentWrapper isBackgroundReady={isBackgroundReady}>
+      <MainContentWrapper>
           {children}
       </MainContentWrapper>
     </>

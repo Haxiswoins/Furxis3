@@ -1,17 +1,19 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { cn } from '@/lib/utils';
+import { useEffect, useState } from 'react';
 
 type AestheticFluidBackgroundProps = {
   onReady?: () => void;
 };
 
 const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) => {
+  const [isAnimationReady, setIsAnimationReady] = useState(false);
+
   useEffect(() => {
     const containerId = 'box';
 
-    // Ensure the container div exists
     let container = document.getElementById(containerId);
     if (!container) {
       console.error('Container element for background not found.');
@@ -21,7 +23,6 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
     const mainScriptId = 'ambient-light-bg-script';
     const initScriptId = 'ambient-light-init-script';
     
-    // Avoid appending the script multiple times
     const existingMainScript = document.getElementById(mainScriptId);
     if (existingMainScript && existingMainScript.parentNode) {
       existingMainScript.parentNode.removeChild(existingMainScript);
@@ -33,12 +34,10 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
     
     const mainScript = document.createElement('script');
     mainScript.id = mainScriptId;
-    // Load the new script provided by the user
     mainScript.src = '/AestheticFluidBg.min.js';
     mainScript.async = true;
 
     mainScript.onload = () => {
-      // The main script has loaded, now we can run the initialization code.
       const initScript = document.createElement('script');
       initScript.id = initScriptId;
       initScript.innerHTML = `
@@ -50,7 +49,6 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
               loop: true,
               gauss: 0.24
             });
-            // Signal that the background is ready
             window.dispatchEvent(new Event('backgroundReady'));
           } else {
               console.error('AestheticFluidBg library not found on window.Color4Bg');
@@ -66,17 +64,14 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
         console.error('Failed to load AestheticFluidBg.min.js script.');
     };
     
-    // Listen for the custom event to call the onReady callback
     const handleBackgroundReady = () => {
-        if (onReady) {
-            onReady();
-        }
+        if (onReady) onReady();
+        setIsAnimationReady(true);
     };
     window.addEventListener('backgroundReady', handleBackgroundReady);
 
     document.body.appendChild(mainScript);
    
-    // Cleanup function to remove scripts and event listener when component unmounts
     return () => {
       window.removeEventListener('backgroundReady', handleBackgroundReady);
       const script1 = document.getElementById(mainScriptId);
@@ -90,7 +85,20 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
     };
   }, [onReady]);
 
-  return <div id="box" className="absolute inset-0 z-0" />;
+  return (
+    <div className="relative w-full h-full">
+        {/* Static placeholder background */}
+        <div className={cn(
+            "absolute inset-0 z-0 bg-[#00001a] transition-opacity duration-1000 ease-in-out",
+            isAnimationReady ? 'opacity-0' : 'opacity-100'
+        )} />
+        {/* Dynamic background container */}
+        <div id="box" className={cn(
+            "absolute inset-0 z-10 transition-opacity duration-1000 ease-in-out",
+            isAnimationReady ? 'opacity-100' : 'opacity-0'
+        )} />
+    </div>
+  );
 };
 
 export default AestheticFluidBackground;
