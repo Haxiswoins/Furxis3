@@ -1,3 +1,4 @@
+
 'use client';
 
 import { CommissionClientPage } from './client-page';
@@ -17,7 +18,9 @@ export function CommissionPageClient({ options, content }: CommissionPageClientP
           {content?.commissionPageDescription || '选择一个基础套餐开始您的定制兽装之旅。'}
         </p>
       </div>
-      <CommissionClientPage commissionOptions={options} />
+      <div className="max-w-5xl mx-auto">
+        <CommissionClientPage commissionOptions={options} />
+      </div>
     </div>
   );
 }
