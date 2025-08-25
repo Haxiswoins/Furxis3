@@ -114,10 +114,9 @@
     @apply absolute -top-1/2 -left-1/2 h-[200%] w-[200%] animate-aurora;
     background: linear-gradient(
       115deg,
-      transparent 20%,
       hsl(var(--primary) / 0.5),
-      hsl(var(--accent) / 0.4),
-      transparent 80%
+      transparent 50%,
+      hsl(var(--accent) / 0.4)
     );
     z-index: 0; /* Sits behind the content */
   }
