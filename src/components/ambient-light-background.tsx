@@ -22,7 +22,7 @@ const AestheticFluidBackground = ({ onReady }: AestheticFluidBackgroundProps) =>
     // --- Configuration is now fixed and does not depend on the theme. ---
     const scriptSrc = '/AestheticFluidBg.min.js';
     const colors = ["#ff7300","#ffffff","#ededed","#0055ff","#ffffff","#ffffff"];
-    const gaussValue = 1;
+    const gaussValue = 0.1;
 
     const mainScriptId = 'ambient-light-bg-script';
     const initScriptId = 'ambient-light-init-script';
