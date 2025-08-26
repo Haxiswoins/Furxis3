@@ -9,7 +9,6 @@ import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { FluidBackground } from '@/components/fluid-background';
 
 
 const containerVariants = {
@@ -62,18 +61,16 @@ export function HomeClient({ content }: HomeClientProps) {
   const cardDescriptionClass = "mt-2 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base";
 
   return (
-    <>
-      <FluidBackground />
       <motion.div 
           className={cn(
-              "relative z-10 flex flex-col transition-opacity duration-500",
+              "relative z-10 flex flex-col min-h-screen transition-opacity duration-500",
               isTransitioning ? "opacity-0" : "opacity-100"
           )}
           initial="hidden"
           animate="visible"
           variants={containerVariants}
       >
-          <div className="py-8 md:py-12">
+          <div className="py-8 md:py-12 flex-grow">
           <motion.div className="text-center mb-10 md:mb-16" variants={itemVariants}>
               <a href="/">
                   <div className="relative inline-block cursor-pointer group">
@@ -157,12 +154,10 @@ export function HomeClient({ content }: HomeClientProps) {
               </Link>
             </motion.div>
           </motion.div>
-
-          </div>
+        </div>
           <motion.div className="w-full py-8 text-center mt-auto" variants={itemVariants}>
               <ContactInfo content={content} />
           </motion.div>
       </motion.div>
-    </>
   );
 }
