@@ -48,9 +48,6 @@ export function LandingPageClient() {
           >
             欢迎来到 前行无界
           </h1>
-          <p className="mt-4 text-xl font-sans tracking-widest text-black">
-            兽装工作室
-          </p>
         </div>
 
 
