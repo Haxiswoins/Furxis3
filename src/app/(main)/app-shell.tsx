@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Header from '@/components/header';
 import { usePathname } from 'next/navigation';
 import AdminSidebar from '@/components/admin-sidebar';
@@ -15,41 +15,22 @@ import {
 } from "@/components/ui/sheet"
 import { Skeleton } from '@/components/ui/skeleton';
 import type { SiteContent } from '@/types';
-import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { useTheme } from '@/context/ThemeContext';
+
 
 function MainContentWrapper({
   children,
-  siteContent
 }: {
   children: React.ReactNode;
-  siteContent: SiteContent | null;
 }) {
   const pathname = usePathname();
-  const { theme } = useTheme();
-  
-  const isHomePage = pathname === '/home';
-  const shouldBeTransparent = isHomePage && theme === 'light';
 
   return (
-    <div className="relative z-10 flex flex-col min-h-screen">
-       <div className={cn("relative z-10", shouldBeTransparent ? 'bg-transparent' : 'bg-background')}>
-        <Header />
-        <main className="flex-1 flex flex-col px-4 py-8 pt-24">
-           <AnimatePresence mode="wait">
-             <motion.div
-                 key={pathname}
-                 initial={{ opacity: 0 }}
-                 animate={{ opacity: 1 }}
-                 exit={{ opacity: 0 }}
-                 transition={{ duration: 0.5, ease: 'easeInOut' }}
-             >
-                {children}
-             </motion.div>
-           </AnimatePresence>
-        </main>
-      </div>
+    <div className="relative z-10 flex flex-col min-h-screen bg-background">
+      <Header />
+      <main className="flex-1 flex flex-col px-4 py-8 pt-24">
+        {/* Animation components are removed to fix the double-flash issue */}
+        {children}
+      </main>
     </div>
   );
 }
@@ -82,7 +63,7 @@ export function AppShell({
   }
 
   if (isLandingPage || isAuthRoute) {
-     return <div className="bg-transparent">{children}</div>;
+     return <div>{children}</div>;
   }
 
   if (isAdminRoute) {
@@ -123,8 +104,8 @@ export function AppShell({
   }
 
   return (
-      <div className="bg-transparent">
-          <MainContentWrapper siteContent={siteContent}>
+      <div className="bg-background">
+          <MainContentWrapper>
               {children}
           </MainContentWrapper>
       </div>

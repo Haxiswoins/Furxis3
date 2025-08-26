@@ -46,31 +46,12 @@ export default function RootLayout({
         fontSerifSC.variable,
         fontBody.variable
       )}>
-        <div id="fluid-bg-container" className="absolute inset-0 z-0"></div>
         <ThemeProvider>
           <AuthProvider>
             {children}
           </AuthProvider>
           <Toaster />
         </ThemeProvider>
-         {/* First, load the THREE.js dependency */}
-        <Script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" strategy="afterInteractive" />
-        {/* Then, load the fluid background script that depends on THREE.js */}
-        <Script src="/AestheticFluidBg.min.js" strategy="afterInteractive" />
-        {/* Finally, initialize the background */}
-        <Script id="fluid-bg-init" strategy="afterInteractive">
-          {`
-            try {
-              new Color4Bg.AestheticFluidBg({
-                dom: "fluid-bg-container",
-                colors: ["#ff5900","#ffffff","#305797","#ffffff","#ffffff","#f5fffe"],
-                loop: true
-              });
-            } catch (e) {
-              console.error('Fluid background initialization failed:', e);
-            }
-          `}
-        </Script>
       </body>
     </html>
   );
