@@ -17,7 +17,7 @@ export function FluidBackground() {
         script.id = 'aesthetic-fluid-bg-script';
         // This is the key fix: tell the browser to treat this script as an ES module.
         script.type = 'module'; 
-        script.src = '/AestheticFluidBg.module.js'; // Assumes the file is in the /public folder
+        script.src = '/AestheticFluidBg.min.js'; // Assumes the file is in the /public folder
         
         script.onload = () => {
             // @ts-ignore
@@ -26,7 +26,7 @@ export function FluidBackground() {
                     // @ts-ignore
                     new window.Color4Bg.AestheticFluidBg({
                         dom: "box",
-                        colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
+                        colors: ["#ff6600","#F0FFFE","#3069a1","#F0FFFE","#83e5ec","#F0FFFE"],
                         loop: true
                     });
                 } catch (e) {
