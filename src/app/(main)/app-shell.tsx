@@ -14,9 +14,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Skeleton } from '@/components/ui/skeleton';
-import Image from 'next/image';
 import type { SiteContent } from '@/types';
-
+import { FluidBackground } from '@/components/fluid-background';
 
 function MainContentWrapper({
   children,
@@ -25,29 +24,9 @@ function MainContentWrapper({
   children: React.ReactNode;
   siteContent: SiteContent | null;
 }) {
-  const pathname = usePathname();
-  const isHomePage = pathname === '/home';
-  const hasHomeBg = isHomePage && siteContent?.homeBackgroundImageUrl;
-
   return (
     <>
-      {/* Background Effects Layer */}
-      <div className="fixed inset-0 z-[-1]">
-        {hasHomeBg && (
-          <div className="absolute inset-0 z-0">
-              <Image
-                  src={siteContent.homeBackgroundImageUrl!}
-                  alt="Homepage Background"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  className="opacity-20"
-              />
-              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
-          </div>
-        )}
-      </div>
-
-      {/* Content Layer */}
+      <FluidBackground />
       <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
         <Header />
         <main className="flex-1 flex flex-col px-4 py-8 pt-24">
@@ -71,8 +50,10 @@ export function AppShell({
   
   const isAdminRoute = pathname.startsWith('/admin');
   const isAuthRoute = ['/login', '/register', '/forgot-password'].includes(pathname) || pathname.startsWith('/api/auth');
-  const isLandingPage = pathname === '/';
   
+  // This is a special case since the root page (/) is now the landing page, and should not have the shell
+  const isLandingPage = pathname === '/';
+
   if (loading) {
     return (
        <div className="flex items-center justify-center min-h-screen bg-background">
@@ -85,10 +66,8 @@ export function AppShell({
     );
   }
 
-  if (isLandingPage || isAuthRoute) {
-     return <>{children}</>;
-  }
-
+  // The root path "/" should also use the MainContentWrapper now
+  // but we can simplify the logic. Any page that is NOT an admin or auth route gets the main shell.
   if (isAdminRoute) {
     if (user?.isAdmin) {
       return (
@@ -126,6 +105,11 @@ export function AppShell({
     }
   }
 
+  if (isAuthRoute) {
+      return <>{children}</>;
+  }
+
+  // All other pages get the main wrapper with header and background
   return (
       <div className="bg-background">
           <MainContentWrapper siteContent={siteContent}>

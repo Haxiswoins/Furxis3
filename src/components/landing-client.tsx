@@ -2,7 +2,6 @@
 'use client';
 
 import { Rocket } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 type LandingPageClientProps = {
@@ -12,7 +11,6 @@ type LandingPageClientProps = {
 export function LandingPageClient({ onNavigate }: LandingPageClientProps) {
 
   const handleNavigate = () => {
-    // This now just calls the state change function from the parent
     onNavigate();
   };
   
@@ -23,6 +21,7 @@ export function LandingPageClient({ onNavigate }: LandingPageClientProps) {
         className="absolute inset-0 z-20 flex flex-col items-center justify-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         transition={{ duration: 1.5, delay: 0.5 }}
       >
         <div className="absolute bottom-[20%]">
@@ -44,6 +43,7 @@ export function LandingPageClient({ onNavigate }: LandingPageClientProps) {
         className="absolute bottom-8 w-full text-center text-xs text-white/40"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         transition={{ duration: 1.5, delay: 0.5 }}
       >
          <p>Developed by Haxis and Mark</p>
