@@ -16,7 +16,6 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import type { SiteContent } from '@/types';
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { FluidBackground } from '@/components/fluid-background';
 
@@ -44,18 +43,7 @@ function MainContentWrapper({
         )}>
         <Header />
         <main className="flex-1 flex flex-col px-4 py-8 pt-24">
-           <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={pathname}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 15 }}
-                transition={{ duration: 0.4, ease: 'easeInOut' }}
-                className="bg-transparent"
-              >
-                {children}
-              </motion.div>
-            </AnimatePresence>
+            {children}
         </main>
       </div>
     </>
