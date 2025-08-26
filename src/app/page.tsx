@@ -9,9 +9,7 @@ export default function WelcomePage() {
   return (
     <>
       <FluidBackground />
-      <Suspense fallback={<div className="bg-black w-screen h-screen"></div>}>
-        <LandingPageClient />
-      </Suspense>
+      <LandingPageClient />
     </>
   );
 }
