@@ -28,6 +28,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Upload, X } from 'lucide-react';
 
 const formSchema = z.object({
+  homeBackgroundImageUrl: z.string().url({ message: "请输入有效的URL。" }).optional().or(z.literal('')),
   commissionTitle: z.string(),
   commissionDescription: z.string(),
   adoptionTitle: z.string(),
@@ -129,6 +130,7 @@ export default function SiteContentPage() {
         defaultValues: async () => {
              const loadedContent = await getSiteContent();
              return {
+                homeBackgroundImageUrl: loadedContent?.homeBackgroundImageUrl || '',
                 commissionTitle: loadedContent?.commissionTitle || '',
                 commissionDescription: loadedContent?.commissionDescription || '',
                 adoptionTitle: loadedContent?.adoptionTitle || '',
@@ -155,6 +157,7 @@ export default function SiteContentPage() {
             const loadedContent = await getSiteContent();
             if (loadedContent) {
                 form.reset({
+                  homeBackgroundImageUrl: loadedContent.homeBackgroundImageUrl,
                   commissionTitle: loadedContent.commissionTitle,
                   commissionDescription: loadedContent.commissionDescription,
                   adoptionTitle: loadedContent.adoptionTitle,
@@ -266,6 +269,22 @@ export default function SiteContentPage() {
                            <CardDescription>配置网站的核心参数和全局视觉元素。</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
+                            <FormField
+                                control={form.control}
+                                name="homeBackgroundImageUrl"
+                                render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>首页背景图URL</FormLabel>
+                                    <FormControl>
+                                    <Input {...field} placeholder="https://example.com/background.jpg" />
+                                    </FormControl>
+                                    <FormDescription>
+                                        设置/home页面的背景图。留空则不显示背景图。
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
                              <FormField
                                 control={form.control}
                                 name="adminEmail"

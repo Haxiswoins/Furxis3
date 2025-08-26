@@ -16,8 +16,6 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import type { SiteContent } from '@/types';
-import { cn } from '@/lib/utils';
-import { FluidBackground } from '@/components/fluid-background';
 
 function MainContentWrapper({
   children,
@@ -26,21 +24,21 @@ function MainContentWrapper({
   children: React.ReactNode;
   siteContent: SiteContent | null;
 }) {
-  const pathname = usePathname();
-  const isHomePage = pathname === '/home';
-  
   return (
     <>
-      {/* Background Effects Layer */}
-      <div className="fixed inset-0 z-0">
-         {isHomePage && <FluidBackground />}
-      </div>
-
-      {/* Content Layer */}
-      <div className={cn(
-        "relative z-10 flex flex-col min-h-screen", 
-        isHomePage ? "bg-transparent" : "bg-background"
-        )}>
+      {siteContent?.homeBackgroundImageUrl && (
+        <div className="fixed inset-0 z-0">
+          <Image
+            src={siteContent.homeBackgroundImageUrl}
+            alt="Background"
+            fill
+            style={{ objectFit: 'cover' }}
+            priority
+          />
+          <div className="absolute inset-0 bg-black/30"></div>
+        </div>
+      )}
+      <div className="relative z-10 flex flex-col min-h-screen">
         <Header />
         <main className="flex-1 flex flex-col px-4 py-8 pt-24">
             {children}
