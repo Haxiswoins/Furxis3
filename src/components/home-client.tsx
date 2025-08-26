@@ -42,10 +42,11 @@ export function HomeClient({ content }: HomeClientProps) {
   const scriptLoaded = useRef(false);
 
   useEffect(() => {
+    // Prevent the script from being added multiple times
     if (scriptLoaded.current) return;
 
     const script = document.createElement('script');
-    script.src = '/AestheticFluidBg.js';
+    script.src = '/AestheticFluidBg.min.js'; // Corrected file name
     script.async = true;
 
     script.onload = () => {
@@ -68,12 +69,13 @@ export function HomeClient({ content }: HomeClientProps) {
     };
     
     script.onerror = () => {
-        console.error("Failed to load the AestheticFluidBg.js script.");
+        console.error("Failed to load the AestheticFluidBg.min.js script.");
     };
 
     document.body.appendChild(script);
 
     return () => {
+        // Cleanup the script when the component unmounts
         if(script.parentNode) {
             script.parentNode.removeChild(script);
         }
