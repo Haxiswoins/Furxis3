@@ -15,9 +15,7 @@ export default async function MainLayout({
   return (
     // siteContent is passed down as a prop
     <AppShell siteContent={siteContent}>
-      <PageAnimationWrapper>
         {children}
-      </PageAnimationWrapper>
     </AppShell>
   );
 }
