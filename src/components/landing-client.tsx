@@ -46,25 +46,25 @@ export function LandingPageClient() {
       )}>
 
         <div className="text-white" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.4)'}}>
-          <p className="text-xl md:text-2xl">Welcome To</p>
-          <p className="text-3xl md:text-4xl font-bold tracking-widest mt-1">FORWARD INFINITY</p>
+          <p className="text-xl md:text-2xl">Welcome to</p>
+          <p className="text-4xl md:text-5xl font-bold tracking-widest mt-1">FORWARD INFINITY</p>
           <h1 
-            className="text-xl md:text-2xl font-sans font-bold text-white/90 mt-4"
+            className="text-3xl md:text-4xl font-sans font-bold text-white mt-2"
           >
             欢迎来到 前行无界
           </h1>
 
-          <div className="mt-8 space-y-4 text-sm md:text-base max-w-md text-white/90">
+          <div className="mt-8 space-y-4 text-base max-w-sm text-white">
              <p>
                 前行无界工作室于2024年成立，我们致力于为您提供充满创意的角色设计服务与定制化Fursuit产品
              </p>
-             <p className="italic">
+             <p className="font-serif-sc">
                 Established in 2024, FORWARD INFINITY studio is dedicated to providing you with creative character design services and Fursuits.
              </p>
           </div>
         </div>
 
-        <p className="mt-12 text-sm text-white/70 animate-pulse">
+        <p className="absolute bottom-12 left-8 md:left-12 text-sm text-white/70 animate-pulse">
           点击任意位置进入网站
         </p>
         
