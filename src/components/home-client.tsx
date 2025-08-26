@@ -46,7 +46,7 @@ export function HomeClient({ content }: HomeClientProps) {
     if (scriptLoaded.current) return;
 
     const script = document.createElement('script');
-    script.src = '/AestheticFluidBg.min.js'; // Corrected file name
+    script.src = '/AestheticFluidBg.min.js';
     script.async = true;
 
     script.onload = () => {
@@ -103,7 +103,7 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
-      <canvas id="box" className="fixed top-0 left-0 w-full h-full z-[-1]"></canvas>
+      <canvas id="box" className="fixed top-0 left-0 w-full h-full z-[9999]"></canvas>
       <motion.div 
           className={cn(
               "relative z-10 flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
