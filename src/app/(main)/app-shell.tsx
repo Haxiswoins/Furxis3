@@ -30,14 +30,10 @@ function MainContentWrapper({
   const pathname = usePathname();
   const isHomePage = pathname === '/home';
   const { theme } = useTheme();
-  
-  // The fluid background is now handled globally in layout.tsx.
-  // This component only needs to control the transparency of its own background.
-  const showFluidBg = isHomePage && theme === 'light';
 
   return (
     <div className="relative z-10 flex flex-col min-h-screen">
-      <div className={cn("relative z-10", showFluidBg && "fluid-bg-active")}>
+      <div className={cn("relative z-10")}>
         <Header />
         <main className="flex-1 flex flex-col px-4 py-8 pt-24">
            <AnimatePresence mode="wait">

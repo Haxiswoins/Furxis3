@@ -46,23 +46,12 @@ export default function RootLayout({
         fontSerifSC.variable,
         fontBody.variable
       )}>
-        <div id="fluid-bg-container" className="fixed inset-0 z-0 pointer-events-none"></div>
         <ThemeProvider>
           <AuthProvider>
             {children}
           </AuthProvider>
           <Toaster />
         </ThemeProvider>
-        <Script src="/AestheticFluidBg.min.js" strategy="afterInteractive" />
-        <Script id="init-fluid-bg" strategy="afterInteractive">
-          {`
-            new Color4Bg.AestheticFluidBg({
-              dom: "fluid-bg-container",
-              colors: ["#ff5900","#ffffff","#305797","#ffffff","#ffffff","#f5fffe"],
-              loop: true
-            });
-          `}
-        </Script>
       </body>
     </html>
   );
