@@ -28,10 +28,13 @@ function MainContentWrapper({
 }) {
   const pathname = usePathname();
   const { theme } = useTheme();
+  
+  const isHomePage = pathname === '/home';
+  const shouldBeTransparent = isHomePage && theme === 'light';
 
   return (
     <div className="relative z-10 flex flex-col min-h-screen">
-       <div className={cn("relative z-10", "bg-transparent")}>
+       <div className={cn("relative z-10", shouldBeTransparent ? 'bg-transparent' : 'bg-background')}>
         <Header />
         <main className="flex-1 flex flex-col px-4 py-8 pt-24">
            <AnimatePresence mode="wait">
@@ -79,7 +82,7 @@ export function AppShell({
   }
 
   if (isLandingPage || isAuthRoute) {
-     return <>{children}</>;
+     return <div className="bg-transparent">{children}</div>;
   }
 
   if (isAdminRoute) {

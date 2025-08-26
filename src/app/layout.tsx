@@ -53,7 +53,11 @@ export default function RootLayout({
           </AuthProvider>
           <Toaster />
         </ThemeProvider>
+         {/* First, load the THREE.js dependency */}
+        <Script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" strategy="afterInteractive" />
+        {/* Then, load the fluid background script that depends on THREE.js */}
         <Script src="/AestheticFluidBg.min.js" strategy="afterInteractive" />
+        {/* Finally, initialize the background */}
         <Script id="fluid-bg-init" strategy="afterInteractive">
           {`
             try {
