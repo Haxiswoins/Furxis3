@@ -32,7 +32,7 @@ function MainContentWrapper({
   return (
     <>
       {/* Background Effects Layer */}
-      <div className="fixed inset-0 z-0">
+      <div className="fixed inset-0 z-[-1]">
         {hasHomeBg && (
           <div className="absolute inset-0 z-0">
               <Image
