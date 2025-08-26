@@ -14,7 +14,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Skeleton } from '@/components/ui/skeleton';
-import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
 import AestheticFluidBackground from '@/components/ambient-light-background';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,13 +21,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export function AppShell({
   children,
-  siteContent
 }: {
   children: React.ReactNode;
-  siteContent: SiteContent | null;
 }) {
   const pathname = usePathname();
   const { user, loading } = useAuth();
+
+  useEffect(() => {
+    // This runs only on the client, after the initial render.
+    // We remove the class that was hiding the content, allowing the fade-in animation.
+    document.body.classList.remove('loading-initial');
+  }, []);
   
   const isAdminRoute = pathname.startsWith('/admin');
   const isAuthRoute = ['/login', '/register', '/forgot-password'].includes(pathname) || pathname.startsWith('/api/auth');
@@ -71,7 +74,7 @@ export function AppShell({
               </SheetContent>
             </Sheet>
           </div>
-          <main className="flex-1 md:ml-64">
+          <main className="flex-1 md:ml-64 transition-opacity duration-500 ease-in-out">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
               {children}
             </div>
@@ -110,9 +113,9 @@ export function AppShell({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
               className={cn(
-                "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24",
+                "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 transition-opacity duration-500",
                 isMainPage && "bg-transparent"
               )}
           >

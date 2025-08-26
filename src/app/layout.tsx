@@ -7,7 +7,6 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { Playfair_Display, Noto_Serif_SC, Noto_Sans_SC } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { AppShell } from './(main)/app-shell';
-import { getSiteContent } from '@/lib/data-service';
 
 export const metadata: Metadata = {
   title: 'Suitopia',
@@ -34,24 +33,23 @@ const fontBody = Noto_Sans_SC({
   display: 'swap',
 })
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const siteContent = await getSiteContent();
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(
-        "font-body antialiased",
+        "font-body antialiased loading-initial",
         fontHeadline.variable,
         fontSerifSC.variable,
         fontBody.variable
       )}>
           <ThemeProvider>
             <AuthProvider>
-              <AppShell siteContent={siteContent}>
+              <AppShell>
                 {children}
               </AppShell>
             </AuthProvider>
