@@ -40,58 +40,6 @@ export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
   const [isTransitioning, setIsTransitioning] = useState(false);
   
-  useEffect(() => {
-    // Check if the script is already added to avoid duplicates
-    if (document.querySelector('script[src="/AmbientLightBg.min.js"]')) {
-        // If script is already there, maybe just try to initialize
-        if (window.Color4Bg && typeof window.Color4Bg.AmbientLightBg === 'function') {
-             try {
-                new window.Color4Bg.AmbientLightBg({
-                    dom: "box",
-                    colors: ["#00023E","#ff7b00","#204299","#132385","#0C0D62","#00023E"],
-                    loop: true
-                });
-             } catch (e) {
-                 console.error("Error re-initializing AmbientLightBg:", e);
-             }
-        }
-        return;
-    }
-
-    const script = document.createElement('script');
-    script.src = '/AmbientLightBg.min.js';
-    script.async = true;
-    
-    script.onload = () => {
-        console.log("AmbientLightBg.min.js loaded successfully.");
-        if (window.Color4Bg && typeof window.Color4Bg.AmbientLightBg === 'function') {
-            try {
-                new window.Color4Bg.AmbientLightBg({
-                    dom: "box",
-                    colors: ["#00023E","#ff7b00","#204299","#132385","#0C0D62","#00023E"],
-	                loop: true
-                });
-                console.log("AmbientLightBg initialized.");
-            } catch (e) {
-                console.error("Error initializing AmbientLightBg:", e);
-            }
-        } else {
-            console.error("Color4Bg or AmbientLightBg not found on window object after script load.");
-        }
-    };
-    
-    script.onerror = () => {
-        console.error("Failed to load AmbientLightBg.min.js");
-    };
-
-    document.body.appendChild(script);
-
-    return () => {
-      // Optional: Cleanup script tag when component unmounts
-      document.body.removeChild(script);
-    };
-  }, []);
-
   const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const href = e.currentTarget.getAttribute('href');
@@ -113,7 +61,6 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
-      <canvas id="box" className="fixed top-0 left-0 w-full h-full z-[9999] pointer-events-none"></canvas>
       <motion.div 
           className={cn(
               "relative z-10 flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
