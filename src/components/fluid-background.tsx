@@ -8,22 +8,41 @@ export function FluidBackground() {
 
     useEffect(() => {
         // Ensure this effect runs only once.
-        if (initialized.current || document.getElementById('aesthetic-fluid-bg-script')) {
+        if (initialized.current) {
             return;
         }
         initialized.current = true;
-
-        const script = document.createElement('script');
-        script.id = 'aesthetic-fluid-bg-script';
-        // This is the key fix: tell the browser to treat this script as an ES module.
-        script.type = 'module'; 
-        script.src = '/AestheticFluidBg.min.js'; // Assumes the file is in the /public folder
         
-        script.onload = () => {
+        // Function to load a script and return a promise
+        const loadScript = (src: string, id: string, isModule = false) => {
+            return new Promise<void>((resolve, reject) => {
+                if (document.getElementById(id)) {
+                    resolve();
+                    return;
+                }
+                const script = document.createElement('script');
+                script.id = id;
+                if (isModule) {
+                    script.type = 'module';
+                }
+                script.src = src;
+                script.onload = () => resolve();
+                script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+                document.body.appendChild(script);
+            });
+        };
+
+        // Chain the loading of scripts
+        loadScript(
+            "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js",
+            "three-js-script"
+        ).then(() => {
+            return loadScript("/AestheticFluidBg.min.js", "color4bg-script");
+        }).then(() => {
             // @ts-ignore
             if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
                 try {
-                    // @ts-ignore
+                     // @ts-ignore
                     new window.Color4Bg.AestheticFluidBg({
                         dom: "box",
                         colors: ["#ff6600","#F0FFFE","#3069a1","#F0FFFE","#83e5ec","#F0FFFE"],
@@ -33,23 +52,12 @@ export function FluidBackground() {
                     console.error('AestheticFluidBg Initialization Error:', e);
                 }
             } else {
-                console.error('AestheticFluidBg library not found on window object after script load.');
+                console.error('Color4Bg library not found on window object after script load.');
             }
-        };
+        }).catch(error => {
+            console.error(error);
+        });
 
-        script.onerror = () => {
-            console.error('Failed to load the AestheticFluidBg script.');
-        };
-
-        document.body.appendChild(script);
-
-        return () => {
-            // Cleanup the script when the component unmounts
-            const existingScript = document.getElementById('aesthetic-fluid-bg-script');
-            if (existingScript) {
-                document.body.removeChild(existingScript);
-            }
-        };
     }, []);
 
     return (
