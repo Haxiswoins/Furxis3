@@ -3,6 +3,7 @@
 
 import { LandingPageClient } from '@/components/landing-client';
 import { FluidBackground } from '@/components/fluid-background';
+import { FluidBackgroundInitializer } from '@/components/fluid-background-initializer';
 
 export default function WelcomePage() {
   
@@ -10,6 +11,7 @@ export default function WelcomePage() {
       <>
         <FluidBackground />
         <LandingPageClient />
+        <FluidBackgroundInitializer />
       </>
   );
 }

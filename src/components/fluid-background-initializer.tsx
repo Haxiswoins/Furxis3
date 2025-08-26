@@ -9,7 +9,7 @@ export function FluidBackgroundInitializer() {
           try {
             new window.Color4Bg.AestheticFluidBg({
               dom: "box",
-              colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
+              colors: ["#ff6600","#F0FFFE","#3069a1","#F0FFFE","#83e5ec","#F0FFFE"],
               loop: true
             });
           } catch(e) {
