@@ -53,15 +53,21 @@ export default function RootLayout({
           </AuthProvider>
           <Toaster />
         </ThemeProvider>
+        {/* Load dependencies first */}
+        <Script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" strategy="afterInteractive" />
+        {/* Then load the background script */}
         <Script src="/AestheticFluidBg.min.js" strategy="afterInteractive" />
+        {/* Then initialize it */}
         <Script id="fluid-bg-init" strategy="afterInteractive">
           {`
             try {
-              new Color4Bg.AestheticFluidBg({
-                dom: "fluid-bg-container",
-                colors: ["#ff5900","#ffffff","#305797","#ffffff","#ffffff","#f5fffe"],
-                loop: true
-              });
+              if (window.Color4Bg && window.THREE) {
+                new Color4Bg.AestheticFluidBg({
+                  dom: "fluid-bg-container",
+                  colors: ["#ff5900","#ffffff","#305797","#ffffff","#ffffff","#f5fffe"],
+                  loop: true
+                });
+              }
             } catch (e) {
               console.error("Failed to initialize fluid background", e);
             }
