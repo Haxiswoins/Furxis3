@@ -1,40 +1,42 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
-import Script from 'next/script';
-
-declare global {
-  interface Window {
-    Color4Bg: any;
-  }
-}
+import { useEffect, useRef }from 'react';
+// @ts-ignore
+import { AestheticFluidBg } from '@/lib/AestheticFluidBg.js';
 
 export function FluidBackground() {
-  // We no longer need the ref to pass to the library,
-  // but it's good practice if we ever need to manipulate the canvas from React.
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const CANVAS_ID = "fluid-background-canvas";
 
-  const handleScriptLoad = () => {
-    if (typeof window.Color4Bg !== 'undefined' && document.getElementById(CANVAS_ID)) {
-        new window.Color4Bg.AestheticFluidBg({
-            dom: CANVAS_ID, // Pass the ID string, not the element object
-            colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
-            loop: true
-        });
+  useEffect(() => {
+    // This effect runs only on the client, after the component has mounted.
+    // The canvas element is guaranteed to be in the DOM at this point.
+    let fluidBgInstance: any = null;
+
+    if (document.getElementById(CANVAS_ID)) {
+      fluidBgInstance = new AestheticFluidBg({
+          dom: CANVAS_ID, // Pass the ID string
+          colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
+          loop: true
+      });
     }
-  };
+    
+    // Cleanup function to destroy the instance when the component unmounts
+    return () => {
+      if (fluidBgInstance && typeof fluidBgInstance.destroy === 'function') {
+        fluidBgInstance.destroy();
+      }
+    }
+  }, []); // Empty dependency array ensures this runs only once.
 
   return (
-    <>
-      {/* Add the id attribute to the canvas */}
-      <canvas id={CANVAS_ID} ref={canvasRef} className="fixed top-0 left-0 w-full h-full z-[9999]"></canvas>
-      <Script
-        src="/AestheticFluidBg.min.js"
-        strategy="lazyOnload"
-        onLoad={handleScriptLoad}
-      />
-    </>
+    // The canvas is now part of this component, ensuring it exists before the effect runs.
+    // It's positioned to cover the entire screen and sit in the background.
+    <canvas 
+      id={CANVAS_ID} 
+      ref={canvasRef} 
+      className="fixed top-0 left-0 w-full h-full z-[-1]"
+    ></canvas>
   );
 }

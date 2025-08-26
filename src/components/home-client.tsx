@@ -66,7 +66,7 @@ export function HomeClient({ content }: HomeClientProps) {
       <FluidBackground />
       <motion.div 
           className={cn(
-              "flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
+              "relative z-10 flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
               isTransitioning ? "opacity-0" : "opacity-100"
           )}
           initial="hidden"
