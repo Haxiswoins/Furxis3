@@ -2,35 +2,53 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-// @ts-ignore
-import { AestheticFluidBg } from '@/lib/AestheticFluidBg.module.js';
 
 export function FluidBackground() {
     const initialized = useRef(false);
 
     useEffect(() => {
-        if (initialized.current) {
+        // Ensure this effect runs only once.
+        if (initialized.current || document.getElementById('aesthetic-fluid-bg-script')) {
             return;
         }
+        initialized.current = true;
 
-        // Check if the canvas element exists
-        const canvas = document.getElementById('box');
-        if (!canvas) {
-            console.error('Canvas element with id "box" not found.');
-            return;
-        }
+        const script = document.createElement('script');
+        script.id = 'aesthetic-fluid-bg-script';
+        script.src = '/AestheticFluidBg.module.js'; // Assumes the file is in the /public folder
+        
+        script.onload = () => {
+            // Now that the script is loaded, the Color4Bg object should be on the window.
+            // @ts-ignore
+            if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
+                try {
+                    // @ts-ignore
+                    new window.Color4Bg.AestheticFluidBg({
+                        dom: "box",
+                        colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
+                        loop: true
+                    });
+                } catch (e) {
+                    console.error('AestheticFluidBg Initialization Error:', e);
+                }
+            } else {
+                console.error('AestheticFluidBg library not found on window object after script load.');
+            }
+        };
 
-        try {
-            new AestheticFluidBg({
-                dom: "box",
-                colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
-                loop: true
-            });
-            initialized.current = true;
-        } catch (e) {
-            console.error('AestheticFluidBg Initialization Error:', e);
-        }
+        script.onerror = () => {
+            console.error('Failed to load the AestheticFluidBg script.');
+        };
 
+        document.body.appendChild(script);
+
+        return () => {
+            // Cleanup the script when the component unmounts
+            const existingScript = document.getElementById('aesthetic-fluid-bg-script');
+            if (existingScript) {
+                document.body.removeChild(existingScript);
+            }
+        };
     }, []);
 
     return (
