@@ -1,9 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
 import Header from '@/components/header';
-import { usePathname } from 'next/navigation';
 import AdminSidebar from '@/components/admin-sidebar';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -14,54 +12,15 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Skeleton } from '@/components/ui/skeleton';
-import type { SiteContent } from '@/types';
-import { useTheme } from '@/context/ThemeContext';
-import { AnimatePresence, motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { FluidBackground } from '@/components/fluid-background';
+import { usePathname } from 'next/navigation';
 
-
-function MainContentWrapper({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const pathname = usePathname();
-  const { theme } = useTheme();
-  
-  const shouldBeTransparent = pathname === '/home' && theme === 'light';
-
-  return (
-    <div className={cn(
-        "relative z-10 flex flex-col min-h-screen",
-        shouldBeTransparent ? 'bg-transparent' : 'bg-background'
-    )}>
-      {shouldBeTransparent && <FluidBackground />}
-      <Header />
-      <main className="flex-1 flex flex-col px-4 py-8 pt-24">
-        <AnimatePresence mode="wait">
-           <motion.div
-            key={pathname}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
-      </main>
-    </div>
-  );
-}
-
-
+// AppShell is now a pure layout component.
+// It NO LONGER contains AnimatePresence or any motion divs.
+// Its role is to provide the consistent "shell" around the page content.
 export function AppShell({
   children,
-  siteContent
 }: {
   children: React.ReactNode;
-  siteContent: SiteContent | null;
 }) {
   const pathname = usePathname();
   const { user, loading } = useAuth();
@@ -123,11 +82,15 @@ export function AppShell({
     }
   }
 
+  // This is the shell for the main public-facing pages.
   return (
       <div className="bg-background">
-          <MainContentWrapper>
+          <div className="relative z-10 flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-1 flex flex-col px-4 py-8 pt-24">
               {children}
-          </MainContentWrapper>
+            </main>
+          </div>
       </div>
   );
 }
