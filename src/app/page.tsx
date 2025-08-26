@@ -1,8 +1,7 @@
-
 'use client';
 
 import { Suspense } from 'react';
-import { LandingPageClient } from '../landing-client';
+import { LandingPageClient } from '@/components/landing-client';
 
 export default function WelcomePage() {
   return (
