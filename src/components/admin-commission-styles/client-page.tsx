@@ -44,8 +44,8 @@ export function AdminCommissionStylesClient({ styles: initialStyles, options }: 
     setIsDeleting(true);
     try {
       await deleteCommissionStyle(id);
-      toast({ title: '删除成功', description: '委托样式已从数据库中移除。页面即将刷新。' });
-      router.refresh();
+      setStyles(prevStyles => prevStyles.filter(s => s.id !== id));
+      toast({ title: '删除成功', description: '委托样式已从数据库中移除。' });
     } catch (error) {
       toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
     } finally {
@@ -105,7 +105,9 @@ export function AdminCommissionStylesClient({ styles: initialStyles, options }: 
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>取消</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(style.id)}>确认删除</AlertDialogAction>
+                          <AlertDialogAction onClick={() => handleDelete(style.id)} disabled={isDeleting}>
+                            {isDeleting ? '删除中...' : '确认删除'}
+                          </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
