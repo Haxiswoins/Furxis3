@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -15,8 +16,6 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import type { SiteContent } from '@/types';
-import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
 
 
 function MainContentWrapper({
@@ -128,16 +127,10 @@ export function AppShell({
   }
 
   return (
-      <motion.div
-          key={pathname}
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: 'easeInOut' }}
-          className="bg-background"
-      >
+      <div className="bg-background">
           <MainContentWrapper siteContent={siteContent}>
               {children}
           </MainContentWrapper>
-      </motion.div>
+      </div>
   );
 }

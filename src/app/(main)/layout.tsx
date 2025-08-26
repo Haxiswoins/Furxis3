@@ -1,5 +1,6 @@
 import { getSiteContent } from '@/lib/data-service';
 import { AppShell } from './app-shell';
+import { PageAnimationWrapper } from '@/components/page-animation-wrapper';
 
 // This is now a Server Component
 export default async function MainLayout({
@@ -13,7 +14,9 @@ export default async function MainLayout({
   return (
     // siteContent is passed down as a prop
     <AppShell siteContent={siteContent}>
-      {children}
+      <PageAnimationWrapper>
+        {children}
+      </PageAnimationWrapper>
     </AppShell>
   );
 }
