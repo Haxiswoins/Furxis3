@@ -18,6 +18,7 @@ import type { SiteContent } from '@/types';
 import { useTheme } from '@/context/ThemeContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { FluidBackground } from '@/components/fluid-background';
 
 
 function MainContentWrapper({
@@ -35,6 +36,7 @@ function MainContentWrapper({
         "relative z-10 flex flex-col min-h-screen",
         shouldBeTransparent ? 'bg-transparent' : 'bg-background'
     )}>
+      {shouldBeTransparent && <FluidBackground />}
       <Header />
       <main className="flex-1 flex flex-col px-4 py-8 pt-24">
         <AnimatePresence mode="wait">

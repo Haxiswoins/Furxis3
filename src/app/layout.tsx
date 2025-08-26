@@ -6,7 +6,6 @@ import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { Playfair_Display, Noto_Serif_SC, Noto_Sans_SC } from 'next/font/google';
 import { cn } from '@/lib/utils';
-import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'Suitopia',
@@ -46,33 +45,12 @@ export default function RootLayout({
         fontSerifSC.variable,
         fontBody.variable
       )}>
-        <div id="fluid-bg-container" className="fixed inset-0 w-screen h-screen z-0"></div>
         <ThemeProvider>
           <AuthProvider>
             {children}
           </AuthProvider>
           <Toaster />
         </ThemeProvider>
-        {/* Load dependencies first */}
-        <Script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" strategy="afterInteractive" />
-        {/* Then load the background script */}
-        <Script src="/AestheticFluidBg.min.js" strategy="afterInteractive" />
-        {/* Then initialize it */}
-        <Script id="fluid-bg-init" strategy="afterInteractive">
-          {`
-            try {
-              if (window.Color4Bg && window.THREE) {
-                new Color4Bg.AestheticFluidBg({
-                  dom: "fluid-bg-container",
-                  colors: ["#ff5900","#ffffff","#305797","#ffffff","#ffffff","#f5fffe"],
-                  loop: true
-                });
-              }
-            } catch (e) {
-              console.error("Failed to initialize fluid background", e);
-            }
-          `}
-        </Script>
       </body>
     </html>
   );
