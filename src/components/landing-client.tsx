@@ -44,18 +44,13 @@ export function LandingPageClient() {
         <div className="absolute top-8 left-8 text-white" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.4)'}}>
           <p className="text-2xl">Welcome To</p>
           <p className="text-4xl font-bold tracking-widest">FORWARD INFINITY</p>
-        </div>
-        
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-          <h1 
-            className="text-5xl font-sans font-bold text-white"
-            style={{textShadow: '1px 1px 4px rgba(0,0,0,0.5)'}}
+           <h1 
+            className="text-2xl font-sans font-bold text-white/90 mt-2"
           >
             欢迎来到 前行无界
           </h1>
         </div>
-
-
+        
         <div className="absolute bottom-[20%]">
           <button
             onClick={handleNavigate}
