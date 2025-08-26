@@ -2,12 +2,8 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-
-declare global {
-    interface Window {
-        Color4Bg?: any;
-    }
-}
+// @ts-ignore
+import { AestheticFluidBg } from '@/lib/AestheticFluidBg.module.js';
 
 export function FluidBackground() {
     const initialized = useRef(false);
@@ -17,25 +13,23 @@ export function FluidBackground() {
             return;
         }
 
-        const tryInit = () => {
-            if (typeof window !== 'undefined' && window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
-                try {
-                    new window.Color4Bg.AestheticFluidBg({
-                        dom: "box",
-                        colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
-                        loop: true
-                    });
-                    initialized.current = true;
-                } catch (e) {
-                    console.error('AestheticFluidBg Initialization Error:', e);
-                }
-            } else {
-                 // If not ready, try again shortly
-                 setTimeout(tryInit, 100);
-            }
-        };
+        // Check if the canvas element exists
+        const canvas = document.getElementById('box');
+        if (!canvas) {
+            console.error('Canvas element with id "box" not found.');
+            return;
+        }
 
-        tryInit();
+        try {
+            new AestheticFluidBg({
+                dom: "box",
+                colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
+                loop: true
+            });
+            initialized.current = true;
+        } catch (e) {
+            console.error('AestheticFluidBg Initialization Error:', e);
+        }
 
     }, []);
 
