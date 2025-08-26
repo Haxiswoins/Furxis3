@@ -102,26 +102,16 @@ export function AppShell({
       {/* Conditional Header for non-landing pages */}
       { pathname !== '/' && <Header /> }
       
-       <AnimatePresence mode="wait">
-          <motion.main
-              ref={mainRef}
-              key={pathname}
-              className={cn(
-                "relative z-20 flex-1 flex flex-col px-4 py-8 content-initial-hidden",
-                 pathname === '/' ? 'pt-8' : 'pt-24', // Less padding for landing page
-                isMainPage && "bg-transparent"
-              )}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4, ease: 'easeInOut' }}
-              onAnimationComplete={() => {
-                mainRef.current?.classList.remove('content-initial-hidden');
-              }}
-          >
-              {children}
-          </motion.main>
-      </AnimatePresence>
+      <main
+          ref={mainRef}
+          className={cn(
+            "relative z-20 flex-1 flex flex-col px-4 py-8",
+              pathname === '/' ? 'pt-8' : 'pt-24', // Less padding for landing page
+            isMainPage && "bg-transparent"
+          )}
+      >
+          {children}
+      </main>
     </>
   );
 }
