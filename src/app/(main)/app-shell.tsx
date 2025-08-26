@@ -14,7 +14,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Skeleton } from '@/components/ui/skeleton';
-import Image from 'next/image';
 import type { SiteContent } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -32,7 +31,7 @@ function MainContentWrapper({
 
   return (
     <div className="relative z-10 flex flex-col min-h-screen">
-       <div className={cn("relative z-10", pathname === '/home' ? 'bg-transparent' : 'bg-background')}>
+       <div className={cn("relative z-10", "bg-transparent")}>
         <Header />
         <main className="flex-1 flex flex-col px-4 py-8 pt-24">
            <AnimatePresence mode="wait">
@@ -121,7 +120,7 @@ export function AppShell({
   }
 
   return (
-      <div className="bg-background">
+      <div className="bg-transparent">
           <MainContentWrapper siteContent={siteContent}>
               {children}
           </MainContentWrapper>

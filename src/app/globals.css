@@ -68,7 +68,7 @@
     scrollbar-gutter: stable;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-transparent text-foreground;
   }
 }
 
@@ -104,9 +104,4 @@
   :not(.dark) ::-webkit-scrollbar-thumb:hover {
     background-color: rgba(0, 0, 0, 0.8);
   }
-
-  .fluid-bg-active {
-    background-color: transparent !important;
-  }
-
 }
