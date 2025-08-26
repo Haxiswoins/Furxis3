@@ -112,7 +112,7 @@ const config: Config = {
         'content-hide': 'content-hide 0.2s ease-in',
         'overlay-show': 'overlay-show 0.2s ease-out',
         'overlay-hide': 'overlay-hide 0.2s ease-in',
-        'warp': 'warp 1s ease-out forwards',
+        'warp': 'warp 1s ease-out forwards'
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

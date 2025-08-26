@@ -6,7 +6,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { Playfair_Display, Noto_Serif_SC, Noto_Sans_SC } from 'next/font/google';
 import { cn } from '@/lib/utils';
-import { AppShell } from './(main)/app-shell';
+// import { UserProvider } from '@authing/nextjs';
 
 export const metadata: Metadata = {
   title: 'Suitopia',
@@ -38,7 +38,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(
@@ -47,14 +46,14 @@ export default function RootLayout({
         fontSerifSC.variable,
         fontBody.variable
       )}>
+        {/* <UserProvider> */}
           <ThemeProvider>
             <AuthProvider>
-              <AppShell>
-                {children}
-              </AppShell>
+              {children}
             </AuthProvider>
             <Toaster />
           </ThemeProvider>
+        {/* </UserProvider> */}
       </body>
     </html>
   );

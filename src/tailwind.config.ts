@@ -100,9 +100,10 @@ const config: Config = {
             from: { opacity: '1' },
             to: { opacity: '0' },
         },
-        'warp': {
-          from: { transform: 'translateX(-100%) scaleX(0)', opacity: '0.7' },
-          to: { transform: 'translateX(200vw) scaleX(1)', opacity: '0' }
+        'wave': {
+          '0%': { transform: 'translate(-50%, 0) rotateZ(0deg)' },
+          '50%': { transform: 'translate(-50%, -2%) rotateZ(180deg)' },
+          '100%': { transform: 'translate(-50%, -4%) rotateZ(360deg)' },
         },
       },
       animation: {
@@ -112,7 +113,6 @@ const config: Config = {
         'content-hide': 'content-hide 0.2s ease-in',
         'overlay-show': 'overlay-show 0.2s ease-out',
         'overlay-hide': 'overlay-hide 0.2s ease-in',
-        'warp': 'warp 1s ease-out forwards',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

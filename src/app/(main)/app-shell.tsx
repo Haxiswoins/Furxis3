@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/header';
 import { usePathname } from 'next/navigation';
 import AdminSidebar from '@/components/admin-sidebar';
@@ -14,24 +13,66 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Skeleton } from '@/components/ui/skeleton';
+import Image from 'next/image';
+import type { SiteContent } from '@/types';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import AestheticFluidBackground from '@/components/ambient-light-background';
-import { motion, AnimatePresence } from 'framer-motion';
+
+
+function MainContentWrapper({
+  children,
+  siteContent
+}: {
+  children: React.ReactNode;
+  siteContent: SiteContent | null;
+}) {
+  const pathname = usePathname();
+  const isHomePage = pathname === '/home';
+  const hasHomeBg = isHomePage && siteContent?.homeBackgroundImageUrl;
+
+  return (
+    <>
+      {/* Background Effects Layer */}
+      <div className="fixed inset-0 z-0">
+        {hasHomeBg && (
+          <div className="absolute inset-0 z-0">
+              <Image
+                  src={siteContent.homeBackgroundImageUrl!}
+                  alt="Homepage Background"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  className="opacity-20"
+              />
+              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
+          </div>
+        )}
+      </div>
+
+      {/* Content Layer */}
+      <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
+        <Header />
+        <main className="flex-1 flex flex-col px-4 py-8 pt-24">
+          {children}
+        </main>
+      </div>
+    </>
+  );
+}
 
 
 export function AppShell({
   children,
+  siteContent
 }: {
   children: React.ReactNode;
+  siteContent: SiteContent | null;
 }) {
   const pathname = usePathname();
   const { user, loading } = useAuth();
-  const mainRef = useRef<HTMLElement>(null);
   
   const isAdminRoute = pathname.startsWith('/admin');
   const isAuthRoute = ['/login', '/register', '/forgot-password'].includes(pathname) || pathname.startsWith('/api/auth');
-  
-  const isMainPage = pathname === '/' || pathname === '/home';
+  const isLandingPage = pathname === '/';
   
   if (loading) {
     return (
@@ -45,7 +86,7 @@ export function AppShell({
     );
   }
 
-  if (isAuthRoute) {
+  if (isLandingPage || isAuthRoute) {
      return <>{children}</>;
   }
 
@@ -69,7 +110,7 @@ export function AppShell({
               </SheetContent>
             </Sheet>
           </div>
-          <main className="flex-1 md:ml-64 transition-opacity duration-500 ease-in-out">
+          <main className="flex-1 md:ml-64">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
               {children}
             </div>
@@ -87,31 +128,16 @@ export function AppShell({
   }
 
   return (
-    <>
-      {/* Persistent Background Layer */}
-      <div className={cn(
-        "fixed inset-0 z-0 overflow-hidden transition-opacity duration-500 ease-in-out",
-        isMainPage ? "opacity-100" : "opacity-0 pointer-events-none"
-      )}>
-        <AestheticFluidBackground />
-      </div>
-      
-      {/* Fallback solid background for non-home pages */}
-      <div className="fixed inset-0 z-[-1] bg-background" />
-
-      {/* Conditional Header for non-landing pages */}
-      { pathname !== '/' && <Header /> }
-      
-      <main
-          ref={mainRef}
-          className={cn(
-            "relative z-20 flex-1 flex flex-col px-4 py-8",
-              pathname === '/' ? 'pt-8' : 'pt-24', // Less padding for landing page
-            isMainPage && "bg-transparent"
-          )}
+      <motion.div
+          key={pathname}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeInOut' }}
+          className="bg-background"
       >
-          {children}
-      </main>
-    </>
+          <MainContentWrapper siteContent={siteContent}>
+              {children}
+          </MainContentWrapper>
+      </motion.div>
   );
 }

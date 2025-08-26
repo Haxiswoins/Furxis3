@@ -1,16 +1,32 @@
 
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
+import { cn } from '@/lib/utils';
 
 type HomeClientProps = {
     content: SiteContent | null;
 }
 
 export function HomeClient({ content }: HomeClientProps) {
+  const router = useRouter();
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const href = e.currentTarget.getAttribute('href');
+    if (!href) return;
+
+    setIsTransitioning(true);
+    setTimeout(() => {
+        router.push(href);
+    }, 500); 
+  }
 
   const cardLinkClass = "group block";
   const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]";
@@ -21,40 +37,34 @@ export function HomeClient({ content }: HomeClientProps) {
   const cardDescriptionClass = "mt-2 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base";
 
   return (
-    <div 
-        className="flex flex-col min-h-[calc(100vh-theme(spacing.24))]"
-    >
-        <div className="pt-12">
-        
-        <div 
-            className="text-center mb-12"
-        >
-            <Link href="/" scroll={false}>
+    <div className={cn(
+        "flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
+        isTransitioning ? "opacity-0" : "opacity-100"
+    )}>
+        <div>
+        <div className="text-center mb-12">
+            <a href="/" onClick={handleNavigate}>
                 <div className="relative inline-block cursor-pointer group">
-                    <h1 
-                      className="text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary"
-                    >
+                    <h1 className="text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary">
                     前行无界
                     </h1>
                     <div
                     className="absolute inset-0 flex items-center justify-center text-primary opacity-80"
                     style={{ zIndex: 5 }}
                     >
-                    <span 
-                      className="font-body text-4xl font-extralight tracking-[0.3em] whitespace-nowrap px-4 mt-12"
-                    >
+                    <span className="font-body text-4xl font-extralight tracking-[0.3em] whitespace-nowrap px-4 mt-12">
                         FORWARD INFINITY
                     </span>
                     </div>
                 </div>
-            </Link>
+            </a>
         </div>
         
         <div
           className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl mx-auto"
         >
           <div>
-            <Link href="/commission" className={cardLinkClass} scroll={false}>
+            <Link href="/commission" className={cardLinkClass} onClick={handleNavigate}>
               <div className={cardDivClass}>
                   <Image
                   src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
@@ -75,7 +85,7 @@ export function HomeClient({ content }: HomeClientProps) {
           </div>
 
           <div>
-            <Link href="/adoption" className={cardLinkClass} scroll={false}>
+            <Link href="/adoption" className={cardLinkClass} onClick={handleNavigate}>
               <div className={cardDivClass}>
                   <Image
                   src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
@@ -95,7 +105,7 @@ export function HomeClient({ content }: HomeClientProps) {
           </div>
           
           <div>
-            <Link href="/works" className={cardLinkClass} scroll={false}>
+            <Link href="/works" className={cardLinkClass} onClick={handleNavigate}>
               <div className={cardDivClass}>
                   <Image
                   src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
@@ -116,10 +126,8 @@ export function HomeClient({ content }: HomeClientProps) {
         </div>
 
         </div>
-        <div 
-            className="w-full py-8 text-center mt-auto"
-        >
-          <ContactInfo content={content} />
+        <div className="w-full py-8 text-center mt-auto">
+        <ContactInfo content={content} />
         </div>
     </div>
   );

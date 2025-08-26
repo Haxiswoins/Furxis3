@@ -14,6 +14,8 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
+  // Initialize theme to null to avoid hydration mismatch.
+  // The actual theme will be set on the client after mount.
   const [theme, setTheme] = useState<Theme | null>(null);
   const [siteContent, setSiteContent] = useState<SiteContent | null>(null);
 
@@ -30,24 +32,29 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const determineTheme = useCallback(() => {
-    if (!siteContent) return; 
+    // This function will only run on the client, so window is safe to use.
+    if (!siteContent) return; // Wait until site content is loaded
+
+    const sunriseHour = siteContent?.sunriseHour ?? 6;
+    const sunsetHour = siteContent?.sunsetHour ?? 18;
 
     const now = new Date();
     const currentHour = now.getHours();
-    const sunrise = siteContent.sunriseHour ?? 6;
-    const sunset = siteContent.sunsetHour ?? 18;
-    const newTheme: Theme = currentHour >= sunrise && currentHour < sunset ? 'light' : 'dark';
+    
+    const newTheme = (currentHour >= sunriseHour && currentHour < sunsetHour) ? 'light' : 'dark';
     
     setTheme(newTheme);
 
   }, [siteContent]); 
 
+  // Run theme determination once on mount and then on an interval.
   useEffect(() => {
     determineTheme();
     const interval = setInterval(determineTheme, 60000);
     return () => clearInterval(interval);
   }, [determineTheme]);
 
+  // Apply the theme class to the document root when theme state changes.
   useEffect(() => {
     if (theme) {
         const root = window.document.documentElement;
@@ -56,8 +63,10 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [theme]);
   
+  // Render children, but provide a default 'dark' theme value
+  // to prevent errors in consuming components before the client-side theme is determined.
   return (
-    <ThemeContext.Provider value={{ theme: theme || 'light' }}>
+    <ThemeContext.Provider value={{ theme: theme || 'dark' }}>
       {children}
     </ThemeContext.Provider>
   );
