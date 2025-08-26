@@ -53,7 +53,7 @@ export default function RootLayout({
           </AuthProvider>
           <Toaster />
         </ThemeProvider>
-        <Script src="/AestheticFluidBg.js" strategy="afterInteractive" />
+        <Script src="/AestheticFluidBg.min.js" strategy="afterInteractive" />
         <Script id="init-fluid-bg" strategy="afterInteractive">
           {`
             new Color4Bg.AestheticFluidBg({
