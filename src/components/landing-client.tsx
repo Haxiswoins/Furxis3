@@ -41,7 +41,12 @@ export function LandingPageClient() {
         isNavigating ? 'opacity-0' : 'opacity-100'
       )}>
 
-        <div className="absolute left-1/2 -translate-x-1/2 top-1/4 text-center">
+        <div className="absolute top-8 left-8 text-white" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.4)'}}>
+          <p className="text-2xl">Welcome To</p>
+          <p className="text-4xl font-bold tracking-widest">FORWARD INFINITY</p>
+        </div>
+        
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
           <h1 
             className="text-5xl font-sans font-bold text-white"
             style={{textShadow: '1px 1px 4px rgba(0,0,0,0.5)'}}
