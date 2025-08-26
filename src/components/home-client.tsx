@@ -8,10 +8,34 @@ import { useRouter } from 'next/navigation';
 import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 type HomeClientProps = {
     content: SiteContent | null;
 }
+
+const containerVariants = {
+  hidden: { opacity: 1 }, // Start with opacity 1 to avoid flash
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: 'easeOut',
+    },
+  },
+};
+
 
 export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
@@ -37,12 +61,17 @@ export function HomeClient({ content }: HomeClientProps) {
   const cardDescriptionClass = "mt-2 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base";
 
   return (
-    <div className={cn(
-        "flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
-        isTransitioning ? "opacity-0" : "opacity-100"
-    )}>
+    <motion.div 
+        className={cn(
+            "flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
+            isTransitioning ? "opacity-0" : "opacity-100"
+        )}
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+    >
         <div className="py-8 md:py-12">
-        <div className="text-center mb-10 md:mb-16">
+        <motion.div className="text-center mb-10 md:mb-16" variants={itemVariants}>
             <a href="/">
                 <div className="relative inline-block cursor-pointer group">
                     <h1 className="text-4xl sm:text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary">
@@ -58,12 +87,13 @@ export function HomeClient({ content }: HomeClientProps) {
                     </div>
                 </div>
             </a>
-        </div>
+        </motion.div>
         
-        <div
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 w-full max-w-7xl mx-auto"
+          variants={containerVariants} // Nested container for cards
         >
-          <div>
+          <motion.div variants={itemVariants}>
             <Link href="/commission" className={cardLinkClass} onClick={handleNavigate}>
               <div className={cardDivClass}>
                   <Image
@@ -82,9 +112,9 @@ export function HomeClient({ content }: HomeClientProps) {
                   </div>
               </div>
             </Link>
-          </div>
+          </motion.div>
 
-          <div>
+          <motion.div variants={itemVariants}>
             <Link href="/adoption" className={cardLinkClass} onClick={handleNavigate}>
               <div className={cardDivClass}>
                   <Image
@@ -102,9 +132,9 @@ export function HomeClient({ content }: HomeClientProps) {
                   </div>
               </div>
             </Link>
-          </div>
+          </motion.div>
           
-          <div>
+          <motion.div variants={itemVariants}>
             <Link href="/works" className={cardLinkClass} onClick={handleNavigate}>
               <div className={cardDivClass}>
                   <Image
@@ -122,13 +152,13 @@ export function HomeClient({ content }: HomeClientProps) {
                   </div>
               </div>
             </Link>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         </div>
-        <div className="w-full py-8 text-center mt-auto">
-        <ContactInfo content={content} />
-        </div>
-    </div>
+        <motion.div className="w-full py-8 text-center mt-auto" variants={itemVariants}>
+            <ContactInfo content={content} />
+        </motion.div>
+    </motion.div>
   );
 }
