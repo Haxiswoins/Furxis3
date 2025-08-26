@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -15,8 +16,9 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import type { SiteContent } from '@/types';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/context/ThemeContext';
 
 
 function MainContentWrapper({
@@ -29,12 +31,43 @@ function MainContentWrapper({
   const pathname = usePathname();
   const isHomePage = pathname === '/home';
   const hasHomeBg = isHomePage && siteContent?.homeBackgroundImageUrl;
+  const { theme } = useTheme();
+
+  useEffect(() => {
+    let fluidBgInstance: any = null;
+
+    // Load the script
+    const script = document.createElement('script');
+    script.src = '/AestheticFluidBg.js';
+    script.async = true;
+    
+    script.onload = () => {
+      // @ts-ignore
+      if (theme === 'light' && isHomePage && window.Color4Bg && window.Color4Bg.AestheticFluidBg) {
+        fluidBgInstance = new (window as any).Color4Bg.AestheticFluidBg({
+          dom: "fluid-bg-container",
+          colors: ["#ff5900","#ffffff","#305797","#ffffff","#ffffff","#f5fffe"],
+          loop: true
+        });
+      }
+    };
+    
+    document.body.appendChild(script);
+
+    return () => {
+      if (fluidBgInstance && typeof fluidBgInstance.destroy === 'function') {
+        fluidBgInstance.destroy();
+      }
+      document.body.removeChild(script);
+    };
+  }, [theme, isHomePage]);
 
   return (
     <>
       {/* Background Effects Layer */}
       <div className="fixed inset-0 z-0">
-        {hasHomeBg && (
+         <div id="fluid-bg-container" className="absolute inset-0 z-0"></div>
+        {hasHomeBg && theme !== 'light' && (
           <div className="absolute inset-0 z-0">
               <Image
                   src={siteContent.homeBackgroundImageUrl!}
@@ -52,7 +85,17 @@ function MainContentWrapper({
       <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
         <Header />
         <main className="flex-1 flex flex-col px-4 py-8 pt-24">
-          {children}
+           <AnimatePresence mode="wait">
+             <motion.div
+                 key={pathname}
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: 1 }}
+                 exit={{ opacity: 0 }}
+                 transition={{ duration: 0.5, ease: 'easeInOut' }}
+             >
+                {children}
+             </motion.div>
+           </AnimatePresence>
         </main>
       </div>
     </>
@@ -128,16 +171,10 @@ export function AppShell({
   }
 
   return (
-      <motion.div
-          key={pathname}
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: 'easeInOut' }}
-          className="bg-background"
-      >
+      <div className="bg-background">
           <MainContentWrapper siteContent={siteContent}>
               {children}
           </MainContentWrapper>
-      </motion.div>
+      </div>
   );
 }
