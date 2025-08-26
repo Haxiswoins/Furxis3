@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -9,7 +9,8 @@ import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { FluidBackground } from '@/components/fluid-background';
+import { FluidBackground } from './fluid-background';
+
 
 const containerVariants = {
   hidden: { opacity: 0 },

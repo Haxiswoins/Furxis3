@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+
 export function LandingPageClient() {
   const router = useRouter();
   const [isContentVisible, setIsContentVisible] = useState(false);
@@ -19,11 +20,10 @@ export function LandingPageClient() {
       setIsContentVisible(true);
     }, 500);
 
-
     return () => {
       clearTimeout(contentTimer);
     };
-  }, []);
+  }, [router]);
 
 
   const handleNavigate = () => {
