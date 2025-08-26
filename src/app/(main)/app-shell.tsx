@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Header from '@/components/header';
 import { usePathname } from 'next/navigation';
 import AdminSidebar from '@/components/admin-sidebar';
@@ -26,6 +26,7 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   const { user, loading } = useAuth();
+  const mainRef = useRef<HTMLElement>(null);
   
   const isAdminRoute = pathname.startsWith('/admin');
   const isAuthRoute = ['/login', '/register', '/forgot-password'].includes(pathname) || pathname.startsWith('/api/auth');
@@ -103,16 +104,20 @@ export function AppShell({
       
        <AnimatePresence mode="wait">
           <motion.main
+              ref={mainRef}
               key={pathname}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 15 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
               className={cn(
-                "relative z-20 flex-1 flex flex-col px-4 py-8",
+                "relative z-20 flex-1 flex flex-col px-4 py-8 content-initial-hidden",
                  pathname === '/' ? 'pt-8' : 'pt-24', // Less padding for landing page
                 isMainPage && "bg-transparent"
               )}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4, ease: 'easeInOut' }}
+              onAnimationComplete={() => {
+                mainRef.current?.classList.remove('content-initial-hidden');
+              }}
           >
               {children}
           </motion.main>
