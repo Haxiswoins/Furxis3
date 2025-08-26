@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sheet"
 import { Skeleton } from '@/components/ui/skeleton';
 import type { SiteContent } from '@/types';
+import { FluidBackground } from '@/components/fluid-background';
 
 function MainContentWrapper({
   children,
@@ -25,12 +26,11 @@ function MainContentWrapper({
 }) {
   return (
     <>
+      <FluidBackground />
       <Header />
-      <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
-        <main className="flex-1 flex flex-col justify-center">
-          {children}
-        </main>
-      </div>
+      <main className="relative z-10 flex flex-col flex-grow justify-center">
+        {children}
+      </main>
     </>
   );
 }
@@ -49,9 +49,6 @@ export function AppShell({
   const isAdminRoute = pathname.startsWith('/admin');
   const isAuthRoute = ['/login', '/register', '/forgot-password'].includes(pathname) || pathname.startsWith('/api/auth');
   
-  // This is a special case since the root page (/) is now the landing page, and should not have the shell
-  const isLandingPage = pathname === '/';
-
   if (loading) {
     return (
        <div className="flex items-center justify-center min-h-screen bg-background">
@@ -63,13 +60,6 @@ export function AppShell({
       </div>
     );
   }
-
-  // The root path "/" is now handled by its own page component entirely.
-  // We check if the route is NOT the root page to apply the shell.
-  if (isLandingPage) {
-      return <>{children}</>;
-  }
-
 
   if (isAdminRoute) {
     if (user?.isAdmin) {
@@ -114,7 +104,7 @@ export function AppShell({
 
   // All other pages get the main wrapper with header and background
   return (
-      <div className="bg-background">
+      <div className="relative flex flex-col min-h-screen bg-background">
           <MainContentWrapper siteContent={siteContent}>
               {children}
           </MainContentWrapper>
