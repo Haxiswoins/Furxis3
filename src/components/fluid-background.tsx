@@ -2,37 +2,72 @@
 'use client';
 
 import { useEffect, useRef }from 'react';
-// @ts-ignore
-import { AestheticFluidBg } from '@/lib/AestheticFluidBg.js';
+
+// This component now handles the dynamic loading and initialization 
+// of the non-module, script-based AestheticFluidBg.js library.
 
 export function FluidBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const scriptLoaded = useRef(false);
   const CANVAS_ID = "fluid-background-canvas";
 
   useEffect(() => {
-    // This effect runs only on the client, after the component has mounted.
-    // The canvas element is guaranteed to be in the DOM at this point.
-    let fluidBgInstance: any = null;
+    // Ensure this effect runs only once.
+    if (scriptLoaded.current || !canvasRef.current) {
+        return;
+    }
 
-    if (document.getElementById(CANVAS_ID)) {
-      fluidBgInstance = new AestheticFluidBg({
-          dom: CANVAS_ID, // Pass the ID string
-          colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
-          loop: true
-      });
+    const initFluidBg = () => {
+        // @ts-ignore - We are accessing a global library loaded via script tag
+        if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
+             // @ts-ignore
+            new window.Color4Bg.AestheticFluidBg({
+                dom: CANVAS_ID, // Pass the ID string as expected by the library
+                colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
+                loop: true
+            });
+        } else {
+            console.error("AestheticFluidBg library not loaded correctly.");
+        }
+    };
+
+    // Check if the script is already on the page
+    // @ts-ignore
+    if (window.Color4Bg) {
+        initFluidBg();
+        scriptLoaded.current = true;
+        return;
     }
+
+    // If not, create and inject the script tag
+    const script = document.createElement('script');
+    script.src = '/AestheticFluidBg.js'; // Assumes the file is in the /public directory
+    script.async = true;
     
-    // Cleanup function to destroy the instance when the component unmounts
+    script.onload = () => {
+        initFluidBg();
+        scriptLoaded.current = true;
+    };
+
+    script.onerror = () => {
+        console.error("Failed to load the AestheticFluidBg.js script.");
+    };
+
+    document.body.appendChild(script);
+
+    // Basic cleanup
     return () => {
-      if (fluidBgInstance && typeof fluidBgInstance.destroy === 'function') {
-        fluidBgInstance.destroy();
+      try {
+        if(script.parentNode) {
+            script.parentNode.removeChild(script);
+        }
+      } catch (e) {
+          // ignore
       }
-    }
-  }, []); // Empty dependency array ensures this runs only once.
+    };
+  }, []); 
 
   return (
-    // The canvas is now part of this component, ensuring it exists before the effect runs.
-    // It's positioned to cover the entire screen and sit in the background.
     <canvas 
       id={CANVAS_ID} 
       ref={canvasRef} 
