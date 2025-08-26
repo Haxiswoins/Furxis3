@@ -39,43 +39,32 @@ type HomeClientProps = {
 export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const scriptLoaded = useRef(false);
   
   useEffect(() => {
-    // Ensure this effect runs only once by checking a ref
-    if (scriptLoaded.current || typeof window === 'undefined') {
-        return;
-    }
-
-    const script = document.createElement('script');
-    script.src = '/AestheticFluidBg.min.js';
-    script.async = true;
-
-    script.onload = () => {
-        // Ensure the global object and method exist before calling
-        if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
-            try {
-                new window.Color4Bg.AestheticFluidBg({
-                    dom: "box", 
-                    colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
-                    loop: true
-                });
-            } catch (error) {
-                console.error("Failed to initialize AestheticFluidBg:", error);
-            }
+    // This effect will run on the client after the component mounts.
+    const intervalId = setInterval(() => {
+      // Check if the library has been loaded and the canvas element is available
+      if (typeof window !== 'undefined' && (window as any).Color4Bg && (window as any).Color4Bg.AestheticFluidBg && document.getElementById('box')) {
+        try {
+          // Once everything is ready, initialize the background
+          new (window as any).Color4Bg.AestheticFluidBg({
+            dom: "box",
+            colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
+            loop: true
+          });
+          // And clear the interval to stop checking
+          clearInterval(intervalId);
+        } catch (error) {
+          console.error("Failed to initialize AestheticFluidBg:", error);
+          // Also clear interval on failure to prevent repeated errors
+          clearInterval(intervalId);
         }
-    };
-    
-    document.body.appendChild(script);
-    scriptLoaded.current = true;
+      }
+    }, 100); // Check every 100ms
 
-    // Cleanup function to remove the script when the component unmounts
-    return () => {
-        if (script.parentNode) {
-            script.parentNode.removeChild(script);
-        }
-    };
-  }, []);
+    // Cleanup function to clear the interval when the component unmounts
+    return () => clearInterval(intervalId);
+  }, []); // The empty dependency array ensures this effect runs only once on mount.
 
 
   const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>) => {
