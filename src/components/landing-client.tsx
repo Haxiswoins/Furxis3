@@ -40,29 +40,34 @@ export function LandingPageClient() {
       tabIndex={0}
     >
       <div className={cn(
-        "absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-500 ease-in-out",
+        "absolute inset-0 z-20 flex flex-col items-start justify-start p-8 md:p-12 transition-opacity duration-500 ease-in-out",
         isContentVisible ? 'opacity-100' : 'opacity-0',
         isNavigating ? 'opacity-0' : 'opacity-100'
       )}>
 
-        <div className="absolute top-8 left-8 text-white" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.4)'}}>
-          <p className="text-2xl">Welcome To</p>
-          <p className="text-4xl font-bold tracking-widest">FORWARD INFINITY</p>
-           <h1 
-            className="text-2xl font-sans font-bold text-white/90 mt-2"
+        <div className="text-white" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.4)'}}>
+          <p className="text-xl md:text-2xl">Welcome To</p>
+          <p className="text-3xl md:text-4xl font-bold tracking-widest mt-1">FORWARD INFINITY</p>
+          <h1 
+            className="text-xl md:text-2xl font-sans font-bold text-white/90 mt-4"
           >
             欢迎来到 前行无界
           </h1>
+
+          <div className="mt-8 space-y-4 text-sm md:text-base max-w-md text-white/90">
+             <p>
+                前行无界工作室于2024年成立，我们致力于为您提供充满创意的角色设计服务与定制化Fursuit产品
+             </p>
+             <p className="italic">
+                Established in 2024, FORWARD INFINITY studio is dedicated to providing you with creative character design services and Fursuits.
+             </p>
+          </div>
+          
+          <p className="mt-12 text-base text-white/70 animate-pulse">
+            点击任意位置进入网站
+          </p>
         </div>
         
-      </div>
-
-      <div className={cn(
-        "absolute bottom-8 w-full text-center text-xs text-white/40 transition-opacity duration-1000 ease-in-out",
-        isContentVisible ? "opacity-100" : "opacity-0",
-        isNavigating ? 'opacity-0' : 'opacity-100'
-      )}>
-         <p>Developed by Haxis and Mark</p>
       </div>
 
     </div>
