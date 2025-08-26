@@ -9,6 +9,7 @@ import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { AestheticFluidBackground } from './aesthetic-fluid-background';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -40,33 +41,6 @@ export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
   const [isTransitioning, setIsTransitioning] = useState(false);
   
-  useEffect(() => {
-    // This effect will run on the client after the component mounts.
-    const intervalId = setInterval(() => {
-      // Check if the library has been loaded and the canvas element is available
-      if (typeof window !== 'undefined' && (window as any).Color4Bg && (window as any).Color4Bg.AestheticFluidBg && document.getElementById('box')) {
-        try {
-          // Once everything is ready, initialize the background
-          new (window as any).Color4Bg.AestheticFluidBg({
-            dom: "box",
-            colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
-            loop: true
-          });
-          // And clear the interval to stop checking
-          clearInterval(intervalId);
-        } catch (error) {
-          console.error("Failed to initialize AestheticFluidBg:", error);
-          // Also clear interval on failure to prevent repeated errors
-          clearInterval(intervalId);
-        }
-      }
-    }, 100); // Check every 100ms
-
-    // Cleanup function to clear the interval when the component unmounts
-    return () => clearInterval(intervalId);
-  }, []); // The empty dependency array ensures this effect runs only once on mount.
-
-
   const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const href = e.currentTarget.getAttribute('href');
@@ -88,7 +62,7 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
-      <canvas id="box" className="fixed top-0 left-0 w-full h-full z-[-1]"></canvas>
+      <AestheticFluidBackground />
       <motion.div 
           className={cn(
               "relative z-10 flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",

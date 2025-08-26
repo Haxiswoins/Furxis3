@@ -18,7 +18,6 @@ export default async function MainLayout({
       <PageAnimationWrapper>
         {children}
       </PageAnimationWrapper>
-      <Script src="/AestheticFluidBg.min.js" strategy="lazyOnload" />
     </AppShell>
   );
 }
