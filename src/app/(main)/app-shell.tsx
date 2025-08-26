@@ -17,28 +17,33 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
 import AestheticFluidBackground from '@/components/ambient-light-background';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 
 function MainContentWrapper({
   children,
+  pathname,
 }: {
   children: React.ReactNode;
+  pathname: string;
 }) {
-  const pathname = usePathname();
   const isMainPage = pathname === '/' || pathname === '/home';
   
   return (
-    <motion.main 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className={cn(
-        "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]",
-        isMainPage && "bg-transparent"
-      )}>
-        {children}
-      </motion.main>
+    <AnimatePresence mode="wait">
+        <motion.main 
+          key={pathname}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className={cn(
+            "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]",
+            isMainPage && "bg-transparent"
+          )}>
+            {children}
+        </motion.main>
+    </AnimatePresence>
   );
 }
 
@@ -125,7 +130,7 @@ export function AppShell({
       <div className="fixed inset-0 z-[-1] bg-background" />
 
       <Header />
-      <MainContentWrapper>
+      <MainContentWrapper pathname={pathname}>
           {children}
       </MainContentWrapper>
     </>

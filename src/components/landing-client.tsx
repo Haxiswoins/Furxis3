@@ -32,15 +32,11 @@ export function LandingPageClient() {
       tabIndex={0}
     >
       <motion.div 
-        className={cn(
-          "absolute inset-0 z-20 flex flex-col items-start justify-start p-8 md:p-12",
-          isNavigating ? 'opacity-0' : 'opacity-100'
-        )}
+        className="absolute inset-0 z-20 flex flex-col items-start justify-start p-8 md:p-12"
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        animate={{ opacity: isNavigating ? 0 : 1, y: isNavigating ? 20 : 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-
         <div className="text-white">
           <p className="text-xl md:text-2xl">Welcome to</p>
           <div className="mt-2">
@@ -67,7 +63,7 @@ export function LandingPageClient() {
        <motion.p 
           className="absolute bottom-12 left-8 md:left-12 text-sm text-white/70 animate-pulse"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={{ opacity: isNavigating ? 0 : 1 }}
           transition={{ delay: 0.5, duration: 0.5 }}
         >
           点击任意位置进入网站
