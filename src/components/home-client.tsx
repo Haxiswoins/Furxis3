@@ -56,7 +56,7 @@ export function HomeClient({ content }: HomeClientProps) {
   return (
     <div className="container mx-auto">
         <motion.div 
-            className="relative z-10 flex flex-col min-h-[calc(100vh-theme(spacing.24))]"
+            className="relative z-10 flex flex-col min-h-screen"
             initial="hidden"
             animate="visible"
             variants={containerVariants}
