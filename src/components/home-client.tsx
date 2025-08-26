@@ -41,7 +41,6 @@ export function HomeClient({ content }: HomeClientProps) {
 
   const handleTitleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    // Navigate back to the welcome page
     router.push('/');
   }
 
@@ -61,7 +60,7 @@ export function HomeClient({ content }: HomeClientProps) {
             animate="visible"
             variants={containerVariants}
         >
-            <div className="py-8 md:py-12 flex-grow pt-24 w-full">
+            <div className="w-full py-8 md:py-12 pt-24">
             <motion.div className="text-center mb-10 md:mb-16" variants={itemVariants}>
                 <a onClick={handleTitleClick} className="cursor-pointer">
                     <div className="relative inline-block group">
