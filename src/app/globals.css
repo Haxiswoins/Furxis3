@@ -70,11 +70,6 @@
   body {
     @apply bg-background text-foreground;
   }
-
-  /* Key change to prevent FOUC */
-  body.loading-initial main {
-    opacity: 0;
-  }
 }
 
 /* Hide number input arrows and custom scrollbar styles */
