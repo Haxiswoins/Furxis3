@@ -70,6 +70,14 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Prevent FOUC (Flash of Unstyled Content) during initial load with animations */
+  .loading-initial {
+    opacity: 0;
+  }
+  body {
+    @apply transition-opacity duration-300;
+  }
 }
 
 /* Hide number input arrows and custom scrollbar styles */

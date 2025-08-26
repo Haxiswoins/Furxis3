@@ -44,7 +44,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(
-        "font-body antialiased",
+        "font-body antialiased loading-initial",
         fontHeadline.variable,
         fontSerifSC.variable,
         fontBody.variable

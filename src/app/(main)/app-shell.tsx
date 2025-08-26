@@ -57,6 +57,11 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   const { user, loading } = useAuth();
+  
+  // This effect handles the initial flash of content on load.
+  useEffect(() => {
+    document.body.classList.remove('loading-initial');
+  }, []);
 
   const isAdminRoute = pathname.startsWith('/admin');
   const isAuthRoute = ['/login', '/register', '/forgot-password'].includes(pathname) || pathname.startsWith('/api/auth');
