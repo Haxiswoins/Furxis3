@@ -1,10 +1,24 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import * as THREE from 'three';
+
+const galaxyParameters = {
+    count: 50000,
+    size: 0.015,
+    radius: 20,
+    branches: 5,
+    spin: 1.5,
+    randomness: 0.5,
+    randomnessPower: 3,
+    insideColor: '#ff6030',
+    outsideColor: '#1b3984'
+};
+
 
 export function LandingPageClient() {
   const router = useRouter();
@@ -34,7 +48,8 @@ export function LandingPageClient() {
   };
   
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-background">
+    <div className="relative h-screen w-full overflow-hidden bg-transparent">
+      
       <div className={cn(
         "absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-500",
         isContentVisible ? 'opacity-100' : 'opacity-0',
