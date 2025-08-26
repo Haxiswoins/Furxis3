@@ -42,40 +42,31 @@ export function HomeClient({ content }: HomeClientProps) {
   const scriptLoaded = useRef(false);
 
   useEffect(() => {
-    if (scriptLoaded.current) {
-        return;
-    }
-
-    const initFluidBg = () => {
-        // @ts-ignore
-        if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
-             // @ts-ignore
-            new window.Color4Bg.AestheticFluidBg({
-                dom: "box",
-                colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
-                loop: true
-            });
-        } else {
-            console.error("AestheticFluidBg library is not available on the window object.");
-        }
-    };
-
-    // @ts-ignore
-    if (window.Color4Bg) {
-        initFluidBg();
-        scriptLoaded.current = true;
-        return;
-    }
+    if (scriptLoaded.current) return;
 
     const script = document.createElement('script');
     script.src = '/AestheticFluidBg.js';
     script.async = true;
-    
-    script.onload = () => {
-        initFluidBg();
-        scriptLoaded.current = true;
-    };
 
+    script.onload = () => {
+      // @ts-ignore
+      if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
+        try {
+          // @ts-ignore
+          new window.Color4Bg.AestheticFluidBg({
+            dom: "box",
+            colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
+            loop: true
+          });
+          scriptLoaded.current = true;
+        } catch (e) {
+            console.error("AestheticFluidBg failed to initialize:", e);
+        }
+      } else {
+        console.error("AestheticFluidBg library is not available on the window object.");
+      }
+    };
+    
     script.onerror = () => {
         console.error("Failed to load the AestheticFluidBg.js script.");
     };
@@ -83,15 +74,11 @@ export function HomeClient({ content }: HomeClientProps) {
     document.body.appendChild(script);
 
     return () => {
-      try {
         if(script.parentNode) {
             script.parentNode.removeChild(script);
         }
-      } catch (e) {
-          // It's possible the script is already gone, so we can ignore errors here.
-      }
     };
-  }, []); 
+  }, []);
 
   const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -114,7 +101,7 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
-      <canvas id="box" className="fixed top-0 left-0 w-full h-full z-[9999]"></canvas>
+      <canvas id="box" className="fixed top-0 left-0 w-full h-full z-[-1]"></canvas>
       <motion.div 
           className={cn(
               "relative z-10 flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
