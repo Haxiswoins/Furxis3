@@ -15,10 +15,11 @@ export function FluidBackground() {
 
         const script = document.createElement('script');
         script.id = 'aesthetic-fluid-bg-script';
+        // This is the key fix: tell the browser to treat this script as an ES module.
+        script.type = 'module'; 
         script.src = '/AestheticFluidBg.module.js'; // Assumes the file is in the /public folder
         
         script.onload = () => {
-            // Now that the script is loaded, the Color4Bg object should be on the window.
             // @ts-ignore
             if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
                 try {
