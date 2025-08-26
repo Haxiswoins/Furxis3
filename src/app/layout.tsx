@@ -6,7 +6,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { Playfair_Display, Noto_Serif_SC, Noto_Sans_SC } from 'next/font/google';
 import { cn } from '@/lib/utils';
-// import { UserProvider } from '@authing/nextjs';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'Suitopia',
@@ -46,14 +46,23 @@ export default function RootLayout({
         fontSerifSC.variable,
         fontBody.variable
       )}>
-        {/* <UserProvider> */}
-          <ThemeProvider>
-            <AuthProvider>
-              {children}
-            </AuthProvider>
-            <Toaster />
-          </ThemeProvider>
-        {/* </UserProvider> */}
+        <div id="fluid-bg-container" className="fixed inset-0 z-0 pointer-events-none"></div>
+        <ThemeProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+          <Toaster />
+        </ThemeProvider>
+        <Script src="/AestheticFluidBg.js" strategy="afterInteractive" />
+        <Script id="init-fluid-bg" strategy="afterInteractive">
+          {`
+            new Color4Bg.AestheticFluidBg({
+              dom: "fluid-bg-container",
+              colors: ["#ff5900","#ffffff","#305797","#ffffff","#ffffff","#f5fffe"],
+              loop: true
+            });
+          `}
+        </Script>
       </body>
     </html>
   );

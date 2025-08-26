@@ -105,18 +105,8 @@
     background-color: rgba(0, 0, 0, 0.8);
   }
 
-  .animate-warp {
-    animation: warp 1s ease-out forwards;
+  .fluid-bg-active {
+    background-color: transparent !important;
   }
-}
 
-@keyframes warp {
-  from {
-    transform: translateX(-100%) scaleX(0);
-    opacity: 0.7;
-  }
-  to {
-    transform: translateX(200vw) scaleX(1);
-    opacity: 0;
-  }
 }

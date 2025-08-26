@@ -20,7 +20,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 
-
 function MainContentWrapper({
   children,
   siteContent
@@ -32,67 +31,28 @@ function MainContentWrapper({
   const isHomePage = pathname === '/home';
   const hasHomeBg = isHomePage && siteContent?.homeBackgroundImageUrl;
   const { theme } = useTheme();
-
-  useEffect(() => {
-    let fluidBgInstance: any = null;
-    const scriptId = 'aesthetic-fluid-bg-script';
-
-    // Only run this effect on the home page and in light mode
-    if (isHomePage && theme === 'light') {
-        const initFluidBg = () => {
-             // @ts-ignore
-            if (window.Color4Bg && window.Color4Bg.AestheticFluidBg) {
-                fluidBgInstance = new (window as any).Color4Bg.AestheticFluidBg({
-                    dom: "fluid-bg-container",
-                    colors: ["#ff5900","#ffffff","#305797","#ffffff","#ffffff","#f5fffe"],
-                    loop: true
-                });
-            }
-        }
-        
-        if (!document.getElementById(scriptId)) {
-            const script = document.createElement('script');
-            script.id = scriptId;
-            script.src = '/AestheticFluidBg.js';
-            script.async = true;
-            script.onload = initFluidBg;
-            document.body.appendChild(script);
-        } else {
-            initFluidBg();
-        }
-    }
-
-    return () => {
-      // Cleanup function
-      if (fluidBgInstance && typeof fluidBgInstance.destroy === 'function') {
-        fluidBgInstance.destroy();
-      }
-    };
-  }, [theme, isHomePage]);
+  
+  // The fluid background is now handled globally in layout.tsx.
+  // This component only needs to control the transparency of its own background.
+  const showFluidBg = isHomePage && theme === 'light';
 
   return (
-    <>
-      {/* Background Effects Layer */}
-      <div className="fixed inset-0 z-0">
-         <div id="fluid-bg-container" className="absolute inset-0 z-0"></div>
-        {hasHomeBg && theme !== 'light' && (
-          <div className="absolute inset-0 z-0">
-              <Image
-                  src={siteContent.homeBackgroundImageUrl!}
-                  alt="Homepage Background"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  className="opacity-20"
-              />
-              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
-          </div>
-        )}
-      </div>
-
-      {/* Content Layer */}
-      <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
+    <div className="relative z-10 flex flex-col min-h-screen">
+      {hasHomeBg && theme !== 'light' && (
+        <div className="fixed inset-0 z-0">
+            <Image
+                src={siteContent.homeBackgroundImageUrl!}
+                alt="Homepage Background"
+                fill
+                style={{ objectFit: 'cover' }}
+                className="opacity-20"
+            />
+            <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
+        </div>
+      )}
+      <div className={cn("relative z-10", showFluidBg && "fluid-bg-active")}>
         <Header />
-        <main className="flex-1 flex flex-col px-4 py-8 pt-24 bg-transparent">
+        <main className="flex-1 flex flex-col px-4 py-8 pt-24">
            <AnimatePresence mode="wait">
              <motion.div
                  key={pathname}
@@ -106,7 +66,7 @@ function MainContentWrapper({
            </AnimatePresence>
         </main>
       </div>
-    </>
+    </div>
   );
 }
 
