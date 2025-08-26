@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -10,7 +9,7 @@ declare global {
     }
 }
 
-export function AmbientLightBackground() {
+export function AestheticFluidBackground() {
     const scriptLoaded = useRef(false);
 
     useEffect(() => {
@@ -20,27 +19,27 @@ export function AmbientLightBackground() {
         }
 
         const script = document.createElement('script');
-        script.src = '/AmbientLightBg.module.js';
+        script.src = '/AestheticFluidBg.min.js';
         script.async = true;
 
         script.onload = () => {
-            if (window.Color4Bg && typeof window.Color4Bg.AmbientLightBg === 'function') {
+            if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
                 try {
-                    new window.Color4Bg.AmbientLightBg({
+                    new window.Color4Bg.AestheticFluidBg({
                         dom: "box",
-                        colors: ["#00023E","#ff7b00","#204299","#132385","#0C0D62","#00023E"],
+                        colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
                         loop: true
                     });
                 } catch (e) {
-                    console.error('AmbientLightBg Initialization Error:', e);
+                    console.error('AestheticFluidBg Initialization Error:', e);
                 }
             } else {
-                 console.error('AmbientLightBg library not found on window object after script load.');
+                 console.error('AestheticFluidBg library not found on window object after script load.');
             }
         };
 
         script.onerror = () => {
-            console.error('Failed to load the AmbientLightBg.module.js script.');
+            console.error('Failed to load the AestheticFluidBg.min.js script.');
         };
 
         document.body.appendChild(script);

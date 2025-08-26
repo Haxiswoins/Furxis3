@@ -9,7 +9,7 @@ import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { AmbientLightBackground } from '@/components/ambient-light-background';
+import { AestheticFluidBackground } from '@/components/aesthetic-fluid-background';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -62,7 +62,7 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
-      <AmbientLightBackground />
+      <AestheticFluidBackground />
       <motion.div 
           className={cn(
               "relative z-10 flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
