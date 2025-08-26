@@ -1,7 +1,7 @@
+
 'use client';
 
 import Script from 'next/script';
-import { useEffect } from 'react';
 
 declare global {
   interface Window {
@@ -22,7 +22,7 @@ export function FluidBackground() {
 
   return (
     <Script
-      src="/AestheticFluidBg.js"
+      src="/AestheticFluidBg.min.js"
       strategy="lazyOnload"
       onLoad={handleScriptLoad}
     />
