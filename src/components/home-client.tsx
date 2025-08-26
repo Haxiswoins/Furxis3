@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -8,12 +9,6 @@ import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { FluidBackground } from '@/components/fluid-background';
-
-
-type HomeClientProps = {
-    content: SiteContent | null;
-}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -41,6 +36,63 @@ const itemVariants = {
 export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const scriptLoaded = useRef(false);
+
+  useEffect(() => {
+    // This effect handles the dynamic loading and initialization of the fluid background.
+    if (scriptLoaded.current) {
+        return;
+    }
+
+    const initFluidBg = () => {
+        // @ts-ignore
+        if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
+             // @ts-ignore
+            new window.Color4Bg.AestheticFluidBg({
+                dom: "box", // Strictly use "box" as the ID
+                colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
+                loop: true
+            });
+        } else {
+            console.error("AestheticFluidBg library is not available on the window object.");
+        }
+    };
+
+    // If the script was already loaded by another component instance or a previous render, just init
+     // @ts-ignore
+    if (window.Color4Bg) {
+        initFluidBg();
+        scriptLoaded.current = true;
+        return;
+    }
+
+    // Otherwise, create and append the script tag to load it.
+    const script = document.createElement('script');
+    script.src = '/AestheticFluidBg.js'; // Assuming the file is in the /public directory
+    script.async = true;
+    
+    script.onload = () => {
+        initFluidBg();
+        scriptLoaded.current = true; // Mark the script as loaded
+    };
+
+    script.onerror = () => {
+        console.error("Failed to load the AestheticFluidBg.js script.");
+    };
+
+    document.body.appendChild(script);
+
+    // Cleanup function to remove the script if the component unmounts
+    return () => {
+      try {
+        if(script.parentNode) {
+            script.parentNode.removeChild(script);
+        }
+      } catch (e) {
+          // It's possible the script is already gone, so we can ignore errors here.
+      }
+    };
+  }, []); 
 
   const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -63,7 +115,7 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
-      <FluidBackground />
+      <canvas id="box" className="fixed top-0 left-0 w-full h-full z-[-1]"></canvas>
       <motion.div 
           className={cn(
               "relative z-10 flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
