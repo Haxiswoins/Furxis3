@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -16,6 +15,9 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import type { SiteContent } from '@/types';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
+
 
 function MainContentWrapper({
   children,
@@ -24,24 +26,33 @@ function MainContentWrapper({
   children: React.ReactNode;
   siteContent: SiteContent | null;
 }) {
+  const pathname = usePathname();
+  const isHomePage = pathname === '/home';
+  const hasHomeBg = isHomePage && siteContent?.homeBackgroundImageUrl;
+
   return (
     <>
-      {siteContent?.homeBackgroundImageUrl && (
-        <div className="fixed inset-0 z-0">
-          <Image
-            src={siteContent.homeBackgroundImageUrl}
-            alt="Background"
-            fill
-            style={{ objectFit: 'cover' }}
-            priority
-          />
-          <div className="absolute inset-0 bg-black/30"></div>
-        </div>
-      )}
-      <div className="relative z-10 flex flex-col min-h-screen">
+      {/* Background Effects Layer */}
+      <div className="fixed inset-0 z-0">
+        {hasHomeBg && (
+          <div className="absolute inset-0 z-0">
+              <Image
+                  src={siteContent.homeBackgroundImageUrl!}
+                  alt="Homepage Background"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  className="opacity-20"
+              />
+              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
+          </div>
+        )}
+      </div>
+
+      {/* Content Layer */}
+      <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
         <Header />
         <main className="flex-1 flex flex-col px-4 py-8 pt-24">
-            {children}
+          {children}
         </main>
       </div>
     </>
@@ -117,8 +128,16 @@ export function AppShell({
   }
 
   return (
-    <MainContentWrapper siteContent={siteContent}>
-      {children}
-    </MainContentWrapper>
+      <motion.div
+          key={pathname}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeInOut' }}
+          className="bg-background"
+      >
+          <MainContentWrapper siteContent={siteContent}>
+              {children}
+          </MainContentWrapper>
+      </motion.div>
   );
 }

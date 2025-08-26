@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation';
 import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
 
 type HomeClientProps = {
     content: SiteContent | null;
@@ -38,15 +37,10 @@ export function HomeClient({ content }: HomeClientProps) {
   const cardDescriptionClass = "mt-2 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base";
 
   return (
-    <motion.div 
-        className={cn(
-            "flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
-            isTransitioning ? "opacity-0" : "opacity-100"
-        )}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-    >
+    <div className={cn(
+        "flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
+        isTransitioning ? "opacity-0" : "opacity-100"
+    )}>
         <div>
         <div className="text-center mb-12">
             <a href="/" onClick={handleNavigate}>
@@ -135,6 +129,6 @@ export function HomeClient({ content }: HomeClientProps) {
         <div className="w-full py-8 text-center mt-auto">
         <ContactInfo content={content} />
         </div>
-    </motion.div>
+    </div>
   );
 }

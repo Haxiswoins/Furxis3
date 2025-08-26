@@ -79,7 +79,6 @@ export type ApplicationData = {
 }
 
 export type SiteContent = {
-  homeBackgroundImageUrl?: string;
   commissionTitle: string;
   commissionDescription: string;
   commissionImageUrl: string;
@@ -92,6 +91,7 @@ export type SiteContent = {
   adoptionPageDescription: string;
   commissionPageDescription: string;
   adminEmail: string;
+  homeBackgroundImageUrl?: string | null;
   sunriseHour?: number;
   sunsetHour?: number;
   contactInfo?: string;
