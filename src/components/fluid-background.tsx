@@ -1,22 +1,35 @@
+
 'use client';
 
 import { useEffect } from 'react';
-import { AestheticFluidBg } from '@/lib/AestheticFluidBg.module.js';
+
+declare global {
+    interface Window {
+        Color4Bg: any;
+    }
+}
 
 export function FluidBackground() {
   useEffect(() => {
     let colorbg: any = null;
-    try {
-      colorbg = new AestheticFluidBg({
-        dom: "box",
-        colors: ["#ff6600","#F0FFFE","#3069a1","#F0FFFE","#83e5ec","#F0FFFE"],
-        loop: true
-      });
-    } catch(e) {
-      console.error("Failed to initialize fluid background", e);
+    
+    // Check if the library is loaded
+    if (typeof window.Color4Bg !== 'undefined' && typeof window.Color4Bg.AestheticFluidBg === 'function') {
+      try {
+        colorbg = new window.Color4Bg.AestheticFluidBg({
+          dom: "box",
+          colors: ["#ff6600","#F0FFFE","#3069a1","#F0FFFE","#83e5ec","#F0FFFE"],
+          loop: true
+        });
+      } catch(e) {
+        console.error("Failed to initialize fluid background", e);
+      }
+    } else {
+        console.error("AestheticFluidBg library not loaded.");
     }
     
     return () => {
+      // Ensure destroy method exists before calling it
       if (colorbg && typeof colorbg.destroy === 'function') {
         colorbg.destroy();
       }
