@@ -22,7 +22,7 @@ export function LandingPageClient() {
       if (window.Color4Bg && window.Color4Bg.AestheticFluidBg) {
         fluidBgInstance = new (window as any).Color4Bg.AestheticFluidBg({
             dom: "fluid-bg-container",
-            colors: ["#1b3984", "#000000", "#ff6030", "#000000"], // Darker theme for landing
+            colors: ["#ff5900","#ffffff","#305797","#ffffff","#ffffff","#f5fffe"],
             loop: true
         });
       }
@@ -59,7 +59,7 @@ export function LandingPageClient() {
   };
   
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-black">
+    <div className="relative h-screen w-full overflow-hidden">
       
       <div className={cn(
         "absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-500",
