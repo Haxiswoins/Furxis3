@@ -1,5 +1,5 @@
 
-import { LandingPageClient } from '@/components/landing-client';
+import { LandingPageClient } from '@/landing-client';
 import Header from '@/components/header';
 
 
