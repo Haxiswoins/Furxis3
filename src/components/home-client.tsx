@@ -45,7 +45,12 @@ export function HomeClient({ content }: HomeClientProps) {
   const cardDescriptionClass = "mt-2 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base";
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-theme(spacing.24))]">
+    <motion.div 
+        className="flex flex-col min-h-[calc(100vh-theme(spacing.24))]"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+    >
         <div className="pt-12">
         
         <div 
@@ -146,6 +151,6 @@ export function HomeClient({ content }: HomeClientProps) {
         >
           <ContactInfo content={content} />
         </div>
-    </div>
+    </motion.div>
   );
 }

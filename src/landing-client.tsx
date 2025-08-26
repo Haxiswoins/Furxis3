@@ -1,7 +1,6 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -9,18 +8,9 @@ import { motion } from 'framer-motion';
 
 export function LandingPageClient() {
   const router = useRouter();
-  const [isWarping, setIsWarping] = useState(false);
   
-  useEffect(() => {
-    router.prefetch('/home');
-  }, [router]);
-
-
   const handleNavigate = () => {
-    setIsWarping(true);
-    setTimeout(() => {
-        router.push('/home');
-    }, 800); 
+    router.push('/home');
   };
   
   return (
@@ -30,11 +20,11 @@ export function LandingPageClient() {
     >
       <motion.div 
         className={cn(
-            "absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-500"
+            "absolute inset-0 z-20 flex items-center justify-center"
         )}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: isWarping ? 0 : 1, y: 0 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.7, ease: 'easeOut' }}
       >
         <div className="absolute top-8 left-8 text-white">
             <p className="text-xl font-light">Welcome to</p>
