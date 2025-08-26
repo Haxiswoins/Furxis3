@@ -74,38 +74,42 @@ export default function UnifiedWelcomeAndHomePage() {
       
       <AnimatePresence onExitComplete={onAnimationComplete}>
         {view === 'welcome' && (
-           <motion.div
-            key="welcome"
+           <div 
+            key="welcome-wrapper"
             className="absolute inset-0 z-10 flex cursor-pointer items-center justify-center"
             onClick={navigateToHome}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={welcomeContainerVariants}
-          >
-            <div className="text-center text-white">
-               <motion.div variants={welcomeItemVariants}>
-                  <h1 className="text-5xl md:text-7xl font-headline" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.5)' }}>
-                    欢迎来到
-                  </h1>
-               </motion.div>
-               <motion.div variants={welcomeItemVariants}>
-                  <div className="relative inline-block group mt-4">
-                      <h1 className="text-4xl sm:text-5xl font-headline transition-colors duration-300 relative z-10" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.5)' }}>
-                      前行无界
-                      </h1>
-                      <div
-                      className="absolute inset-0 flex items-center justify-center text-primary opacity-80"
-                      style={{ zIndex: 5 }}
-                      >
-                      <span className="font-body text-2xl sm:text-4xl font-extralight tracking-[0.3em] whitespace-nowrap px-4 mt-10 sm:mt-12">
-                          FORWARD INFINITY
-                      </span>
-                      </div>
-                  </div>
-              </motion.div>
-            </div>
-          </motion.div>
+           >
+            <motion.div
+              key="welcome"
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              variants={welcomeContainerVariants}
+            >
+              <div className="text-center text-white">
+                <motion.div variants={welcomeItemVariants}>
+                    <h1 className="text-5xl md:text-7xl font-headline" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.5)' }}>
+                      欢迎来到
+                    </h1>
+                </motion.div>
+                <motion.div variants={welcomeItemVariants}>
+                    <div className="relative inline-block group mt-4">
+                        <h1 className="text-4xl sm:text-5xl font-headline transition-colors duration-300 relative z-10" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.5)' }}>
+                        前行无界
+                        </h1>
+                        <div
+                        className="absolute inset-0 flex items-center justify-center text-primary opacity-80"
+                        style={{ zIndex: 5 }}
+                        >
+                        <span className="font-body text-2xl sm:text-4xl font-extralight tracking-[0.3em] whitespace-nowrap px-4 mt-10 sm:mt-12">
+                            FORWARD INFINITY
+                        </span>
+                        </div>
+                    </div>
+                </motion.div>
+              </div>
+            </motion.div>
+           </div>
         )}
       </AnimatePresence>
 
@@ -125,3 +129,4 @@ export default function UnifiedWelcomeAndHomePage() {
     </div>
   );
 }
+
