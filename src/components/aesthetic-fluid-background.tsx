@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -9,7 +10,7 @@ declare global {
     }
 }
 
-export function AestheticFluidBackground() {
+export function AmbientLightBackground() {
     const scriptLoaded = useRef(false);
 
     useEffect(() => {
@@ -19,27 +20,27 @@ export function AestheticFluidBackground() {
         }
 
         const script = document.createElement('script');
-        script.src = '/AestheticFluidBg.min.js';
+        script.src = '/AmbientLightBg.module.js';
         script.async = true;
 
         script.onload = () => {
-            if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
+            if (window.Color4Bg && typeof window.Color4Bg.AmbientLightBg === 'function') {
                 try {
-                    new window.Color4Bg.AestheticFluidBg({
+                    new window.Color4Bg.AmbientLightBg({
                         dom: "box",
-                        colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
+                        colors: ["#00023E","#ff7b00","#204299","#132385","#0C0D62","#00023E"],
                         loop: true
                     });
                 } catch (e) {
-                    console.error('AestheticFluidBg Initialization Error:', e);
+                    console.error('AmbientLightBg Initialization Error:', e);
                 }
             } else {
-                 console.error('AestheticFluidBg library not found on window object after script load.');
+                 console.error('AmbientLightBg library not found on window object after script load.');
             }
         };
 
         script.onerror = () => {
-            console.error('Failed to load the AestheticFluidBg.min.js script.');
+            console.error('Failed to load the AmbientLightBg.module.js script.');
         };
 
         document.body.appendChild(script);
@@ -47,7 +48,9 @@ export function AestheticFluidBackground() {
 
         return () => {
             // Optional: Cleanup script from body when component unmounts
-            document.body.removeChild(script);
+            if (script.parentNode) {
+                script.parentNode.removeChild(script);
+            }
         };
     }, []);
 

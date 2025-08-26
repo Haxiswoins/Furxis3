@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -9,7 +10,7 @@ import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { AestheticFluidBackground } from './aesthetic-fluid-background';
+import { AmbientLightBackground } from '@/components/ambient-light-background';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -62,7 +63,7 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
-      <AestheticFluidBackground />
+      <AmbientLightBackground />
       <motion.div 
           className={cn(
               "relative z-10 flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
