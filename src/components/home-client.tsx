@@ -46,7 +46,7 @@ export function HomeClient({ content }: HomeClientProps) {
     if (scriptLoaded.current) return;
 
     const script = document.createElement('script');
-    script.src = '/AestheticFluidBg.min.js';
+    script.src = '/AestheticFluidBg.min.js'; // Corrected filename
     script.async = true;
 
     script.onload = () => {
@@ -55,7 +55,7 @@ export function HomeClient({ content }: HomeClientProps) {
         try {
           // @ts-ignore
           new window.Color4Bg.AestheticFluidBg({
-            dom: "box",
+            dom: "box", // Use the correct ID
             colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
             loop: true
           });
@@ -103,7 +103,7 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
-      <canvas id="box" className="fixed top-0 left-0 w-full h-full z-[9999]"></canvas>
+      <canvas id="box" className="fixed top-0 left-0 w-full h-full z-[9999] pointer-events-none"></canvas>
       <motion.div 
           className={cn(
               "relative z-10 flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
