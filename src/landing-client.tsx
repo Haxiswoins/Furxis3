@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -25,7 +25,7 @@ export function LandingPageClient() {
   
   return (
     <div 
-        className="relative h-screen w-full overflow-hidden bg-black cursor-pointer"
+        className="relative h-screen w-full overflow-hidden cursor-pointer"
         onClick={handleNavigate}
     >
       <motion.div 
@@ -43,7 +43,7 @@ export function LandingPageClient() {
                 <h1 className="text-4xl font-bold mt-2">欢迎来到 前行无界</h1>
             </div>
 
-             <div className="mt-10 max-w-xs text-sm text-white">
+             <div className="mt-10 max-w-xs text-sm">
                 <p>前行无界工作室于2024年成立，我们致力于为您提供充满创意的角色设计服务与定制化Fursuit产品。</p>
                 <p className="font-serif-sc mt-4">Established in 2024, FORWARD INFINITY studio is dedicated to providing you with creative character design services and Fursuits.</p>
             </div>
