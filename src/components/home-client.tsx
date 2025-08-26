@@ -32,6 +32,9 @@ const itemVariants = {
   },
 };
 
+type HomeClientProps = {
+  content: SiteContent | null;
+}
 
 export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
@@ -39,7 +42,6 @@ export function HomeClient({ content }: HomeClientProps) {
   const scriptLoaded = useRef(false);
 
   useEffect(() => {
-    // This effect handles the dynamic loading and initialization of the fluid background.
     if (scriptLoaded.current) {
         return;
     }
@@ -49,7 +51,7 @@ export function HomeClient({ content }: HomeClientProps) {
         if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
              // @ts-ignore
             new window.Color4Bg.AestheticFluidBg({
-                dom: "box", // Strictly use "box" as the ID
+                dom: "box",
                 colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
                 loop: true
             });
@@ -58,22 +60,20 @@ export function HomeClient({ content }: HomeClientProps) {
         }
     };
 
-    // If the script was already loaded by another component instance or a previous render, just init
-     // @ts-ignore
+    // @ts-ignore
     if (window.Color4Bg) {
         initFluidBg();
         scriptLoaded.current = true;
         return;
     }
 
-    // Otherwise, create and append the script tag to load it.
     const script = document.createElement('script');
-    script.src = '/AestheticFluidBg.js'; // Assuming the file is in the /public directory
+    script.src = '/AestheticFluidBg.js';
     script.async = true;
     
     script.onload = () => {
         initFluidBg();
-        scriptLoaded.current = true; // Mark the script as loaded
+        scriptLoaded.current = true;
     };
 
     script.onerror = () => {
@@ -82,7 +82,6 @@ export function HomeClient({ content }: HomeClientProps) {
 
     document.body.appendChild(script);
 
-    // Cleanup function to remove the script if the component unmounts
     return () => {
       try {
         if(script.parentNode) {
@@ -115,7 +114,7 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
-      <canvas id="box" className="fixed top-0 left-0 w-full h-full z-[-1]"></canvas>
+      <canvas id="box" className="fixed top-0 left-0 w-full h-full z-[9999]"></canvas>
       <motion.div 
           className={cn(
               "relative z-10 flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
