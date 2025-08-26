@@ -47,7 +47,7 @@ export function LandingPageClient() {
 
         <div className="text-white" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.4)'}}>
           <p className="text-xl md:text-2xl">Welcome to</p>
-          <div className="-mt-1">
+          <div className="mt-2">
             <p className="text-4xl md:text-5xl font-bold tracking-widest">FORWARD INFINITY</p>
             <h1 
               className="text-3xl md:text-4xl font-sans font-bold text-white mt-2"
@@ -56,7 +56,7 @@ export function LandingPageClient() {
             </h1>
           </div>
 
-          <div className="mt-10 space-y-4 text-sm max-w-xs text-white">
+          <div className="mt-10 space-y-4 text-sm max-w-xs">
              <p>
                 前行无界工作室于2024年成立，我们致力于为您提供充满创意的角色设计服务与定制化Fursuit产品
              </p>
