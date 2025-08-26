@@ -30,19 +30,15 @@ export function FluidBackground() {
     <>
       <Script
         src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
         onLoad={() => {
-          // Once three.js is loaded, we can attempt to initialize our fluid animation
-          // This assumes AestheticFluidBg is also loaded or will be loaded soon.
           initializeFluid();
         }}
       />
       <Script
         src="/AestheticFluidBg.min.js"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
         onLoad={() => {
-          // This will be called after AestheticFluidBg.min.js has loaded
-          // We call initializeFluid again to ensure it runs after both scripts are ready.
           initializeFluid();
         }}
       />

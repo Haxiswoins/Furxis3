@@ -51,7 +51,7 @@ function MainContentWrapper({
       </div>
 
       {/* Content Layer */}
-      <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
+      <div className={cn("relative z-10 flex flex-col min-h-screen", isHomePage ? "bg-transparent": "bg-background")}>
         <Header />
         <main className="flex-1 flex flex-col px-4 py-8 pt-24">
           {children}
