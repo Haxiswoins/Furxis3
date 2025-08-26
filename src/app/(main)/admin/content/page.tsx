@@ -45,7 +45,6 @@ const formSchema = z.object({
   commissionImageUrl: z.string().optional(),
   adoptionImageUrl: z.string().optional(),
   workImageUrl: z.string().optional(),
-  homeBackgroundImageUrl: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -116,17 +115,14 @@ export default function SiteContentPage() {
     const [commissionImageFile, setCommissionImageFile] = useState<File | null>(null);
     const [adoptionImageFile, setAdoptionImageFile] = useState<File | null>(null);
     const [workImageFile, setWorkImageFile] = useState<File | null>(null);
-    const [homeBgImageFile, setHomeBgImageFile] = useState<File | null>(null);
 
     const [commissionImagePreview, setCommissionImagePreview] = useState<string | null>(null);
     const [adoptionImagePreview, setAdoptionImagePreview] = useState<string | null>(null);
     const [workImagePreview, setWorkImagePreview] = useState<string | null>(null);
-    const [homeBgImagePreview, setHomeBgImagePreview] = useState<string | null>(null);
 
     const commissionFileInputRef = useRef<HTMLInputElement>(null);
     const adoptionFileInputRef = useRef<HTMLInputElement>(null);
     const workFileInputRef = useRef<HTMLInputElement>(null);
-    const homeBgFileInputRef = useRef<HTMLInputElement>(null);
     
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
@@ -149,7 +145,6 @@ export default function SiteContentPage() {
                 commissionImageUrl: loadedContent?.commissionImageUrl || '',
                 adoptionImageUrl: loadedContent?.adoptionImageUrl || '',
                 workImageUrl: loadedContent?.workImageUrl || '',
-                homeBackgroundImageUrl: loadedContent?.homeBackgroundImageUrl || '',
             }
         },
     });
@@ -176,12 +171,10 @@ export default function SiteContentPage() {
                   commissionImageUrl: loadedContent.commissionImageUrl,
                   adoptionImageUrl: loadedContent.adoptionImageUrl,
                   workImageUrl: loadedContent.workImageUrl,
-                  homeBackgroundImageUrl: loadedContent.homeBackgroundImageUrl || '',
                 });
                 setCommissionImagePreview(loadedContent.commissionImageUrl);
                 setAdoptionImagePreview(loadedContent.adoptionImageUrl);
                 setWorkImagePreview(loadedContent.workImageUrl);
-                setHomeBgImagePreview(loadedContent.homeBackgroundImageUrl || null);
             }
             setInitialLoading(false);
         }
@@ -205,7 +198,6 @@ export default function SiteContentPage() {
             let newCommissionImageUrl = values.commissionImageUrl || currentContent?.commissionImageUrl;
             let newAdoptionImageUrl = values.adoptionImageUrl || currentContent?.adoptionImageUrl;
             let newWorkImageUrl = values.workImageUrl || currentContent?.workImageUrl;
-            let newHomeBgImageUrl = values.homeBackgroundImageUrl || currentContent?.homeBackgroundImageUrl;
             
             if (commissionImageFile && !values.commissionImageUrl) {
                 newCommissionImageUrl = await uploadImage(commissionImageFile, `site/commission_home_${Date.now()}`);
@@ -219,17 +211,12 @@ export default function SiteContentPage() {
               newWorkImageUrl = await uploadImage(workImageFile, `site/work_home_${Date.now()}`);
             }
 
-            if (homeBgImageFile && !values.homeBackgroundImageUrl) {
-                 newHomeBgImageUrl = await uploadImage(homeBgImageFile, `site/home_bg_${Date.now()}`);
-            }
-
             const updatedContent: SiteContent = {
                 ...currentContent, // Start with current content to preserve all fields
                 ...values,
                 commissionImageUrl: newCommissionImageUrl || "",
                 adoptionImageUrl: newAdoptionImageUrl || "",
                 workImageUrl: newWorkImageUrl || "",
-                homeBackgroundImageUrl: newHomeBgImageUrl || null,
             };
             
             await saveSiteContent(updatedContent);
@@ -256,7 +243,6 @@ export default function SiteContentPage() {
     const commissionUrlValue = form.watch('commissionImageUrl');
     const adoptionUrlValue = form.watch('adoptionImageUrl');
     const workUrlValue = form.watch('workImageUrl');
-    const homeBgUrlValue = form.watch('homeBackgroundImageUrl');
 
 
     if (initialLoading) {
@@ -342,43 +328,6 @@ export default function SiteContentPage() {
                                     </FormItem>
                                 )}
                             />
-                            <div className="space-y-2">
-                                <FormLabel>首页背景图</FormLabel>
-                                <div className="flex items-center gap-4">
-                                     <div className="w-48 h-32 relative rounded-md border bg-muted flex-shrink-0">
-                                        <Image src={homeBgUrlValue || homeBgImagePreview || "https://placehold.co/600x400.png"} alt="首页背景预览" fill style={{objectFit:'cover'}} className="rounded-md"/>
-                                     </div>
-                                     <div className="space-y-2">
-                                        <Button type="button" variant="outline" onClick={() => homeBgFileInputRef.current?.click()}>
-                                            <Upload className="mr-2 h-4 w-4" />
-                                            本地上传
-                                        </Button>
-                                        <Input
-                                            id="homeBgImageFile"
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleFileChange(e, setHomeBgImageFile, setHomeBgImagePreview, 'homeBackgroundImageUrl')}
-                                            ref={homeBgFileInputRef}
-                                            className="hidden"
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="homeBackgroundImageUrl"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormControl>
-                                                        <Input placeholder="或在此处粘贴图片URL" {...field} onChange={(e) => {
-                                                            field.onChange(e);
-                                                            if (e.target.value) setHomeBgImageFile(null);
-                                                        }}/>
-                                                    </FormControl>
-                                                </FormItem>
-                                            )}
-                                        />
-                                     </div>
-                                </div>
-                                <FormDescription>这张图片将作为/home页面的全屏背景。如果留空，则不显示背景图。优先使用URL。</FormDescription>
-                            </div>
                         </CardContent>
                     </Card>
 

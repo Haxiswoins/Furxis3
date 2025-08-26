@@ -29,31 +29,19 @@ function MainContentWrapper({
 }) {
   const pathname = usePathname();
   const isHomePage = pathname === '/home';
-  const hasHomeBgImage = isHomePage && siteContent?.homeBackgroundImageUrl;
-
+  
   return (
     <>
       {/* Background Effects Layer */}
       <div className="fixed inset-0 z-0">
-        {/* Conditional Rendering: Only show one background type */}
-        {isHomePage && !hasHomeBgImage && <FluidBackground />}
-
-        {hasHomeBgImage && (
-          <div className="absolute inset-0 z-0">
-              <Image
-                  src={siteContent.homeBackgroundImageUrl!}
-                  alt="Homepage Background"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  className="opacity-20"
-              />
-              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
-          </div>
-        )}
+         {isHomePage && <FluidBackground />}
       </div>
 
       {/* Content Layer */}
-      <div className={cn("relative z-10 flex flex-col min-h-screen", (isHomePage && !hasHomeBgImage) ? "bg-transparent": "bg-background")}>
+      <div className={cn(
+        "relative z-10 flex flex-col min-h-screen", 
+        isHomePage ? "bg-transparent" : "bg-background"
+        )}>
         <Header />
         <main className="flex-1 flex flex-col px-4 py-8 pt-24">
            <AnimatePresence mode="wait" initial={false}>
