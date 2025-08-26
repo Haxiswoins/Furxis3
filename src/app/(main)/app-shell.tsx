@@ -29,14 +29,16 @@ function MainContentWrapper({
 }) {
   const pathname = usePathname();
   const isHomePage = pathname === '/home';
-  const hasHomeBg = isHomePage && siteContent?.homeBackgroundImageUrl;
+  const hasHomeBgImage = isHomePage && siteContent?.homeBackgroundImageUrl;
 
   return (
     <>
       {/* Background Effects Layer */}
       <div className="fixed inset-0 z-0">
-        {isHomePage && <FluidBackground />}
-        {hasHomeBg && (
+        {/* Conditional Rendering: Only show one background type */}
+        {isHomePage && !hasHomeBgImage && <FluidBackground />}
+
+        {hasHomeBgImage && (
           <div className="absolute inset-0 z-0">
               <Image
                   src={siteContent.homeBackgroundImageUrl!}
@@ -51,10 +53,21 @@ function MainContentWrapper({
       </div>
 
       {/* Content Layer */}
-      <div className={cn("relative z-10 flex flex-col min-h-screen", isHomePage ? "bg-transparent": "bg-background")}>
+      <div className={cn("relative z-10 flex flex-col min-h-screen", (isHomePage && !hasHomeBgImage) ? "bg-transparent": "bg-background")}>
         <Header />
         <main className="flex-1 flex flex-col px-4 py-8 pt-24">
-          {children}
+           <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={pathname}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 15 }}
+                transition={{ duration: 0.4, ease: 'easeInOut' }}
+                className="bg-transparent"
+              >
+                {children}
+              </motion.div>
+            </AnimatePresence>
         </main>
       </div>
     </>
@@ -131,15 +144,7 @@ export function AppShell({
 
   return (
     <MainContentWrapper siteContent={siteContent}>
-      <motion.div
-        key={pathname}
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeInOut' }}
-        className="bg-transparent"
-      >
-        {children}
-      </motion.div>
+      {children}
     </MainContentWrapper>
   );
 }
