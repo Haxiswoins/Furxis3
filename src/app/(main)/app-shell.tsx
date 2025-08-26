@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/sheet"
 import { Skeleton } from '@/components/ui/skeleton';
 import type { SiteContent } from '@/types';
-import { FluidBackground } from '@/components/fluid-background';
 
 function MainContentWrapper({
   children,
@@ -26,10 +25,8 @@ function MainContentWrapper({
 }) {
   return (
     <>
-      <FluidBackground />
       <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
-        <Header />
-        <main className="flex-1 flex flex-col px-4 py-8 pt-24">
+        <main className="flex-1 flex flex-col">
           {children}
         </main>
       </div>
@@ -66,8 +63,13 @@ export function AppShell({
     );
   }
 
-  // The root path "/" should also use the MainContentWrapper now
-  // but we can simplify the logic. Any page that is NOT an admin or auth route gets the main shell.
+  // The root path "/" is now handled by its own page component entirely.
+  // We check if the route is NOT the root page to apply the shell.
+  if (isLandingPage) {
+      return <>{children}</>;
+  }
+
+
   if (isAdminRoute) {
     if (user?.isAdmin) {
       return (
