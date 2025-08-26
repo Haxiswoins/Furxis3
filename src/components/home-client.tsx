@@ -9,8 +9,6 @@ import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import * as THREE from 'three';
-
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -41,132 +39,56 @@ type HomeClientProps = {
 export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   
   useEffect(() => {
-    if (!canvasRef.current) return;
-
-    // Scene
-    const scene = new THREE.Scene();
-
-    // Galaxy
-    const parameters = {
-        count: 100000,
-        size: 0.01,
-        radius: 5,
-        branches: 3,
-        spin: 1,
-        randomness: 0.2,
-        randomnessPower: 3,
-        insideColor: '#ff6030',
-        outsideColor: '#1b3984'
-    };
-
-    let geometry: THREE.BufferGeometry | null = null;
-    let material: THREE.PointsMaterial | null = null;
-    let points: THREE.Points | null = null;
-
-    const generateGalaxy = () => {
-        if(points !== null) {
-            geometry?.dispose();
-            material?.dispose();
-            scene.remove(points);
+    // Check if the script is already added to avoid duplicates
+    if (document.querySelector('script[src="/AmbientLightBg.min.js"]')) {
+        // If script is already there, maybe just try to initialize
+        if (window.Color4Bg && typeof window.Color4Bg.AmbientLightBg === 'function') {
+             try {
+                new window.Color4Bg.AmbientLightBg({
+                    dom: "box",
+                    colors: ["#00023E","#ff7b00","#204299","#132385","#0C0D62","#00023E"],
+                    loop: true
+                });
+             } catch (e) {
+                 console.error("Error re-initializing AmbientLightBg:", e);
+             }
         }
-
-        geometry = new THREE.BufferGeometry();
-        const positions = new Float32Array(parameters.count * 3);
-        const colors = new Float32Array(parameters.count * 3);
-
-        const colorInside = new THREE.Color(parameters.insideColor);
-        const colorOutside = new THREE.Color(parameters.outsideColor);
-
-        for(let i = 0; i < parameters.count; i++) {
-            const i3 = i * 3;
-            const radius = Math.random() * parameters.radius;
-            const spinAngle = radius * parameters.spin;
-            const branchAngle = (i % parameters.branches) / parameters.branches * Math.PI * 2;
-
-            const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1);
-            const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1);
-            const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1);
-
-            positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
-            positions[i3 + 1] = randomY;
-            positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
-            
-            const mixedColor = colorInside.clone();
-            mixedColor.lerp(colorOutside, radius / parameters.radius);
-            
-            colors[i3] = mixedColor.r;
-            colors[i3 + 1] = mixedColor.g;
-            colors[i3 + 2] = mixedColor.b;
-        }
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-        material = new THREE.PointsMaterial({
-            size: parameters.size,
-            sizeAttenuation: true,
-            depthWrite: false,
-            blending: THREE.AdditiveBlending,
-            vertexColors: true
-        });
-
-        points = new THREE.Points(geometry, material);
-        scene.add(points);
+        return;
     }
-    generateGalaxy();
 
-    // Sizes
-    const sizes = {
-        width: window.innerWidth,
-        height: window.innerHeight
-    };
-
-    // Camera
-    const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100);
-    camera.position.z = 3;
-    scene.add(camera);
-
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({
-        canvas: canvasRef.current,
-        alpha: true
-    });
-    renderer.setSize(sizes.width, sizes.height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    // Animate
-    const clock = new THREE.Clock();
-    let animationFrameId: number;
-
-    const tick = () => {
-        const elapsedTime = clock.getElapsedTime();
-        if (points) {
-            points.rotation.y = elapsedTime * 0.1;
+    const script = document.createElement('script');
+    script.src = '/AmbientLightBg.min.js';
+    script.async = true;
+    
+    script.onload = () => {
+        console.log("AmbientLightBg.min.js loaded successfully.");
+        if (window.Color4Bg && typeof window.Color4Bg.AmbientLightBg === 'function') {
+            try {
+                new window.Color4Bg.AmbientLightBg({
+                    dom: "box",
+                    colors: ["#00023E","#ff7b00","#204299","#132385","#0C0D62","#00023E"],
+	                loop: true
+                });
+                console.log("AmbientLightBg initialized.");
+            } catch (e) {
+                console.error("Error initializing AmbientLightBg:", e);
+            }
+        } else {
+            console.error("Color4Bg or AmbientLightBg not found on window object after script load.");
         }
-        renderer.render(scene, camera);
-        animationFrameId = window.requestAnimationFrame(tick);
     };
-    tick();
-
-    const handleResize = () => {
-        sizes.width = window.innerWidth;
-        sizes.height = window.innerHeight;
-        camera.aspect = sizes.width / sizes.height;
-        camera.updateProjectionMatrix();
-        renderer.setSize(sizes.width, sizes.height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    
+    script.onerror = () => {
+        console.error("Failed to load AmbientLightBg.min.js");
     };
-    window.addEventListener('resize', handleResize);
 
-    // Cleanup
+    document.body.appendChild(script);
+
     return () => {
-        window.removeEventListener('resize', handleResize);
-        window.cancelAnimationFrame(animationFrameId);
-        geometry?.dispose();
-        material?.dispose();
-        renderer.dispose();
+      // Optional: Cleanup script tag when component unmounts
+      document.body.removeChild(script);
     };
   }, []);
 
@@ -191,7 +113,7 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
-      <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none"></canvas>
+      <canvas id="box" className="fixed top-0 left-0 w-full h-full z-[9999] pointer-events-none"></canvas>
       <motion.div 
           className={cn(
               "relative z-10 flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
@@ -294,5 +216,3 @@ export function HomeClient({ content }: HomeClientProps) {
     </>
   );
 }
-
-    
