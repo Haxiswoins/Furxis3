@@ -29,7 +29,6 @@ function MainContentWrapper({
 }) {
   const pathname = usePathname();
   const isHomePage = pathname === '/home';
-  const hasHomeBg = isHomePage && siteContent?.homeBackgroundImageUrl;
   const { theme } = useTheme();
   
   // The fluid background is now handled globally in layout.tsx.
@@ -38,18 +37,6 @@ function MainContentWrapper({
 
   return (
     <div className="relative z-10 flex flex-col min-h-screen">
-      {hasHomeBg && theme !== 'light' && (
-        <div className="fixed inset-0 z-0">
-            <Image
-                src={siteContent.homeBackgroundImageUrl!}
-                alt="Homepage Background"
-                fill
-                style={{ objectFit: 'cover' }}
-                className="opacity-20"
-            />
-            <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
-        </div>
-      )}
       <div className={cn("relative z-10", showFluidBg && "fluid-bg-active")}>
         <Header />
         <main className="flex-1 flex flex-col px-4 py-8 pt-24">
