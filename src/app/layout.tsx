@@ -52,7 +52,6 @@ export default function RootLayout({
             </AuthProvider>
             <Toaster />
           </ThemeProvider>
-          <Script src="/AestheticFluidBg.min.js" strategy="lazyOnload" />
       </body>
     </html>
   );

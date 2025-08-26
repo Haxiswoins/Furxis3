@@ -2,16 +2,14 @@
 'use client';
 
 import { LandingPageClient } from '@/components/landing-client';
-import { FluidBackground } from '@/components/fluid-background';
-import { FluidBackgroundInitializer } from '@/components/fluid-background-initializer';
+import { VideoBackground } from '@/components/video-background';
 
 export default function WelcomePage() {
   
   return (
       <>
-        <FluidBackground />
+        <VideoBackground />
         <LandingPageClient />
-        <FluidBackgroundInitializer />
       </>
   );
 }
