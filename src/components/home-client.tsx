@@ -5,30 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
-import { motion } from 'framer-motion';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-      ease: 'easeOut',
-    },
-  },
-};
 
 type HomeClientProps = {
     content: SiteContent | null;
@@ -45,11 +21,8 @@ export function HomeClient({ content }: HomeClientProps) {
   const cardDescriptionClass = "mt-2 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base";
 
   return (
-    <motion.div 
+    <div 
         className="flex flex-col min-h-[calc(100vh-theme(spacing.24))]"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeInOut" }}
     >
         <div className="pt-12">
         
@@ -77,13 +50,10 @@ export function HomeClient({ content }: HomeClientProps) {
             </Link>
         </div>
         
-        <motion.div
+        <div
           className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl mx-auto"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
         >
-          <motion.div variants={itemVariants}>
+          <div>
             <Link href="/commission" className={cardLinkClass} scroll={false}>
               <div className={cardDivClass}>
                   <Image
@@ -102,9 +72,9 @@ export function HomeClient({ content }: HomeClientProps) {
                   </div>
               </div>
             </Link>
-          </motion.div>
+          </div>
 
-          <motion.div variants={itemVariants}>
+          <div>
             <Link href="/adoption" className={cardLinkClass} scroll={false}>
               <div className={cardDivClass}>
                   <Image
@@ -122,9 +92,9 @@ export function HomeClient({ content }: HomeClientProps) {
                   </div>
               </div>
             </Link>
-          </motion.div>
+          </div>
           
-          <motion.div variants={itemVariants}>
+          <div>
             <Link href="/works" className={cardLinkClass} scroll={false}>
               <div className={cardDivClass}>
                   <Image
@@ -142,8 +112,8 @@ export function HomeClient({ content }: HomeClientProps) {
                   </div>
               </div>
             </Link>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
         </div>
         <div 
@@ -151,6 +121,6 @@ export function HomeClient({ content }: HomeClientProps) {
         >
           <ContactInfo content={content} />
         </div>
-    </motion.div>
+    </div>
   );
 }
