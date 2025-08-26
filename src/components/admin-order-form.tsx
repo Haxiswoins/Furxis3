@@ -106,11 +106,15 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
     if (selectedProvince) {
       const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
       setCities(provinceData?.cities.map(c => c.name) || []);
+      // Reset city and district
+      form.setValue('city', '');
+      form.setValue('district', '');
       setDistricts([]);
     } else {
       setCities([]);
       setDistricts([]);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProvince]);
 
   // Effect for when city changes
@@ -122,6 +126,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
     } else {
         setDistricts([]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCity, selectedProvince]);
 
 
@@ -167,13 +172,13 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
 
   const handleProvinceChange = (value: string) => {
     form.setValue('province', value, { shouldValidate: true });
-    form.setValue('city', '', { shouldValidate: true });
-    form.setValue('district', '', { shouldValidate: true });
+    form.setValue('city', '', { shouldValidate: false }); // Prevent validation issue
+    form.setValue('district', '', { shouldValidate: false });
   }
 
   const handleCityChange = (value: string) => {
     form.setValue('city', value, { shouldValidate: true });
-    form.setValue('district', '', { shouldValidate: true });
+    form.setValue('district', '', { shouldValidate: false }); // Prevent validation issue
   }
 
   return (
