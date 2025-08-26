@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -9,12 +8,7 @@ import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import dynamic from 'next/dynamic';
-
-const FluidBackground = dynamic(
-  () => import('@/components/fluid-background').then(mod => mod.FluidBackground),
-  { ssr: false }
-);
+import { FluidBackground } from '@/components/fluid-background';
 
 
 type HomeClientProps = {
