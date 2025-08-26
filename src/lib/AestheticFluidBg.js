@@ -4,6 +4,8 @@
  * @dependences - three.js
  * @Github - https://github.com/vito-L/AestheticFluidBg
  */
+import * as THREE from 'three';
+
 var Color4Bg;
 (function (Color4Bg) {
     class AestheticFluidBg {
@@ -66,13 +68,11 @@ var Color4Bg;
             this.points = new THREE.Points(this.geometry, this.material);
             this.scene.add(this.points);
             // set renderer
-            this.renderer = new THREE.WebGLRenderer();
+            this.renderer = new THREE.WebGLRenderer({
+                canvas: this.container
+            });
             this.renderer.setPixelRatio(window.devicePixelRatio);
             this.renderer.setSize(window.innerWidth, window.innerHeight);
-            (_a = this.container) === null || _a === void 0 ? void 0 : _a.appendChild(this.renderer.domElement);
-            // set stats
-            // this.stats = new Stats();
-            // this.container?.appendChild(this.stats.dom);
             // bind event
             window.addEventListener('resize', this.onWindowResize.bind(this));
             document.addEventListener('mousemove', this.onDocumentMouseMove.bind(this));
@@ -82,7 +82,6 @@ var Color4Bg;
         animate() {
             this.animationId = requestAnimationFrame(this.animate.bind(this));
             this.render();
-            // this.stats?.update();
         }
         render() {
             const time = Date.now() * 0.00005;
@@ -126,7 +125,8 @@ var Color4Bg;
             document.removeEventListener('touchmove', this.onDocumentTouchMove);
             cancelAnimationFrame(this.animationId);
             if (this.renderer) {
-                (_a = this.renderer.domElement.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(this.renderer.domElement);
+                this.renderer.dispose();
+                // We don't remove the canvas, as React will handle it.
             }
         }
     }

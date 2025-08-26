@@ -9,7 +9,13 @@ import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { FluidBackground } from './fluid-background';
+import dynamic from 'next/dynamic';
+
+const FluidBackground = dynamic(
+  () => import('@/components/fluid-background').then(mod => mod.FluidBackground),
+  { ssr: false }
+);
+
 
 type HomeClientProps = {
     content: SiteContent | null;
