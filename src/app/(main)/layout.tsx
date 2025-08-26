@@ -1,6 +1,7 @@
 import { getSiteContent } from '@/lib/data-service';
 import { AppShell } from './app-shell';
 import { PageAnimationWrapper } from '@/components/page-animation-wrapper';
+import Script from 'next/script';
 
 // This is now a Server Component
 export default async function MainLayout({
@@ -17,6 +18,7 @@ export default async function MainLayout({
       <PageAnimationWrapper>
         {children}
       </PageAnimationWrapper>
+      <Script src="/AestheticFluidBg.min.js" strategy="lazyOnload" />
     </AppShell>
   );
 }
