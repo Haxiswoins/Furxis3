@@ -46,12 +46,27 @@ export default function RootLayout({
         fontSerifSC.variable,
         fontBody.variable
       )}>
+        <div id="fluid-bg-container" className="fixed inset-0 w-screen h-screen z-0"></div>
         <ThemeProvider>
           <AuthProvider>
             {children}
           </AuthProvider>
           <Toaster />
         </ThemeProvider>
+        <Script src="/AestheticFluidBg.min.js" strategy="afterInteractive" />
+        <Script id="fluid-bg-init" strategy="afterInteractive">
+          {`
+            try {
+              new Color4Bg.AestheticFluidBg({
+                dom: "fluid-bg-container",
+                colors: ["#ff5900","#ffffff","#305797","#ffffff","#ffffff","#f5fffe"],
+                loop: true
+              });
+            } catch (e) {
+              console.error("Failed to initialize fluid background", e);
+            }
+          `}
+        </Script>
       </body>
     </html>
   );

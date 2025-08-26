@@ -15,6 +15,9 @@ import {
 } from "@/components/ui/sheet"
 import { Skeleton } from '@/components/ui/skeleton';
 import type { SiteContent } from '@/types';
+import { useTheme } from '@/context/ThemeContext';
+import { AnimatePresence, motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 
 function MainContentWrapper({
@@ -23,13 +26,28 @@ function MainContentWrapper({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { theme } = useTheme();
+  
+  const shouldBeTransparent = pathname === '/home' && theme === 'light';
 
   return (
-    <div className="relative z-10 flex flex-col min-h-screen bg-background">
+    <div className={cn(
+        "relative z-10 flex flex-col min-h-screen",
+        shouldBeTransparent ? 'bg-transparent' : 'bg-background'
+    )}>
       <Header />
       <main className="flex-1 flex flex-col px-4 py-8 pt-24">
-        {/* Animation components are removed to fix the double-flash issue */}
-        {children}
+        <AnimatePresence mode="wait">
+           <motion.div
+            key={pathname}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </main>
     </div>
   );
