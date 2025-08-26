@@ -43,12 +43,12 @@ export function HomeClient({ content }: HomeClientProps) {
   
   useEffect(() => {
     // Ensure this effect runs only once by checking a ref
-    if (scriptLoaded.current) {
+    if (scriptLoaded.current || typeof window === 'undefined') {
         return;
     }
 
     const script = document.createElement('script');
-    script.src = '/AestheticFluidBg.min.js'; // Correct path to the public file
+    script.src = '/AestheticFluidBg.min.js';
     script.async = true;
 
     script.onload = () => {
@@ -56,7 +56,7 @@ export function HomeClient({ content }: HomeClientProps) {
         if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
             try {
                 new window.Color4Bg.AestheticFluidBg({
-                    dom: "box", // The ID of our canvas element
+                    dom: "box", 
                     colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
                     loop: true
                 });
@@ -71,7 +71,9 @@ export function HomeClient({ content }: HomeClientProps) {
 
     // Cleanup function to remove the script when the component unmounts
     return () => {
-        document.body.removeChild(script);
+        if (script.parentNode) {
+            script.parentNode.removeChild(script);
+        }
     };
   }, []);
 
