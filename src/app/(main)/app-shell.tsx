@@ -35,30 +35,43 @@ function MainContentWrapper({
 
   useEffect(() => {
     let fluidBgInstance: any = null;
+    const scriptId = 'aesthetic-fluid-bg-script';
 
-    // Load the script
-    const script = document.createElement('script');
-    script.src = '/AestheticFluidBg.js';
-    script.async = true;
-    
-    script.onload = () => {
-      // @ts-ignore
-      if (theme === 'light' && isHomePage && window.Color4Bg && window.Color4Bg.AestheticFluidBg) {
-        fluidBgInstance = new (window as any).Color4Bg.AestheticFluidBg({
-          dom: "fluid-bg-container",
-          colors: ["#ff5900","#ffffff","#305797","#ffffff","#ffffff","#f5fffe"],
-          loop: true
-        });
-      }
-    };
-    
-    document.body.appendChild(script);
+    // Only run this effect on the home page and in light mode
+    if (isHomePage && theme === 'light') {
+        // Ensure the script is only added once
+        if (!document.getElementById(scriptId)) {
+            const script = document.createElement('script');
+            script.id = scriptId;
+            script.src = '/AestheticFluidBg.js';
+            script.async = true;
+            
+            script.onload = () => {
+                // @ts-ignore
+                if (window.Color4Bg && window.Color4Bg.AestheticFluidBg) {
+                    fluidBgInstance = new (window as any).Color4Bg.AestheticFluidBg({
+                        dom: "fluid-bg-container",
+                        colors: ["#ff5900","#ffffff","#305797","#ffffff","#ffffff","#f5fffe"],
+                        loop: true
+                    });
+                }
+            };
+            
+            document.body.appendChild(script);
+        }
+    }
 
     return () => {
+      // Cleanup function
       if (fluidBgInstance && typeof fluidBgInstance.destroy === 'function') {
         fluidBgInstance.destroy();
       }
-      document.body.removeChild(script);
+      const existingScript = document.getElementById(scriptId);
+      if (existingScript) {
+        // We might not want to remove the script itself if we navigate between pages that both use it,
+        // but for this case (only on /home), removing it is safer to prevent conflicts.
+        // In a more complex app, we might manage the script presence differently.
+      }
     };
   }, [theme, isHomePage]);
 
