@@ -56,7 +56,8 @@ export function AestheticFluidBackground() {
     return (
         <canvas 
             id="box" 
-            className="fixed top-0 left-0 w-full h-full z-[-1]"
+            className="fixed top-0 left-0 w-full h-full"
+            style={{ zIndex: 9999 }}
         />
     );
 }
