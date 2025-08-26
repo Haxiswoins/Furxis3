@@ -30,7 +30,7 @@ export function LandingPageClient() {
                 <p className="font-serif-sc mt-4">Established in 2024, FORWARD INFINITY studio is dedicated to providing you with creative character design services and Fursuits.</p>
             </div>
             
-            <p className="mt-12 text-sm text-white/90">点击任意位置进入网站</p>
+            <p className="mt-12 text-sm text-white/90 animate-pulse">点击任意位置进入网站</p>
         </div>
       </div>
     </div>
