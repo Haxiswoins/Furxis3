@@ -33,28 +33,28 @@ export default async function AdoptionDetailPage({ params }: { params: { charact
     <div
         className="max-w-6xl mx-auto"
     >
-      <Card>
-        <CardContent className="p-4 md:p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-            <div className="sticky top-24 md:col-span-1">
-              <CardHeader className="px-0 pt-0">
-                <CardTitle className="text-4xl font-headline">{character.name}</CardTitle>
-                <CardDescription className="text-lg text-muted-foreground pt-1">{character.species}</CardDescription>
-              </CardHeader>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <div className="md:sticky md:top-24">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-4xl font-headline">{character.name}</CardTitle>
+              <CardDescription className="text-lg text-muted-foreground pt-1">{character.species}</CardDescription>
+            </CardHeader>
+            <CardContent>
               <p className="text-foreground/90 mb-4 whitespace-pre-wrap">{character.description}</p>
               <div className="text-sm text-muted-foreground mb-6">
                 <span className="font-semibold">{character.applicants}</span> 人已申请
               </div>
-              <CardFooter className="p-0">
-                <CharacterDetailClient character={character} />
-              </CardFooter>
-            </div>
-            <div className="md:col-span-2">
-                <Images images={characterImages} name={character.name} />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+            <CardFooter>
+              <CharacterDetailClient character={character} />
+            </CardFooter>
+          </Card>
+        </div>
+        <div className="md:col-span-1">
+            <Images images={characterImages} name={character.name} />
+        </div>
+      </div>
     </div>
   );
 }

@@ -41,18 +41,18 @@ export function HomeClient({ content }: HomeClientProps) {
         "flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
         isTransitioning ? "opacity-0" : "opacity-100"
     )}>
-        <div>
-        <div className="text-center mb-12">
+        <div className="py-8 md:py-12">
+        <div className="text-center mb-10 md:mb-16">
             <a href="/">
                 <div className="relative inline-block cursor-pointer group">
-                    <h1 className="text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary">
+                    <h1 className="text-4xl sm:text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary">
                     前行无界
                     </h1>
                     <div
                     className="absolute inset-0 flex items-center justify-center text-primary opacity-80"
                     style={{ zIndex: 5 }}
                     >
-                    <span className="font-body text-4xl font-extralight tracking-[0.3em] whitespace-nowrap px-4 mt-12">
+                    <span className="font-body text-2xl sm:text-4xl font-extralight tracking-[0.3em] whitespace-nowrap px-4 mt-10 sm:mt-12">
                         FORWARD INFINITY
                     </span>
                     </div>
@@ -61,7 +61,7 @@ export function HomeClient({ content }: HomeClientProps) {
         </div>
         
         <div
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 w-full max-w-7xl mx-auto"
         >
           <div>
             <Link href="/commission" className={cardLinkClass} onClick={handleNavigate}>

@@ -48,7 +48,7 @@ export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeries
       </div>
 
       <motion.div 
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -62,7 +62,7 @@ export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeries
                       src={s.imageUrl}
                       alt={s.name}
                       fill
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                       style={{objectFit: 'cover'}}
                       className="transition-transform duration-500 group-hover:scale-110"
                       />

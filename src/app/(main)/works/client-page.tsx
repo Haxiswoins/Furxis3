@@ -50,7 +50,7 @@ export function WorksPageClient({ worksByYear, sortedYears }: WorksPageClientPro
             <div key={year}>
               <h2 className="text-3xl font-headline mb-6 pl-4 border-l-4 border-primary">{year}</h2>
               <motion.div 
-                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -65,7 +65,7 @@ export function WorksPageClient({ worksByYear, sortedYears }: WorksPageClientPro
                                   src={work.imageUrls[0]}
                                   alt={work.workName}
                                   fill
-                                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+                                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
                                   style={{objectFit: 'cover'}}
                                   className="transition-transform duration-300 group-hover:scale-105"
                                 />

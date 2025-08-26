@@ -61,25 +61,27 @@ export function CommissionClientPage({ commissionOptions }: CommissionClientPage
       {commissionOptions.length > 0 ? (
         commissionOptions.map((item) => (
           <motion.div key={item.id} variants={itemVariants}>
-            <Link href={`/commission/${encodeURIComponent(item.name)}`} className="group block relative aspect-[16/4] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-              <Image
-                src={item.imageUrl}
-                alt={item.name}
-                fill
-                sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 50vw"
-                style={{ objectFit: 'cover' }}
-                className="transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 flex flex-row items-center p-8 text-white bg-gradient-to-r from-black/80 via-black/50 to-transparent">
-                <div className="w-2/3 space-y-3">
-                  <h3 className="font-headline text-2xl md:text-3xl font-bold" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.8)' }}>{item.name}</h3>
-                  <p className="text-sm opacity-90" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.category}</p>
-                  <p className="text-xs opacity-80 mt-2 line-clamp-3" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.description}</p>
-                </div>
-                 <div className="absolute top-6 right-6">
-                  <Badge variant="outline" className={cn("text-xs font-semibold backdrop-blur-sm", statusStyles[item.status])}>
-                    {item.status}
-                  </Badge>
+            <Link href={`/commission/${encodeURIComponent(item.name)}`} className="group block relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+              <div className="aspect-[16/9] md:aspect-[16/4] relative">
+                <Image
+                  src={item.imageUrl}
+                  alt={item.name}
+                  fill
+                  sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 50vw"
+                  style={{ objectFit: 'cover' }}
+                  className="transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 flex flex-col md:flex-row items-end md:items-center p-4 md:p-8 text-white bg-gradient-to-t md:bg-gradient-to-r from-black/80 via-black/50 to-transparent">
+                  <div className="w-full md:w-2/3 space-y-2 md:space-y-3">
+                    <h3 className="font-headline text-xl md:text-3xl font-bold" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.8)' }}>{item.name}</h3>
+                    <p className="text-xs md:text-sm opacity-90" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.category}</p>
+                    <p className="text-xs opacity-80 mt-2 line-clamp-2 md:line-clamp-3" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.description}</p>
+                  </div>
+                  <div className="absolute top-4 right-4 md:top-6 md:right-6">
+                    <Badge variant="outline" className={cn("text-xs font-semibold backdrop-blur-sm", statusStyles[item.status])}>
+                      {item.status}
+                    </Badge>
+                  </div>
                 </div>
               </div>
             </Link>
