@@ -9,6 +9,7 @@ import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { FluidBackground } from '@/components/fluid-background';
 
 
 const containerVariants = {
@@ -62,9 +63,10 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
+      <FluidBackground />
       <motion.div 
           className={cn(
-              "relative z-10 flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
+              "relative z-10 flex flex-col transition-opacity duration-500",
               isTransitioning ? "opacity-0" : "opacity-100"
           )}
           initial="hidden"
