@@ -103,31 +103,34 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
 
   // Effect for when province changes
   useEffect(() => {
-    if (selectedProvince) {
-      const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
-      setCities(provinceData?.cities.map(c => c.name) || []);
-      // Reset city and district
-      form.setValue('city', '');
-      form.setValue('district', '');
-      setDistricts([]);
-    } else {
-      setCities([]);
-      setDistricts([]);
+    const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
+    const newCities = provinceData?.cities.map(c => c.name) || [];
+    setCities(newCities);
+    
+    // Only reset city if the new city list doesn't include the current city
+    if (!newCities.includes(selectedCity)) {
+        form.setValue('city', '');
+        form.setValue('district', '');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedProvince]);
+  }, [selectedProvince, form]);
 
   // Effect for when city changes
   useEffect(() => {
-    if (selectedCity && selectedProvince) {
-        const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
-        const cityData = provinceData?.cities.find(c => c.name === selectedCity);
-        setDistricts(cityData?.districts || []);
+    if (selectedProvince && selectedCity) {
+      const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
+      const cityData = provinceData?.cities.find(c => c.name === selectedCity);
+      const newDistricts = cityData?.districts || [];
+      setDistricts(newDistricts);
+
+       if (!newDistricts.includes(form.getValues('district'))) {
+         form.setValue('district', '');
+       }
     } else {
         setDistricts([]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCity, selectedProvince]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCity, selectedProvince, form]);
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -172,13 +175,13 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
 
   const handleProvinceChange = (value: string) => {
     form.setValue('province', value, { shouldValidate: true });
-    form.setValue('city', '', { shouldValidate: false }); // Prevent validation issue
-    form.setValue('district', '', { shouldValidate: false });
+    form.setValue('city', '', { shouldValidate: true });
+    form.setValue('district', '', { shouldValidate: true });
   }
 
   const handleCityChange = (value: string) => {
     form.setValue('city', value, { shouldValidate: true });
-    form.setValue('district', '', { shouldValidate: false }); // Prevent validation issue
+    form.setValue('district', '', { shouldValidate: true });
   }
 
   return (
@@ -235,7 +238,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
                               name="city"
                               render={({ field }) => (
                                   <FormItem>
-                                      <Select onValueChange={(value) => handleCityChange(value)} value={field.value} disabled={cities.length === 0}>
+                                      <Select onValueChange={(value) => handleCityChange(value)} value={field.value} disabled={!cities.length}>
                                           <FormControl>
                                               <SelectTrigger><SelectValue placeholder="选择城市" /></SelectTrigger>
                                           </FormControl>
@@ -252,7 +255,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
                               name="district"
                               render={({ field }) => (
                                   <FormItem>
-                                      <Select onValueChange={field.onChange} value={field.value} disabled={districts.length === 0}>
+                                      <Select onValueChange={field.onChange} value={field.value} disabled={!districts.length}>
                                           <FormControl>
                                               <SelectTrigger><SelectValue placeholder="选择区/县" /></SelectTrigger>
                                           </FormControl>

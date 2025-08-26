@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import fs from 'fs/promises';
@@ -266,7 +267,12 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
         if(siteContent) {
             let emailBody = siteContent.confirmationEmailBody || '';
             emailBody = emailBody.replace('{productName}', updatedOrder.productName);
-            emailBody = emailBody.replace('{commissionOptionName}', updatedOrder.commissionOptionName || '');
+            // Safely replace the commission option name
+            if (updatedOrder.commissionOptionName) {
+                emailBody = emailBody.replace('{commissionOptionName}', updatedOrder.commissionOptionName);
+            } else {
+                 emailBody = emailBody.replace('{commissionOptionName}', '');
+            }
             
             try {
                 await sendEmail({

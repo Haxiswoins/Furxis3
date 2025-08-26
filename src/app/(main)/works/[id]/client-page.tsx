@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from 'next/image';
@@ -7,20 +8,54 @@ import { Separator } from '@/components/ui/separator';
 import { X } from 'lucide-react';
 import type { Work } from '@/types';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 type WorkImagesProps = {
     work: Work;
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: 'easeOut',
+    },
+  },
+};
+
+
 function WorkImages({ work }: WorkImagesProps) {
     // Using a multi-column layout for a masonry/pinterest-style effect.
     // This is a simpler CSS-only approach.
     return (
-        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+        <motion.div 
+            className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+        >
             {work.imageUrls.map((imgSrc, index) => (
             <Dialog key={index}>
                 <DialogTrigger asChild>
-                    <div className="break-inside-avoid rounded-lg overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02] block">
+                    <motion.div 
+                        className="break-inside-avoid rounded-lg overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02] block"
+                        variants={itemVariants}
+                    >
                         <Image
                             src={imgSrc}
                             alt={`${work.workName} - 视图 ${index + 1}`}
@@ -29,7 +64,7 @@ function WorkImages({ work }: WorkImagesProps) {
                             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                             className="w-full h-auto"
                         />
-                    </div>
+                    </motion.div>
                 </DialogTrigger>
                 <DialogContent className="max-w-[90vw] md:max-w-4xl h-auto p-2 bg-transparent border-none shadow-none">
                     <DialogClose className="absolute -top-2 -right-2 z-50 bg-background/50 rounded-full p-1 text-foreground hover:bg-background/80">
@@ -41,7 +76,7 @@ function WorkImages({ work }: WorkImagesProps) {
                 </DialogContent>
             </Dialog>
             ))}
-        </div>
+        </motion.div>
     );
 }
 
