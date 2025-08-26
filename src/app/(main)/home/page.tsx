@@ -1,17 +1,7 @@
 
-import { getSiteContent } from '@/lib/data-service';
-import { HomeClient } from '@/components/home-client';
-import type { SiteContent } from '@/types';
-import { FluidBackground } from '@/components/fluid-background';
+import { redirect } from 'next/navigation';
 
-// This is now a Server Component
-export default async function HomePage() {
-  const content: SiteContent | null = await getSiteContent();
-
-  return (
-    <div className="relative w-full h-full">
-      <FluidBackground />
-      <HomeClient content={content} />
-    </div>
-  );
+// This page now simply redirects to the root, as the content is conditionally rendered there.
+export default function HomePageRedirect() {
+  redirect('/');
 }

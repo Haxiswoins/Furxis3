@@ -1,13 +1,10 @@
 
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
-import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 
@@ -35,21 +32,14 @@ const itemVariants = {
 
 type HomeClientProps = {
   content: SiteContent | null;
+  onNavigate: () => void;
 }
 
-export function HomeClient({ content }: HomeClientProps) {
-  const router = useRouter();
-  const [isTransitioning, setIsTransitioning] = useState(false);
+export function HomeClient({ content, onNavigate }: HomeClientProps) {
   
-  const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleTitleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    const href = e.currentTarget.getAttribute('href');
-    if (!href) return;
-
-    setIsTransitioning(true);
-    setTimeout(() => {
-        router.push(href);
-    }, 500); 
+    onNavigate();
   }
 
   const cardLinkClass = "group block";
@@ -63,18 +53,15 @@ export function HomeClient({ content }: HomeClientProps) {
   return (
     <div className="container mx-auto">
         <motion.div 
-            className={cn(
-                "relative z-10 flex flex-col min-h-screen transition-opacity duration-500",
-                isTransitioning ? "opacity-0" : "opacity-100"
-            )}
+            className="relative z-10 flex flex-col min-h-screen"
             initial="hidden"
             animate="visible"
             variants={containerVariants}
         >
             <div className="py-8 md:py-12 flex-grow">
             <motion.div className="text-center mb-10 md:mb-16" variants={itemVariants}>
-                <a href="/">
-                    <div className="relative inline-block cursor-pointer group">
+                <a onClick={handleTitleClick} className="cursor-pointer">
+                    <div className="relative inline-block group">
                         <h1 className="text-4xl sm:text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary">
                         前行无界
                         </h1>
@@ -95,7 +82,7 @@ export function HomeClient({ content }: HomeClientProps) {
                 variants={containerVariants}
             >
                 <motion.div variants={itemVariants}>
-                <Link href="/commission" className={cardLinkClass} onClick={handleNavigate}>
+                <Link href="/commission" className={cardLinkClass}>
                     <div className={cardDivClass}>
                         <Image
                         src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
@@ -116,7 +103,7 @@ export function HomeClient({ content }: HomeClientProps) {
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
-                <Link href="/adoption" className={cardLinkClass} onClick={handleNavigate}>
+                <Link href="/adoption" className={cardLinkClass}>
                     <div className={cardDivClass}>
                         <Image
                         src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
@@ -136,7 +123,7 @@ export function HomeClient({ content }: HomeClientProps) {
                 </motion.div>
                 
                 <motion.div variants={itemVariants}>
-                <Link href="/works" className={cardLinkClass} onClick={handleNavigate}>
+                <Link href="/works" className={cardLinkClass}>
                     <div className={cardDivClass}>
                         <Image
                         src={content?.workImageUrl || "https://placehold.co/800x1000.png"}

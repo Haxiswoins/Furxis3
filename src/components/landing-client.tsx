@@ -1,47 +1,30 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
+type LandingPageClientProps = {
+  onNavigate: () => void;
+};
 
-export function LandingPageClient() {
-  const router = useRouter();
-  const [isContentVisible, setIsContentVisible] = useState(false);
-  const [isWarping, setIsWarping] = useState(false);
-  
-  useEffect(() => {
-    // Prefetch the home page as soon as the landing page is interactive
-    router.prefetch('/home');
-
-    const contentTimer = setTimeout(() => {
-      setIsContentVisible(true);
-    }, 500);
-
-    return () => {
-      clearTimeout(contentTimer);
-    };
-  }, [router]);
-
+export function LandingPageClient({ onNavigate }: LandingPageClientProps) {
 
   const handleNavigate = () => {
-    setIsWarping(true);
-    
-    setTimeout(() => {
-        router.push('/home');
-    }, 800); 
+    // This now just calls the state change function from the parent
+    onNavigate();
   };
   
   return (
     <div className="relative h-screen w-full overflow-hidden bg-transparent">
       
-      <div className={cn(
-        "absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-500",
-        isContentVisible ? 'opacity-100' : 'opacity-0',
-        isWarping ? 'opacity-0' : 'opacity-100'
-      )}>
+      <motion.div
+        className="absolute inset-0 z-20 flex flex-col items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.5, delay: 0.5 }}
+      >
         <div className="absolute bottom-[20%]">
           <button
             onClick={handleNavigate}
@@ -55,15 +38,16 @@ export function LandingPageClient() {
             />
           </button>
         </div>
-      </div>
+      </motion.div>
 
-      <div className={cn(
-        "absolute bottom-8 w-full text-center text-xs text-white/40 transition-opacity duration-1000 ease-in-out",
-        isContentVisible ? "opacity-100" : "opacity-0",
-        isWarping ? 'opacity-0' : 'opacity-100'
-      )}>
+      <motion.div
+        className="absolute bottom-8 w-full text-center text-xs text-white/40"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.5, delay: 0.5 }}
+      >
          <p>Developed by Haxis and Mark</p>
-      </div>
+      </motion.div>
 
     </div>
   );
