@@ -17,35 +17,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
 import AestheticFluidBackground from '@/components/ambient-light-background';
-import { AnimatePresence, motion } from 'framer-motion';
-
-
-function MainContentWrapper({
-  children,
-  pathname,
-}: {
-  children: React.ReactNode;
-  pathname: string;
-}) {
-  const isMainPage = pathname === '/' || pathname === '/home';
-  
-  return (
-    <AnimatePresence mode="wait">
-        <motion.main 
-          key={pathname}
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 15 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          className={cn(
-            "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]",
-            isMainPage && "bg-transparent"
-          )}>
-            {children}
-        </motion.main>
-    </AnimatePresence>
-  );
-}
 
 
 export function AppShell({
@@ -58,11 +29,6 @@ export function AppShell({
   const pathname = usePathname();
   const { user, loading } = useAuth();
   
-  // This effect handles the initial flash of content on load.
-  useEffect(() => {
-    document.body.classList.remove('loading-initial');
-  }, []);
-
   const isAdminRoute = pathname.startsWith('/admin');
   const isAuthRoute = ['/login', '/register', '/forgot-password'].includes(pathname) || pathname.startsWith('/api/auth');
   
@@ -137,9 +103,12 @@ export function AppShell({
       {/* Conditional Header for non-landing pages */}
       { pathname !== '/' && <Header /> }
       
-      <MainContentWrapper pathname={pathname}>
+      <main className={cn(
+            "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]",
+            isMainPage && "bg-transparent"
+          )}>
           {children}
-      </MainContentWrapper>
+      </main>
     </>
   );
 }

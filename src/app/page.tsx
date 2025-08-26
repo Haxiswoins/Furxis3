@@ -1,13 +1,8 @@
 
-import { LandingPageClient } from '@/landing-client';
-import Header from '@/components/header';
-
+import { LandingPageClient } from '@/components/landing-client';
 
 export default function WelcomePage() {
   return (
-    <>
-      <Header />
       <LandingPageClient />
-    </>
   );
 }
