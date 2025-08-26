@@ -6,11 +6,12 @@ import { useRouter } from 'next/navigation';
 import { Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+
 export function LandingPageClient() {
   const router = useRouter();
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
-
+  
   useEffect(() => {
     let fluidBgInstance: any = null;
     const script = document.createElement('script');
@@ -44,7 +45,10 @@ export function LandingPageClient() {
         fluidBgInstance.destroy();
       }
       if (script.parentNode) {
-        document.body.removeChild(script);
+        // Use a safer check before removing the script
+        if (document.body.contains(script)) {
+            document.body.removeChild(script);
+        }
       }
     };
   }, [router]);
@@ -60,6 +64,7 @@ export function LandingPageClient() {
   
   return (
     <div className="relative h-screen w-full overflow-hidden">
+      <div id="fluid-bg-container" className="absolute inset-0 z-0"></div>
       
       <div className={cn(
         "absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-500",
