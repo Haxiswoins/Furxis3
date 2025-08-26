@@ -28,7 +28,7 @@ function MainContentWrapper({
     <>
       <FluidBackground />
       <Header />
-      <main className="relative z-10 flex flex-col flex-grow justify-center">
+      <main className="relative z-10 flex flex-col flex-grow pt-24">
         {children}
       </main>
     </>
