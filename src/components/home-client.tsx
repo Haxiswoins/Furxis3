@@ -63,7 +63,6 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
-      <canvas id="fluid-background-box" className="fixed top-0 left-0 w-full h-full z-[9999]"></canvas>
       <FluidBackground />
       <motion.div 
           className={cn(
