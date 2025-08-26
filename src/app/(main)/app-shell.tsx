@@ -33,9 +33,9 @@ function MainContentWrapper({
     <AnimatePresence mode="wait">
         <motion.main 
           key={pathname}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 15 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
           className={cn(
             "relative z-20 flex-1 flex flex-col px-4 py-8 pt-24 min-h-[calc(100vh-theme(spacing.24))]",
@@ -129,7 +129,9 @@ export function AppShell({
       {/* Fallback solid background for non-home pages */}
       <div className="fixed inset-0 z-[-1] bg-background" />
 
-      <Header />
+      {/* Conditional Header for non-landing pages */}
+      { pathname !== '/' && <Header /> }
+      
       <MainContentWrapper pathname={pathname}>
           {children}
       </MainContentWrapper>

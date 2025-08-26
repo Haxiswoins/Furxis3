@@ -1,14 +1,11 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 
 export function LandingPageClient() {
   const router = useRouter();
-  const [isNavigating, setIsNavigating] = useState(false);
   
   useEffect(() => {
     router.prefetch('/home');
@@ -16,11 +13,7 @@ export function LandingPageClient() {
 
 
   const handleNavigate = () => {
-    setIsNavigating(true);
-    
-    setTimeout(() => {
-        router.push('/home');
-    }, 400); 
+    router.push('/home');
   };
   
   return (
@@ -31,19 +24,15 @@ export function LandingPageClient() {
       role="button"
       tabIndex={0}
     >
-      <motion.div 
+      <div 
         className="absolute inset-0 z-20 flex flex-col items-start justify-start p-8 md:p-12"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: isNavigating ? 0 : 1, y: isNavigating ? 20 : 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
       >
         <div className="text-white">
           <p className="text-xl md:text-2xl">Welcome to</p>
           <div className="mt-2">
-            <p className="text-4xl md:text-5xl font-bold tracking-widest" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.4)'}}>FORWARD INFINITY</p>
+            <p className="text-4xl md:text-5xl font-bold tracking-widest">FORWARD INFINITY</p>
             <h1 
               className="text-3xl md:text-4xl font-sans font-bold text-white mt-2"
-               style={{textShadow: '1px 1px 3px rgba(0,0,0,0.4)'}}
             >
               欢迎来到 前行无界
             </h1>
@@ -58,16 +47,13 @@ export function LandingPageClient() {
              </p>
           </div>
         </div>
-      </motion.div>
+      </div>
       
-       <motion.p 
+       <p 
           className="absolute bottom-12 left-8 md:left-12 text-sm text-white/70 animate-pulse"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isNavigating ? 0 : 1 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
         >
           点击任意位置进入网站
-        </motion.p>
+        </p>
 
     </div>
   );

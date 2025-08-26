@@ -48,11 +48,8 @@ export function HomeClient({ content }: HomeClientProps) {
     <div className="flex flex-col min-h-[calc(100vh-theme(spacing.24))]">
         <div className="pt-12">
         
-        <motion.div 
+        <div 
             className="text-center mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
         >
             <Link href="/" scroll={false}>
                 <div className="relative inline-block cursor-pointer group">
@@ -73,7 +70,7 @@ export function HomeClient({ content }: HomeClientProps) {
                     </div>
                 </div>
             </Link>
-        </motion.div>
+        </div>
         
         <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl mx-auto"
@@ -144,14 +141,11 @@ export function HomeClient({ content }: HomeClientProps) {
         </motion.div>
 
         </div>
-        <motion.div 
+        <div 
             className="w-full py-8 text-center mt-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut", delay: 0.4 }}
         >
           <ContactInfo content={content} />
-        </motion.div>
+        </div>
     </div>
   );
 }
