@@ -50,13 +50,13 @@ export function LandingPageClient() {
           <div className="-mt-1">
             <p className="text-4xl md:text-5xl font-bold tracking-widest">FORWARD INFINITY</p>
             <h1 
-              className="text-3xl md:text-4xl font-sans font-bold text-white -mt-2"
+              className="text-3xl md:text-4xl font-sans font-bold text-white mt-2"
             >
               欢迎来到 前行无界
             </h1>
           </div>
 
-          <div className="mt-10 space-y-4 text-sm max-w-sm text-white">
+          <div className="mt-10 space-y-4 text-sm max-w-xs text-white">
              <p>
                 前行无界工作室于2024年成立，我们致力于为您提供充满创意的角色设计服务与定制化Fursuit产品
              </p>
