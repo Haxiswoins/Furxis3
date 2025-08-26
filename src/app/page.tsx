@@ -1,7 +1,13 @@
 
-import { LandingPageClient } from "@/components/landing-client";
+'use client';
 
-// This page remains simple, it just renders the client component.
+import { Suspense } from 'react';
+import { LandingPageClient } from '@/components/landing-client';
+
 export default function WelcomePage() {
-    return <LandingPageClient />
+  return (
+    <Suspense fallback={<div className="bg-black w-screen h-screen"></div>}>
+      <LandingPageClient />
+    </Suspense>
+  );
 }

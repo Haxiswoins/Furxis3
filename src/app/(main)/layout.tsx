@@ -1,15 +1,18 @@
-
+import { getSiteContent } from '@/lib/data-service';
 import { AppShell } from './app-shell';
 
-// This is now a Server Component again.
-// It simply provides the AppShell, which will handle its own animations.
-export default function MainLayout({
+// This is now a Server Component
+export default async function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Data is fetched on the server
+  const siteContent = await getSiteContent();
+
   return (
-    <AppShell>
+    // siteContent is passed down as a prop
+    <AppShell siteContent={siteContent}>
       {children}
     </AppShell>
   );

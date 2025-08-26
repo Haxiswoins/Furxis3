@@ -16,7 +16,7 @@ export function FluidBackground() {
       try {
         new (window as any).Color4Bg.AestheticFluidBg({
           dom: containerRef.current, // Use the ref to target the specific div
-          colors: ["#ff5900", "#ffffff", "#305797", "#ffffff", "#ffffff", "#f5fffe"],
+          colors: ["#ff6600","#F0FFFE","#304ca1","#F0FFFE","#d3e0ee","#F0FFFE"],
           loop: true
         });
         isInitialized.current = true;

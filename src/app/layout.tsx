@@ -6,6 +6,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { Playfair_Display, Noto_Serif_SC, Noto_Sans_SC } from 'next/font/google';
 import { cn } from '@/lib/utils';
+// import { UserProvider } from '@authing/nextjs';
 
 export const metadata: Metadata = {
   title: 'Suitopia',
@@ -45,12 +46,14 @@ export default function RootLayout({
         fontSerifSC.variable,
         fontBody.variable
       )}>
-        <ThemeProvider>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-          <Toaster />
-        </ThemeProvider>
+        {/* <UserProvider> */}
+          <ThemeProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+            <Toaster />
+          </ThemeProvider>
+        {/* </UserProvider> */}
       </body>
     </html>
   );

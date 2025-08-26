@@ -1,7 +1,9 @@
 
 'use client';
 
+import { useState, useEffect } from 'react';
 import Header from '@/components/header';
+import { usePathname } from 'next/navigation';
 import AdminSidebar from '@/components/admin-sidebar';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -12,16 +14,60 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Skeleton } from '@/components/ui/skeleton';
-import { usePathname } from 'next/navigation';
-import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
+import type { SiteContent } from '@/types';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { FluidBackground } from '@/components/fluid-background';
 
-// AppShell is now a pure layout component.
-// It NO LONGER contains AnimatePresence or any motion divs.
-// Its role is to provide the consistent "shell" around the page content.
-export function AppShell({
+function MainContentWrapper({
   children,
+  siteContent
 }: {
   children: React.ReactNode;
+  siteContent: SiteContent | null;
+}) {
+  const pathname = usePathname();
+  const isHomePage = pathname === '/home';
+  const hasHomeBg = isHomePage && siteContent?.homeBackgroundImageUrl;
+
+  return (
+    <>
+      {/* Background Effects Layer */}
+      <div className="fixed inset-0 z-0">
+        {isHomePage && <FluidBackground />}
+        {hasHomeBg && (
+          <div className="absolute inset-0 z-0">
+              <Image
+                  src={siteContent.homeBackgroundImageUrl!}
+                  alt="Homepage Background"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  className="opacity-20"
+              />
+              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm"></div>
+          </div>
+        )}
+      </div>
+
+      {/* Content Layer */}
+      <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
+        <Header />
+        <main className="flex-1 flex flex-col px-4 py-8 pt-24">
+          {children}
+        </main>
+      </div>
+    </>
+  );
+}
+
+
+export function AppShell({
+  children,
+  siteContent
+}: {
+  children: React.ReactNode;
+  siteContent: SiteContent | null;
 }) {
   const pathname = usePathname();
   const { user, loading } = useAuth();
@@ -43,7 +89,7 @@ export function AppShell({
   }
 
   if (isLandingPage || isAuthRoute) {
-     return <div>{children}</div>;
+     return <>{children}</>;
   }
 
   if (isAdminRoute) {
@@ -83,26 +129,17 @@ export function AppShell({
     }
   }
 
-  // This is the shell for the main public-facing pages.
   return (
-      <div className="bg-background">
-          <div className="relative z-10 flex flex-col min-h-screen">
-            <Header />
-            <main className="flex-1 flex flex-col px-4 py-8 pt-24">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={pathname}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {children}
-                </motion.div>
-              </AnimatePresence>
-            </main>
-          </div>
-      </div>
+    <MainContentWrapper siteContent={siteContent}>
+      <motion.div
+        key={pathname}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: 'easeInOut' }}
+        className="bg-transparent"
+      >
+        {children}
+      </motion.div>
+    </MainContentWrapper>
   );
 }
-
