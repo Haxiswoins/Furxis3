@@ -37,7 +37,7 @@ const formSchema = z.object({
   makerName: z.string().optional(),
   completionDate: z.date({ required_error: '必须选择一个完成日期' }),
   description: z.string().optional(),
-  imageUrls: z.array(z.string().optional()).default([]),
+  imageUrls: z.array(z.string()).default([]),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -52,15 +52,10 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   
+  // Only store files for new uploads, not existing URLs
   const [imageFiles, setImageFiles] = useState<(File | null)[]>(Array(5).fill(null));
 
-  const fileInputRefs = [
-      useRef<HTMLInputElement>(null),
-      useRef<HTMLInputElement>(null),
-      useRef<HTMLInputElement>(null),
-      useRef<HTMLInputElement>(null),
-      useRef<HTMLInputElement>(null),
-  ];
+  const fileInputRefs = Array(5).fill(null).map(() => useRef<HTMLInputElement>(null));
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -71,7 +66,8 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
       makerName: work?.makerName || '',
       completionDate: work ? new Date(work.completionDate) : new Date(),
       description: work?.description || '',
-      imageUrls: work?.imageUrls || [],
+      // Ensure the array has 5 elements for the form fields, padding with empty strings
+      imageUrls: work?.imageUrls ? [...work.imageUrls, ...Array(5 - work.imageUrls.length).fill('')].slice(0, 5) : Array(5).fill(''),
     },
   });
 
@@ -80,13 +76,13 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0];
     if (file) {
-        const newImageFiles = [...imageFiles];
-        newImageFiles[index] = file;
-        setImageFiles(newImageFiles);
-        
-        const newUrls = [...(form.getValues('imageUrls') || [])];
-        newUrls[index] = URL.createObjectURL(file);
-        form.setValue('imageUrls', newUrls, { shouldValidate: true });
+      const newImageFiles = [...imageFiles];
+      newImageFiles[index] = file;
+      setImageFiles(newImageFiles);
+      
+      const newUrls = [...form.getValues('imageUrls')];
+      newUrls[index] = URL.createObjectURL(file); // Show preview
+      form.setValue('imageUrls', newUrls, { shouldValidate: true });
     }
   };
 
@@ -95,8 +91,8 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
     newImageFiles[index] = null;
     setImageFiles(newImageFiles);
     
-    const newUrls = [...(form.getValues('imageUrls') || [])];
-    newUrls[index] = '';
+    const newUrls = [...form.getValues('imageUrls')];
+    newUrls[index] = ''; // Set to empty string instead of undefined
     form.setValue('imageUrls', newUrls, { shouldValidate: true });
 
     if (fileInputRefs[index].current) {
@@ -109,23 +105,24 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
     setLoading(true);
 
     try {
-        const finalImageUrls = await Promise.all(
-            (values.imageUrls || []).map(async (url, index) => {
-                const file = imageFiles[index];
-                if (file) {
-                    // This is a new file upload, use it.
-                    return await uploadImage(file, `works/${values.workName}_${index}_${Date.now()}`);
-                }
-                // If there's no new file, this URL is either an old one from `work` or a newly pasted one.
-                return url;
-            })
-        );
+        const finalImageUrls: string[] = [];
+
+        for (let i = 0; i < values.imageUrls.length; i++) {
+            const file = imageFiles[i];
+            const url = values.imageUrls[i];
+            if (file && url?.startsWith('blob:')) {
+                // This is a new file upload
+                const uploadedUrl = await uploadImage(file, `works/${values.workName}_${i}_${Date.now()}`);
+                finalImageUrls.push(uploadedUrl);
+            } else if (url && url.trim() !== '') {
+                // This is an existing or pasted URL
+                finalImageUrls.push(url.trim());
+            }
+        }
         
         setIsUploading(false);
 
-        const filteredUrls = finalImageUrls.filter((url): url is string => !!url && url.length > 0);
-        
-        if (filteredUrls.length === 0) {
+        if (finalImageUrls.length === 0) {
             toast({ title: '图片缺失', description: '新增作品必须上传至少一张图片或提供URL。', variant: 'destructive' });
             setLoading(false);
             return;
@@ -138,7 +135,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
             makerName: values.makerName,
             completionDate: values.completionDate.toISOString(),
             description: values.description || '',
-            imageUrls: filteredUrls,
+            imageUrls: finalImageUrls,
         };
       
         await saveWork(workData, work?.id);
@@ -207,7 +204,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
             <FormItem>
               <FormLabel>作品描述</FormLabel>
               <FormControl>
-                <Textarea placeholder="输入关于这个作品的简介或故事..." {...field} rows={4} />
+                <Textarea placeholder="输入关于这个作品的简介或故事..." {...field} />
               </FormControl>
               <FormDescription>
                 这段描述将显示在作品详情页。如果留空，则不显示。
@@ -230,9 +227,9 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
                             <FormLabel className="text-xs text-muted-foreground">图片 {index + 1} {index === 0 && "(主图)"}</FormLabel>
                             <div className="flex items-center gap-4">
                                 <div className="w-32 h-32 relative rounded-md border bg-muted flex-shrink-0">
-                                    { (field.value || watchedImageUrls?.[index]) ? (
+                                    { (watchedImageUrls?.[index]) ? (
                                         <>
-                                            <Image src={field.value || watchedImageUrls?.[index]!} alt={`图片 ${index+1} 预览`} fill style={{objectFit:'cover'}} className="rounded-md" />
+                                            <Image src={watchedImageUrls[index]} alt={`图片 ${index+1} 预览`} fill style={{objectFit:'cover'}} className="rounded-md" />
                                             <Button type="button" variant="ghost" size="icon" className="absolute top-0 right-0 bg-black/50 hover:bg-black/70 text-white rounded-full h-6 w-6" onClick={() => clearImage(index)}>
                                                 <X className="h-4 w-4" />
                                             </Button>
@@ -242,7 +239,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
                                 <div className="space-y-2">
                                     <Button type="button" variant="outline" onClick={() => fileInputRefs[index].current?.click()}>
                                         <Upload className="mr-2 h-4 w-4" />
-                                        {(field.value || watchedImageUrls?.[index]) ? '更换图片' : '本地上传'}
+                                        {(watchedImageUrls?.[index]) ? '更换图片' : '本地上传'}
                                     </Button>
                                     <Input 
                                         type="file" 
