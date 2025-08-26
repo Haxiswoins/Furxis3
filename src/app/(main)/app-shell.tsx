@@ -25,8 +25,9 @@ function MainContentWrapper({
 }) {
   return (
     <>
+      <Header />
       <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
-        <main className="flex-1 flex flex-col">
+        <main className="flex-1 flex flex-col items-center justify-center">
           {children}
         </main>
       </div>

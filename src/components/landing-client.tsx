@@ -3,17 +3,21 @@
 
 import { Rocket } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 type LandingPageClientProps = {
   onNavigate: () => void;
 };
 
 export function LandingPageClient({ onNavigate }: LandingPageClientProps) {
+  const router = useRouter();
 
-  const handleNavigate = () => {
-    onNavigate();
-  };
-  
+  useEffect(() => {
+    // Prefetch the home page to make the transition faster
+    router.prefetch('/home');
+  }, [router]);
+
   return (
     <div className="relative h-screen w-full overflow-hidden bg-transparent">
       
@@ -26,7 +30,7 @@ export function LandingPageClient({ onNavigate }: LandingPageClientProps) {
       >
         <div className="absolute bottom-[20%]">
           <button
-            onClick={handleNavigate}
+            onClick={onNavigate}
             aria-label="进入网站"
             className="group relative flex h-20 w-20 items-center justify-center rounded-full border border-primary/50 bg-black/30 text-white transition-all duration-300 ease-in-out hover:scale-110 hover:border-primary hover:shadow-[0_0_35px_rgba(255,97,47,0.7)] active:scale-100 backdrop-blur-sm"
           >

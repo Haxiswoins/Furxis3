@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 
 const containerVariants = {
@@ -33,14 +34,15 @@ const itemVariants = {
 
 type HomeClientProps = {
   content: SiteContent | null;
-  onNavigate: () => void;
 }
 
-export function HomeClient({ content, onNavigate }: HomeClientProps) {
-  
+export function HomeClient({ content }: HomeClientProps) {
+  const router = useRouter();
+
   const handleTitleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    onNavigate();
+    // Navigate back to the welcome page
+    router.push('/');
   }
 
   const cardLinkClass = "group block";
@@ -54,7 +56,7 @@ export function HomeClient({ content, onNavigate }: HomeClientProps) {
   return (
     <div className="container mx-auto">
         <motion.div 
-            className="relative z-10 flex flex-col min-h-screen"
+            className="relative z-10 flex flex-col min-h-[calc(100vh-theme(spacing.24))]"
             initial="hidden"
             animate="visible"
             variants={containerVariants}

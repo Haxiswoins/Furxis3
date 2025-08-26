@@ -7,6 +7,22 @@ import { memo } from 'react';
 // This component is memoized to prevent re-renders,
 // which could cause the script to load multiple times.
 export const FluidBackground = memo(function FluidBackground() {
+  const initializeBackground = () => {
+      try {
+        if (window.Color4Bg && window.Color4Bg.AestheticFluidBg) {
+            new window.Color4Bg.AestheticFluidBg({
+            dom: "box",
+            colors: ["#ff6600","#F0FFFE","#3069a1","#F0FFFE","#83e5ec","#F0FFFE"],
+            loop: true
+            });
+        } else {
+            console.error('AestheticFluidBg script loaded, but Color4Bg object not found on window.');
+        }
+      } catch (error) {
+        console.error('Failed to initialize AestheticFluidBg:', error);
+      }
+  };
+  
   return (
     <>
       <div 
@@ -23,22 +39,7 @@ export const FluidBackground = memo(function FluidBackground() {
       <Script
         src="/AestheticFluidBg.min.js"
         strategy="lazyOnload"
-        onLoad={() => {
-          try {
-            // The script from color4bg.com attaches its main class to window.Color4Bg
-            if (window.Color4Bg && window.Color4Bg.AestheticFluidBg) {
-               new window.Color4Bg.AestheticFluidBg({
-                dom: "box",
-                colors: ["#ff6600","#F0FFFE","#3069a1","#F0FFFE","#83e5ec","#F0FFFE"],
-                loop: true
-              });
-            } else {
-              console.error('AestheticFluidBg script loaded, but Color4Bg object not found on window.');
-            }
-          } catch (error) {
-            console.error('Failed to initialize AestheticFluidBg:', error);
-          }
-        }}
+        onLoad={initializeBackground}
         onError={(e) => {
             console.error('Failed to load AestheticFluidBg script:', e);
         }}

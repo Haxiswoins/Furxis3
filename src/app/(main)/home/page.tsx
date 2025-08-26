@@ -1,17 +1,14 @@
 
-'use client';
+import { getSiteContent } from '@/lib/data-service';
+import { HomeClient } from '@/components/home-client';
+import type { SiteContent } from '@/types';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+export default async function HomePage() {
+  const content = await getSiteContent();
 
-// This component now only serves to redirect any direct access attempts to the root page.
-export default function HomePageRedirect() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace('/');
-  }, [router]);
-
-  // Render nothing, or a loading spinner, while redirecting.
-  return null;
+  return (
+    <div className="bg-background text-foreground">
+        <HomeClient content={content} />
+    </div>
+  );
 }
