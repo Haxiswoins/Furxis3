@@ -39,7 +39,43 @@ type HomeClientProps = {
 export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const scriptLoaded = useRef(false);
   
+  useEffect(() => {
+    // Ensure this effect runs only once by checking a ref
+    if (scriptLoaded.current) {
+        return;
+    }
+
+    const script = document.createElement('script');
+    script.src = '/AestheticFluidBg.min.js'; // Correct path to the public file
+    script.async = true;
+
+    script.onload = () => {
+        // Ensure the global object and method exist before calling
+        if (window.Color4Bg && typeof window.Color4Bg.AestheticFluidBg === 'function') {
+            try {
+                new window.Color4Bg.AestheticFluidBg({
+                    dom: "box", // The ID of our canvas element
+                    colors: ["#ff5900","#F0FFFE","#194294","#F0FFFE","#58b3c6","#F0FFFE"],
+                    loop: true
+                });
+            } catch (error) {
+                console.error("Failed to initialize AestheticFluidBg:", error);
+            }
+        }
+    };
+    
+    document.body.appendChild(script);
+    scriptLoaded.current = true;
+
+    // Cleanup function to remove the script when the component unmounts
+    return () => {
+        document.body.removeChild(script);
+    };
+  }, []);
+
+
   const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const href = e.currentTarget.getAttribute('href');
@@ -61,6 +97,7 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
+      <canvas id="box" className="fixed top-0 left-0 w-full h-full z-[-1]"></canvas>
       <motion.div 
           className={cn(
               "relative z-10 flex flex-col transition-opacity duration-500 min-h-[calc(100vh-theme(spacing.24))]",
