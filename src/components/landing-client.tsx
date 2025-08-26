@@ -41,11 +41,11 @@ export function LandingPageClient() {
         isNavigating ? 'opacity-0' : 'opacity-100'
       )}>
 
-        <div 
-          className="absolute left-1/2 -translate-x-1/2 top-1/4 text-center text-white"
-          style={{textShadow: '1px 1px 4px rgba(0,0,0,0.5)'}}
-        >
-          <h1 className="text-5xl font-sans font-bold">
+        <div className="absolute left-1/2 -translate-x-1/2 top-1/4 text-center text-white">
+          <h1 
+            className="text-5xl font-sans font-bold"
+            style={{textShadow: '1px 1px 4px rgba(0,0,0,0.5)'}}
+          >
             欢迎来到 前行无界
           </h1>
           <p className="mt-4 text-xl font-sans tracking-widest text-white/80">
