@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
 declare global {
     interface Window {
         Color4Bg?: {
-            AmbientLightBg: new (options: {
+            CurveGradientBg: new (options: {
                 dom: string,
                 colors: string[],
                 loop: boolean
@@ -28,21 +28,21 @@ export function LandingPageClient() {
 
   const initializeBackground = () => {
       // Ensure the script has loaded and the object is available on window
-      if (window.Color4Bg && typeof window.Color4Bg.AmbientLightBg === 'function') {
+      if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
           try {
               // Ensure the target DOM element exists before initializing
               if (document.getElementById('box')) {
-                animationInstance.current = new window.Color4Bg.AmbientLightBg({
+                animationInstance.current = new window.Color4Bg.CurveGradientBg({
                     dom: "box",
-                    colors: ["#007FFE","#3099FE","#60B2FE","#90CCFE","#C0E5FE","#F0FFFE"],
+                    colors: ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"],
                     loop: true
                 });
               }
           } catch (error) {
-              console.error('Failed to initialize AmbientLightBg:', error);
+              console.error('Failed to initialize CurveGradientBg:', error);
           }
       } else {
-        console.error('AmbientLightBg script loaded, but Color4Bg object not found or not a constructor.');
+        console.error('CurveGradientBg script loaded, but Color4Bg object not found or not a constructor.');
       }
   };
 
@@ -57,7 +57,8 @@ export function LandingPageClient() {
     // The cleanup function will be called when the component unmounts
     return () => {
       clearTimeout(contentTimer);
-      // Clear the reference to the animation instance to allow garbage collection
+      // Even if we can't call a specific destroy method, clearing the reference
+      // helps with garbage collection and prevents memory leaks.
       animationInstance.current = null;
     };
   }, [router]);
@@ -74,11 +75,11 @@ export function LandingPageClient() {
     <div className="relative h-screen w-full overflow-hidden bg-black">
       <div id="box" className="absolute inset-0 z-0"></div>
       <Script
-        src="/AmbientLightBg.min.js"
+        src="/CurveGradientBg.min.js"
         strategy="lazyOnload"
         onLoad={initializeBackground}
         onError={(e) => {
-            console.error('Failed to load AmbientLightBg.min.js script:', e);
+            console.error('Failed to load CurveGradientBg.min.js script:', e);
         }}
       />
       
@@ -97,7 +98,7 @@ export function LandingPageClient() {
           <button
             onClick={handleNavigate}
             aria-label="进入网站"
-            className="group relative flex h-20 w-20 items-center justify-center rounded-full border border-primary/50 bg-black/30 text-white transition-all duration-300 ease-in-out hover:scale-110 hover:border-primary hover:shadow-[0_0_35px_rgba(0,127,254,0.7)] active:scale-100 backdrop-blur-sm"
+            className="group relative flex h-20 w-20 items-center justify-center rounded-full border border-primary/50 bg-black/30 text-white transition-all duration-300 ease-in-out hover:scale-110 hover:border-primary hover:shadow-[0_0_35px_rgba(255,115,0,0.7)] active:scale-100 backdrop-blur-sm"
           >
             <div className="absolute inset-0 rounded-full border-2 border-white/20 scale-125 group-hover:scale-150 group-hover:opacity-0 transition-all duration-500 animate-pulse"></div>
             <Rocket 
