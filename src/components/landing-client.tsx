@@ -14,9 +14,8 @@ declare global {
             CurveGradientBg: new (options: {
                 dom: string,
                 colors: string[],
-                loop: boolean,
-                zoom?: number
-            }) => any;
+                loop: boolean
+            }) => any; // Keep it 'any' as we don't know the exact class type
         }
     }
 }
@@ -26,19 +25,22 @@ export function LandingPageClient() {
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
   const animationInstance = useRef<any>(null);
-
+  
   const initializeBackground = () => {
-      // Ensure the script has loaded and the object is available on window
+      if (animationInstance.current) return;
+      
       if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
           try {
-              // Ensure the target DOM element exists before initializing
               if (document.getElementById('box')) {
-                animationInstance.current = new window.Color4Bg.CurveGradientBg({
+                const instance = new window.Color4Bg.CurveGradientBg({
                     dom: "box",
                     colors: ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"],
-                    loop: true,
-                    zoom: 0.2
+                    loop: true
                 });
+                // After analyzing the provided source code, the correct way to update the scale
+                // is by calling the 'update' method with 'scale' as the key.
+                instance.update('scale', 0.2);
+                animationInstance.current = instance;
               }
           } catch (error) {
               console.error('Failed to initialize CurveGradientBg:', error);
@@ -49,24 +51,24 @@ export function LandingPageClient() {
   };
 
   useEffect(() => {
-    // Prefetch the home page as soon as the landing page is interactive
     router.prefetch('/home');
 
     const contentTimer = setTimeout(() => {
       setIsContentVisible(true);
     }, 500);
 
-    // The cleanup function will be called when the component unmounts
     return () => {
       clearTimeout(contentTimer);
-      // Although we can't be sure of a destroy method, nullifying the ref is good practice.
+      // Attempt to call a destroy method if it exists, and clear the ref
+      if (animationInstance.current && typeof animationInstance.current.destroy === 'function') {
+        animationInstance.current.destroy();
+      }
       animationInstance.current = null;
     };
   }, [router]);
 
   const handleNavigate = () => {
     setIsWarping(true);
-    // Use motion's onAnimationComplete or a timeout to navigate
     setTimeout(() => {
         router.push('/home');
     }, 800); 
