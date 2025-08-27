@@ -22,18 +22,22 @@ declare global {
 export default function WelcomePage() {
     const { theme } = useTheme();
     const router = useRouter();
+    const [isClient, setIsClient] = useState(false);
     const [isContentVisible, setIsContentVisible] = useState(false);
     const [isWarping, setIsWarping] = useState(false);
     const animationInstance = useRef<any>(null);
     const scriptElement = useRef<HTMLScriptElement | null>(null);
+    
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     useEffect(() => {
         router.prefetch('/home');
     }, [router]);
 
     useEffect(() => {
-        // We need to ensure the theme is determined on the client before initializing the script.
-        if (!theme) {
+        if (!isClient || !theme) {
             return;
         }
 
@@ -81,19 +85,17 @@ export default function WelcomePage() {
             }
             animationInstance.current = null;
         };
-    }, [theme]);
+    }, [isClient, theme]);
 
     const handleNavigate = () => {
         setIsWarping(true);
         setTimeout(() => router.push('/home'), 800); 
     };
-
-    // By checking for `!theme` we ensure the component doesn't render on the server
-    // or on the initial client render before the theme is determined, preventing hydration mismatches.
-    if (!theme) {
+  
+    if (!isClient || !theme) {
         return null;
     }
-  
+
     return (
         <div className="relative h-screen w-full overflow-hidden cursor-pointer" onClick={handleNavigate}>
             <div className="absolute inset-0 z-0 bg-background"></div>
