@@ -34,7 +34,6 @@ export function LandingPageClient() {
   }, [router]);
 
   useEffect(() => {
-    // Crucial fix: Do not proceed until the theme is definitively set to light or dark.
     if (!theme) {
       return;
     }
@@ -43,12 +42,10 @@ export function LandingPageClient() {
     script.src = "/CurveGradientBg.min.js";
     script.async = true;
     script.onload = () => {
-       // Prevent re-initialization
        if (animationInstance.current || !document.getElementById('box')) return;
       
         if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
             try {
-                // Define colors based on the now-determined theme
                 const lightThemeColors = ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"];
                 const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#1a1b29"];
                 
@@ -75,7 +72,6 @@ export function LandingPageClient() {
 
     const contentTimer = setTimeout(() => setIsContentVisible(true), 500);
 
-    // Cleanup function
     return () => {
       clearTimeout(contentTimer);
       if (scriptElement.current && scriptElement.current.parentNode) {
@@ -86,7 +82,7 @@ export function LandingPageClient() {
       }
       animationInstance.current = null;
     };
-  }, [theme]); // This effect now correctly depends on the theme state
+  }, [theme]);
 
   const handleNavigate = () => {
     setIsWarping(true);
@@ -94,7 +90,10 @@ export function LandingPageClient() {
   };
   
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-background cursor-pointer" onClick={handleNavigate}>
+    <div className="relative h-screen w-full overflow-hidden cursor-pointer" onClick={handleNavigate}>
+      {/* This new div acts as a colored backplate, ensuring the theme background is visible immediately. */}
+      <div className="absolute inset-0 z-0 bg-background"></div>
+
       <motion.div
         className="absolute inset-0 z-0"
         animate={{ opacity: isWarping ? 0 : 1 }}
@@ -173,4 +172,3 @@ export function LandingPageClient() {
     </div>
   );
 }
-
