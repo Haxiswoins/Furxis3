@@ -35,21 +35,26 @@ export function LandingPageClient() {
   }, [router]);
 
   useEffect(() => {
+    // Crucial fix: Do not proceed until the theme is definitively set to light or dark.
+    // The theme is 'null' on initial server render and first client render.
     if (!theme) {
       return;
     }
 
-    // Only render the animation box when the theme is determined.
+    // Only now can we be sure which color scheme to use.
+    // Allow the animation box to be rendered.
     setShowBox(true);
 
     const script = document.createElement('script');
     script.src = "/CurveGradientBg.min.js";
     script.async = true;
     script.onload = () => {
+       // Prevent re-initialization
        if (animationInstance.current || !document.getElementById('box')) return;
       
         if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
             try {
+                // Define colors based on the now-determined theme
                 const lightThemeColors = ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"];
                 const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#1a1b29"];
                 
@@ -76,6 +81,7 @@ export function LandingPageClient() {
 
     const contentTimer = setTimeout(() => setIsContentVisible(true), 500);
 
+    // Cleanup function
     return () => {
       clearTimeout(contentTimer);
       if (scriptElement.current && scriptElement.current.parentNode) {
@@ -86,7 +92,7 @@ export function LandingPageClient() {
       }
       animationInstance.current = null;
     };
-  }, [theme]);
+  }, [theme]); // This effect now correctly depends on the theme state
 
   const handleNavigate = () => {
     setIsWarping(true);
@@ -100,6 +106,7 @@ export function LandingPageClient() {
         animate={{ opacity: isWarping ? 0 : 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
+        {/* Conditional rendering: The animation container is only added to the DOM after the theme is known. */}
         {showBox && <div id="box" className="absolute inset-0 z-0"></div>}
       </motion.div>
       
@@ -160,12 +167,13 @@ export function LandingPageClient() {
          <p>Developed by Haxis and Mark</p>
       </motion.div>
       
+       {/* Full-screen transition overlay that fades in to the current theme's background color */}
        <motion.div 
         className="fixed inset-0 z-30 bg-background"
         initial={{ opacity: 0 }}
         animate={{ opacity: isWarping ? 1 : 0 }}
         transition={{ duration: 0.6, ease: 'easeInOut'}}
-        style={{ pointerEvents: 'none' }}
+        style={{ pointerEvents: 'none' }} // Allow clicks to pass through when invisible
        >
        </motion.div>
 
