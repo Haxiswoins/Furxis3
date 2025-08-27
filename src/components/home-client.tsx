@@ -7,6 +7,7 @@ import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 
 const containerVariants = {
@@ -37,6 +38,8 @@ type HomeClientProps = {
 }
 
 export function HomeClient({ content }: HomeClientProps) {
+  const router = useRouter();
+  const [isWarping, setIsWarping] = useState(false);
 
   const cardLinkClass = "group block";
   const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]";
@@ -45,6 +48,13 @@ export function HomeClient({ content }: HomeClientProps) {
   const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/70 via-black/40 to-transparent transition-all duration-500 ease-in-out";
   const cardTitleClass = "font-headline text-2xl md:text-4xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1";
   const cardDescriptionClass = "mt-2 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base";
+
+  const handleNavigate = (path: string) => {
+    setIsWarping(true);
+    setTimeout(() => {
+        router.push(path);
+    }, 600);
+  };
 
   return (
     <div className="container mx-auto">
@@ -56,7 +66,7 @@ export function HomeClient({ content }: HomeClientProps) {
         >
             <div className="w-full py-8 md:py-12 pt-24">
             <motion.div className="text-center mb-10 md:mb-16" variants={itemVariants}>
-                <a href="/" className="cursor-pointer">
+                <a onClick={() => handleNavigate('/')} className="cursor-pointer">
                     <div className="relative inline-block group">
                         <h1 className="text-4xl sm:text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary">
                         前行无界
@@ -143,6 +153,16 @@ export function HomeClient({ content }: HomeClientProps) {
                 <ContactInfo content={content} />
             </motion.div>
         </motion.div>
+
+        {/* Transition Mask */}
+       <motion.div 
+        className="fixed inset-0 z-[100] bg-background"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isWarping ? 1 : 0 }}
+        transition={{ duration: 0.6, ease: 'easeInOut'}}
+        style={{ pointerEvents: 'none' }}
+       >
+       </motion.div>
     </div>
   );
 }
