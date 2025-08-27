@@ -25,7 +25,8 @@ export function LandingPageClient() {
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
   const animationInstance = useRef<any>(null);
-  
+  const scriptElement = useRef<HTMLScriptElement | null>(null);
+
   const initializeBackground = () => {
       // Prevent re-initialization
       if (animationInstance.current || !theme) return;
@@ -56,14 +57,14 @@ export function LandingPageClient() {
   };
 
   useEffect(() => {
-    // Crucial fix: Do not proceed until the theme is definitively set to 'light' or 'dark'.
+    // Crucial fix: Do not proceed until the theme is definitively set.
     // This prevents initialization with a default/null theme, avoiding the flash of incorrect colors.
     if (!theme) return;
       
     // Prefetch the home page as soon as the landing page is interactive
     router.prefetch('/home');
 
-    // Load the script and initialize background when the theme is ready
+    // Load the script and initialize background ONLY when the theme is ready
     const script = document.createElement('script');
     script.src = "/CurveGradientBg.min.js";
     script.async = true;
@@ -75,6 +76,8 @@ export function LandingPageClient() {
     };
 
     document.body.appendChild(script);
+    scriptElement.current = script;
+
 
     const contentTimer = setTimeout(() => {
       setIsContentVisible(true);
@@ -83,12 +86,12 @@ export function LandingPageClient() {
     return () => {
       clearTimeout(contentTimer);
       // Clean up script tag
-      document.body.removeChild(script);
+      if (scriptElement.current && scriptElement.current.parentNode) {
+          scriptElement.current.parentNode.removeChild(scriptElement.current);
+      }
       // Ensure we clear the animation instance reference on cleanup
       animationInstance.current = null;
     };
-    // The dependency on `theme` ensures this effect re-runs if the theme changes,
-    // and the guard clause `if (!theme) return;` ensures it only runs with a valid theme.
   }, [router, theme]);
 
   const handleNavigate = () => {
