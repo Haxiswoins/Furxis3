@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -15,7 +16,7 @@ type ContactInfoProps = {
 export function ContactInfo({ content }: ContactInfoProps) {
   const infoText = content?.contactInfo 
     ? content.contactInfo 
-    : "联系方式暂未设置。管理员请前往后台“页面内容管理”页面进行配置。";
+    : "当前暂未提供即时联系方式，如有需要您可通过邮件与我们沟通。";
   
   return (
     <Popover>
@@ -26,7 +27,7 @@ export function ContactInfo({ content }: ContactInfoProps) {
         <div className="grid gap-4">
           <div className="space-y-2">
             <h4 className="font-medium leading-none">联系方式</h4>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                {infoText}
             </p>
           </div>

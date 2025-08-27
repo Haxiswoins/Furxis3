@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 type Theme = 'dark' | 'light';
 
@@ -12,9 +12,10 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState<Theme | null>(() => {
+  const [theme] = useState<Theme | null>(() => {
+    // This now runs only once on the client, reading the class set by the inline script.
     if (typeof window === 'undefined') {
-      return null;
+      return null; // On the server, we don't know the theme.
     }
     return document.documentElement.classList.contains('light') ? 'light' : 'dark';
   });
