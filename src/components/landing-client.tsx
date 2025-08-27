@@ -79,6 +79,9 @@ export function LandingPageClient() {
       if (scriptElement.current && scriptElement.current.parentNode) {
           scriptElement.current.parentNode.removeChild(scriptElement.current);
       }
+       if (animationInstance.current && typeof animationInstance.current.destroy === 'function') {
+        animationInstance.current.destroy();
+      }
       animationInstance.current = null;
     };
   }, [theme]);
@@ -100,7 +103,7 @@ export function LandingPageClient() {
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
         <motion.div 
-            className="flex items-center justify-center p-8 md:p-16 text-white"
+            className="flex items-start justify-start p-8 md:p-16 text-white"
             initial={{ opacity: 0 }}
             animate={{ opacity: isWarping ? 0 : 1 }}
             transition={{ duration: 0.3 }}
@@ -112,7 +115,7 @@ export function LandingPageClient() {
             >
                 <p className="text-xl font-semibold">欢迎来到</p>
                 <p className="text-lg font-light mb-4">Welcome to</p>
-                <h1 className="text-7xl md:text-8xl font-headline">前行无界</h1>
+                <h1 className="text-7xl md:text-8xl font-headline whitespace-nowrap">前行无界</h1>
                 <h2 className="text-4xl md:text-5xl font-extralight tracking-[0.2em] mt-2 mb-8">FORWARD INFINITY</h2>
                 <p className="text-sm font-light max-w-md leading-relaxed">
                     前行无界工作室正式成立于2024年, <br/>
@@ -124,19 +127,18 @@ export function LandingPageClient() {
       </motion.div>
 
       <motion.div
-        className="absolute inset-0 z-20 flex flex-col items-center justify-center"
+        className="absolute inset-0 z-20 flex items-end justify-end p-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: isContentVisible ? 1 : 0 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
         <motion.div
-            className="absolute bottom-[20%]"
             animate={{ opacity: isWarping ? 0 : 1 }}
             transition={{ duration: 0.3 }}
         >
           <p className="text-white/80 font-light text-base animate-pulse">
-            任意点击进入首页
+            点击任意区域进入
           </p>
         </motion.div>
       </motion.div>
