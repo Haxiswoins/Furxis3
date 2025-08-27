@@ -8,7 +8,7 @@ import { getSiteContent } from '@/lib/data-service';
 type Theme = 'dark' | 'light';
 
 type ThemeContextType = {
-  theme: Theme | null;
+  theme: Theme;
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -63,9 +63,10 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [theme]);
   
-  // Provide the theme state, which will be `null` initially on the client.
+  // Render children, but provide a default 'dark' theme value
+  // to prevent errors in consuming components before the client-side theme is determined.
   return (
-    <ThemeContext.Provider value={{ theme }}>
+    <ThemeContext.Provider value={{ theme: theme || 'dark' }}>
       {children}
     </ThemeContext.Provider>
   );

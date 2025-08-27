@@ -3,11 +3,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Rocket } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import Script from 'next/script';
-import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
+import { useTheme } from '@/context/ThemeContext';
+import { cn } from '@/lib/utils';
 
 // Define the custom type on the Window interface
 declare global {
@@ -15,10 +13,9 @@ declare global {
         Color4Bg?: {
             CurveGradientBg: new (options: {
                 dom: string,
-                colors: [string, string, string, string],
-                duration: number,
-                angle: number,
-            }) => any;
+                colors: string[],
+                loop: boolean
+            }) => any; 
         }
     }
 }
@@ -28,114 +25,158 @@ export function LandingPageClient() {
   const { theme } = useTheme();
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
-  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
-  const boxRef = useRef<HTMLDivElement>(null);
-  
-  // This effect runs once when the component mounts and the theme is determined.
+  const [showBox, setShowBox] = useState(false);
+  const animationInstance = useRef<any>(null);
+  const scriptElement = useRef<HTMLScriptElement | null>(null);
+
   useEffect(() => {
-    // Do not proceed until theme is determined and the script is loaded
-    if (!theme || !isScriptLoaded || !boxRef.current) return;
+    // Prefetch the home page
+    router.prefetch('/home');
+  }, [router]);
 
-    let gradient: any;
-
-    try {
-        if (window.Color4Bg && window.Color4Bg.CurveGradientBg) {
-             gradient = new window.Color4Bg.CurveGradientBg({
-                dom: "box",
-                colors: theme === 'dark' 
-                    ? ["#121826", "#121826", "#121826", "#121826"]
-                    : ["#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"],
-                duration: 10000,
-                angle: 60,
-             });
-        }
-    } catch (e) {
-        console.error("Failed to initialize CurveGradientBg:", e);
+  useEffect(() => {
+    // Crucial fix: Do not proceed until the theme is definitively set to light or dark.
+    // The theme is 'null' on initial server render and first client render.
+    if (!theme) {
+      return;
     }
-    
-    // Cleanup function to destroy the gradient instance when the component unmounts
-    return () => {
-        if (gradient && typeof gradient.destroy === 'function') {
-            gradient.destroy();
+
+    // Only now can we be sure which color scheme to use.
+    // Allow the animation box to be rendered.
+    setShowBox(true);
+
+    const script = document.createElement('script');
+    script.src = "/CurveGradientBg.min.js";
+    script.async = true;
+    script.onload = () => {
+       // Prevent re-initialization
+       if (animationInstance.current || !document.getElementById('box')) return;
+      
+        if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
+            try {
+                // Define colors based on the now-determined theme
+                const lightThemeColors = ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"];
+                const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#1a1b29"];
+                
+                const instance = new window.Color4Bg.CurveGradientBg({
+                    dom: "box",
+                    colors: theme === 'light' ? lightThemeColors : darkThemeColors,
+                    loop: true
+                });
+                
+                instance.update('scale', 0.2);
+                instance.update('noise', 0.05);
+                
+                animationInstance.current = instance;
+
+            } catch (error) {
+                console.error('Failed to initialize CurveGradientBg:', error);
+            }
         }
     };
-  }, [theme, isScriptLoaded]); // Rerun when theme or script load state changes
+    script.onerror = (e) => console.error('Failed to load CurveGradientBg.min.js script:', e);
 
-  useEffect(() => {
-    // Prefetch the home page as soon as the landing page is interactive
-    router.prefetch('/home');
+    document.body.appendChild(script);
+    scriptElement.current = script;
 
-    const contentTimer = setTimeout(() => {
-      setIsContentVisible(true);
-    }, 500);
+    const contentTimer = setTimeout(() => setIsContentVisible(true), 500);
 
-    return () => clearTimeout(contentTimer);
-  }, [router]);
+    // Cleanup function
+    return () => {
+      clearTimeout(contentTimer);
+      if (scriptElement.current && scriptElement.current.parentNode) {
+          scriptElement.current.parentNode.removeChild(scriptElement.current);
+      }
+       if (animationInstance.current && typeof animationInstance.current.destroy === 'function') {
+        animationInstance.current.destroy();
+      }
+      animationInstance.current = null;
+    };
+  }, [theme]); // This effect now correctly depends on the theme state
 
   const handleNavigate = () => {
     setIsWarping(true);
-    setTimeout(() => {
-        router.push('/home');
-    }, 600); 
+    setTimeout(() => router.push('/home'), 800); 
   };
   
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-background">
-      <Script
-          src="/CurveGradientBg.min.js"
-          strategy="lazyOnload"
-          onLoad={() => setIsScriptLoaded(true)}
-          onError={(e) => {
-              console.error('Failed to load CurveGradientBg script:', e);
-          }}
-      />
+    <div className="relative h-screen w-full overflow-hidden bg-background cursor-pointer" onClick={handleNavigate}>
+      <motion.div
+        className="absolute inset-0 z-0"
+        animate={{ opacity: isWarping ? 0 : 1 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      >
+        {/* Conditional rendering: The animation container is only added to the DOM after the theme is known. */}
+        {showBox && <div id="box" className="absolute inset-0 z-0"></div>}
+      </motion.div>
       
-      <div 
-        id="box" 
-        ref={boxRef} 
-        className={cn(
-            "absolute inset-0 z-0 transition-opacity duration-500",
-            isWarping ? "opacity-0" : "opacity-100"
-        )}
-      ></div>
+      <motion.div
+        className="absolute inset-0 z-20 flex items-start justify-start p-8 md:p-16"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isContentVisible ? 1 : 0 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      >
+        <motion.div 
+            className="flex items-start justify-start text-white drop-shadow-md"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isWarping ? 0 : 1 }}
+            transition={{ duration: 0.3 }}
+        >
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: isContentVisible ? 1 : 0, y: isContentVisible ? 0 : 20 }}
+                transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
+            >
+                <p className="text-xl font-semibold">欢迎来到</p>
+                <p className="text-lg font-light mb-4">Welcome to</p>
+                <h1 className="text-7xl md:text-8xl font-headline whitespace-nowrap">前行无界</h1>
+                <h2 className="text-4xl md:text-5xl font-extralight tracking-[0.2em] mt-2 mb-8">FORWARD INFINITY</h2>
+                <p className="text-sm font-light max-w-md leading-relaxed">
+                    前行无界工作室正式成立于2024年, <br/>
+                    我们致力于打造富有创意与品质优良的兽装及相关设计作品, <br/>
+                    欢迎您的到访。
+                </p>
+            </motion.div>
+        </motion.div>
+      </motion.div>
 
-      <div className={cn(
-        "absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-500",
-        isContentVisible ? 'opacity-100' : 'opacity-0',
-        isWarping ? 'opacity-0' : 'opacity-100'
-      )}>
-        <div className="absolute bottom-[20%]">
-          <button
-            onClick={handleNavigate}
-            aria-label="进入网站"
-            className="group relative flex h-20 w-20 items-center justify-center rounded-full border border-primary/50 bg-black/30 text-white transition-all duration-300 ease-in-out hover:scale-110 hover:border-primary hover:shadow-[0_0_35px_rgba(255,97,47,0.7)] active:scale-100 backdrop-blur-sm"
-          >
-            <div className="absolute inset-0 rounded-full border-2 border-white/20 scale-125 group-hover:scale-150 group-hover:opacity-0 transition-all duration-500 animate-pulse"></div>
-            <Rocket 
-                className="h-10 w-10 text-primary/80 transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1 group-hover:scale-110"
-                style={{ transform: 'rotate(-45deg)' }}
-            />
-          </button>
-        </div>
-      </div>
+      <motion.div
+        className="absolute bottom-8 right-8 z-20 flex items-end justify-end"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isContentVisible ? 1 : 0 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      >
+        <motion.div
+            animate={{ opacity: isWarping ? 0 : 1 }}
+            transition={{ duration: 0.3 }}
+        >
+          <p className="text-white/80 font-light text-sm animate-pulse">
+            点击任意区域进入
+          </p>
+        </motion.div>
+      </motion.div>
+
+       <motion.div
+            className="absolute bottom-8 w-full text-center text-xs text-white/40"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isContentVisible && !isWarping ? 1 : 0 }}
+            transition={{ duration: 1.0, ease: 'easeOut' }}
+       >
+         <p>Developed by Haxis and Mark</p>
+      </motion.div>
       
-       {/* Transition Mask */}
+       {/* Full-screen transition overlay that fades in to the current theme's background color */}
        <motion.div 
-        className="fixed inset-0 z-[100] bg-background"
+        className="fixed inset-0 z-30 bg-background"
         initial={{ opacity: 0 }}
         animate={{ opacity: isWarping ? 1 : 0 }}
         transition={{ duration: 0.6, ease: 'easeInOut'}}
-        style={{ pointerEvents: 'none' }}
+        style={{ pointerEvents: 'none' }} // Allow clicks to pass through when invisible
        >
        </motion.div>
 
-      <div className={cn(
-        "absolute bottom-8 w-full text-center text-xs text-white/40 transition-opacity duration-1000 ease-in-out",
-        isContentVisible ? "opacity-100" : "opacity-0",
-        isWarping ? 'opacity-0' : 'opacity-100'
-      )}>
-         <p>Developed by Haxis and Mark</p>
-      </div>
     </div>
   );
 }
