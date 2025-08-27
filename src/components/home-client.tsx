@@ -37,12 +37,6 @@ type HomeClientProps = {
 }
 
 export function HomeClient({ content }: HomeClientProps) {
-  const router = useRouter();
-
-  const handleTitleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    router.push('/');
-  }
 
   const cardLinkClass = "group block";
   const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]";
@@ -62,7 +56,7 @@ export function HomeClient({ content }: HomeClientProps) {
         >
             <div className="w-full py-8 md:py-12 pt-24">
             <motion.div className="text-center mb-10 md:mb-16" variants={itemVariants}>
-                <a onClick={handleTitleClick} className="cursor-pointer">
+                <a href="/" className="cursor-pointer">
                     <div className="relative inline-block group">
                         <h1 className="text-4xl sm:text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary">
                         前行无界

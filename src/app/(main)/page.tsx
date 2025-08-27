@@ -1,19 +1,15 @@
 
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { LandingPageClient } from '@/components/landing-client';
-
+import { useState } from 'react';
 
 export default function WelcomePage() {
-    const router = useRouter();
-
-    const handleNavigate = () => {
-        router.push('/home');
-    };
+    // By changing the key, we force React to unmount the old component
+    // and mount a new one, ensuring a clean state for the animation script.
+    const [key, setKey] = useState(Date.now());
 
     return (
-        <LandingPageClient onNavigate={handleNavigate} />
+        <LandingPageClient key={key} />
     );
 }
-
