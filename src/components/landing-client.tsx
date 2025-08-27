@@ -4,68 +4,169 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Rocket } from 'lucide-react';
-import { motion } from 'framer-motion';
-import Script from 'next/script';
+import { cn } from '@/lib/utils';
+import * as THREE from 'three';
 
-// Define the custom type on the Window interface for the background script
-declare global {
-    interface Window {
-        Color4Bg?: {
-            AmbientLightBg: new (options: {
-                dom: string,
-                colors: string[],
-                loop: boolean
-            }) => { destroy?: () => void };
-        }
-    }
-}
+const galaxyParameters = {
+    count: 50000,
+    size: 0.015,
+    radius: 20,
+    branches: 5,
+    spin: 1.5,
+    randomness: 0.5,
+    randomnessPower: 3,
+    insideColor: '#ff6030',
+    outsideColor: '#1b3984'
+};
 
 
 export function LandingPageClient() {
   const router = useRouter();
+  const [isContentVisible, setIsContentVisible] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
-  const animationInstance = useRef<ReturnType<Window['Color4Bg']['AmbientLightBg']> | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mouse = useRef({ x: 0, y: 0 });
   
   useEffect(() => {
+    // Prefetch the home page as soon as the landing page is interactive
     router.prefetch('/home');
-    
-    // This is the cleanup function. It runs when the component unmounts.
-    return () => {
-        // More robust cleanup: remove the DOM element to ensure the animation stops.
-        const boxElement = document.getElementById("box");
-        if (boxElement && boxElement.parentElement) {
-            boxElement.parentElement.removeChild(boxElement);
-        }
-        
-        // Also attempt to call destroy if it exists, for good measure.
-        if (animationInstance.current && typeof animationInstance.current.destroy === 'function') {
-            animationInstance.current.destroy();
-        }
-        animationInstance.current = null;
-    };
-  }, [router]);
 
-  const handleInitAnimation = () => {
-     try {
-      if (window.Color4Bg && window.Color4Bg.AmbientLightBg && document.getElementById('box')) {
-        if (animationInstance.current) {
-           animationInstance.current.destroy?.();
+    const contentTimer = setTimeout(() => {
+      setIsContentVisible(true);
+    }, 500);
+
+    if (!canvasRef.current) return;
+    
+    const scene = new THREE.Scene();
+    
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 30;
+    
+    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    let geometry: THREE.BufferGeometry | null = null;
+    let material: THREE.PointsMaterial | null = null;
+    let galaxyGroup: THREE.Group | null = null;
+    
+    const generateGalaxy = () => {
+        if (galaxyGroup) {
+            geometry?.dispose();
+            material?.dispose();
+            scene.remove(galaxyGroup);
         }
-        animationInstance.current = new window.Color4Bg.AmbientLightBg({
-          dom: "box",
-          colors: ["#007FFE", "#3099FE", "#60B2FE", "#90CCFE", "#C0E5FE", "#F0FFFE"],
-          loop: true
+
+        galaxyGroup = new THREE.Group();
+        scene.add(galaxyGroup);
+        
+        galaxyGroup.position.y = 5;
+        galaxyGroup.rotation.x = Math.PI * 0.2; 
+        
+        geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(galaxyParameters.count * 3);
+        const colors = new Float32Array(galaxyParameters.count * 3);
+        
+        const colorInside = new THREE.Color(galaxyParameters.insideColor);
+        const colorOutside = new THREE.Color(galaxyParameters.outsideColor);
+
+        for (let i = 0; i < galaxyParameters.count; i++) {
+            const i3 = i * 3;
+            const radius = Math.random() * galaxyParameters.radius;
+            const spinAngle = radius * galaxyParameters.spin;
+            const branchAngle = ((i % galaxyParameters.branches) / galaxyParameters.branches) * Math.PI * 2;
+
+            const randomX = Math.pow(Math.random(), galaxyParameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * galaxyParameters.randomness * radius;
+            const randomY = Math.pow(Math.random(), galaxyParameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * galaxyParameters.randomness * radius;
+            const randomZ = Math.pow(Math.random(), galaxyParameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * galaxyParameters.randomness * radius;
+
+            positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
+            positions[i3 + 1] = randomY;
+            positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+            
+            const mixedColor = colorInside.clone();
+            mixedColor.lerp(colorOutside, radius / galaxyParameters.radius);
+
+            colors[i3] = mixedColor.r;
+            colors[i3 + 1] = mixedColor.g;
+            colors[i3 + 2] = mixedColor.b;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        
+        material = new THREE.PointsMaterial({
+            size: galaxyParameters.size,
+            sizeAttenuation: true,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+            vertexColors: true
         });
-      } else {
-        console.warn('AmbientLightBg script not yet available or box container not found.');
-      }
-    } catch (error) {
-      console.error('Failed to initialize AmbientLightBg:', error);
+
+        const points = new THREE.Points(geometry, material);
+        galaxyGroup.add(points);
     }
-  }
+    
+    generateGalaxy();
+
+    const handleResize = () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    };
+    
+    const handleMouseMove = (event: MouseEvent) => {
+        mouse.current.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    }
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('mousemove', handleMouseMove);
+    
+    const clock = new THREE.Clock();
+    let animationFrameId: number;
+
+    const animate = () => {
+        animationFrameId = requestAnimationFrame(animate);
+
+        const elapsedTime = clock.getElapsedTime();
+
+        if (isWarping) {
+            camera.position.z -= 0.5;
+        }
+
+        if(galaxyGroup) {
+            (galaxyGroup.children[0] as THREE.Points).rotation.y = elapsedTime * 0.1;
+        }
+            
+        const parallaxX = mouse.current.x * 0.2;
+        const parallaxY = -mouse.current.y * 0.2;
+            
+        camera.position.x += (parallaxX - camera.position.x) * 0.02;
+        camera.position.y += (parallaxY - camera.position.y) * 0.02;
+
+        renderer.render(scene, camera);
+    };
+    
+    animate();
+
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(animationFrameId);
+      geometry?.dispose();
+      material?.dispose();
+      renderer.dispose();
+      clearTimeout(contentTimer);
+    };
+  }, [isWarping, router]);
+
 
   const handleNavigate = () => {
     setIsWarping(true);
+    
     setTimeout(() => {
         router.push('/home');
     }, 800); 
@@ -73,19 +174,13 @@ export function LandingPageClient() {
   
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
-      <div id="box" className="absolute inset-0 z-0" />
-      <Script 
-        src="/AmbientLightBg.min.js"
-        strategy="lazyOnload"
-        onLoad={handleInitAnimation}
-      />
+      <canvas ref={canvasRef} className="absolute inset-0 z-0"></canvas>
       
-      <motion.div
-        className="absolute inset-0 z-20 flex flex-col items-center justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isWarping ? 0 : 1 }}
-        transition={{ duration: 0.8 }}
-      >
+      <div className={cn(
+        "absolute inset-0 z-20 flex flex-col items-center justify-center transition-opacity duration-500",
+        isContentVisible ? 'opacity-100' : 'opacity-0',
+        isWarping ? 'opacity-0' : 'opacity-100'
+      )}>
         <div className="absolute bottom-[20%]">
           <button
             onClick={handleNavigate}
@@ -99,16 +194,15 @@ export function LandingPageClient() {
             />
           </button>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div
-        className="absolute bottom-8 w-full text-center text-xs text-white/40"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isWarping ? 0 : 1 }}
-        transition={{ duration: 0.8, delay: 0.5 }}
-      >
+      <div className={cn(
+        "absolute bottom-8 w-full text-center text-xs text-white/40 transition-opacity duration-1000 ease-in-out",
+        isContentVisible ? "opacity-100" : "opacity-0",
+        isWarping ? 'opacity-0' : 'opacity-100'
+      )}>
          <p>Developed by Haxis and Mark</p>
-      </motion.div>
+      </div>
 
     </div>
   );
