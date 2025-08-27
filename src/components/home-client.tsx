@@ -67,7 +67,7 @@ export function HomeClient({ content }: HomeClientProps) {
             <div className="w-full py-8 md:py-12 pt-24">
             <motion.div className="text-center mb-10 md:mb-16 px-4" variants={itemVariants}>
                 <a onClick={() => handleNavigate('/')} className="cursor-pointer">
-                    <div className="relative inline-block group">
+                    <div className="relative inline-block group px-4">
                         <h1 className="text-4xl sm:text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary">
                         前行无界
                         </h1>
@@ -84,10 +84,10 @@ export function HomeClient({ content }: HomeClientProps) {
             </motion.div>
             
             <motion.div
-                className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 w-full max-w-7xl mx-auto"
+                className="flex md:grid md:grid-cols-3 md:gap-8 gap-6 overflow-x-auto snap-x snap-mandatory px-4 md:px-0 -mx-4 md:mx-0"
                 variants={containerVariants}
             >
-                <motion.div variants={itemVariants}>
+                <motion.div variants={itemVariants} className="flex-shrink-0 w-[80vw] md:w-auto snap-center">
                 <Link href="/commission" className={cardLinkClass}>
                     <div className={cardDivClass}>
                         <Image
@@ -95,7 +95,7 @@ export function HomeClient({ content }: HomeClientProps) {
                         alt="委托申请"
                         fill
                         priority
-                        sizes="(max-width: 768px) 100vw, 33vw"
+                        sizes="(max-width: 768px) 80vw, 33vw"
                         style={{objectFit: "cover"}}
                         className={cardImageClass}
                         data-ai-hint="commission custom"
@@ -108,14 +108,14 @@ export function HomeClient({ content }: HomeClientProps) {
                 </Link>
                 </motion.div>
 
-                <motion.div variants={itemVariants}>
+                <motion.div variants={itemVariants} className="flex-shrink-0 w-[80vw] md:w-auto snap-center">
                 <Link href="/adoption" className={cardLinkClass}>
                     <div className={cardDivClass}>
                         <Image
                         src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
                         alt="设定领养"
                         fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
+                        sizes="(max-width: 768px) 80vw, 33vw"
                         style={{objectFit: "cover"}}
                         className={cardImageClass}
                         data-ai-hint="character design"
@@ -128,14 +128,14 @@ export function HomeClient({ content }: HomeClientProps) {
                 </Link>
                 </motion.div>
                 
-                <motion.div variants={itemVariants}>
+                <motion.div variants={itemVariants} className="flex-shrink-0 w-[80vw] md:w-auto snap-center">
                 <Link href="/works" className={cardLinkClass}>
                     <div className={cardDivClass}>
                         <Image
                         src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
                         alt="作品一览"
                         fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
+                        sizes="(max-width: 768px) 80vw, 33vw"
                         style={{objectFit: "cover"}}
                         className={cardImageClass}
                         data-ai-hint="portfolio gallery"
