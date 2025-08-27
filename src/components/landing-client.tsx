@@ -24,7 +24,6 @@ export function LandingPageClient() {
   const { theme } = useTheme();
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
-  const [showBox, setShowBox] = useState(false);
   const animationInstance = useRef<any>(null);
   const scriptElement = useRef<HTMLScriptElement | null>(null);
 
@@ -34,9 +33,11 @@ export function LandingPageClient() {
   }, [router]);
 
   useEffect(() => {
-    if (!theme) return;
-
-    setShowBox(true);
+    // Crucially, wait until the theme is determined ('light' or 'dark')
+    // before doing anything related to the background animation.
+    if (!theme) {
+      return;
+    }
 
     const initializeBackground = () => {
       if (animationInstance.current || !document.getElementById('box')) return;
@@ -63,6 +64,7 @@ export function LandingPageClient() {
       }
     };
 
+    // Only load the script once the theme is known
     const script = document.createElement('script');
     script.src = "/CurveGradientBg.min.js";
     script.async = true;
@@ -84,7 +86,7 @@ export function LandingPageClient() {
       }
       animationInstance.current = null;
     };
-  }, [theme]);
+  }, [theme]); // Dependency on `theme` ensures this effect re-runs when the theme is determined.
 
   const handleNavigate = () => {
     setIsWarping(true);
@@ -93,7 +95,8 @@ export function LandingPageClient() {
   
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black cursor-pointer" onClick={handleNavigate}>
-      {showBox && <div id="box" className="absolute inset-0 z-0"></div>}
+      {/* The box is always present, but the script that USES it is delayed */}
+      <div id="box" className="absolute inset-0 z-0"></div>
       
       <motion.div
         className="absolute inset-0 z-20 flex items-start justify-start p-8 md:p-16"
@@ -128,7 +131,7 @@ export function LandingPageClient() {
       </motion.div>
 
       <motion.div
-        className="absolute bottom-8 right-8 z-20 flex items-end justify-end p-8"
+        className="absolute bottom-8 right-8 z-20 flex items-end justify-end"
         initial={{ opacity: 0 }}
         animate={{ opacity: isContentVisible ? 1 : 0 }}
         exit={{ opacity: 0 }}
@@ -156,3 +159,4 @@ export function LandingPageClient() {
     </div>
   );
 }
+
