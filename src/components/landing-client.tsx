@@ -37,9 +37,12 @@ export function LandingPageClient() {
                     colors: ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"],
                     loop: true
                 });
+                
                 // After analyzing the provided source code, the correct way to update the scale
                 // is by calling the 'update' method with 'scale' as the key.
                 instance.update('scale', 0.2);
+                instance.update('noise', 0.05);
+                
                 animationInstance.current = instance;
               }
           } catch (error) {
