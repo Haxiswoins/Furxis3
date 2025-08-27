@@ -59,6 +59,8 @@ export function LandingPageClient() {
 
     return () => {
       clearTimeout(contentTimer);
+      // When the component unmounts, clear the reference.
+      // The key change on the parent component will handle full re-initialization.
       animationInstance.current = null;
     };
   }, [router]);
@@ -94,7 +96,7 @@ export function LandingPageClient() {
             animate={{ opacity: isWarping ? 0 : 1 }}
             transition={{ duration: 0.3 }}
         >
-          <p className="text-white/80 font-semibold text-lg animate-pulse">
+          <p className="text-white/80 font-light text-base animate-pulse">
             任意点击进入首页
           </p>
         </motion.div>
