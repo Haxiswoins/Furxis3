@@ -17,25 +17,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { SiteContent } from '@/types';
 import { AmbientLightBackground } from '@/components/ambient-light-background';
 
-function MainContentWrapper({
-  children,
-  siteContent
-}: {
-  children: React.ReactNode;
-  siteContent: SiteContent | null;
-}) {
-  return (
-    <>
-      <AmbientLightBackground />
-      <Header />
-      <main className="relative z-10 flex flex-col flex-grow pt-24">
-        {children}
-      </main>
-    </>
-  );
-}
-
-
 export function AppShell({
   children,
   siteContent
@@ -105,9 +86,22 @@ export function AppShell({
   // All other pages get the main wrapper with header and background
   return (
       <div className="relative flex flex-col min-h-screen bg-background">
-          <MainContentWrapper siteContent={siteContent}>
+          <div 
+            id="box" 
+            style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                zIndex: 0,
+            }}
+          />
+          <AmbientLightBackground />
+          <Header />
+          <main className="relative z-10 flex flex-col flex-grow pt-24">
               {children}
-          </MainContentWrapper>
+          </main>
       </div>
   );
 }

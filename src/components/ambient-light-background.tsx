@@ -24,27 +24,14 @@ export const AmbientLightBackground = memo(function AmbientLightBackground() {
   };
   
   return (
-    <>
-      <div 
-        id="box" 
-        style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            zIndex: -1,
-        }}
-      />
-      <Script
+    <Script
         src="/AmbientLightBg.js"
         strategy="lazyOnload"
         onLoad={initializeBackground}
         onError={(e) => {
             console.error('Failed to load AmbientLightBg script:', e);
         }}
-      />
-    </>
+    />
   );
 });
 
