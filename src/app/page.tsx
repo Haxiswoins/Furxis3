@@ -2,16 +2,20 @@
 'use client';
 
 import { LandingPageClient } from '@/components/landing-client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function WelcomePage() {
     // By changing the key, we force React to unmount the old component
     // and mount a new one, ensuring a clean state for the animation script.
     const [key, setKey] = useState(Date.now());
+    const { theme } = useTheme();
 
-    // This is not strictly necessary for navigation TO this page, but can help
-    // if we add any internal logic that might require a re-render.
-    // For now, the main fix is the key itself forcing a new instance on navigation.
+    // Do not render the landing page until the theme has been determined.
+    // This prevents any flicker or flash of unstyled/incorrectly styled content.
+    if (!theme) {
+        return null;
+    }
 
     return (
         <LandingPageClient key={key} />
