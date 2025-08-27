@@ -92,7 +92,7 @@ export default function WelcomePage() {
         setTimeout(() => router.push('/home'), 800); 
     };
 
-    if (!isClient || !theme) {
+    if (!isClient) {
         return null;
     }
   
@@ -157,7 +157,7 @@ export default function WelcomePage() {
             </motion.div>
 
             <motion.div
-                    className="absolute bottom-8 w-full text-center text-xs text-white/40"
+                    className="absolute bottom-4 w-full text-center text-xs text-white/40"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: isContentVisible && !isWarping ? 1 : 0 }}
                     transition={{ duration: 1.0, ease: 'easeOut' }}
