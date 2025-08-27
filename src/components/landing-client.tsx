@@ -94,10 +94,14 @@ export function LandingPageClient() {
   };
   
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-black cursor-pointer" onClick={handleNavigate}>
-      {showBox && (
-            <div id="box" className="absolute inset-0 z-0"></div>
-      )}
+    <div className="relative h-screen w-full overflow-hidden bg-background cursor-pointer" onClick={handleNavigate}>
+      <motion.div
+        className="absolute inset-0 z-0"
+        animate={{ opacity: isWarping ? 0 : 1 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      >
+        {showBox && <div id="box" className="absolute inset-0 z-0"></div>}
+      </motion.div>
       
       <motion.div
         className="absolute inset-0 z-20 flex items-start justify-start p-8 md:p-16"
@@ -156,13 +160,12 @@ export function LandingPageClient() {
          <p>Developed by Haxis and Mark</p>
       </motion.div>
       
-      {/* Transition Mask - Fades in to cover the content */}
        <motion.div 
         className="fixed inset-0 z-30 bg-background"
         initial={{ opacity: 0 }}
         animate={{ opacity: isWarping ? 1 : 0 }}
         transition={{ duration: 0.6, ease: 'easeInOut'}}
-        style={{ pointerEvents: 'none' }} // Make it non-interactive
+        style={{ pointerEvents: 'none' }}
        >
        </motion.div>
 
