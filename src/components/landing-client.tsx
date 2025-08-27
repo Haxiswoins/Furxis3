@@ -24,12 +24,23 @@ export function LandingPageClient() {
   const { theme } = useTheme();
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
+  const [showBox, setShowBox] = useState(false); // New state to control animation container rendering
   const animationInstance = useRef<any>(null);
   const scriptElement = useRef<HTMLScriptElement | null>(null);
 
-  const initializeBackground = () => {
-      // Prevent re-initialization
-      if (animationInstance.current || !theme) return;
+  useEffect(() => {
+    // Crucial fix: Do not proceed until the theme is definitively set.
+    if (!theme) return;
+
+    // 1. Show the animation container ONLY when the theme is ready.
+    setShowBox(true);
+    
+    // Prefetch the home page
+    router.prefetch('/home');
+
+    // 2. Load the script and initialize background
+    const initializeBackground = () => {
+      if (animationInstance.current) return;
       
       if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
           try {
@@ -54,30 +65,18 @@ export function LandingPageClient() {
       } else {
         console.error('CurveGradientBg script loaded, but Color4Bg object not found or not a constructor.');
       }
-  };
+    };
 
-  useEffect(() => {
-    // Crucial fix: Do not proceed until the theme is definitively set.
-    // This prevents initialization with a default/null theme, avoiding the flash of incorrect colors.
-    if (!theme) return;
-      
-    // Prefetch the home page as soon as the landing page is interactive
-    router.prefetch('/home');
-
-    // Load the script and initialize background ONLY when the theme is ready
     const script = document.createElement('script');
     script.src = "/CurveGradientBg.min.js";
     script.async = true;
-    script.onload = () => {
-        initializeBackground();
-    };
-     script.onerror = (e) => {
+    script.onload = initializeBackground;
+    script.onerror = (e) => {
         console.error('Failed to load CurveGradientBg.min.js script:', e);
     };
 
     document.body.appendChild(script);
     scriptElement.current = script;
-
 
     const contentTimer = setTimeout(() => {
       setIsContentVisible(true);
@@ -85,13 +84,12 @@ export function LandingPageClient() {
 
     return () => {
       clearTimeout(contentTimer);
-      // Clean up script tag
       if (scriptElement.current && scriptElement.current.parentNode) {
           scriptElement.current.parentNode.removeChild(scriptElement.current);
       }
-      // Ensure we clear the animation instance reference on cleanup
       animationInstance.current = null;
     };
+  // The effect now correctly depends on the theme.
   }, [router, theme]);
 
   const handleNavigate = () => {
@@ -103,7 +101,8 @@ export function LandingPageClient() {
   
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black cursor-pointer" onClick={handleNavigate}>
-      <div id="box" className="absolute inset-0 z-0"></div>
+      {/* The animation container is now conditionally rendered */}
+      {showBox && <div id="box" className="absolute inset-0 z-0"></div>}
       
       <motion.div
         className="absolute inset-0 z-20 flex flex-col items-center justify-center"
