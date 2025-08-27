@@ -22,17 +22,22 @@ declare global {
 export default function WelcomePage() {
     const { theme } = useTheme();
     const router = useRouter();
+    const [isClient, setIsClient] = useState(false);
     const [isContentVisible, setIsContentVisible] = useState(false);
     const [isWarping, setIsWarping] = useState(false);
     const animationInstance = useRef<any>(null);
     const scriptElement = useRef<HTMLScriptElement | null>(null);
 
     useEffect(() => {
+      setIsClient(true);
+    }, []);
+
+    useEffect(() => {
         router.prefetch('/home');
     }, [router]);
 
     useEffect(() => {
-        if (!theme) {
+        if (!theme || !isClient) {
             return;
         }
 
@@ -80,14 +85,14 @@ export default function WelcomePage() {
             }
             animationInstance.current = null;
         };
-    }, [theme]);
+    }, [theme, isClient]);
 
     const handleNavigate = () => {
         setIsWarping(true);
         setTimeout(() => router.push('/home'), 800); 
     };
 
-    if (!theme) {
+    if (!isClient || !theme) {
         return null;
     }
   
