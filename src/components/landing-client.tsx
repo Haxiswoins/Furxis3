@@ -4,7 +4,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Rocket } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import Script from 'next/script';
 import { motion } from 'framer-motion';
 
@@ -25,22 +24,23 @@ export function LandingPageClient() {
   const router = useRouter();
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
+  const [showBox, setShowBox] = useState(true); // State to control the DOM element
   const animationInstance = useRef<any>(null);
 
   const initializeBackground = () => {
       // Ensure the script has loaded and the object is available on window
       if (window.Color4Bg && typeof window.Color4Bg.AmbientLightBg === 'function') {
-          // Only create a new instance if one doesn't already exist
-          if (!animationInstance.current) {
-              try {
-                  animationInstance.current = new window.Color4Bg.AmbientLightBg({
-                      dom: "box",
-                      colors: ["#007FFE","#3099FE","#60B2FE","#90CCFE","#C0E5FE","#F0FFFE"],
-                      loop: true
-                  });
-              } catch (error) {
-                  console.error('Failed to initialize AmbientLightBg:', error);
+          try {
+              // Ensure the target DOM element exists before initializing
+              if (document.getElementById('box')) {
+                animationInstance.current = new window.Color4Bg.AmbientLightBg({
+                    dom: "box",
+                    colors: ["#007FFE","#3099FE","#60B2FE","#90CCFE","#C0E5FE","#F0FFFE"],
+                    loop: true
+                });
               }
+          } catch (error) {
+              console.error('Failed to initialize AmbientLightBg:', error);
           }
       } else {
         console.error('AmbientLightBg script loaded, but Color4Bg object not found or not a constructor.');
@@ -58,12 +58,9 @@ export function LandingPageClient() {
     // The cleanup function will be called when the component unmounts
     return () => {
       clearTimeout(contentTimer);
-       // We can't be sure the 3rd party script has a destroy method,
-       // so the most robust way to prevent memory leaks is to clear our reference to it,
-       // allowing garbage collection to reclaim the memory.
-      if (animationInstance.current) {
-        animationInstance.current = null;
-      }
+      // On cleanup, remove the container from the DOM to stop the animation
+      setShowBox(false);
+      animationInstance.current = null;
     };
   }, [router]);
 
@@ -77,7 +74,7 @@ export function LandingPageClient() {
   
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
-      <div id="box" className="absolute inset-0 z-0"></div>
+      {showBox && <div id="box" className="absolute inset-0 z-0"></div>}
       <Script
         src="/AmbientLightBg.min.js"
         strategy="lazyOnload"
