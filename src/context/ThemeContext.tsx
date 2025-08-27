@@ -64,7 +64,6 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, [theme]);
   
   // Provide the theme, which can be null initially.
-  // Consuming components will need to handle the null case.
   return (
     <ThemeContext.Provider value={{ theme }}>
       {children}
