@@ -1,36 +1,80 @@
 
 'use client';
 
-import { Rocket } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { Rocket } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import Script from 'next/script';
+import { motion } from 'framer-motion';
 
-type LandingPageClientProps = {
-  onNavigate: () => void;
-};
+// Define the custom type on the Window interface for the background script
+declare global {
+    interface Window {
+        Color4Bg?: {
+            AmbientLightBg: new (options: {
+                dom: string,
+                colors: string[],
+                loop: boolean
+            }) => any;
+        }
+    }
+}
 
-export function LandingPageClient({ onNavigate }: LandingPageClientProps) {
+
+export function LandingPageClient() {
   const router = useRouter();
-
+  const [isWarping, setIsWarping] = useState(false);
+  
   useEffect(() => {
-    // Prefetch the home page to make the transition faster
+    // Prefetch the home page as soon as the landing page is interactive
     router.prefetch('/home');
   }, [router]);
 
+  const handleScriptLoad = () => {
+    try {
+      if (window.Color4Bg && window.Color4Bg.AmbientLightBg) {
+        new window.Color4Bg.AmbientLightBg({
+          dom: "box",
+          colors: ["#007FFE", "#3099FE", "#60B2FE", "#90CCFE", "#C0E5FE", "#F0FFFE"],
+          loop: true
+        });
+      }
+    } catch (error) {
+      console.error('Failed to initialize AmbientLightBg:', error);
+    }
+  };
+
+  const handleNavigate = () => {
+    setIsWarping(true);
+    // Wait for the fade-out animation to be noticeable before navigating
+    setTimeout(() => {
+        router.push('/home');
+    }, 800); 
+  };
+  
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-transparent">
+    <div className="relative h-screen w-full overflow-hidden bg-black">
+      {/* The container for the background effect */}
+      <div id="box" className="absolute inset-0 z-0" />
+      
+      {/* Script to load and initialize the background */}
+      <Script
+        src="/AmbientLightBg.js"
+        strategy="lazyOnload"
+        onLoad={handleScriptLoad}
+        onError={(e) => console.error('Failed to load AmbientLightBg script:', e)}
+      />
       
       <motion.div
         className="absolute inset-0 z-20 flex flex-col items-center justify-center"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 1.5, delay: 0.5 }}
+        animate={{ opacity: isWarping ? 0 : 1 }}
+        transition={{ duration: 0.8 }}
       >
         <div className="absolute bottom-[20%]">
           <button
-            onClick={onNavigate}
+            onClick={handleNavigate}
             aria-label="进入网站"
             className="group relative flex h-20 w-20 items-center justify-center rounded-full border border-primary/50 bg-black/30 text-white transition-all duration-300 ease-in-out hover:scale-110 hover:border-primary hover:shadow-[0_0_35px_rgba(255,97,47,0.7)] active:scale-100 backdrop-blur-sm"
           >
@@ -46,9 +90,8 @@ export function LandingPageClient({ onNavigate }: LandingPageClientProps) {
       <motion.div
         className="absolute bottom-8 w-full text-center text-xs text-white/40"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 1.5, delay: 0.5 }}
+        animate={{ opacity: isWarping ? 0 : 1 }}
+        transition={{ duration: 0.8, delay: 0.5 }}
       >
          <p>Developed by Haxis and Mark</p>
       </motion.div>

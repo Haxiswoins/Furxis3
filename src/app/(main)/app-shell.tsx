@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/sheet"
 import { Skeleton } from '@/components/ui/skeleton';
 import type { SiteContent } from '@/types';
-import { AmbientLightBackground } from '@/components/ambient-light-background';
 import { PageAnimationWrapper } from '@/components/page-animation-wrapper';
 
 export function AppShell({
@@ -86,21 +85,9 @@ export function AppShell({
 
   // All other pages get the main wrapper with header and background
   return (
-      <div className="relative flex flex-col min-h-screen">
-          <div 
-            id="box" 
-            style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100vw',
-                height: '100vh',
-                zIndex: 0,
-            }}
-          />
-          <AmbientLightBackground />
+      <div className="relative flex flex-col min-h-screen bg-background">
           <Header />
-          <main className="relative z-10 flex flex-col flex-grow bg-background">
+          <main className="relative z-10 flex flex-col flex-grow pt-24">
               <PageAnimationWrapper>
                 {children}
               </PageAnimationWrapper>

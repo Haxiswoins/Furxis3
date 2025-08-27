@@ -13,7 +13,6 @@ export default function WelcomePage() {
     };
 
     return (
-        <LandingPageClient onNavigate={handleNavigate} />
+        <LandingPageClient />
     );
 }
-
