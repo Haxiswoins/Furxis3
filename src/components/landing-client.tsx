@@ -14,7 +14,8 @@ declare global {
             CurveGradientBg: new (options: {
                 dom: string,
                 colors: string[],
-                loop: boolean
+                loop: boolean,
+                scale?: number
             }) => any;
         }
     }
@@ -35,7 +36,8 @@ export function LandingPageClient() {
                 animationInstance.current = new window.Color4Bg.CurveGradientBg({
                     dom: "box",
                     colors: ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"],
-                    loop: true
+                    loop: true,
+                    scale: 0.2
                 });
               }
           } catch (error) {
@@ -57,8 +59,7 @@ export function LandingPageClient() {
     // The cleanup function will be called when the component unmounts
     return () => {
       clearTimeout(contentTimer);
-      // Even if we can't call a specific destroy method, clearing the reference
-      // helps with garbage collection and prevents memory leaks.
+      // Set ref to null to help with garbage collection.
       animationInstance.current = null;
     };
   }, [router]);
