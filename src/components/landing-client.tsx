@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
+import { cn } from '@/lib/utils';
 
 // Define the custom type on the Window interface
 declare global {
@@ -16,6 +17,21 @@ declare global {
                 loop: boolean
             }) => any; 
         }
+    }
+}
+
+const transitionVariants = {
+    initial: {
+        x: '100%',
+        width: '100%'
+    },
+    animate: {
+        x: '0%',
+        width: '100%'
+    },
+    exit: {
+        x: ['0%', '-100%'],
+        width: ['100%', '100%']
     }
 }
 
@@ -33,42 +49,37 @@ export function LandingPageClient() {
   }, [router]);
 
   useEffect(() => {
-    // Crucially, wait until the theme is determined ('light' or 'dark')
-    // before doing anything related to the background animation.
     if (!theme) {
       return;
     }
 
-    const initializeBackground = () => {
-      if (animationInstance.current || !document.getElementById('box')) return;
-      
-      if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
-          try {
-              const lightThemeColors = ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"];
-              const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#1a1b29"];
-              
-              const instance = new window.Color4Bg.CurveGradientBg({
-                  dom: "box",
-                  colors: theme === 'light' ? lightThemeColors : darkThemeColors,
-                  loop: true
-              });
-              
-              instance.update('scale', 0.2);
-              instance.update('noise', 0.05);
-              
-              animationInstance.current = instance;
-
-          } catch (error) {
-              console.error('Failed to initialize CurveGradientBg:', error);
-          }
-      }
-    };
-
-    // Only load the script once the theme is known
     const script = document.createElement('script');
     script.src = "/CurveGradientBg.min.js";
     script.async = true;
-    script.onload = initializeBackground;
+    script.onload = () => {
+       if (animationInstance.current || !document.getElementById('box')) return;
+      
+        if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
+            try {
+                const lightThemeColors = ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"];
+                const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#1a1b29"];
+                
+                const instance = new window.Color4Bg.CurveGradientBg({
+                    dom: "box",
+                    colors: theme === 'light' ? lightThemeColors : darkThemeColors,
+                    loop: true
+                });
+                
+                instance.update('scale', 0.2);
+                instance.update('noise', 0.05);
+                
+                animationInstance.current = instance;
+
+            } catch (error) {
+                console.error('Failed to initialize CurveGradientBg:', error);
+            }
+        }
+    };
     script.onerror = (e) => console.error('Failed to load CurveGradientBg.min.js script:', e);
 
     document.body.appendChild(script);
@@ -86,7 +97,7 @@ export function LandingPageClient() {
       }
       animationInstance.current = null;
     };
-  }, [theme]); // Dependency on `theme` ensures this effect re-runs when the theme is determined.
+  }, [theme]);
 
   const handleNavigate = () => {
     setIsWarping(true);
@@ -95,7 +106,6 @@ export function LandingPageClient() {
   
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black cursor-pointer" onClick={handleNavigate}>
-      {/* The box is always present, but the script that USES it is delayed */}
       <div id="box" className="absolute inset-0 z-0"></div>
       
       <motion.div
@@ -155,8 +165,20 @@ export function LandingPageClient() {
        >
          <p>Developed by Haxis and Mark</p>
       </motion.div>
+      
+      {/* Transition Mask */}
+       <motion.div 
+        className={cn(
+            "fixed top-0 bottom-0 right-full h-screen z-30",
+            theme === 'light' ? 'bg-background' : 'bg-background'
+        )}
+        variants={transitionVariants}
+        initial="initial"
+        animate={isWarping ? 'animate' : 'exit'}
+        transition={{ delay: 0.2, duration: 0.6, ease: 'easeInOut'}}
+       >
+       </motion.div>
 
     </div>
   );
 }
-
