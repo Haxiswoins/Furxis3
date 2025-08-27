@@ -25,7 +25,6 @@ export function LandingPageClient() {
   const { theme } = useTheme();
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
-  const [showBox, setShowBox] = useState(false);
   const animationInstance = useRef<any>(null);
   const scriptElement = useRef<HTMLScriptElement | null>(null);
 
@@ -40,10 +39,6 @@ export function LandingPageClient() {
     if (!theme) {
       return;
     }
-
-    // Only now can we be sure which color scheme to use.
-    // Allow the animation box to be rendered.
-    setShowBox(true);
 
     const script = document.createElement('script');
     script.src = "/CurveGradientBg.min.js";
@@ -99,6 +94,11 @@ export function LandingPageClient() {
     setTimeout(() => router.push('/home'), 800); 
   };
   
+  // Do not render anything until the theme is determined to prevent FOUC
+  if (!theme) {
+    return null;
+  }
+  
   return (
     <div className="relative h-screen w-full overflow-hidden bg-background cursor-pointer" onClick={handleNavigate}>
       <motion.div
@@ -106,8 +106,7 @@ export function LandingPageClient() {
         animate={{ opacity: isWarping ? 0 : 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
-        {/* Conditional rendering: The animation container is only added to the DOM after the theme is known. */}
-        {showBox && <div id="box" className="absolute inset-0 z-0"></div>}
+        <div id="box" className="absolute inset-0 z-0"></div>
       </motion.div>
       
       <motion.div
