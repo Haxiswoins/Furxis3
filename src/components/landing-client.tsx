@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Rocket } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Script from 'next/script';
 
 // Define the custom type on the Window interface for the background script
 declare global {
@@ -14,7 +15,7 @@ declare global {
                 dom: string,
                 colors: string[],
                 loop: boolean
-            }) => { destroy?: () => void }; // Assume a destroy method might exist
+            }) => { destroy?: () => void };
         }
     }
 }
@@ -24,22 +25,26 @@ export function LandingPageClient() {
   const router = useRouter();
   const [isWarping, setIsWarping] = useState(false);
   const animationInstance = useRef<ReturnType<Window['Color4Bg']['AmbientLightBg']> | null>(null);
-  const boxContainerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    // Prefetch the home page as soon as the landing page is interactive
     router.prefetch('/home');
-
-    // Safely initialize the background effect after the component has mounted
-    try {
-      if (window.Color4Bg && window.Color4Bg.AmbientLightBg && boxContainerRef.current) {
-        // Ensure the container is empty before creating a new instance
-        while (boxContainerRef.current.firstChild) {
-            boxContainerRef.current.removeChild(boxContainerRef.current.firstChild);
+    
+    return () => {
+        if (animationInstance.current && typeof animationInstance.current.destroy === 'function') {
+            animationInstance.current.destroy();
+            animationInstance.current = null;
         }
-        
+    };
+  }, [router]);
+
+  const handleInitAnimation = () => {
+     try {
+      if (window.Color4Bg && window.Color4Bg.AmbientLightBg) {
+        if (animationInstance.current) {
+           animationInstance.current.destroy?.();
+        }
         animationInstance.current = new window.Color4Bg.AmbientLightBg({
-          dom: "box", // The script uses the ID, so we keep it.
+          dom: "box",
           colors: ["#007FFE", "#3099FE", "#60B2FE", "#90CCFE", "#C0E5FE", "#F0FFFE"],
           loop: true
         });
@@ -49,29 +54,10 @@ export function LandingPageClient() {
     } catch (error) {
       console.error('Failed to initialize AmbientLightBg:', error);
     }
-    
-    // --- The Cleanup Function ---
-    // This function will run when the component unmounts (e.g., when navigating away)
-    return () => {
-        // Attempt to call a destroy method if it exists on the instance
-        if (animationInstance.current && typeof animationInstance.current.destroy === 'function') {
-            animationInstance.current.destroy();
-        }
-        
-        // As a fallback, remove the canvas or any elements the script might have created inside our container.
-        if (boxContainerRef.current) {
-            while (boxContainerRef.current.firstChild) {
-                boxContainerRef.current.removeChild(boxContainerRef.current.firstChild);
-            }
-        }
-        animationInstance.current = null;
-    };
-
-  }, []); // The empty dependency array ensures this runs only once on mount and cleanup runs on unmount.
+  }
 
   const handleNavigate = () => {
     setIsWarping(true);
-    // Wait for the fade-out animation to be noticeable before navigating
     setTimeout(() => {
         router.push('/home');
     }, 800); 
@@ -79,8 +65,12 @@ export function LandingPageClient() {
   
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
-      {/* The container for the background effect, now with a ref */}
-      <div id="box" ref={boxContainerRef} className="absolute inset-0 z-0" />
+      <div id="box" className="absolute inset-0 z-0" />
+      <Script 
+        src="/AmbientLightBg.min.js"
+        strategy="lazyOnload"
+        onLoad={handleInitAnimation}
+      />
       
       <motion.div
         className="absolute inset-0 z-20 flex flex-col items-center justify-center"
