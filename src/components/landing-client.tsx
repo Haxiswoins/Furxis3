@@ -15,7 +15,7 @@ declare global {
                 dom: string,
                 colors: string[],
                 loop: boolean,
-                scale?: number
+                zoom?: number
             }) => any;
         }
     }
@@ -37,7 +37,7 @@ export function LandingPageClient() {
                     dom: "box",
                     colors: ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"],
                     loop: true,
-                    scale: 0.2
+                    zoom: 0.2
                 });
               }
           } catch (error) {
@@ -59,7 +59,7 @@ export function LandingPageClient() {
     // The cleanup function will be called when the component unmounts
     return () => {
       clearTimeout(contentTimer);
-      // Set ref to null to help with garbage collection.
+      // Although we can't be sure of a destroy method, nullifying the ref is good practice.
       animationInstance.current = null;
     };
   }, [router]);
