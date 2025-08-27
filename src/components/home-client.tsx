@@ -84,11 +84,11 @@ export function HomeClient({ content }: HomeClientProps) {
             </motion.div>
             
             <motion.div
-                className="flex md:grid md:grid-cols-3 md:gap-8 gap-6 overflow-x-auto snap-x snap-mandatory px-4 md:px-0 -mx-4 md:mx-0"
+                className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4"
                 variants={containerVariants}
             >
-                <motion.div variants={itemVariants} className="flex-shrink-0 w-[80vw] md:w-auto snap-center">
-                <Link href="/commission" className={cardLinkClass}>
+                <motion.div variants={itemVariants}>
+                <a onClick={() => handleNavigate('/commission')} className={cardLinkClass}>
                     <div className={cardDivClass}>
                         <Image
                         src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
@@ -105,11 +105,11 @@ export function HomeClient({ content }: HomeClientProps) {
                         <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
                         </div>
                     </div>
-                </Link>
+                </a>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="flex-shrink-0 w-[80vw] md:w-auto snap-center">
-                <Link href="/adoption" className={cardLinkClass}>
+                <motion.div variants={itemVariants}>
+                <a onClick={() => handleNavigate('/adoption')} className={cardLinkClass}>
                     <div className={cardDivClass}>
                         <Image
                         src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
@@ -125,11 +125,11 @@ export function HomeClient({ content }: HomeClientProps) {
                         <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
                         </div>
                     </div>
-                </Link>
+                </a>
                 </motion.div>
                 
-                <motion.div variants={itemVariants} className="flex-shrink-0 w-[80vw] md:w-auto snap-center">
-                <Link href="/works" className={cardLinkClass}>
+                <motion.div variants={itemVariants}>
+                <a onClick={() => handleNavigate('/works')} className={cardLinkClass}>
                     <div className={cardDivClass}>
                         <Image
                         src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
@@ -145,7 +145,7 @@ export function HomeClient({ content }: HomeClientProps) {
                         <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
                         </div>
                     </div>
-                </Link>
+                </a>
                 </motion.div>
             </motion.div>
             </div>
