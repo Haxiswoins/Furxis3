@@ -24,7 +24,6 @@ export function LandingPageClient() {
   const router = useRouter();
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
-  const [showBox, setShowBox] = useState(true); // State to control the DOM element
   const animationInstance = useRef<any>(null);
 
   const initializeBackground = () => {
@@ -58,8 +57,7 @@ export function LandingPageClient() {
     // The cleanup function will be called when the component unmounts
     return () => {
       clearTimeout(contentTimer);
-      // On cleanup, remove the container from the DOM to stop the animation
-      setShowBox(false);
+      // Clear the reference to the animation instance to allow garbage collection
       animationInstance.current = null;
     };
   }, [router]);
@@ -74,7 +72,7 @@ export function LandingPageClient() {
   
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
-      {showBox && <div id="box" className="absolute inset-0 z-0"></div>}
+      <div id="box" className="absolute inset-0 z-0"></div>
       <Script
         src="/AmbientLightBg.min.js"
         strategy="lazyOnload"
