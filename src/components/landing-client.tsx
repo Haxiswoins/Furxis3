@@ -34,7 +34,7 @@ export function LandingPageClient() {
           try {
               if (document.getElementById('box')) {
                 const lightThemeColors = ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"];
-                const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#9FE3EE"];
+                const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#1a1b29"];
 
                 const instance = new window.Color4Bg.CurveGradientBg({
                     dom: "box",
