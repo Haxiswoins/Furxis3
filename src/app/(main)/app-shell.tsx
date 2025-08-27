@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/sheet"
 import { Skeleton } from '@/components/ui/skeleton';
 import type { SiteContent } from '@/types';
-import { FluidBackground } from '@/components/fluid-background';
+import { AmbientLightBackground } from '@/components/ambient-light-background';
 
 function MainContentWrapper({
   children,
@@ -26,7 +26,7 @@ function MainContentWrapper({
 }) {
   return (
     <>
-      <FluidBackground />
+      <AmbientLightBackground />
       <Header />
       <main className="relative z-10 flex flex-col flex-grow pt-24">
         {children}

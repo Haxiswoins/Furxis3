@@ -6,20 +6,20 @@ import { memo } from 'react';
 
 // This component is memoized to prevent re-renders,
 // which could cause the script to load multiple times.
-export const FluidBackground = memo(function FluidBackground() {
+export const AmbientLightBackground = memo(function AmbientLightBackground() {
   const initializeBackground = () => {
       try {
-        if (window.Color4Bg && window.Color4Bg.AestheticFluidBg) {
-            new window.Color4Bg.AestheticFluidBg({
-            dom: "box",
-            colors: ["#ff6600","#F0FFFE","#3069a1","#F0FFFE","#83e5ec","#F0FFFE"],
-            loop: true
+        if (window.Color4Bg && window.Color4Bg.AmbientLightBg) {
+            new window.Color4Bg.AmbientLightBg({
+                dom: "box",
+                colors: ["#007FFE","#3099FE","#60B2FE","#90CCFE","#C0E5FE","#F0FFFE"],
+                loop: true
             });
         } else {
-            console.error('AestheticFluidBg script loaded, but Color4Bg object not found on window.');
+            console.error('AmbientLightBg script loaded, but Color4Bg object not found on window.');
         }
       } catch (error) {
-        console.error('Failed to initialize AestheticFluidBg:', error);
+        console.error('Failed to initialize AmbientLightBg:', error);
       }
   };
   
@@ -37,11 +37,11 @@ export const FluidBackground = memo(function FluidBackground() {
         }}
       />
       <Script
-        src="/AestheticFluidBg.min.js"
+        src="/AmbientLightBg.js"
         strategy="lazyOnload"
         onLoad={initializeBackground}
         onError={(e) => {
-            console.error('Failed to load AestheticFluidBg script:', e);
+            console.error('Failed to load AmbientLightBg script:', e);
         }}
       />
     </>
@@ -52,7 +52,7 @@ export const FluidBackground = memo(function FluidBackground() {
 declare global {
     interface Window {
         Color4Bg?: {
-            AestheticFluidBg: new (options: {
+            AmbientLightBg: new (options: {
                 dom: string,
                 colors: string[],
                 loop: boolean
