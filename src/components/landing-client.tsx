@@ -40,6 +40,7 @@ export function LandingPageClient() {
   const { theme } = useTheme();
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
+  const [showBox, setShowBox] = useState(false);
   const animationInstance = useRef<any>(null);
   const scriptElement = useRef<HTMLScriptElement | null>(null);
 
@@ -52,6 +53,9 @@ export function LandingPageClient() {
     if (!theme) {
       return;
     }
+
+    // Only render the animation box when the theme is determined.
+    setShowBox(true);
 
     const script = document.createElement('script');
     script.src = "/CurveGradientBg.min.js";
@@ -106,7 +110,16 @@ export function LandingPageClient() {
   
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black cursor-pointer" onClick={handleNavigate}>
-      <div id="box" className="absolute inset-0 z-0"></div>
+      {showBox && (
+        <motion.div
+            className="absolute inset-0 z-0"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: isWarping ? 0 : 1 }}
+            transition={{ duration: 0.5 }}
+        >
+            <div id="box" className="absolute inset-0"></div>
+        </motion.div>
+      )}
       
       <motion.div
         className="absolute inset-0 z-20 flex items-start justify-start p-8 md:p-16"
