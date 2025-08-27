@@ -29,17 +29,25 @@ export function LandingPageClient() {
   useEffect(() => {
     router.prefetch('/home');
     
+    // This is the cleanup function. It runs when the component unmounts.
     return () => {
+        // More robust cleanup: remove the DOM element to ensure the animation stops.
+        const boxElement = document.getElementById("box");
+        if (boxElement && boxElement.parentElement) {
+            boxElement.parentElement.removeChild(boxElement);
+        }
+        
+        // Also attempt to call destroy if it exists, for good measure.
         if (animationInstance.current && typeof animationInstance.current.destroy === 'function') {
             animationInstance.current.destroy();
-            animationInstance.current = null;
         }
+        animationInstance.current = null;
     };
   }, [router]);
 
   const handleInitAnimation = () => {
      try {
-      if (window.Color4Bg && window.Color4Bg.AmbientLightBg) {
+      if (window.Color4Bg && window.Color4Bg.AmbientLightBg && document.getElementById('box')) {
         if (animationInstance.current) {
            animationInstance.current.destroy?.();
         }
