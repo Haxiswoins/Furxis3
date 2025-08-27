@@ -14,9 +14,15 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  // Initialize theme to null to avoid hydration mismatch.
-  // The actual theme will be set on the client after mount.
-  const [theme, setTheme] = useState<Theme | null>(null);
+  const [theme, setTheme] = useState<Theme | null>(() => {
+    // Read the theme from the DOM on initial client-side render.
+    // This avoids the flash because the class is already set by the inline script.
+    if (typeof window !== 'undefined') {
+      return document.documentElement.classList.contains('light') ? 'light' : 'dark';
+    }
+    return null;
+  });
+  
   const [siteContent, setSiteContent] = useState<SiteContent | null>(null);
 
   useEffect(() => {
@@ -32,8 +38,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const determineTheme = useCallback(() => {
-    // This function will only run on the client, so window is safe to use.
-    if (!siteContent) return; // Wait until site content is loaded
+    if (!siteContent) return;
 
     const sunriseHour = siteContent?.sunriseHour ?? 6;
     const sunsetHour = siteContent?.sunsetHour ?? 18;
@@ -43,13 +48,15 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     
     const newTheme = (currentHour >= sunriseHour && currentHour < sunsetHour) ? 'light' : 'dark';
     
-    setTheme(newTheme);
+    if (newTheme !== theme) {
+      setTheme(newTheme);
+    }
 
-  }, [siteContent]); 
+  }, [siteContent, theme]); 
 
-  // Run theme determination once on mount and then on an interval.
+  // Run theme determination on mount and then on an interval.
   useEffect(() => {
-    determineTheme();
+    // We already set the theme from the DOM, so this just sets up the interval for updates.
     const interval = setInterval(determineTheme, 60000);
     return () => clearInterval(interval);
   }, [determineTheme]);
@@ -58,12 +65,13 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (theme) {
         const root = window.document.documentElement;
-        root.classList.remove('light', 'dark');
-        root.classList.add(theme);
+        if (!root.classList.contains(theme)) {
+             root.classList.remove('light', 'dark');
+             root.classList.add(theme);
+        }
     }
   }, [theme]);
   
-  // Provide the theme, which can be null initially.
   return (
     <ThemeContext.Provider value={{ theme }}>
       {children}
