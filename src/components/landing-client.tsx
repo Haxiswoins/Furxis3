@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 import { motion } from 'framer-motion';
+import { useTheme } from '@/context/ThemeContext';
 
 // Define the custom type on the Window interface
 declare global {
@@ -21,6 +22,7 @@ declare global {
 
 export function LandingPageClient() {
   const router = useRouter();
+  const { theme } = useTheme();
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
   const animationInstance = useRef<any>(null);
@@ -31,9 +33,12 @@ export function LandingPageClient() {
       if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
           try {
               if (document.getElementById('box')) {
+                const lightThemeColors = ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"];
+                const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#9FE3EE"];
+
                 const instance = new window.Color4Bg.CurveGradientBg({
                     dom: "box",
-                    colors: ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"],
+                    colors: theme === 'light' ? lightThemeColors : darkThemeColors,
                     loop: true
                 });
                 
