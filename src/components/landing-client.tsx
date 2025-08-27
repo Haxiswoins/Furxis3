@@ -7,6 +7,7 @@ import { Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Script from 'next/script';
 import { useTheme } from '@/context/ThemeContext';
+import { motion } from 'framer-motion';
 
 // Define the custom type on the Window interface
 declare global {
