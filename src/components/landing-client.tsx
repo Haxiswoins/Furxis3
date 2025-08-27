@@ -28,7 +28,7 @@ export function LandingPageClient() {
   const animationInstance = useRef<any>(null);
   
   const initializeBackground = () => {
-      if (animationInstance.current) return;
+      if (animationInstance.current || !theme) return;
       
       if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
           try {
@@ -56,7 +56,24 @@ export function LandingPageClient() {
   };
 
   useEffect(() => {
+    // Prefetch the home page as soon as the landing page is interactive
     router.prefetch('/home');
+
+    // Load the script and initialize background when the theme is ready
+    const script = document.createElement('script');
+    script.src = "/CurveGradientBg.min.js";
+    script.async = true;
+    script.onload = () => {
+        // Only initialize if the theme is already determined
+        if (theme) {
+            initializeBackground();
+        }
+    };
+     script.onerror = (e) => {
+        console.error('Failed to load CurveGradientBg.min.js script:', e);
+    };
+
+    document.body.appendChild(script);
 
     const contentTimer = setTimeout(() => {
       setIsContentVisible(true);
@@ -64,11 +81,12 @@ export function LandingPageClient() {
 
     return () => {
       clearTimeout(contentTimer);
-      // When the component unmounts, clear the reference.
-      // The key change on the parent component will handle full re-initialization.
+      // Clean up script tag
+      document.body.removeChild(script);
+      // Ensure we clear the animation instance reference
       animationInstance.current = null;
     };
-  }, [router]);
+  }, [router, theme]); // Add theme as a dependency to re-trigger if needed.
 
   const handleNavigate = () => {
     setIsWarping(true);
@@ -80,14 +98,6 @@ export function LandingPageClient() {
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black cursor-pointer" onClick={handleNavigate}>
       <div id="box" className="absolute inset-0 z-0"></div>
-      <Script
-        src="/CurveGradientBg.min.js"
-        strategy="lazyOnload"
-        onLoad={initializeBackground}
-        onError={(e) => {
-            console.error('Failed to load CurveGradientBg.min.js script:', e);
-        }}
-      />
       
       <motion.div
         className="absolute inset-0 z-20 flex flex-col items-center justify-center"
