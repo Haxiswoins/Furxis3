@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 import type { SessionData } from '@/lib/session';
 
 export async function GET() {
-  // --- Admin Test Mode ---
+  /* --- Admin Test Mode ---
   // This is a temporary modification to simulate an admin login for testing purposes.
   // It bypasses the actual session check and returns a hardcoded admin user.
   const adminUser = {
@@ -17,8 +17,9 @@ export async function GET() {
   };
 
   return NextResponse.json({ user: adminUser });
+  */
 
-  /* --- Original Code ---
+  // --- Original Code ---
   const session = await getIronSession<SessionData>(cookies(), {
     password: process.env.AUTHING_SECRET!,
     cookieName: 'suitopia-session',
@@ -37,5 +38,4 @@ export async function GET() {
       isAdmin: session.isAdmin,
     },
   });
-  */
 }
