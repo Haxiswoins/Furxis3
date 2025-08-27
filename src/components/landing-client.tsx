@@ -31,10 +31,6 @@ export function LandingPageClient() {
     // Prefetch the home page
     router.prefetch('/home');
 
-    // Define color schemes
-    const lightThemeColors = ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"];
-    const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#1a1b29"];
-
     const initializeBackground = () => {
       // Prevent re-initialization
       if (animationInstance.current) return;
@@ -45,7 +41,7 @@ export function LandingPageClient() {
                 // Always initialize with the light theme colors by default
                 const instance = new window.Color4Bg.CurveGradientBg({
                     dom: "box",
-                    colors: lightThemeColors,
+                    colors: ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"],
                     loop: true
                 });
                 
@@ -54,11 +50,6 @@ export function LandingPageClient() {
                 instance.update('noise', 0.05);
                 
                 animationInstance.current = instance;
-
-                // After initializing, check if the current theme is dark and update if necessary
-                if (theme === 'dark') {
-                  instance.colors(darkThemeColors);
-                }
               }
           } catch (error) {
               console.error('Failed to initialize CurveGradientBg:', error);
