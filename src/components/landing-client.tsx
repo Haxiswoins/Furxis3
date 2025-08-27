@@ -20,21 +20,6 @@ declare global {
     }
 }
 
-const transitionVariants = {
-    initial: {
-        x: '100%',
-        width: '100%'
-    },
-    animate: {
-        x: '0%',
-        width: '100%'
-    },
-    exit: {
-        x: ['0%', '-100%'],
-        width: ['100%', '100%']
-    }
-}
-
 export function LandingPageClient() {
   const router = useRouter();
   const { theme } = useTheme();
@@ -111,14 +96,7 @@ export function LandingPageClient() {
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black cursor-pointer" onClick={handleNavigate}>
       {showBox && (
-        <motion.div
-            className="absolute inset-0 z-0"
-            initial={{ opacity: 1 }}
-            animate={{ opacity: isWarping ? 0 : 1 }}
-            transition={{ duration: 0.5 }}
-        >
-            <div id="box" className="absolute inset-0"></div>
-        </motion.div>
+            <div id="box" className="absolute inset-0 z-0"></div>
       )}
       
       <motion.div
@@ -129,13 +107,12 @@ export function LandingPageClient() {
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
         <motion.div 
-            className="flex items-start justify-start text-white"
+            className="flex items-start justify-start text-white drop-shadow-md"
             initial={{ opacity: 0 }}
             animate={{ opacity: isWarping ? 0 : 1 }}
             transition={{ duration: 0.3 }}
         >
             <motion.div 
-                className="drop-shadow-md"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: isContentVisible ? 1 : 0, y: isContentVisible ? 0 : 20 }}
                 transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
@@ -179,16 +156,13 @@ export function LandingPageClient() {
          <p>Developed by Haxis and Mark</p>
       </motion.div>
       
-      {/* Transition Mask */}
+      {/* Transition Mask - Fades in to cover the content */}
        <motion.div 
-        className={cn(
-            "fixed top-0 bottom-0 right-full h-screen z-30",
-            theme === 'light' ? 'bg-background' : 'bg-background'
-        )}
-        variants={transitionVariants}
-        initial="initial"
-        animate={isWarping ? 'animate' : 'exit'}
-        transition={{ delay: 0.2, duration: 0.6, ease: 'easeInOut'}}
+        className="fixed inset-0 z-30 bg-background"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isWarping ? 1 : 0 }}
+        transition={{ duration: 0.6, ease: 'easeInOut'}}
+        style={{ pointerEvents: 'none' }} // Make it non-interactive
        >
        </motion.div>
 
