@@ -3,7 +3,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import Script from 'next/script';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -28,6 +27,7 @@ export function LandingPageClient() {
   const animationInstance = useRef<any>(null);
   
   const initializeBackground = () => {
+      // Prevent re-initialization
       if (animationInstance.current || !theme) return;
       
       if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
@@ -56,6 +56,10 @@ export function LandingPageClient() {
   };
 
   useEffect(() => {
+    // Crucial fix: Do not proceed until the theme is definitively set to 'light' or 'dark'.
+    // This prevents initialization with a default/null theme, avoiding the flash of incorrect colors.
+    if (!theme) return;
+      
     // Prefetch the home page as soon as the landing page is interactive
     router.prefetch('/home');
 
@@ -64,10 +68,7 @@ export function LandingPageClient() {
     script.src = "/CurveGradientBg.min.js";
     script.async = true;
     script.onload = () => {
-        // Only initialize if the theme is already determined
-        if (theme) {
-            initializeBackground();
-        }
+        initializeBackground();
     };
      script.onerror = (e) => {
         console.error('Failed to load CurveGradientBg.min.js script:', e);
@@ -83,10 +84,12 @@ export function LandingPageClient() {
       clearTimeout(contentTimer);
       // Clean up script tag
       document.body.removeChild(script);
-      // Ensure we clear the animation instance reference
+      // Ensure we clear the animation instance reference on cleanup
       animationInstance.current = null;
     };
-  }, [router, theme]); // Add theme as a dependency to re-trigger if needed.
+    // The dependency on `theme` ensures this effect re-runs if the theme changes,
+    // and the guard clause `if (!theme) return;` ensures it only runs with a valid theme.
+  }, [router, theme]);
 
   const handleNavigate = () => {
     setIsWarping(true);
