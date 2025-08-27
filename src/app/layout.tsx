@@ -67,7 +67,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-       <body>
+       <body className={cn(fontHeadline.variable, fontSerifSC.variable, fontBody.variable)}>
           <ThemeInitializer />
           <ThemeProvider>
             <AuthProvider>
