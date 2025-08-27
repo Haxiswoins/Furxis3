@@ -24,49 +24,49 @@ export function LandingPageClient() {
   const { theme } = useTheme();
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [isWarping, setIsWarping] = useState(false);
-  const [showBox, setShowBox] = useState(false); // New state to control animation container rendering
   const animationInstance = useRef<any>(null);
   const scriptElement = useRef<HTMLScriptElement | null>(null);
 
   useEffect(() => {
-    // Crucial fix: Do not proceed until the theme is definitively set.
-    if (!theme) return;
-
-    // 1. Show the animation container ONLY when the theme is ready.
-    setShowBox(true);
-    
     // Prefetch the home page
     router.prefetch('/home');
 
-    // 2. Load the script and initialize background
+    // Define color schemes
+    const lightThemeColors = ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"];
+    const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#1a1b29"];
+
     const initializeBackground = () => {
+      // Prevent re-initialization
       if (animationInstance.current) return;
       
       if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
           try {
               if (document.getElementById('box')) {
-                const lightThemeColors = ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"];
-                const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#1a1b29"];
-
+                // Always initialize with the light theme colors by default
                 const instance = new window.Color4Bg.CurveGradientBg({
                     dom: "box",
-                    colors: theme === 'light' ? lightThemeColors : darkThemeColors,
+                    colors: lightThemeColors,
                     loop: true
                 });
                 
+                // Use the update method which is the correct API
                 instance.update('scale', 0.2);
                 instance.update('noise', 0.05);
                 
                 animationInstance.current = instance;
+
+                // After initializing, check if the current theme is dark and update if necessary
+                if (theme === 'dark') {
+                  instance.colors(darkThemeColors);
+                }
               }
           } catch (error) {
               console.error('Failed to initialize CurveGradientBg:', error);
           }
-      } else {
-        console.error('CurveGradientBg script loaded, but Color4Bg object not found or not a constructor.');
       }
     };
 
+    // Load the script
     const script = document.createElement('script');
     script.src = "/CurveGradientBg.min.js";
     script.async = true;
@@ -89,8 +89,23 @@ export function LandingPageClient() {
       }
       animationInstance.current = null;
     };
-  // The effect now correctly depends on the theme.
-  }, [router, theme]);
+  }, [router]); // Run only once on mount
+
+  // This separate effect handles theme changes AFTER the initial load
+  useEffect(() => {
+    if (animationInstance.current && theme) {
+      const lightThemeColors = ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"];
+      const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#1a1b29"];
+      
+      // Update colors based on the current theme
+      if (theme === 'dark') {
+        animationInstance.current.colors(darkThemeColors);
+      } else {
+        animationInstance.current.colors(lightThemeColors);
+      }
+    }
+  }, [theme]);
+
 
   const handleNavigate = () => {
     setIsWarping(true);
@@ -101,8 +116,7 @@ export function LandingPageClient() {
   
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black cursor-pointer" onClick={handleNavigate}>
-      {/* The animation container is now conditionally rendered */}
-      {showBox && <div id="box" className="absolute inset-0 z-0"></div>}
+      <div id="box" className="absolute inset-0 z-0"></div>
       
       <motion.div
         className="absolute inset-0 z-20 flex flex-col items-center justify-center"
