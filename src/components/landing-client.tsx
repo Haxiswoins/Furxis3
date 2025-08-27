@@ -138,7 +138,7 @@ export function LandingPageClient() {
             animate={{ opacity: isWarping ? 0 : 1 }}
             transition={{ duration: 0.3 }}
         >
-          <p className="text-white/80 font-light text-base animate-pulse">
+          <p className="text-white/80 font-light text-sm animate-pulse">
             点击任意区域进入
           </p>
         </motion.div>
