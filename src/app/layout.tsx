@@ -52,6 +52,8 @@ export default function RootLayout({
             </AuthProvider>
             <Toaster />
           </ThemeProvider>
+          {/* The script is now loaded here in the root layout to be available globally */}
+          <Script src="/AmbientLightBg.min.js" strategy="beforeInteractive" />
       </body>
     </html>
   );

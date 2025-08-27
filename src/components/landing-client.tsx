@@ -1,11 +1,9 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Rocket } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import Script from 'next/script';
 import { motion } from 'framer-motion';
 
 // Define the custom type on the Window interface for the background script
@@ -29,9 +27,9 @@ export function LandingPageClient() {
   useEffect(() => {
     // Prefetch the home page as soon as the landing page is interactive
     router.prefetch('/home');
-  }, [router]);
 
-  const handleScriptLoad = () => {
+    // Safely initialize the background effect after the component has mounted
+    // and the script from the layout has loaded.
     try {
       if (window.Color4Bg && window.Color4Bg.AmbientLightBg) {
         new window.Color4Bg.AmbientLightBg({
@@ -39,11 +37,14 @@ export function LandingPageClient() {
           colors: ["#007FFE", "#3099FE", "#60B2FE", "#90CCFE", "#C0E5FE", "#F0FFFE"],
           loop: true
         });
+      } else {
+        console.warn('AmbientLightBg script not yet available.');
       }
     } catch (error) {
       console.error('Failed to initialize AmbientLightBg:', error);
     }
-  };
+
+  }, []);
 
   const handleNavigate = () => {
     setIsWarping(true);
@@ -57,14 +58,6 @@ export function LandingPageClient() {
     <div className="relative h-screen w-full overflow-hidden bg-black">
       {/* The container for the background effect */}
       <div id="box" className="absolute inset-0 z-0" />
-      
-      {/* Script to load and initialize the background */}
-      <Script
-        src="/AmbientLightBg.js"
-        strategy="lazyOnload"
-        onLoad={handleScriptLoad}
-        onError={(e) => console.error('Failed to load AmbientLightBg script:', e)}
-      />
       
       <motion.div
         className="absolute inset-0 z-20 flex flex-col items-center justify-center"
