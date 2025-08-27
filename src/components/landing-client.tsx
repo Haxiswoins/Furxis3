@@ -96,19 +96,20 @@ export function LandingPageClient() {
       {showBox && <div id="box" className="absolute inset-0 z-0"></div>}
       
       <motion.div
-        className="absolute inset-0 z-20 flex"
+        className="absolute inset-0 z-20 flex items-start justify-start p-8 md:p-16"
         initial={{ opacity: 0 }}
         animate={{ opacity: isContentVisible ? 1 : 0 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
         <motion.div 
-            className="flex items-start justify-start p-8 md:p-16 text-white"
+            className="flex items-start justify-start text-white"
             initial={{ opacity: 0 }}
             animate={{ opacity: isWarping ? 0 : 1 }}
             transition={{ duration: 0.3 }}
         >
             <motion.div 
+                className="drop-shadow-md"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: isContentVisible ? 1 : 0, y: isContentVisible ? 0 : 20 }}
                 transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
@@ -127,7 +128,7 @@ export function LandingPageClient() {
       </motion.div>
 
       <motion.div
-        className="absolute inset-0 z-20 flex items-end justify-end p-8"
+        className="absolute bottom-8 right-8 z-20 flex items-end justify-end p-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: isContentVisible ? 1 : 0 }}
         exit={{ opacity: 0 }}
