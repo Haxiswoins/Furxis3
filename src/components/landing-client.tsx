@@ -100,7 +100,7 @@ export function LandingPageClient() {
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
         <motion.div 
-            className="w-full md:w-1/2 flex items-center justify-center p-8 md:p-16 text-white"
+            className="flex items-center justify-center p-8 md:p-16 text-white"
             initial={{ opacity: 0 }}
             animate={{ opacity: isWarping ? 0 : 1 }}
             transition={{ duration: 0.3 }}
