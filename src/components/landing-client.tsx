@@ -3,7 +3,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Rocket } from 'lucide-react';
 import Script from 'next/script';
 import { motion } from 'framer-motion';
 
@@ -15,7 +14,7 @@ declare global {
                 dom: string,
                 colors: string[],
                 loop: boolean
-            }) => any; // Keep it 'any' as we don't know the exact class type
+            }) => any; 
         }
     }
 }
@@ -38,8 +37,6 @@ export function LandingPageClient() {
                     loop: true
                 });
                 
-                // After analyzing the provided source code, the correct way to update the scale
-                // is by calling the 'update' method with 'scale' as the key.
                 instance.update('scale', 0.2);
                 instance.update('noise', 0.05);
                 
@@ -62,10 +59,6 @@ export function LandingPageClient() {
 
     return () => {
       clearTimeout(contentTimer);
-      // Attempt to call a destroy method if it exists, and clear the ref
-      if (animationInstance.current && typeof animationInstance.current.destroy === 'function') {
-        animationInstance.current.destroy();
-      }
       animationInstance.current = null;
     };
   }, [router]);
@@ -78,7 +71,7 @@ export function LandingPageClient() {
   };
   
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-black">
+    <div className="relative h-screen w-full overflow-hidden bg-black cursor-pointer" onClick={handleNavigate}>
       <div id="box" className="absolute inset-0 z-0"></div>
       <Script
         src="/CurveGradientBg.min.js"
@@ -101,17 +94,9 @@ export function LandingPageClient() {
             animate={{ opacity: isWarping ? 0 : 1 }}
             transition={{ duration: 0.3 }}
         >
-          <button
-            onClick={handleNavigate}
-            aria-label="进入网站"
-            className="group relative flex h-20 w-20 items-center justify-center rounded-full border border-primary/50 bg-black/30 text-white transition-all duration-300 ease-in-out hover:scale-110 hover:border-primary hover:shadow-[0_0_35px_rgba(255,115,0,0.7)] active:scale-100 backdrop-blur-sm"
-          >
-            <div className="absolute inset-0 rounded-full border-2 border-white/20 scale-125 group-hover:scale-150 group-hover:opacity-0 transition-all duration-500 animate-pulse"></div>
-            <Rocket 
-                className="h-10 w-10 text-primary/80 transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1 group-hover:scale-110"
-                style={{ transform: 'rotate(-45deg)' }}
-            />
-          </button>
+          <p className="text-white/80 font-semibold text-lg animate-pulse">
+            任意点击进入首页
+          </p>
         </motion.div>
       </motion.div>
 
