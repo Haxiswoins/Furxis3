@@ -28,7 +28,7 @@ const itemVariants = {
     opacity: 1,
     transition: {
       duration: 0.5,
-      ease: 'easeOut',
+      ease: 'easeInOut',
     },
   },
 };
@@ -59,12 +59,12 @@ export function HomeClient({ content }: HomeClientProps) {
   return (
     <div className="container mx-auto">
         <motion.div 
-            className="relative z-10 flex flex-col min-h-screen pt-24"
+            className="relative z-10 flex flex-col min-h-screen"
             initial="hidden"
             animate="visible"
             variants={containerVariants}
         >
-            <div className="w-full py-8 md:py-12 mt-[-6rem]">
+            <div className="w-full py-8 md:py-12">
             <motion.div className="text-center mb-10 md:mb-16 px-4" variants={itemVariants}>
                 <a onClick={() => handleNavigate('/')} className="cursor-pointer">
                     <div className="relative inline-block group px-4">
