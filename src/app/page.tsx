@@ -99,7 +99,7 @@ export default function WelcomePage() {
             <motion.div
                 className="absolute inset-0 z-0"
                 animate={{ opacity: isWarping ? 0 : 1 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
+                transition={{ duration: 0.5, ease: 'easeInOut' }}
             >
                 <div id="box" className="absolute inset-0 z-0"></div>
             </motion.div>
@@ -109,7 +109,7 @@ export default function WelcomePage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: isContentVisible ? 1 : 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
+                transition={{ duration: 0.5, ease: 'easeInOut' }}
             >
                 <motion.div 
                     className="flex items-start justify-start text-white drop-shadow-md"
@@ -120,7 +120,7 @@ export default function WelcomePage() {
                     <motion.div 
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: isContentVisible ? 1 : 0, y: isContentVisible ? 0 : 20 }}
-                        transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
+                        transition={{ duration: 0.8, ease: 'easeInOut', delay: 0.2 }}
                     >
                         <p className="text-lg md:text-xl font-semibold">欢迎来到</p>
                         <p className="text-base md:text-lg font-light mb-4">Welcome to</p>
@@ -140,7 +140,7 @@ export default function WelcomePage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: isContentVisible ? 1 : 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
+                transition={{ duration: 0.5, ease: 'easeInOut' }}
             >
                 <motion.div
                     animate={{ opacity: isWarping ? 0 : 1 }}
@@ -156,7 +156,7 @@ export default function WelcomePage() {
                     className="absolute bottom-4 w-full text-center text-xs text-white/40"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: isContentVisible && !isWarping ? 1 : 0 }}
-                    transition={{ duration: 1.0, ease: 'easeOut' }}
+                    transition={{ duration: 1.0, ease: 'easeInOut' }}
             >
                 <p>Developed by Haxis and Mark</p>
             </motion.div>
