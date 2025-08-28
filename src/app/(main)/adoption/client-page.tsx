@@ -6,13 +6,14 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import type { CharacterSeries, SiteContent } from '@/types';
 import { cn } from '@/lib/utils';
+import { ArrowRight } from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.08,
+      staggerChildren: 0.15,
     },
   },
 };
@@ -23,7 +24,7 @@ const itemVariants = {
     y: 0,
     opacity: 1,
     transition: {
-      duration: 0.5,
+      duration: 0.6,
       ease: 'easeInOut',
     },
   },
@@ -35,27 +36,6 @@ type AdoptionSeriesClientPageProps = {
 }
 
 export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeriesClientPageProps) {
-
-  const getGridSpanClass = (index: number) => {
-    // A repeating pattern for visual variety. You can adjust this pattern.
-    const pattern = index % 6;
-    switch (pattern) {
-      case 0:
-        return "md:col-span-2 md:row-span-2"; // Large focus item
-      case 1:
-        return "md:row-span-1"; // Standard
-      case 2:
-        return "md:row-span-1"; // Standard
-      case 3:
-        return "md:col-span-1 md:row-span-2"; // Tall item
-      case 4:
-         return "md:col-span-2 md:row-span-1"; // Wide item
-      case 5:
-        return "md:row-span-1"; // Standard
-      default:
-        return "md:row-span-1";
-    }
-  };
 
   return (
     <motion.div
@@ -72,32 +52,35 @@ export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeries
 
       {seriesData.length > 0 ? (
         <motion.div 
-            className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 grid-flow-dense gap-4 md:gap-6"
+            className="flex flex-col gap-8 md:gap-12"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
         >
-            {seriesData.map((s, index) => (
+            {seriesData.map((s) => (
                 <motion.div 
                     key={s.id} 
                     variants={itemVariants}
-                    className={cn(
-                      "group relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1",
-                      getGridSpanClass(index)
-                    )}
                 >
-                    <Link href={`/adoption/${encodeURIComponent(s.name)}`} className="block w-full h-full">
+                    <Link href={`/adoption/${encodeURIComponent(s.name)}`} className="group block relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 aspect-[16/9] md:aspect-[16/7]">
                         <Image
                             src={s.imageUrl}
                             alt={s.name}
                             fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            sizes="(max-width: 768px) 100vw, 80vw"
                             style={{objectFit: 'cover'}}
-                            className="transition-transform duration-500 group-hover:scale-110"
+                            className="transition-transform duration-500 group-hover:scale-105"
                         />
-                        <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/70 to-transparent">
-                            <h3 className="font-headline text-2xl" style={{textShadow: '1px 1px 4px rgba(0,0,0,0.8)'}}>{s.name}</h3>
-                            <p className="text-sm opacity-0 group-hover:opacity-90 transition-opacity duration-300 mt-1 line-clamp-2" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.7)'}}>{s.description}</p>
+                        <div className="absolute inset-0 flex flex-col justify-center items-center p-8 text-white bg-black/40 hover:bg-black/50 transition-colors duration-300">
+                           <div className="text-center max-w-2xl">
+                                <h3 className="font-headline text-3xl md:text-5xl" style={{textShadow: '2px 2px 6px rgba(0,0,0,0.8)'}}>{s.name}</h3>
+                                <p className="text-sm md:text-base opacity-90 mt-2 line-clamp-2" style={{textShadow: '1px 1px 4px rgba(0,0,0,0.7)'}}>{s.description}</p>
+                                <div className="mt-6">
+                                    <div className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold border border-white/50 rounded-full bg-white/10 backdrop-blur-sm group-hover:bg-white/20 group-hover:border-white transition-all duration-300">
+                                        进入系列 <ArrowRight className="h-4 w-4 transform transition-transform group-hover:translate-x-1" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </Link>
                 </motion.div>
