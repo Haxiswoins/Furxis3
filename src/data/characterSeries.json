@@ -1,14 +1,39 @@
+
 [
   {
     "id": "series_1723282303884",
     "name": "山海异兽",
     "description": "灵感来源于中国古代神话，神秘而威严的东方神兽。",
-    "imageUrl": "https://placehold.co/600x800.png"
+    "imageUrl": "https://placehold.co/800x600.png"
   },
   {
     "id": "series_1723282278917",
     "name": "赛博纪元",
     "description": "融合了未来科技感与生物形态的机械生物系列。",
+    "imageUrl": "https://placehold.co/600x800.png"
+  },
+  {
+    "id": "series_1723456000001",
+    "name": "蒸汽幻想",
+    "description": "精密齿轮与复古皮革的交响，维多利亚时代的奇幻生物。",
+    "imageUrl": "https://placehold.co/600x600.png"
+  },
+  {
+    "id": "series_1723456000002",
+    "name": "森灵秘语",
+    "description": "栖息于古老森林中的温顺精怪，身披苔藓与星光。",
+    "imageUrl": "https://placehold.co/800x1000.png"
+  },
+  {
+    "id": "series_1723456000003",
+    "name": "糖果王国",
+    "description": "由棉花糖、巧克力和糖霜构成的甜蜜居民们。",
+    "imageUrl": "https://placehold.co/1000x800.png"
+  },
+  {
+    "id": "series_1723456000004",
+    "name": "深海迷航",
+    "description": "来自深海未知领域的荧光生物，神秘而瑰丽。",
     "imageUrl": "https://placehold.co/600x800.png"
   }
 ]
