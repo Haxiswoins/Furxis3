@@ -31,10 +31,10 @@ export default async function AdoptionDetailPage({ params }: { params: { charact
 
   return (
     <div
-        className="max-w-6xl mx-auto"
+        className="container max-w-7xl mx-auto"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-        <div className="md:sticky md:top-24">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="lg:col-span-1 lg:sticky lg:top-24">
           <Card>
             <CardHeader>
               <CardTitle className="text-4xl font-headline">{character.name}</CardTitle>
@@ -51,7 +51,7 @@ export default async function AdoptionDetailPage({ params }: { params: { charact
             </CardFooter>
           </Card>
         </div>
-        <div className="md:col-span-1">
+        <div className="lg:col-span-2">
             <Images images={characterImages} name={character.name} />
         </div>
       </div>
