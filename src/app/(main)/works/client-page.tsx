@@ -5,29 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Work } from '@/types';
-import { motion } from 'framer-motion';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-      ease: 'easeOut',
-    },
-  },
-};
 
 type WorksPageClientProps = {
   worksByYear: Record<string, Work[]>;
@@ -49,14 +26,11 @@ export function WorksPageClient({ worksByYear, sortedYears }: WorksPageClientPro
           sortedYears.map(year => (
             <div key={year}>
               <h2 className="text-3xl font-headline mb-6 pl-4 border-l-4 border-primary">{year}</h2>
-              <motion.div 
+              <div 
                 className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
               >
                 {worksByYear[year].map((work) => (
-                  <motion.div key={work.id} variants={itemVariants}>
+                  <div key={work.id}>
                       <Card className="overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col text-sm h-full group hover:-translate-y-1">
                         <Link href={`/works/${work.id}`} passHref>
                           <CardHeader className="p-0">
@@ -80,9 +54,9 @@ export function WorksPageClient({ worksByYear, sortedYears }: WorksPageClientPro
                           </CardDescription>
                         </CardContent>
                       </Card>
-                  </motion.div>
+                  </div>
                 ))}
-              </motion.div>
+              </div>
             </div>
           ))
         ) : (

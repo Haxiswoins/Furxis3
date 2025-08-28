@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -6,29 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronRight } from 'lucide-react';
 import type { CommissionOption, CommissionStyle } from '@/types';
-import { motion } from 'framer-motion';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-      ease: 'easeOut',
-    },
-  },
-};
 
 type CommissionStylePageClientProps = {
     styles: CommissionStyle[];
@@ -49,15 +27,12 @@ export function CommissionStylePageClient({ styles, commissionOption, commission
         </p>
       </div>
 
-      <motion.div 
+      <div 
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
       >
         {styles.length > 0 ? (
           styles.map((style) => (
-            <motion.div key={style.id} variants={itemVariants}>
+            <div key={style.id}>
               <Card className="overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col h-full group hover:-translate-y-1">
                 <CardContent className="p-4 flex-grow flex flex-col">
                   <CardTitle className="text-xl font-headline mb-2">{style.name}</CardTitle>
@@ -75,7 +50,7 @@ export function CommissionStylePageClient({ styles, commissionOption, commission
                   </Button>
                 </CardFooter>
               </Card>
-            </motion.div>
+            </div>
           ))
         ) : (
           <div className="col-span-full text-center py-10">
@@ -83,7 +58,7 @@ export function CommissionStylePageClient({ styles, commissionOption, commission
             <Button variant="outline" className="mt-4" onClick={() => router.back()}>返回上一页</Button>
           </div>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 }

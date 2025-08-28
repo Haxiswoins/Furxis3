@@ -1,32 +1,10 @@
+
 'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import type { CharacterSeries, SiteContent } from '@/types';
 
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-      ease: 'easeOut',
-    },
-  },
-};
 
 type AdoptionSeriesClientPageProps = {
   seriesData: CharacterSeries[];
@@ -35,11 +13,7 @@ type AdoptionSeriesClientPageProps = {
 
 export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeriesClientPageProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-    >
+    <div>
       <div className="text-center mb-12">
         <h1 className="text-3xl sm:text-4xl font-headline">设定领养</h1>
         <p className="mt-2 text-base sm:text-lg text-muted-foreground">
@@ -47,15 +21,12 @@ export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeries
         </p>
       </div>
 
-      <motion.div 
+      <div 
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
       >
           {seriesData.length > 0 ? (
           seriesData.map((s) => (
-              <motion.div key={s.id} variants={itemVariants}>
+              <div key={s.id}>
                   <Link href={`/adoption/${encodeURIComponent(s.name)}`} className="group">
                   <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                       <Image
@@ -72,14 +43,14 @@ export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeries
                       </div>
                   </div>
                   </Link>
-              </motion.div>
+              </div>
           ))
           ) : (
           <div className="col-span-full text-center py-10">
               <p className="text-muted-foreground">暂无设定系列。</p>
           </div>
           )}
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
