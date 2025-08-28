@@ -1,4 +1,3 @@
-
 # 网站服务器部署指南
 
 本文档将指导您如何将此 Next.js 应用程序部署到您自己的服务器。
@@ -13,6 +12,20 @@
 > **关于Google服务**：
 > *   **Google Fonts**：已在项目构建时自动下载并自托管，**运行时不依赖Google**。
 > *   **Google AI (Genkit)**：项目预置了Google AI功能，但目前未激活。如未来使用，需确保服务器能访问Google AI的API (`generativelanguage.googleapis.com`)。
+
+---
+
+### **API接口与密钥配置 (API & Key Configuration)**
+
+在进行部署前，请确保您已经注册并获取了以下第三方服务的API密钥。这些是保证网站核心功能正常运行所必需的。
+
+| 服务商 | 功能 | 所需环境变量 | 获取指南 |
+| :--- | :--- | :--- | :--- |
+| **Authing** | 用户认证 (登录/注册) | `AUTHING_APP_ID`<br>`AUTHING_APP_SECRET`<br>`AUTHING_ISSUER`<br>`AUTHING_REDIRECT_URI`<br>`AUTHING_SECRET`<br>`ADMIN_EMAIL` | 请参照 `Authing` 控制台的应用配置。 |
+| **Resend** | 邮件服务 (各类通知) | `RESEND_API_KEY` | 详细设置请务必参考项目中的 **`RESEND_GUIDE.md`** 文件。 |
+| **Google AI** | (未来功能) AI相关 | `GOOGLE_API_KEY` 或 `GEMINI_API_KEY` | 当前未激活。如需使用，请前往 Google AI Studio 获取。 |
+
+您需要在服务器上创建一个 `.env.local` 文件，并将从上述服务获取到的所有密钥填入其中。详细步骤见下文。
 
 ---
 
