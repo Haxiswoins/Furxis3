@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -8,6 +7,29 @@ import { Badge } from '@/components/ui/badge';
 import { Heart } from 'lucide-react';
 import Link from 'next/link';
 import type { Character, CharacterSeries } from '@/types';
+import { motion } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: 'easeOut',
+    },
+  },
+};
 
 type CharacterListPageClientProps = {
   series: CharacterSeries;
@@ -17,19 +39,26 @@ type CharacterListPageClientProps = {
 export function CharacterListPageClient({ series, characters }: CharacterListPageClientProps) {
   const seriesName = series.name;
   return (
-    <div>
+    <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+    >
       <div className="text-center mb-12">
-        <h1 className="text-3xl sm:text-4xl font-headline">{series?.name}</h1>
-        <p className="mt-2 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+        <h1 className="text-4xl font-headline">{series?.name}</h1>
+        <p className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto">
           {series?.description || '给这些预先设计的角色一个家。'}
         </p>
       </div>
-      <div 
+      <motion.div 
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
       >
         {characters.length > 0 ? (
           characters.map((char) => (
-            <div key={char.id}>
+            <motion.div key={char.id} variants={itemVariants}>
                 <Card className="overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col text-sm h-full group hover:-translate-y-1">
                 <CardHeader className="p-0">
                     <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
@@ -62,14 +91,14 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
                     </Link>
                 </CardFooter>
                 </Card>
-            </div>
+            </motion.div>
           ))
         ) : (
           <div className="col-span-full text-center py-10">
             <p className="text-muted-foreground">该系列下暂无角色。</p>
           </div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

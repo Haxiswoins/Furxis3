@@ -1,10 +1,32 @@
-
 'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import type { CharacterSeries, SiteContent } from '@/types';
 
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: 'easeInOut',
+    },
+  },
+};
 
 type AdoptionSeriesClientPageProps = {
   seriesData: CharacterSeries[];
@@ -13,27 +35,34 @@ type AdoptionSeriesClientPageProps = {
 
 export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeriesClientPageProps) {
   return (
-    <div>
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       <div className="text-center mb-12">
-        <h1 className="text-3xl sm:text-4xl font-headline">设定领养</h1>
-        <p className="mt-2 text-base sm:text-lg text-muted-foreground">
+        <h1 className="text-4xl font-headline">设定领养</h1>
+        <p className="mt-2 text-lg text-muted-foreground">
         {content?.adoptionPageDescription || '给这些预先设计的角色一个家。'}
         </p>
       </div>
 
-      <div 
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+      <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-6"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
       >
           {seriesData.length > 0 ? (
           seriesData.map((s) => (
-              <div key={s.id}>
+              <motion.div key={s.id} variants={itemVariants}>
                   <Link href={`/adoption/${encodeURIComponent(s.name)}`} className="group">
                   <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                       <Image
                       src={s.imageUrl}
                       alt={s.name}
                       fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 20vw"
                       style={{objectFit: 'cover'}}
                       className="transition-transform duration-500 group-hover:scale-110"
                       />
@@ -43,14 +72,14 @@ export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeries
                       </div>
                   </div>
                   </Link>
-              </div>
+              </motion.div>
           ))
           ) : (
           <div className="col-span-full text-center py-10">
               <p className="text-muted-foreground">暂无设定系列。</p>
           </div>
           )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 import type { CommissionOption } from '@/types';
+import { motion } from 'framer-motion';
 
 const lightStatusStyles: { [key: string]: string } = {
   '开放中': 'bg-primary/10 text-primary border-primary/20',
@@ -25,17 +26,42 @@ type CommissionClientPageProps = {
   commissionOptions: CommissionOption[];
 };
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: 'easeOut',
+    },
+  },
+};
+
 export function CommissionClientPage({ commissionOptions }: CommissionClientPageProps) {
   const { theme } = useTheme();
   const statusStyles = theme === 'dark' ? darkStatusStyles : lightStatusStyles;
 
   return (
-    <div 
+    <motion.div 
       className="flex flex-col gap-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
     >
       {commissionOptions.length > 0 ? (
         commissionOptions.map((item) => (
-          <div key={item.id}>
+          <motion.div key={item.id} variants={itemVariants}>
             <Link href={`/commission/${encodeURIComponent(item.name)}`} className="group block relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
               <div className="aspect-[16/9] md:aspect-[16/4] relative">
                 <Image
@@ -60,13 +86,13 @@ export function CommissionClientPage({ commissionOptions }: CommissionClientPage
                 </div>
               </div>
             </Link>
-          </div>
+          </motion.div>
         ))
       ) : (
         <div className="col-span-full text-center py-10">
           <p className="text-muted-foreground">该年份下暂无委托选项。</p>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

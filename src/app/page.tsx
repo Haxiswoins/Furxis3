@@ -1,37 +1,178 @@
 
-import { AmbientLightBackground } from '@/components/ambient-light-background';
-import { Button } from '@/components/ui/button';
-import { Rocket } from 'lucide-react';
-import Link from 'next/link';
+'use client';
+
+import { useTheme } from '@/context/ThemeContext';
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+
+// Define the custom type on the Window interface
+declare global {
+    interface Window {
+        Color4Bg?: {
+            CurveGradientBg: new (options: {
+                dom: string,
+                colors: string[],
+                loop: boolean
+            }) => any; 
+        }
+    }
+}
 
 export default function WelcomePage() {
-  return (
-    <div className="relative h-screen w-full overflow-hidden bg-black">
-      <div id="box" className="absolute inset-0 z-0 opacity-50" />
-      <AmbientLightBackground />
+    const { theme } = useTheme();
+    const router = useRouter();
+    const [isClient, setIsClient] = useState(false);
+    const [isContentVisible, setIsContentVisible] = useState(false);
+    const [isWarping, setIsWarping] = useState(false);
+    const animationInstance = useRef<any>(null);
+    const scriptElement = useRef<HTMLScriptElement | null>(null);
+    
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
-      <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white">
-        <h1 className="text-5xl md:text-7xl font-headline tracking-widest text-white/90" style={{ textShadow: "0 0 15px rgba(255,255,255,0.5)" }}>
-            The Stars Arrives
-        </h1>
-        <p className="mt-4 text-lg text-white/70">
-            欢迎来到前行无界工作室
-        </p>
-        <Link href="/home" passHref className="mt-12">
-            <Button
-              aria-label="进入网站"
-              className="group relative flex h-20 w-20 items-center justify-center rounded-full border border-primary/50 bg-black/30 text-white transition-all duration-300 ease-in-out hover:scale-110 hover:border-primary hover:shadow-[0_0_35px_rgba(255,97,47,0.7)] active:scale-100 backdrop-blur-sm"
+    useEffect(() => {
+        router.prefetch('/home');
+    }, [router]);
+
+    useEffect(() => {
+        if (!isClient || !theme) {
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = "/CurveGradientBg.min.js";
+        script.async = true;
+        script.onload = () => {
+            if (animationInstance.current || !document.getElementById('box')) return;
+        
+            if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
+                try {
+                    const lightThemeColors = ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"];
+                    const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#1a1b29"];
+                    
+                    const instance = new window.Color4Bg.CurveGradientBg({
+                        dom: "box",
+                        colors: theme === 'light' ? lightThemeColors : darkThemeColors,
+                        loop: true
+                    });
+                    
+                    instance.update('scale', 0.2);
+                    instance.update('noise', 0.05);
+                    
+                    animationInstance.current = instance;
+
+                } catch (error) {
+                    console.error('Failed to initialize CurveGradientBg:', error);
+                }
+            }
+        };
+        script.onerror = (e) => console.error('Failed to load CurveGradientBg.min.js script:', e);
+
+        document.body.appendChild(script);
+        scriptElement.current = script;
+
+        const contentTimer = setTimeout(() => setIsContentVisible(true), 500);
+
+        return () => {
+            clearTimeout(contentTimer);
+            if (scriptElement.current && scriptElement.current.parentNode) {
+                scriptElement.current.parentNode.removeChild(scriptElement.current);
+            }
+            if (animationInstance.current && typeof animationInstance.current.destroy === 'function') {
+                animationInstance.current.destroy();
+            }
+            animationInstance.current = null;
+        };
+    }, [isClient, theme]);
+
+    const handleNavigate = () => {
+        setIsWarping(true);
+        setTimeout(() => router.push('/home'), 800); 
+    };
+  
+    if (!isClient || !theme) {
+        return null;
+    }
+
+    return (
+        <div className="relative h-screen w-full overflow-hidden cursor-pointer" onClick={handleNavigate}>
+            <div className="absolute inset-0 z-0 bg-background"></div>
+
+            <motion.div
+                className="absolute inset-0 z-0"
+                animate={{ opacity: isWarping ? 0 : 1 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
             >
-              <div className="absolute inset-0 rounded-full border-2 border-white/20 scale-125 group-hover:scale-150 group-hover:opacity-0 transition-all duration-500 animate-pulse"></div>
-              <Rocket 
-                  className="h-10 w-10 text-primary/80 transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1 group-hover:scale-110"
-              />
-            </Button>
-        </Link>
-      </div>
-       <div className="absolute bottom-8 w-full text-center text-xs text-white/40">
-         <p>Developed by Haxis and Mark</p>
-      </div>
-    </div>
-  );
+                <div id="box" className="absolute inset-0 z-0"></div>
+            </motion.div>
+      
+            <motion.div
+                className="absolute inset-0 z-20 flex items-start justify-start p-8 md:p-16"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isContentVisible ? 1 : 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+            >
+                <motion.div 
+                    className="flex items-start justify-start text-white drop-shadow-md"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isWarping ? 0 : 1 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: isContentVisible ? 1 : 0, y: isContentVisible ? 0 : 20 }}
+                        transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
+                    >
+                        <p className="text-xl font-semibold">欢迎来到</p>
+                        <p className="text-lg font-light mb-4">Welcome to</p>
+                        <h1 className="text-6xl md:text-8xl font-headline whitespace-nowrap">前行无界</h1>
+                        <h2 className="text-3xl md:text-5xl font-extralight tracking-[0.2em] mt-2 mb-8">FORWARD INFINITY</h2>
+                        <p className="text-sm font-light max-w-md leading-relaxed">
+                            前行无界工作室正式成立于2024年, <br/>
+                            我们致力于打造富有创意与品质优良的兽装及相关设计作品, <br/>
+                            欢迎您的到访。
+                        </p>
+                    </motion.div>
+                </motion.div>
+            </motion.div>
+
+            <motion.div
+                className="absolute bottom-8 right-8 z-20 flex items-end justify-end"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isContentVisible ? 1 : 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+            >
+                <motion.div
+                    animate={{ opacity: isWarping ? 0 : 1 }}
+                    transition={{ duration: 0.3 }}
+                >
+                <p className="text-white/80 font-light text-sm animate-pulse">
+                    点击任意区域进入
+                </p>
+                </motion.div>
+            </motion.div>
+
+            <motion.div
+                    className="absolute bottom-4 w-full text-center text-xs text-white/40"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isContentVisible && !isWarping ? 1 : 0 }}
+                    transition={{ duration: 1.0, ease: 'easeOut' }}
+            >
+                <p>Developed by Haxis and Mark</p>
+            </motion.div>
+            
+            <motion.div 
+                className="fixed inset-0 z-30 bg-background"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isWarping ? 1 : 0 }}
+                transition={{ duration: 0.6, ease: 'easeInOut'}}
+                style={{ pointerEvents: 'none' }}
+            >
+            </motion.div>
+        </div>
+    );
 }
