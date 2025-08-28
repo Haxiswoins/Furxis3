@@ -95,7 +95,7 @@ export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeries
                             style={{objectFit: 'cover'}}
                             className="transition-transform duration-500 group-hover:scale-110"
                         />
-                        <div className="absolute inset-0 flex flex-col justify-end p-6 text-white bg-gradient-to-t from-black/70 to-transparent">
+                        <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/70 to-transparent">
                             <h3 className="font-headline text-2xl" style={{textShadow: '1px 1px 4px rgba(0,0,0,0.8)'}}>{s.name}</h3>
                             <p className="text-sm opacity-0 group-hover:opacity-90 transition-opacity duration-300 mt-1 line-clamp-2" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.7)'}}>{s.description}</p>
                         </div>
