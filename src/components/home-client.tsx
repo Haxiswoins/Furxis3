@@ -64,7 +64,7 @@ export function HomeClient({ content }: HomeClientProps) {
             animate="visible"
             variants={containerVariants}
         >
-            <div className="w-full py-8 md:py-12 pt-24">
+            <div className="w-full py-8 md:py-12">
             <motion.div className="text-center mb-10 md:mb-16 px-4" variants={itemVariants}>
                 <a onClick={() => handleNavigate('/')} className="cursor-pointer">
                     <div className="relative inline-block group px-4">
