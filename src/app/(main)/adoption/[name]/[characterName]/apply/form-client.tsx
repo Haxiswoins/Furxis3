@@ -108,7 +108,7 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
     <div>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-headline">领养申请：{character.name}</CardTitle>
+          <CardTitle className="text-2xl sm:text-3xl font-headline">领养申请：{character.name}</CardTitle>
           <CardDescription>请填写您的信息以完成申请。</CardDescription>
         </CardHeader>
         <CardContent>

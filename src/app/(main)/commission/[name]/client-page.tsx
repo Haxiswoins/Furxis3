@@ -43,8 +43,8 @@ export function CommissionStylePageClient({ styles, commissionOption, commission
   return (
     <div>
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-headline">样式选择</h1>
-        <p className="mt-2 text-lg text-muted-foreground">
+        <h1 className="text-3xl sm:text-4xl font-headline">样式选择</h1>
+        <p className="mt-2 text-base sm:text-lg text-muted-foreground">
           {`请为 “${commissionOption.name}” 选择您感兴趣的具体样式`}
         </p>
       </div>

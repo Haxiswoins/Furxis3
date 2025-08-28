@@ -179,7 +179,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
   return (
     <Card className="w-full">
       <CardHeader>
-          <CardTitle className="text-3xl font-headline">{commissionOption.name} - {commissionStyle.name}</CardTitle>
+          <CardTitle className="text-2xl sm:text-3xl font-headline">{commissionOption.name} - {commissionStyle.name}</CardTitle>
           <CardDescription className="mt-2 text-base">{commissionStyle.description}</CardDescription>
       </CardHeader>
 

@@ -22,22 +22,17 @@ declare global {
 export default function WelcomePage() {
     const { theme } = useTheme();
     const router = useRouter();
-    const [isClient, setIsClient] = useState(false);
     const [isContentVisible, setIsContentVisible] = useState(false);
     const [isWarping, setIsWarping] = useState(false);
     const animationInstance = useRef<any>(null);
     const scriptElement = useRef<HTMLScriptElement | null>(null);
     
     useEffect(() => {
-        setIsClient(true);
-    }, []);
-
-    useEffect(() => {
         router.prefetch('/home');
     }, [router]);
 
     useEffect(() => {
-        if (!isClient || !theme) {
+        if (!theme) {
             return;
         }
 
@@ -85,14 +80,14 @@ export default function WelcomePage() {
             }
             animationInstance.current = null;
         };
-    }, [isClient, theme]);
+    }, [theme]);
 
     const handleNavigate = () => {
         setIsWarping(true);
         setTimeout(() => router.push('/home'), 800); 
     };
   
-    if (!isClient || !theme) {
+    if (!theme) {
         return null;
     }
 
@@ -126,11 +121,11 @@ export default function WelcomePage() {
                         animate={{ opacity: isContentVisible ? 1 : 0, y: isContentVisible ? 0 : 20 }}
                         transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
                     >
-                        <p className="text-xl font-semibold">欢迎来到</p>
-                        <p className="text-lg font-light mb-4">Welcome to</p>
-                        <h1 className="text-6xl md:text-8xl font-headline whitespace-nowrap">前行无界</h1>
-                        <h2 className="text-3xl md:text-5xl font-extralight tracking-[0.2em] mt-2 mb-8">FORWARD INFINITY</h2>
-                        <p className="text-sm font-light max-w-md leading-relaxed">
+                        <p className="text-lg md:text-xl font-semibold">欢迎来到</p>
+                        <p className="text-base md:text-lg font-light mb-4">Welcome to</p>
+                        <h1 className="text-5xl sm:text-6xl md:text-8xl font-headline whitespace-nowrap">前行无界</h1>
+                        <h2 className="text-2xl sm:text-3xl md:text-5xl font-extralight tracking-[0.2em] mt-2 mb-8">FORWARD INFINITY</h2>
+                        <p className="text-xs md:text-sm font-light max-w-md leading-relaxed">
                             前行无界工作室正式成立于2024年, <br/>
                             我们致力于打造富有创意与品质优良的兽装及相关设计作品, <br/>
                             欢迎您的到访。

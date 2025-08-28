@@ -45,8 +45,8 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
         transition={{ duration: 0.5, ease: "easeOut" }}
     >
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-headline">{series?.name}</h1>
-        <p className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto">
+        <h1 className="text-3xl sm:text-4xl font-headline">{series?.name}</h1>
+        <p className="mt-2 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
           {series?.description || '给这些预先设计的角色一个家。'}
         </p>
       </div>
