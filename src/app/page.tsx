@@ -28,6 +28,7 @@ export default function WelcomePage() {
     const scriptElement = useRef<HTMLScriptElement | null>(null);
     
     useEffect(() => {
+        // Prefetch the home page to make the transition faster
         router.prefetch('/home');
     }, [router]);
 
