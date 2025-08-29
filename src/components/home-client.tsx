@@ -57,7 +57,22 @@ export function HomeClient({ content }: HomeClientProps) {
   };
 
   return (
-    <div className="container mx-auto">
+    <div className="relative">
+       {content?.homeBackgroundImageUrl && (
+        <>
+            <div className="fixed inset-0 z-[-1]">
+            <Image
+                src={content.homeBackgroundImageUrl}
+                alt="主页背景"
+                fill
+                style={{ objectFit: 'cover' }}
+                className="opacity-90"
+            />
+             <div className="absolute inset-0 bg-black/30"></div>
+            </div>
+        </>
+      )}
+      <div className="container mx-auto">
         <motion.div 
             className="relative z-10 flex flex-col min-h-screen"
             initial="hidden"
