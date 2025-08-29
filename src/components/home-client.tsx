@@ -57,7 +57,7 @@ export function HomeClient({ content }: HomeClientProps) {
   };
 
   return (
-    <div className="relative">
+    <>
        {content?.homeBackgroundImageUrl && (
         <>
             <div className="fixed inset-0 z-[-1]">
@@ -179,5 +179,6 @@ export function HomeClient({ content }: HomeClientProps) {
        >
        </motion.div>
     </div>
+    </>
   );
 }
