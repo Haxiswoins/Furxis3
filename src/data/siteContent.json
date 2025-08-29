@@ -1,4 +1,3 @@
-
 {
   "commissionTitle": "委托申请",
   "commissionDescription": "为您量身定制。",
@@ -14,7 +13,7 @@
   "adminEmail": "haxiswoins@qq.com",
   "homeBackgroundImageUrl": null,
   "sunriseHour": 6,
-  "sunsetHour": 18,
+  "sunsetHour": 16,
   "contactInfo": "您好，如有需要可通过邮箱haxiswoins@qq.com与我们取得联系，我们将在收到邮件的第一时间回复您。您也可以直接联系您的委托经办人。",
   "adoptionContractText": "请在后台管理页面编辑合同条款。",
   "commissionContractText": "请在后台管理页面编辑合同条款。",
