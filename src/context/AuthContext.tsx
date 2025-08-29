@@ -16,6 +16,22 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  // --- MOCK USER ---
+  // To revert to real authentication, uncomment the original state and useEffect hooks below,
+  // and remove or comment out this mock user section.
+  const [user, setUser] = useState<CustomUser | null>({
+    uid: 'mock-admin-uid',
+    email: 'admin-mock@suitopia.club',
+    name: '临时管理员',
+    picture: null,
+    isAdmin: true,
+  });
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  /*
+  // --- ORIGINAL AUTH LOGIC ---
   const [user, setUser] = useState<CustomUser | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -41,26 +57,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     fetchUser();
   }, [fetchUser]);
+  */
 
   const login = (returnTo?: string) => {
-    setLoading(true);
-    let path = '/api/auth/authing/login';
-    const finalReturnTo = returnTo || pathname;
-    const params = new URLSearchParams();
-    params.set('returnTo', finalReturnTo);
-    router.push(`${path}?${params.toString()}`);
+    // Mock login does nothing, user is already an admin.
+    console.log("Login function called, but using mock admin. Redirecting to dashboard.");
+    router.push('/admin/dashboard');
   };
 
   const logout = async () => {
-    setLoading(true);
-    try {
-        await fetch('/api/auth/logout');
-        setUser(null);
-    } catch (error) {
-        console.error("Logout failed:", error);
-    } finally {
-        setLoading(false);
-    }
+    // Mock logout also does nothing, to maintain the admin state.
+    console.log("Logout function called, but using mock admin. To truly log out, restore original AuthContext logic.");
   };
 
 
