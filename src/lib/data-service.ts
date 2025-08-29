@@ -7,8 +7,6 @@ import path from 'path';
 import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, Work, CharacterSeries } from '@/types';
 import { sendEmail } from '@/ai/flows/send-email-flow';
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-
 // Helper to get the path to our JSON data file
 const getDataPath = (fileName: string) => path.join(process.cwd(), 'src', 'data', fileName);
 
@@ -343,7 +341,7 @@ export async function createAdoptionApplication(character: Character, userId: st
                     to: siteContent.adminEmail,
                     from: 'notification@suitopia.club', 
                     subject: `[新领养申请] ${character.name}`,
-                    html: `<p>新领养申请: ${character.name} by ${applicationData.userName}. <a href="${BASE_URL}/admin/orders/edit/${newId}">处理订单</a></p>`
+                    html: `<p>新领养申请: ${character.name} by ${applicationData.userName}.</p>`
                 });
             } catch(e) {
                 console.error("Failed to send admin notification email:", e);
@@ -399,7 +397,7 @@ export async function createCommissionApplication(userId: string, commissionInfo
                     to: siteContent.adminEmail,
                     from: 'notification@suitopia.club',
                     subject: `[新委托申请] ${commissionInfo.styleName}`,
-                    html: `<p>新委托申请: ${commissionInfo.styleName} by ${applicationData.userName}. <a href="${BASE_URL}/admin/orders/edit/${newId}">处理订单</a></p>`
+                    html: `<p>新委托申请: ${commissionInfo.styleName} by ${applicationData.userName}.</p>`
                 });
             } catch(e) {
                 console.error("Failed to send admin notification email:", e);
@@ -430,7 +428,7 @@ export async function cancelOrder(orderId: string, reason: string): Promise<void
                 to: siteContent.adminEmail,
                 from: 'notification@suitopia.club',
                 subject: `[退养申请] 订单 #${order.orderNumber}`,
-                html: `<p>用户申请取消订单: ${order.orderNumber}. 理由: ${reason}. <a href="${BASE_URL}/admin/orders/edit/${order.id}">处理订单</a></p>`
+                html: `<p>用户申请取消订单: ${order.orderNumber}. 理由: ${reason}.</p>`
             });
           } catch(e) {
               console.error("Failed to send admin notification email for cancellation:", e);
