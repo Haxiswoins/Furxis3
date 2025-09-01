@@ -555,55 +555,81 @@ export async function getUserBadges(userId: string): Promise<(UserBadge & { badg
     }).sort((a, b) => new Date(b.claimedAt).getTime() - new Date(a.claimedAt).getTime());
 }
 
+type ClaimValidationResult = {
+    isValid: boolean;
+    reason?: 'INVALID_QR' | 'BADGE_NOT_FOUND' | 'QR_CLAIMED' | 'QR_EXPIRED' | 'ALREADY_OWNED';
+    badge?: Badge;
+};
+
+// This is a pure validation function. It does not modify any data.
+function validateClaim(
+    qrCode: BadgeQRCode | undefined,
+    badge: Badge | undefined,
+    userHasBadge: boolean
+): ClaimValidationResult {
+    if (!qrCode) {
+        return { isValid: false, reason: 'INVALID_QR' };
+    }
+    if (!badge) {
+        return { isValid: false, reason: 'BADGE_NOT_FOUND', badge };
+    }
+    if (qrCode.type === 'single' && qrCode.isClaimed) {
+        return { isValid: false, reason: 'QR_CLAIMED', badge };
+    }
+    if (qrCode.expiresAt && new Date(qrCode.expiresAt) < new Date()) {
+        return { isValid: false, reason: 'QR_EXPIRED', badge };
+    }
+    if (userHasBadge) {
+        return { isValid: false, reason: 'ALREADY_OWNED', badge };
+    }
+    
+    return { isValid: true, badge };
+}
+
+
 export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ success: boolean; message: string; badge?: Badge }> {
     const allQRCodes = await readData<BadgeQRCode[]>('badgeQRCodes.json');
     const allBadges = await getBadges();
     const allUserBadges = await readData<UserBadge[]>('userBadges.json');
 
     const qrCode = allQRCodes.find(qr => qr.id === qrId);
+    const badge = qrCode ? allBadges.find(b => b.id === qrCode.badgeId) : undefined;
+    const userHasBadge = allUserBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode?.badgeId);
 
-    // ========== 1. VALIDATION STAGE ==========
-    // First, check all possible failure conditions and return immediately if any are met.
-    
-    if (!qrCode) {
-        return { success: false, message: '无效的二维码。' };
+    // 1. VALIDATION
+    const validation = validateClaim(qrCode, badge, userHasBadge);
+
+    if (!validation.isValid) {
+        switch (validation.reason) {
+            case 'INVALID_QR':
+                return { success: false, message: '无效的二维码。' };
+            case 'BADGE_NOT_FOUND':
+                return { success: false, message: '二维码关联的徽章不存在。' };
+            case 'QR_CLAIMED':
+                return { success: false, message: '此二维码已被使用。', badge: validation.badge };
+            case 'QR_EXPIRED':
+                return { success: false, message: '此二维码已过期。', badge: validation.badge };
+            case 'ALREADY_OWNED':
+                return { success: false, message: '您已拥有此徽章。', badge: validation.badge };
+            default:
+                return { success: false, message: '发生未知验证错误。' };
+        }
     }
 
-    const badge = allBadges.find(b => b.id === qrCode.badgeId);
-    if (!badge) {
-        return { success: false, message: '二维码关联的徽章不存在。' };
-    }
-    
-    if (qrCode.type === 'single' && qrCode.isClaimed) {
-        return { success: false, message: '此二维码已被使用。', badge };
-    }
-
-    if (qrCode.expiresAt && new Date(qrCode.expiresAt) < new Date()) {
-        return { success: false, message: '此二维码已过期。', badge };
-    }
-
-    const alreadyHasBadge = allUserBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode.badgeId);
-    if (alreadyHasBadge) {
-        return { success: false, message: '您已拥有此徽章。', badge };
-    }
-
-    // ========== 2. EXECUTION STAGE ==========
-    // If all checks passed, we are in the sole "success" path.
-    // Perform the necessary data mutations and then return the success message.
-    
+    // 2. EXECUTION (only if validation is successful)
     const now = new Date().toISOString();
 
     // Add badge to user's collection
     const newUserBadge: UserBadge = {
         id: `userbadge_${Date.now()}`,
         userId: userId,
-        badgeId: qrCode.badgeId,
+        badgeId: qrCode!.badgeId,
         claimedAt: now,
     };
     allUserBadges.push(newUserBadge);
 
     // If it's a single-use QR code, mark it as claimed
-    if (qrCode.type === 'single') {
+    if (qrCode!.type === 'single') {
         const qrCodeIndex = allQRCodes.findIndex(qr => qr.id === qrId);
         if (qrCodeIndex !== -1) {
             allQRCodes[qrCodeIndex].isClaimed = true;
@@ -612,12 +638,10 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
         }
     }
 
-    // Persist all changes back to the files
     await Promise.all([
         writeData('userBadges.json', allUserBadges),
         writeData('badgeQRCodes.json', allQRCodes)
     ]);
     
-    // Return the success message.
     return { success: true, message: '恭喜您，获取成功！', badge };
 }
