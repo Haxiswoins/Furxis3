@@ -1,5 +1,4 @@
 
-
 'use server';
 
 import fs from 'fs/promises';
@@ -516,12 +515,23 @@ export async function deleteBadge(id: string): Promise<void> {
 
 
 // QR Codes
-export async function generateBadgeQRCode(badgeId: string): Promise<BadgeQRCode> {
+export async function generateBadgeQRCode(badgeId: string, type: 'single' | 'long-term'): Promise<BadgeQRCode> {
     const allQRCodes = await readData<BadgeQRCode[]>('badgeQRCodes.json');
+    const now = new Date();
+    
+    let expiresAt: string | undefined = undefined;
+    if (type === 'long-term') {
+        const expiryDate = new Date(now);
+        expiryDate.setMonth(expiryDate.getMonth() + 1);
+        expiresAt = expiryDate.toISOString();
+    }
+
     const newQRCode: BadgeQRCode = {
         id: randomUUID(),
         badgeId: badgeId,
-        createdAt: new Date().toISOString(),
+        type: type,
+        createdAt: now.toISOString(),
+        expiresAt: expiresAt,
         isClaimed: false,
     };
     allQRCodes.push(newQRCode);
@@ -554,11 +564,18 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
 
     const qrCode = allQRCodes[qrCodeIndex];
     const badge = allBadges.find(b => b.id === qrCode.badgeId);
-
-    if (qrCode.isClaimed) {
+    
+    // 1. Check if expired
+    if (qrCode.expiresAt && new Date(qrCode.expiresAt) < new Date()) {
+         return { success: false, message: '此二维码已过期。', badge };
+    }
+    
+    // 2. Check if single-use and already claimed
+    if (qrCode.type === 'single' && qrCode.isClaimed) {
         return { success: false, message: '此二维码已被领取。', badge };
     }
 
+    // 3. Check if user already has this badge
     const alreadyHasBadge = userBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode.badgeId);
     if (alreadyHasBadge) {
         return { success: false, message: '您已拥有此徽章。', badge };
@@ -567,10 +584,12 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     // If we reach here, the claim is successful.
     const now = new Date().toISOString();
     
-    // Mark QR code as claimed
-    allQRCodes[qrCodeIndex].isClaimed = true;
-    allQRCodes[qrCodeIndex].claimedBy = userId;
-    allQRCodes[qrCodeIndex].claimedAt = now;
+    // Only mark single-use QR codes as claimed
+    if (qrCode.type === 'single') {
+        allQRCodes[qrCodeIndex].isClaimed = true;
+        allQRCodes[qrCodeIndex].claimedBy = userId;
+        allQRCodes[qrCodeIndex].claimedAt = now;
+    }
 
     // Add badge to user's collection
     const newUserBadge: UserBadge = {

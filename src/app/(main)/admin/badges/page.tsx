@@ -72,11 +72,11 @@ export default function BadgesPage() {
     }
   }
 
-  async function handleGenerateQR(badgeId: string) {
+  async function handleGenerateQR(badgeId: string, type: 'single' | 'long-term') {
     setGenerating(true);
     setGeneratedQR(null);
     try {
-      const qrCodeData = await generateBadgeQRCode(badgeId);
+      const qrCodeData = await generateBadgeQRCode(badgeId, type);
       setGeneratedQR(qrCodeData);
     } catch (error) {
       toast({ title: '生成失败', description: '无法生成二维码，请重试。', variant: 'destructive' });
@@ -149,21 +149,21 @@ export default function BadgesPage() {
                         <DialogTrigger asChild>
                             <div className="cursor-pointer text-center">
                                 <Image src={badge.imageUrl} alt={badge.name} width={96} height={96} className="h-24 w-24 object-contain" />
-                                <p className="text-sm font-medium mt-2">{badge.name}</p>
+                                <p className="text-sm font-headline mt-2">{badge.name}</p>
                             </div>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
-                            <DialogTitle>为“{badge.name}”生成二维码</DialogTitle>
+                            <DialogTitle className="font-headline">为“{badge.name}”生成二维码</DialogTitle>
                             <DialogDescription>
-                                每次生成的二维码都是全新的、唯一的，且只能被领取一次。
+                                单次二维码只能被领取一次。长期二维码在一个月内可被多人领取。
                             </DialogDescription>
                             </DialogHeader>
                             <div className="flex justify-center py-4">
                             {generatedQR ? (
                                 <div className="flex flex-col items-center gap-4">
-                                <QRCodeComponent value={getQRCodeUrl(generatedQR.id)} size={256} />
-                                <p className="text-xs text-muted-foreground break-all max-w-[256px]">扫码方式：个人信息-我的徽章-获取徽章</p>
+                                    <QRCodeComponent value={getQRCodeUrl(generatedQR.id)} size={256} />
+                                    <p className="text-xs text-muted-foreground break-all max-w-[256px]">扫码方式：个人信息-我的徽章-获取徽章</p>
                                 </div>
                             ) : generating ? (
                                 <div className="flex flex-col items-center gap-4">
@@ -176,9 +176,14 @@ export default function BadgesPage() {
                                 </div>
                             )}
                             </div>
-                            <Button onClick={() => handleGenerateQR(badge.id)} disabled={generating}>
-                            {generating ? '生成中...' : '生成新二维码'}
-                            </Button>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Button onClick={() => handleGenerateQR(badge.id, 'single')} disabled={generating}>
+                                    {generating ? '生成中...' : '生成单次二维码'}
+                                </Button>
+                                 <Button variant="secondary" onClick={() => handleGenerateQR(badge.id, 'long-term')} disabled={generating}>
+                                    {generating ? '生成中...' : '生成长期二维码'}
+                                </Button>
+                            </div>
                         </DialogContent>
                     </Dialog>
                     <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity">

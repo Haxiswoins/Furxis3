@@ -134,10 +134,12 @@ export type Badge = {
 export type BadgeQRCode = {
   id: string; // This is the unique code in the QR, e.g. a UUID
   badgeId: string;
+  type: 'single' | 'long-term';
   createdAt: string; // ISO String
-  isClaimed: boolean;
-  claimedBy?: string; // User ID
-  claimedAt?: string; // ISO String
+  expiresAt?: string; // ISO String, only for long-term
+  isClaimed: boolean; // For single-use, marks if it has been used
+  claimedBy?: string; // User ID - only for single-use
+  claimedAt?: string; // ISO String - only for single-use
 };
 
 export type UserBadge = {

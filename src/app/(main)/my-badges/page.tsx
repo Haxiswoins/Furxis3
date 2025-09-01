@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -259,7 +258,7 @@ export default function MyBadgesPage() {
                             <div className="relative h-24 w-24">
                                 <Image src={badge.imageUrl} alt={badge.name} width={96} height={96} className="object-contain" />
                             </div>
-                            <p className="text-sm font-medium">{badge.name}</p>
+                            <p className="text-sm font-headline">{badge.name}</p>
                             <p className="text-xs text-muted-foreground">{format(new Date(claimedAt), 'yyyy-MM-dd')}</p>
                         </div>
                     </DialogTrigger>
@@ -268,7 +267,7 @@ export default function MyBadgesPage() {
                              <div className="relative h-32 w-32 mb-4">
                                 <Image src={badge.imageUrl} alt={badge.name} width={128} height={128} className="object-contain" />
                             </div>
-                            <DialogTitle className="text-2xl">{badge.name}</DialogTitle>
+                            <DialogTitle className="text-2xl font-headline">{badge.name}</DialogTitle>
                         </DialogHeader>
                          <div className="my-4 text-center text-sm text-muted-foreground">
                             {badge.description}
