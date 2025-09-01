@@ -14,50 +14,41 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// --- Admin Test Mode ---
+// This is a mock admin user for testing purposes.
+const mockAdminUser: CustomUser = {
+    uid: 'admin_test_uid',
+    email: 'admin_test@example.com',
+    name: '测试管理员',
+    picture: 'https://placehold.co/100x100.png',
+    isAdmin: true,
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<CustomUser | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
-  const fetchUser = useCallback(async () => {
-    try {
-      const response = await fetch('/api/auth/me');
-      if (response.ok) {
-        const { user } = await response.json();
-        setUser(user);
-      } else {
-        setUser(null);
-      }
-    } catch (error) {
-      console.error('Failed to fetch user:', error);
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
+  useEffect(() => {
+    // In test mode, immediately set the mock admin user.
+    setUser(mockAdminUser);
+    setLoading(false);
   }, []);
 
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser, pathname]); // Re-fetch user on path change for SPA-style navigation
-
   const login = (returnTo?: string) => {
-    const targetUrl = `/api/auth/authing/login?returnTo=${encodeURIComponent(returnTo || pathname)}`;
+    // In test mode, login does nothing as user is already mocked.
+    console.log("Login function called in test mode. No action taken.");
+    const targetUrl = returnTo || pathname;
     router.push(targetUrl);
   };
 
   const logout = async () => {
-    setLoading(true);
-    try {
-      await fetch('/api/auth/logout');
-      setUser(null);
-    } catch (error) {
-      console.error('Logout failed:', error);
-    } finally {
-      setLoading(false);
-      // Ensure redirect happens after state is cleared
-      router.push('/home'); 
-    }
+    // In test mode, logout simulates clearing the user.
+    console.log("Logout function called in test mode.");
+    setUser(null);
+    setLoading(false);
+    router.push('/home'); 
   };
 
   const value = {
