@@ -563,7 +563,7 @@ type ClaimStatusCode =
     | 'QR_EXPIRED'
     | 'ALREADY_OWNED';
 
-type ClaimValidationResult = {
+type ValidationResult = {
     status: ClaimStatusCode;
     badge?: Badge;
 };
@@ -573,21 +573,21 @@ function validateClaim(
     qrCode: BadgeQRCode | undefined,
     badge: Badge | undefined,
     userHasBadge: boolean
-): ClaimValidationResult {
+): ValidationResult {
     if (!qrCode) {
         return { status: 'INVALID_QR' };
     }
     if (!badge) {
         return { status: 'BADGE_NOT_FOUND', badge };
     }
-    if (userHasBadge) {
-        return { status: 'ALREADY_OWNED', badge };
-    }
     if (qrCode.type === 'single' && qrCode.isClaimed) {
         return { status: 'QR_CLAIMED', badge };
     }
     if (qrCode.expiresAt && new Date(qrCode.expiresAt) < new Date()) {
         return { status: 'QR_EXPIRED', badge };
+    }
+    if (userHasBadge) {
+        return { status: 'ALREADY_OWNED', badge };
     }
     
     return { status: 'SUCCESS', badge };
