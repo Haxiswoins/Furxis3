@@ -28,5 +28,11 @@
     "userId": "mock-admin-uid",
     "badgeId": "badge_1725200000001",
     "claimedAt": "2025-09-01T07:44:48.946Z"
+  },
+  {
+    "id": "userbadge_1756712945980",
+    "userId": "mock-admin-uid",
+    "badgeId": "badge_1725200000002",
+    "claimedAt": "2025-09-01T07:49:05.980Z"
   }
 ]

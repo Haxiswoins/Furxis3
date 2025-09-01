@@ -558,7 +558,6 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     
     const qrCodeIndex = allQRCodes.findIndex(qr => qr.id === qrId);
 
-    // 1. Check if QR code is valid
     if (qrCodeIndex === -1) {
         return { success: false, message: '无效的二维码。' };
     }
@@ -566,33 +565,27 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     const qrCode = allQRCodes[qrCodeIndex];
     const badge = allBadges.find(b => b.id === qrCode.badgeId);
 
-    // 2. Check for expiration
     if (qrCode.expiresAt && new Date(qrCode.expiresAt) < new Date()) {
-         return { success: false, message: '此二维码已过期。', badge };
+        return { success: false, message: '此二维码已过期。', badge };
     }
     
-    // 3. Check if single-use QR has already been claimed by anyone
     if (qrCode.type === 'single' && qrCode.isClaimed) {
         return { success: false, message: '此二维码已被领取。', badge };
     }
 
-    // 4. Check if this specific user already owns this badge
     const alreadyHasBadge = userBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode.badgeId);
     if (alreadyHasBadge) {
         return { success: false, message: '您已拥有此徽章。', badge };
     }
     
-    // 5. If all checks pass, the claim is successful.
     const now = new Date().toISOString();
     
-    // Mark as claimed if it's a single-use code
     if (qrCode.type === 'single') {
         allQRCodes[qrCodeIndex].isClaimed = true;
         allQRCodes[qrCodeIndex].claimedBy = userId;
         allQRCodes[qrCodeIndex].claimedAt = now;
     }
 
-    // Add the badge to the user's collection
     const newUserBadge: UserBadge = {
         id: `userbadge_${Date.now()}`,
         userId: userId,
@@ -601,10 +594,11 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     };
     userBadges.push(newUserBadge);
 
-    // Write all changes back to the files
-    await writeData('badgeQRCodes.json', allQRCodes);
-    await writeData('userBadges.json', userBadges);
+    // Atomically write both files
+    await Promise.all([
+        writeData('badgeQRCodes.json', allQRCodes),
+        writeData('userBadges.json', userBadges)
+    ]);
 
-    // Return a success message
     return { success: true, message: '徽章领取成功！', badge };
 }
