@@ -565,33 +565,28 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     const qrCode = allQRCodes[qrCodeIndex];
     const badge = allBadges.find(b => b.id === qrCode.badgeId);
     
-    // 1. Check if expired
     if (qrCode.expiresAt && new Date(qrCode.expiresAt) < new Date()) {
          return { success: false, message: '此二维码已过期。', badge };
     }
     
-    // 2. Check if single-use and already claimed
     if (qrCode.type === 'single' && qrCode.isClaimed) {
         return { success: false, message: '此二维码已被领取。', badge };
     }
 
-    // 3. Check if user already has this badge
     const alreadyHasBadge = userBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode.badgeId);
     if (alreadyHasBadge) {
         return { success: false, message: '您已拥有此徽章。', badge };
     }
     
-    // If we reach here, the claim is successful.
+    // If all checks pass, claim is successful.
     const now = new Date().toISOString();
     
-    // Only mark single-use QR codes as claimed
     if (qrCode.type === 'single') {
         allQRCodes[qrCodeIndex].isClaimed = true;
         allQRCodes[qrCodeIndex].claimedBy = userId;
         allQRCodes[qrCodeIndex].claimedAt = now;
     }
 
-    // Add badge to user's collection
     const newUserBadge: UserBadge = {
         id: `userbadge_${Date.now()}`,
         userId: userId,
@@ -600,7 +595,6 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     };
     userBadges.push(newUserBadge);
 
-    // Write all changes to files
     await writeData('badgeQRCodes.json', allQRCodes);
     await writeData('userBadges.json', userBadges);
 
