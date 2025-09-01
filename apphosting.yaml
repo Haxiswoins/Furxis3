@@ -7,8 +7,13 @@ runConfig:
   # more instances in response to increased traffic.
   maxInstances: 1
 scheduledJobs:
-  - schedule: "0 21 * * *" # Runs every day at 21:00 (9 PM) UTC.
+  - schedule: "0 21 * * *" # Runs every day at 21:00 (9 PM) UTC, which is 5 AM Beijing time.
     timeZone: "Asia/Shanghai"
     httpTarget:
       path: /__run/notifyAdminOfPendingOrders
+      method: "GET"
+  - schedule: "0 3 * * *" # Runs every day at 3:00 AM server time.
+    timeZone: "Asia/Shanghai"
+    httpTarget:
+      path: /__run/cleanup
       method: "GET"
