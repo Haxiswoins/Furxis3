@@ -32,5 +32,11 @@
     "badgeId": "badge_1723456789001",
     "createdAt": "2025-09-01T07:11:12.360Z",
     "isClaimed": false
+  },
+  {
+    "id": "c937911e-003a-4ec5-934c-63638497b408",
+    "badgeId": "badge_1725174431000",
+    "createdAt": "2025-09-01T07:18:15.971Z",
+    "isClaimed": false
   }
 ]

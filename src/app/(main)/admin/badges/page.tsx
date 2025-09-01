@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -161,7 +160,7 @@ export default function BadgesPage() {
                             {generatedQR ? (
                                 <div className="flex flex-col items-center gap-4">
                                 <QRCodeComponent value={getQRCodeUrl(generatedQR.id)} size={256} />
-                                <p className="text-xs text-muted-foreground break-all max-w-[256px]">请用户使用App内扫码功能领取</p>
+                                <p className="text-xs text-muted-foreground break-all max-w-[256px]">扫码方式：个人信息-我的徽章-获取徽章</p>
                                 </div>
                             ) : generating ? (
                                 <div className="flex flex-col items-center gap-4">
