@@ -4,5 +4,11 @@
     "userId": "mock-admin-uid",
     "badgeId": "badge_1724000000001",
     "claimedAt": "2025-09-01T08:19:00.297Z"
+  },
+  {
+    "id": "userbadge_1756715004536",
+    "userId": "mock-admin-uid",
+    "badgeId": "badge_1724000000002",
+    "claimedAt": "2025-09-01T08:23:24.536Z"
   }
 ]
