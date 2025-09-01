@@ -1,4 +1,5 @@
 
+
 export type CharacterSeries = {
   id: string;
   name: string;
@@ -91,7 +92,6 @@ export type SiteContent = {
   adoptionPageDescription: string;
   commissionPageDescription: string;
   adminEmail: string;
-  homeBackgroundImageUrl?: string | null;
   sunriseHour?: number;
   sunsetHour?: number;
   contactInfo?: string;
@@ -121,3 +121,27 @@ export interface CustomUser {
     picture: string | null;
     isAdmin?: boolean;
 }
+
+// Badge System Types
+export type Badge = {
+  id: string;
+  name: string;
+  imageUrl: string;
+  createdAt: string; // ISO String
+};
+
+export type BadgeQRCode = {
+  id: string; // This is the unique code in the QR, e.g. a UUID
+  badgeId: string;
+  createdAt: string; // ISO String
+  isClaimed: boolean;
+  claimedBy?: string; // User ID
+  claimedAt?: string; // ISO String
+};
+
+export type UserBadge = {
+  id: string;
+  userId: string;
+  badgeId: string;
+  claimedAt: string; // ISO String
+};

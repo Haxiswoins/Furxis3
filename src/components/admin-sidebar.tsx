@@ -1,9 +1,10 @@
 
+
 'use client';
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, PawPrint, ShoppingCart, LogOut, LayoutDashboard, Settings, Package, Component, Layers, Briefcase, FileText } from 'lucide-react';
+import { Home, PawPrint, ShoppingCart, LogOut, LayoutDashboard, Settings, Package, Component, Layers, Briefcase, FileText, Badge } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -16,6 +17,7 @@ const navItems = [
   { href: '/admin/characters', label: '领养角色管理', icon: PawPrint },
   { href: '/admin/commissions', label: '各期委托管理', icon: ShoppingCart },
   { href: '/admin/commission-styles', label: '委托样式管理', icon: Component },
+  { href: '/admin/badges', label: '徽章管理', icon: Badge },
   { href: '/admin/content', label: '页面内容管理', icon: Settings },
   { href: '/admin/contracts', label: '合同与邮件管理', icon: FileText },
 ];

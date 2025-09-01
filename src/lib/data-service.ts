@@ -4,8 +4,9 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, Work, CharacterSeries } from '@/types';
+import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, Work, CharacterSeries, Badge, BadgeQRCode, UserBadge } from '@/types';
 import { sendEmail } from '@/ai/flows/send-email-flow';
+import { randomUUID } from 'crypto';
 
 // Helper to get the path to our JSON data file
 const getDataPath = (fileName: string) => path.join(process.cwd(), 'src', 'data', fileName);
@@ -480,4 +481,92 @@ export async function deleteWork(id: string): Promise<void> {
     await writeData('works.json', allWorks);
 }
 
+
+// Badges
+export async function getBadges(): Promise<Badge[]> {
+    const badges = await readData<Badge[]>('badges.json');
+    return badges.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export async function saveBadge(badgeData: Omit<Badge, 'id' | 'createdAt'>): Promise<Badge> {
+    const allBadges = await getBadges();
+    const newBadge: Badge = {
+        id: `badge_${Date.now()}`,
+        ...badgeData,
+        createdAt: new Date().toISOString(),
+    };
+    allBadges.push(newBadge);
+    await writeData('badges.json', allBadges);
+    return newBadge;
+}
+
+// QR Codes
+export async function generateBadgeQRCode(badgeId: string): Promise<BadgeQRCode> {
+    const allQRCodes = await readData<BadgeQRCode[]>('badgeQRCodes.json');
+    const newQRCode: BadgeQRCode = {
+        id: randomUUID(),
+        badgeId: badgeId,
+        createdAt: new Date().toISOString(),
+        isClaimed: false,
+    };
+    allQRCodes.push(newQRCode);
+    await writeData('badgeQRCodes.json', allQRCodes);
+    return newQRCode;
+}
+
+// User Badges
+export async function getUserBadges(userId: string): Promise<(UserBadge & { badge?: Badge })[]> {
+    const userBadges = await readData<UserBadge[]>('userBadges.json');
+    const badges = await getBadges();
+    const userBadgesForUser = userBadges.filter(ub => ub.userId === userId);
     
+    return userBadgesForUser.map(ub => {
+        const badge = badges.find(b => b.id === ub.badgeId);
+        return { ...ub, badge };
+    }).sort((a, b) => new Date(b.claimedAt).getTime() - new Date(a.claimedAt).getTime());
+}
+
+export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ success: boolean; message: string; badge?: Badge }> {
+    const allQRCodes = await readData<BadgeQRCode[]>('badgeQRCodes.json');
+    const qrCodeIndex = allQRCodes.findIndex(qr => qr.id === qrId);
+
+    if (qrCodeIndex === -1) {
+        return { success: false, message: '无效的二维码。' };
+    }
+
+    const qrCode = allQRCodes[qrCodeIndex];
+
+    if (qrCode.isClaimed) {
+        return { success: false, message: '此二维码已被领取。' };
+    }
+
+    const userBadges = await readData<UserBadge[]>('userBadges.json');
+    const alreadyHasBadge = userBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode.badgeId);
+    if (alreadyHasBadge) {
+        const allBadges = await getBadges();
+        const badge = allBadges.find(b => b.id === qrCode.badgeId);
+        return { success: false, message: '您已拥有此徽章。', badge };
+    }
+
+    // Claim the badge
+    const now = new Date().toISOString();
+    allQRCodes[qrCodeIndex].isClaimed = true;
+    allQRCodes[qrCodeIndex].claimedBy = userId;
+    allQRCodes[qrCodeIndex].claimedAt = now;
+
+    const newUserBadge: UserBadge = {
+        id: `userbadge_${Date.now()}`,
+        userId: userId,
+        badgeId: qrCode.badgeId,
+        claimedAt: now,
+    };
+    userBadges.push(newUserBadge);
+
+    await writeData('badgeQRCodes.json', allQRCodes);
+    await writeData('userBadges.json', userBadges);
+    
+    const allBadges = await getBadges();
+    const badge = allBadges.find(b => b.id === qrCode.badgeId);
+
+    return { success: true, message: '徽章领取成功！', badge };
+}
