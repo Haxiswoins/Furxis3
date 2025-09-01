@@ -11,5 +11,11 @@
     "name": "测试徽章",
     "imageUrl": "https://placehold.co/96x96/png?text=Test",
     "createdAt": "2024-08-13T10:00:00.000Z"
+  },
+  {
+    "id": "badge_1725174431000",
+    "name": "测试徽章",
+    "imageUrl": "https://placehold.co/96x96/png?text=B",
+    "createdAt": "2024-09-01T08:07:11.000Z"
   }
 ]

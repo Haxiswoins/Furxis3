@@ -500,6 +500,21 @@ export async function saveBadge(badgeData: Omit<Badge, 'id' | 'createdAt'>): Pro
     return newBadge;
 }
 
+export async function deleteBadge(id: string): Promise<void> {
+    let allBadges = await readData<Badge[]>('badges.json');
+    let allQRCodes = await readData<BadgeQRCode[]>('badgeQRCodes.json');
+    let allUserBadges = await readData<UserBadge[]>('userBadges.json');
+
+    allBadges = allBadges.filter(b => b.id !== id);
+    allQRCodes = allQRCodes.filter(qr => qr.badgeId !== id);
+    allUserBadges = allUserBadges.filter(ub => ub.badgeId !== id);
+
+    await writeData('badges.json', allBadges);
+    await writeData('badgeQRCodes.json', allQRCodes);
+    await writeData('userBadges.json', allUserBadges);
+}
+
+
 // QR Codes
 export async function generateBadgeQRCode(badgeId: string): Promise<BadgeQRCode> {
     const allQRCodes = await readData<BadgeQRCode[]>('badgeQRCodes.json');
@@ -536,16 +551,16 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
 
     const qrCode = allQRCodes[qrCodeIndex];
 
-    if (qrCode.isClaimed) {
-        return { success: false, message: '此二维码已被领取。' };
-    }
-
     const userBadges = await readData<UserBadge[]>('userBadges.json');
     const alreadyHasBadge = userBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode.badgeId);
     if (alreadyHasBadge) {
         const allBadges = await getBadges();
         const badge = allBadges.find(b => b.id === qrCode.badgeId);
         return { success: false, message: '您已拥有此徽章。', badge };
+    }
+    
+    if (qrCode.isClaimed) {
+        return { success: false, message: '此二维码已被领取。' };
     }
 
     // Claim the badge
