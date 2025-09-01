@@ -275,7 +275,7 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
             try {
                 await sendEmail({
                     to: updatedOrder.applicationData.email,
-                    from: 'notification@suitopia.club', 
+                    from: 'notification@suitopia.club', // IMPORTANT: This address's domain must be verified in Resend.
                     subject: siteContent.confirmationEmailSubject || '您的委托申请已中标！',
                     html: emailBody.replace(/\n/g, '<br>'),
                 });
@@ -339,7 +339,7 @@ export async function createAdoptionApplication(character: Character, userId: st
             try {
                 await sendEmail({
                     to: siteContent.adminEmail,
-                    from: 'notification@suitopia.club', 
+                    from: 'notification@suitopia.club', // IMPORTANT: This address's domain must be verified in Resend.
                     subject: `[新领养申请] ${character.name}`,
                     html: `<p>新领养申请: ${character.name} by ${applicationData.userName}.</p>`
                 });
@@ -395,7 +395,7 @@ export async function createCommissionApplication(userId: string, commissionInfo
             try {
                 await sendEmail({
                     to: siteContent.adminEmail,
-                    from: 'notification@suitopia.club',
+                    from: 'notification@suitopia.club', // IMPORTANT: This address's domain must be verified in Resend.
                     subject: `[新委托申请] ${commissionInfo.styleName}`,
                     html: `<p>新委托申请: ${commissionInfo.styleName} by ${applicationData.userName}.</p>`
                 });
@@ -426,7 +426,7 @@ export async function cancelOrder(orderId: string, reason: string): Promise<void
           try {
             await sendEmail({
                 to: siteContent.adminEmail,
-                from: 'notification@suitopia.club',
+                from: 'notification@suitopia.club', // IMPORTANT: This address's domain must be verified in Resend.
                 subject: `[退养申请] 订单 #${order.orderNumber}`,
                 html: `<p>用户申请取消订单: ${order.orderNumber}. 理由: ${reason}.</p>`
             });
@@ -583,9 +583,14 @@ export async function confirmAndGrantBadge(qrId: string, userId: string): Promis
     const qrCode = allQRCodes.find(qr => qr.id === qrId);
 
     // Re-validate before any write operation
-    if (!qrCode || (qrCode.type === 'single' && qrCode.isClaimed) || allUserBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode.badgeId)) {
-        return { success: false, message: '无法领取徽章，状态可能已改变。' };
+    const validation = await validateBadgeQRCode(qrId, userId);
+    if (!validation.success) {
+        return { success: false, message: validation.message };
     }
+    if (!qrCode) { // Should be caught by validation, but for type safety
+        return { success: false, message: "无效的二维码。"};
+    }
+
 
     const now = new Date().toISOString();
     

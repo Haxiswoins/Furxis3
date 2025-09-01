@@ -159,7 +159,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
         title: '保存成功！',
         description: `订单 "${order.orderNumber}" 已被成功更新。`,
       });
-      router.push('/admin/orders');
+      // Do not redirect, stay on the page
       router.refresh();
     } catch (error) {
        console.error("保存失败:", error);
