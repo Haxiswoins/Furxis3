@@ -1,44 +1,23 @@
 [
   {
-    "id": "badge_1723616298587",
-    "name": "测试徽章3",
-    "createdAt": "2024-08-14T06:18:18.587Z",
-    "imageUrl": "https://placehold.co/128x128.png",
-    "description": "这是第三个测试徽章的描述。"
+    "id": "badge_1724000000001",
+    "name": "测试徽章 A",
+    "description": "这是第一个用于全面测试的徽章。",
+    "imageUrl": "https://placehold.co/128x128/orange/white?text=A",
+    "createdAt": "2024-08-18T10:00:00.000Z"
   },
   {
-    "id": "badge_1723616298588",
-    "name": "测试徽章4",
-    "createdAt": "2024-08-14T06:18:18.588Z",
-    "imageUrl": "https://placehold.co/128x128.png",
-    "description": "这是第四个测试徽章的描述。"
+    "id": "badge_1724000000002",
+    "name": "测试徽章 B",
+    "description": "这是第二个用于验证长期二维码的徽章。",
+    "imageUrl": "https://placehold.co/128x128/green/white?text=B",
+    "createdAt": "2024-08-18T10:01:00.000Z"
   },
   {
-    "id": "badge_1723616300002",
-    "name": "备用徽章 Beta",
-    "imageUrl": "https://placehold.co/128x128.png",
-    "description": "Beta测试专用。",
-    "createdAt": "2024-08-14T08:00:02.000Z"
-  },
-  {
-    "id": "badge_1723616300003",
-    "name": "备用徽章 Gamma",
-    "imageUrl": "https://placehold.co/128x128.png",
-    "description": "Gamma测试专用。",
-    "createdAt": "2024-08-14T08:00:03.000Z"
-  },
-  {
-    "id": "badge_1723616300004",
-    "name": "备用徽章 Delta",
-    "imageUrl": "https://placehold.co/128x128.png",
-    "description": "Delta测试专用。",
-    "createdAt": "2024-08-14T08:00:04.000Z"
-  },
-  {
-    "id": "badge_1723616300005",
-    "name": "备用徽章 Epsilon",
-    "imageUrl": "https://placehold.co/128x128.png",
-    "description": "Epsilon测试专用。",
-    "createdAt": "2024-08-14T08:00:05.000Z"
+    "id": "badge_1724000000003",
+    "name": "测试徽章 C",
+    "description": "这是第三个用于验证单次二维码的徽章。",
+    "imageUrl": "https://placehold.co/128x128/blue/white?text=C",
+    "createdAt": "2024-08-18T10:02:00.000Z"
   }
 ]
