@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -37,6 +38,7 @@ const formSchema = z.object({
   adoptionPageDescription: z.string(),
   commissionPageDescription: z.string(),
   adminEmail: z.string().email({ message: "请输入有效的邮箱地址。" }).min(1, '管理员邮箱不能为空'),
+  senderEmail: z.string().email({ message: "请输入有效的发件邮箱地址。"}).optional(),
   sunriseHour: z.coerce.number().min(0, "小时不能小于0").max(23, "小时不能大于23"),
   sunsetHour: z.coerce.number().min(0, "小时不能小于0").max(23, "小时不能大于23"),
   contactInfo: z.string().optional(),
@@ -138,6 +140,7 @@ export default function SiteContentPage() {
                 adoptionPageDescription: loadedContent?.adoptionPageDescription || '',
                 commissionPageDescription: loadedContent?.commissionPageDescription || '',
                 adminEmail: loadedContent?.adminEmail || '',
+                senderEmail: loadedContent?.senderEmail || '',
                 sunriseHour: loadedContent?.sunriseHour ?? 6,
                 sunsetHour: loadedContent?.sunsetHour ?? 18,
                 contactInfo: loadedContent?.contactInfo || '',
@@ -164,6 +167,7 @@ export default function SiteContentPage() {
                   adoptionPageDescription: loadedContent.adoptionPageDescription,
                   commissionPageDescription: loadedContent.commissionPageDescription,
                   adminEmail: loadedContent.adminEmail,
+                  senderEmail: loadedContent.senderEmail,
                   sunriseHour: loadedContent.sunriseHour ?? 6,
                   sunsetHour: loadedContent.sunsetHour ?? 18,
                   contactInfo: loadedContent.contactInfo || '',
@@ -271,9 +275,21 @@ export default function SiteContentPage() {
                                 name="adminEmail"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>管理员邮箱</FormLabel>
+                                        <FormLabel>管理员邮箱 (收件)</FormLabel>
                                         <FormControl><Input {...field} placeholder="admin@example.com" /></FormControl>
                                         <FormDescription>用于接收新订单和系统通知的邮箱地址。</FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                             <FormField
+                                control={form.control}
+                                name="senderEmail"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>系统发件邮箱 (发件)</FormLabel>
+                                        <FormControl><Input {...field} placeholder="noreply@yourdomain.com" /></FormControl>
+                                        <FormDescription>用于发送所有系统邮件的地址。此邮箱的域名必须在Resend平台完成验证。</FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}

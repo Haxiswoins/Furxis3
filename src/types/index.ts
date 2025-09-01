@@ -8,7 +8,7 @@ export type CharacterSeries = {
 };
 
 export type Character = {
-  id: string;
+  id:string;
   seriesId: string;
   name: string;
   species: string;
@@ -92,6 +92,7 @@ export type SiteContent = {
   adoptionPageDescription: string;
   commissionPageDescription: string;
   adminEmail: string;
+  senderEmail?: string;
   sunriseHour?: number;
   sunsetHour?: number;
   contactInfo?: string;

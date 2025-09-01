@@ -1,4 +1,5 @@
 
+
 'use server';
 /**
  * @fileOverview A function to check for pending orders and notify the admin.
@@ -26,11 +27,18 @@ export async function notifyAdminOfPendingOrders(): Promise<string> {
 
     const siteContent = await getSiteContent();
     const adminEmail = siteContent?.adminEmail;
+    const senderEmail = siteContent?.senderEmail;
 
     if (!adminEmail) {
       const message = "Admin email not configured. Cannot send notification.";
       console.error(message);
       return message;
+    }
+
+    if (!senderEmail) {
+        const message = "Sender email not configured. Cannot send notification.";
+        console.error(message);
+        return message;
     }
 
     if (!process.env.RESEND_API_KEY) {
@@ -60,7 +68,7 @@ export async function notifyAdminOfPendingOrders(): Promise<string> {
     try {
       await sendEmail({
         to: adminEmail,
-        from: 'notification@markjoker.top', // IMPORTANT: This address's domain must be verified in Resend.
+        from: senderEmail,
         subject: subject,
         html: htmlBody,
       });

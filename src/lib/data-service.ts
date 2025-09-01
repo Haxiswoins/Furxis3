@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import fs from 'fs/promises';
@@ -262,7 +263,7 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
 
     if (shouldSendEmail && process.env.RESEND_API_KEY && updatedOrder.applicationData?.email) {
         const siteContent = await getSiteContent();
-        if(siteContent) {
+        if(siteContent && siteContent.senderEmail) {
             let emailBody = siteContent.confirmationEmailBody || '';
             emailBody = emailBody.replace('{productName}', updatedOrder.productName);
             // Safely replace the commission option name
@@ -275,13 +276,15 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
             try {
                 await sendEmail({
                     to: updatedOrder.applicationData.email,
-                    from: 'notification@markjoker.top', // IMPORTANT: This address's domain must be verified in Resend.
+                    from: siteContent.senderEmail,
                     subject: siteContent.confirmationEmailSubject || '您的委托申请已中标！',
                     html: emailBody.replace(/\n/g, '<br>'),
                 });
             } catch (emailError) {
                 console.error("Failed to send confirmation email, but order was updated successfully. Error:", emailError);
             }
+        } else {
+             console.error("Failed to send confirmation email: senderEmail is not configured in site content.");
         }
     }
 }
@@ -335,11 +338,11 @@ export async function createAdoptionApplication(character: Character, userId: st
     // Admin Email Notification
     if (process.env.RESEND_API_KEY) {
         const siteContent = await getSiteContent();
-        if (siteContent?.adminEmail) {
+        if (siteContent?.adminEmail && siteContent.senderEmail) {
             try {
                 await sendEmail({
                     to: siteContent.adminEmail,
-                    from: 'notification@markjoker.top', // IMPORTANT: This address's domain must be verified in Resend.
+                    from: siteContent.senderEmail,
                     subject: `[新领养申请] ${character.name}`,
                     html: `<p>新领养申请: ${character.name} by ${applicationData.userName}.</p>`
                 });
@@ -391,11 +394,11 @@ export async function createCommissionApplication(userId: string, commissionInfo
     // Admin Email Notification
     if (process.env.RESEND_API_KEY) {
         const siteContent = await getSiteContent();
-        if (siteContent?.adminEmail) {
+        if (siteContent?.adminEmail && siteContent.senderEmail) {
             try {
                 await sendEmail({
                     to: siteContent.adminEmail,
-                    from: 'notification@markjoker.top', // IMPORTANT: This address's domain must be verified in Resend.
+                    from: siteContent.senderEmail,
                     subject: `[新委托申请] ${commissionInfo.styleName}`,
                     html: `<p>新委托申请: ${commissionInfo.styleName} by ${applicationData.userName}.</p>`
                 });
@@ -422,11 +425,11 @@ export async function cancelOrder(orderId: string, reason: string): Promise<void
   const order = allOrders[orderIndex];
   if (process.env.RESEND_API_KEY && order) {
       const siteContent = await getSiteContent();
-      if (siteContent?.adminEmail) {
+      if (siteContent?.adminEmail && siteContent.senderEmail) {
           try {
             await sendEmail({
                 to: siteContent.adminEmail,
-                from: 'notification@markjoker.top', // IMPORTANT: This address's domain must be verified in Resend.
+                from: siteContent.senderEmail,
                 subject: `[退养申请] 订单 #${order.orderNumber}`,
                 html: `<p>用户申请取消订单: ${order.orderNumber}. 理由: ${reason}.</p>`
             });
