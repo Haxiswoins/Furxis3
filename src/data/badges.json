@@ -1,30 +1,38 @@
+
 [
   {
-    "id": "badge_1756719223080",
-    "name": "CCC",
-    "description": "CCC",
-    "imageUrl": "https://img1.baidu.com/it/u=1213969067,718194646&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",
-    "createdAt": "2025-09-01T09:33:43.080Z"
+    "id": "badge_1723536000001",
+    "name": "创始成员",
+    "description": "赠与工作室初创时期便与我们同行的开拓者，感谢您的信任与支持。",
+    "imageUrl": "https://picsum.photos/200/200",
+    "createdAt": "2024-01-01T00:00:00.000Z"
   },
   {
-    "id": "badge_1756718992076",
-    "name": "BBB",
-    "description": "BBB",
-    "imageUrl": "https://photo.mac89.com/180816/EPS-180816_124/c563U8Bolq_small.jpg",
-    "createdAt": "2025-09-01T09:29:52.076Z"
+    "id": "badge_1723536000002",
+    "name": "开站元老",
+    "description": "赠与在网站上线首周内注册的早期支持者，您是这一切的见证者。",
+    "imageUrl": "https://picsum.photos/200/200",
+    "createdAt": "2024-01-02T00:00:00.000Z"
   },
   {
-    "id": "badge_1756718670214",
-    "name": "AAA",
-    "description": "AAA",
-    "imageUrl": "https://iphoto.mac89.com/photo/181025/EPS-181025_140/3whq47Oabv_small.jpg",
-    "createdAt": "2025-09-01T09:24:30.214Z"
+    "id": "badge_1723536000003",
+    "name": "热心反馈",
+    "description": "感谢那些为我们提供了宝贵建议与Bug反馈的用户，您的帮助让社区更美好。",
+    "imageUrl": "https://picsum.photos/200/200",
+    "createdAt": "2024-01-03T00:00:00.000Z"
   },
   {
-    "id": "badge_1756719415078",
-    "name": "DDD",
-    "description": "DDD",
-    "imageUrl": "https://iphoto.mac89.com/photo/EPS-180514/180514_69/tuouAXMkfR_small.jpg",
-    "createdAt": "2025-09-01T09:36:55.078Z"
+    "id": "badge_1723536000004",
+    "name": "第一滴血",
+    "description": "授予第一位成功提交委托或领养申请的用户，您开启了新的篇章。",
+    "imageUrl": "https://picsum.photos/200/200",
+    "createdAt": "2024-01-04T00:00:00.000Z"
+  },
+  {
+    "id": "badge_1723536000005",
+    "name": "2024夏日庆典",
+    "description": "颁发给参与了2024年夏日庆典特别活动的用户，纪念那个火热的夏天。",
+    "imageUrl": "https://picsum.photos/200/200",
+    "createdAt": "2024-07-01T00:00:00.000Z"
   }
 ]
