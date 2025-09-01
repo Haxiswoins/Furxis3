@@ -800,3 +800,40 @@ export async function grantBadgeToUser(userId: string, badgeId: string): Promise
 
     return newUserBadge;
 }
+
+export async function grantBadgeToUsers(userIds: string[], badgeId: string): Promise<{ success: boolean; message: string }> {
+    if (!userIds || userIds.length === 0 || !badgeId) {
+        throw new Error("必须提供用户和徽章。");
+    }
+
+    const allUserBadges = await readData<UserBadge[]>('userBadges.json');
+    const badges = await getBadges();
+
+    const badgeToGrant = badges.find(b => b.id === badgeId);
+    if (!badgeToGrant) {
+        throw new Error(`未找到ID为 ${badgeId} 的徽章。`);
+    }
+
+    const existingUserBadges = new Set(allUserBadges.map(ub => `${ub.userId}-${ub.badgeId}`));
+    let grantedCount = 0;
+    
+    userIds.forEach((userId, index) => {
+        if (!existingUserBadges.has(`${userId}-${badgeId}`)) {
+            const newUserBadge: UserBadge = {
+                id: `userbadge_bulk_${Date.now()}_${index}`,
+                userId: userId,
+                badgeId: badgeId,
+                claimedAt: new Date().toISOString(),
+            };
+            allUserBadges.push(newUserBadge);
+            grantedCount++;
+        }
+    });
+
+    if (grantedCount > 0) {
+        await writeData('userBadges.json', allUserBadges);
+        return { success: true, message: `操作完成！已成功为 ${grantedCount} 位用户发放了徽章“${badgeToGrant.name}”。` };
+    } else {
+        return { success: true, message: '所有选中的用户都已经拥有该徽章，未执行任何操作。' };
+    }
+}

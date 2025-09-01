@@ -29,9 +29,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { getAggregatedUsers, grantBadgeToUser, AggregatedUser } from '@/lib/data-service';
+import { getAggregatedUsers, grantBadgeToUser, grantBadgeToUsers, AggregatedUser } from '@/lib/data-service';
 import type { Badge } from '@/types';
 import { getBadges } from '@/lib/data-service';
 import { Badge as BadgeIcon, Search, ChevronRight, ArrowUpDown } from 'lucide-react';
@@ -54,7 +55,7 @@ function UserManagementPageSkeleton() {
         <Table>
           <TableHeader>
             <TableRow>
-              {[...Array(6)].map((_, i) => (
+              {[...Array(7)].map((_, i) => (
                 <TableHead key={i}>
                   <Skeleton className="h-5 w-full" />
                 </TableHead>
@@ -64,7 +65,7 @@ function UserManagementPageSkeleton() {
           <TableBody>
             {[...Array(5)].map((_, i) => (
               <TableRow key={i}>
-                {[...Array(5)].map((_, j) => (
+                {[...Array(6)].map((_, j) => (
                   <TableCell key={j}>
                     <Skeleton className="h-5 w-full" />
                   </TableCell>
@@ -142,6 +143,63 @@ function GrantBadgeDialog({ user, badges, onBadgeGranted }: { user: AggregatedUs
     )
 }
 
+function BulkGrantBadgeDialog({ selectedUserIds, badges, onBulkGranted, onCancel }: { selectedUserIds: string[], badges: Badge[], onBulkGranted: () => void, onCancel: () => void }) {
+    const { toast } = useToast();
+    const [selectedBadgeId, setSelectedBadgeId] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleBulkGrant = async () => {
+        if (!selectedBadgeId) {
+            toast({ title: '请选择徽章', description: '您需要选择一个徽章才能发放。', variant: 'destructive' });
+            return;
+        }
+        setIsSubmitting(true);
+        try {
+            const result = await grantBadgeToUsers(selectedUserIds, selectedBadgeId);
+            toast({ title: result.message });
+            onBulkGranted();
+        } catch (error) {
+            toast({ title: '批量发放失败', description: error instanceof Error ? error.message : '发生未知错误。', variant: 'destructive' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <Dialog open={true} onOpenChange={(isOpen) => !isOpen && onCancel()}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>批量发放徽章</DialogTitle>
+                    <DialogDescription>
+                        您已选择 {selectedUserIds.length} 位用户。请选择要授予他们的徽章。系统会自动跳过已拥有该徽章的用户。
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                     <Select onValueChange={setSelectedBadgeId} value={selectedBadgeId}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="选择一个徽章..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {badges.map(badge => (
+                                <SelectItem key={badge.id} value={badge.id}>
+                                    {badge.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={onCancel}>取消</Button>
+                    <Button onClick={handleBulkGrant} disabled={isSubmitting || !selectedBadgeId}>
+                        {isSubmitting ? '发放中...' : '确认发放'}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    )
+}
+
+
 export default function UserManagementPage() {
   const { toast } = useToast();
   const [users, setUsers] = useState<AggregatedUser[]>([]);
@@ -150,9 +208,11 @@ export default function UserManagementPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('registrationDate');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [isBulkGranting, setIsBulkGranting] = useState(false);
 
   const fetchData = async () => {
-    setLoading(true);
+    // We don't set loading to true here to avoid skeleton on refresh
     try {
       const [userData, badgeData] = await Promise.all([
         getAggregatedUsers(),
@@ -167,11 +227,12 @@ export default function UserManagementPage() {
         variant: 'destructive',
       });
     } finally {
-      setLoading(false);
+      setLoading(false); // Ensure loading is false after fetch
     }
   };
 
   useEffect(() => {
+    setLoading(true);
     fetchData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -217,6 +278,28 @@ export default function UserManagementPage() {
     );
   }, [users, searchTerm, sortKey, sortDirection]);
 
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+        setSelectedUserIds(sortedAndFilteredUsers.map(u => u.id));
+    } else {
+        setSelectedUserIds([]);
+    }
+  }
+
+  const handleSelectOne = (userId: string, checked: boolean) => {
+    if(checked) {
+        setSelectedUserIds(prev => [...prev, userId]);
+    } else {
+        setSelectedUserIds(prev => prev.filter(id => id !== userId));
+    }
+  }
+  
+  const handleBulkGrantSuccess = () => {
+    setIsBulkGranting(false);
+    setSelectedUserIds([]);
+    fetchData(); // Refresh data to show new badge counts
+  }
+
   if (loading) {
     return <UserManagementPageSkeleton />;
   }
@@ -234,20 +317,40 @@ export default function UserManagementPage() {
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
         <h1 className="text-3xl font-headline">用户管理</h1>
-        <div className="relative w-full sm:w-auto">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input 
-                placeholder="按用户名搜索..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-full sm:w-64"
-            />
+        <div className="flex items-center gap-2">
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input 
+                    placeholder="按用户名搜索..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 w-full sm:w-64"
+                />
+            </div>
+            <Button onClick={() => setIsBulkGranting(true)} disabled={selectedUserIds.length === 0}>
+                批量发放徽章 ({selectedUserIds.length})
+            </Button>
+             {isBulkGranting && (
+                <BulkGrantBadgeDialog 
+                    selectedUserIds={selectedUserIds}
+                    badges={badges}
+                    onBulkGranted={handleBulkGrantSuccess}
+                    onCancel={() => setIsBulkGranting(false)}
+                />
+             )}
         </div>
       </div>
       <div className="border rounded-lg">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead padding="checkbox">
+                <Checkbox
+                  checked={selectedUserIds.length > 0 && selectedUserIds.length === sortedAndFilteredUsers.length}
+                  onCheckedChange={(checked) => handleSelectAll(checked as boolean)}
+                  aria-label="Select all"
+                />
+              </TableHead>
               <SortableHeader sortKey="name">用户名</SortableHeader>
               <TableHead>邮箱</TableHead>
               <SortableHeader sortKey="registrationDate">注册日期</SortableHeader>
@@ -260,26 +363,35 @@ export default function UserManagementPage() {
           <TableBody>
             {sortedAndFilteredUsers.length > 0 ? (
               sortedAndFilteredUsers.map(user => (
-                <Link key={user.id} href={`/admin/users/${user.id}`} passHref legacyBehavior>
-                    <TableRow className="cursor-pointer">
-                        <TableCell className="font-medium">{user.name || '(未设置)'}</TableCell>
-                        <TableCell className="text-muted-foreground text-xs">{user.email || 'N/A'}</TableCell>
-                        <TableCell>{format(new Date(user.registrationDate), 'yyyy-MM-dd')}</TableCell>
-                        <TableCell>{user.completedOrders}</TableCell>
-                        <TableCell>{user.notSelectedOrders}</TableCell>
-                        <TableCell>{user.badgeCount}</TableCell>
-                        <TableCell className="text-right">
-                           <div className="flex items-center justify-end gap-2">
-                             <GrantBadgeDialog user={user} badges={badges} onBadgeGranted={fetchData} />
-                             <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                           </div>
-                        </TableCell>
-                    </TableRow>
-                </Link>
+                <TableRow key={user.id} data-state={selectedUserIds.includes(user.id) && "selected"}>
+                    <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={selectedUserIds.includes(user.id)}
+                          onCheckedChange={(checked) => handleSelectOne(user.id, checked as boolean)}
+                          aria-label="Select row"
+                        />
+                    </TableCell>
+                    <TableCell className="font-medium">
+                        <Link href={`/admin/users/${user.id}`} className="hover:underline">{user.name || '(未设置)'}</Link>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground text-xs">{user.email || 'N/A'}</TableCell>
+                    <TableCell>{format(new Date(user.registrationDate), 'yyyy-MM-dd')}</TableCell>
+                    <TableCell>{user.completedOrders}</TableCell>
+                    <TableCell>{user.notSelectedOrders}</TableCell>
+                    <TableCell>{user.badgeCount}</TableCell>
+                    <TableCell className="text-right">
+                       <div className="flex items-center justify-end gap-2">
+                         <GrantBadgeDialog user={user} badges={badges} onBadgeGranted={fetchData} />
+                          <Link href={`/admin/users/${user.id}`} passHref>
+                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                          </Link>
+                       </div>
+                    </TableCell>
+                </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className="text-center h-24">
+                <TableCell colSpan={8} className="text-center h-24">
                   沒有找到任何用戶。
                 </TableCell>
               </TableRow>
