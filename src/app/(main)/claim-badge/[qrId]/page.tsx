@@ -1,114 +1,148 @@
 
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { claimBadgeQRCode } from '@/lib/data-service';
+import { validateBadgeQRCode, confirmAndGrantBadge } from '@/lib/data-service';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { CheckCircle2, AlertTriangle, XCircle, Loader2 } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, Loader2, HelpCircle } from 'lucide-react';
 import Image from 'next/image';
 import type { Badge } from '@/types';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+
 
 export default function ClaimBadgePage() {
   const { qrId } = useParams();
   const router = useRouter();
   const { user, loading: authLoading, login } = useAuth();
-  
-  const [claimStatus, setClaimStatus] = useState<'loading' | 'success' | 'already-claimed' | 'already-owned' | 'error'>('loading');
-  const [message, setMessage] = useState('');
-  const [claimedBadge, setClaimedBadge] = useState<Badge | null>(null);
-  const claimTriggered = useRef(false);
 
-  const processClaim = useCallback(async (userId: string, codeId: string) => {
+  const [pageState, setPageState] = useState<'loading' | 'error' | 'confirmation' | 'submitting'>('loading');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [badgeToClaim, setBadgeToClaim] = useState<Badge | null>(null);
+
+  const processValidation = useCallback(async (userId: string, codeId: string) => {
     try {
-        const result = await claimBadgeQRCode(codeId, userId);
-        
-        setMessage(result.message);
-        if (result.badge) {
-          setClaimedBadge(result.badge);
-        }
-        
-        if (result.success) {
-          setClaimStatus('success');
-        } else {
-          if (result.message.includes('已拥有')) {
-            setClaimStatus('already-owned');
-          } else if (result.message.includes('已被使用') || result.message.includes('已被领取')) {
-            setClaimStatus('already-claimed');
-          } else {
-            setClaimStatus('error');
-          }
-        }
+      const result = await validateBadgeQRCode(codeId, userId);
+      if (result.success && result.badge) {
+        setBadgeToClaim(result.badge);
+        setPageState('confirmation');
+      } else {
+        setErrorMessage(result.message);
+        setPageState('error');
+      }
     } catch (e) {
-        setClaimStatus('error');
-        setMessage(e instanceof Error ? e.message : "发生未知错误。");
+      setPageState('error');
+      setErrorMessage(e instanceof Error ? e.message : "发生未知错误。");
     }
   }, []);
 
   useEffect(() => {
-    // If auth is still loading, do nothing.
     if (authLoading) return;
 
-    // If user is not logged in, redirect them.
     if (!user) {
       login(`/claim-badge/${qrId}`);
       return;
     }
-
-    // If a claim has already been triggered, do nothing.
-    if (claimTriggered.current) return;
     
-    // Trigger the claim and mark it as triggered.
-    if (user && qrId) {
-        claimTriggered.current = true; 
-        processClaim(user.uid, qrId as string);
+    if (pageState === 'loading' && user && qrId) {
+        processValidation(user.uid, qrId as string);
     }
-  }, [user, qrId, authLoading, login, processClaim]);
+  }, [user, qrId, authLoading, login, pageState, processValidation]);
+  
+  const handleConfirmClaim = async () => {
+    if (!user || !qrId) return;
+    
+    setPageState('submitting');
+    
+    try {
+      const result = await confirmAndGrantBadge(qrId as string, user.uid);
+      if(result.success) {
+        // On success, redirect without a toast
+        router.push('/my-badges');
+      } else {
+        // If confirmation fails for some reason (e.g. race condition), show error
+        setErrorMessage(result.message);
+        setPageState('error');
+      }
+    } catch(e) {
+       setErrorMessage(e instanceof Error ? e.message : "发生未知错误。");
+       setPageState('error');
+    }
+  }
 
-  const renderStatus = () => {
-    switch (claimStatus) {
+
+  const renderLoading = () => (
+    <Card>
+      <CardHeader className="items-center text-center space-y-4">
+        <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        <CardTitle>正在验证...</CardTitle>
+        <CardDescription>请稍候，我们正在检查您的徽章信息。</CardDescription>
+      </CardHeader>
+    </Card>
+  );
+
+  const renderError = () => (
+     <Card>
+        <CardHeader className="items-center text-center space-y-4">
+            <XCircle className="h-16 w-16 text-red-500" />
+            <CardTitle>操作失败</CardTitle>
+            <CardDescription>{errorMessage}</CardDescription>
+        </CardHeader>
+        <CardFooter>
+            <Button className="w-full" onClick={() => router.push('/my-badges')}>
+              返回我的徽章
+            </Button>
+        </CardFooter>
+      </Card>
+  );
+  
+  const renderConfirmation = () => {
+    if (!badgeToClaim) return renderError();
+    
+    return (
+        <AlertDialog open={true}>
+            <AlertDialogContent>
+                <AlertDialogHeader className="items-center text-center">
+                    <div className="relative h-32 w-32 mb-4">
+                        <Image src={badgeToClaim.imageUrl} alt={badgeToClaim.name} width={128} height={128} className="object-contain" />
+                    </div>
+                    <AlertDialogTitle className="text-2xl font-headline">{badgeToClaim.name}</AlertDialogTitle>
+                    <AlertDialogDescription className="text-center">
+                        {badgeToClaim.description}
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="!flex-col !space-x-0 sm:!flex-col sm:!space-x-0 gap-2">
+                     <AlertDialogAction onClick={handleConfirmClaim}>确认添加</AlertDialogAction>
+                     <AlertDialogCancel onClick={() => router.push('/my-badges')}>取消</AlertDialogCancel>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    );
+  };
+  
+   const renderSubmitting = () => (
+     <Card>
+      <CardHeader className="items-center text-center space-y-4">
+        <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        <CardTitle>正在添加...</CardTitle>
+        <CardDescription>正在将新徽章加入您的收藏。</CardDescription>
+      </CardHeader>
+    </Card>
+  );
+  
+
+  const renderContent = () => {
+    switch (pageState) {
       case 'loading':
-        return (
-          <>
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
-            <CardTitle>正在验证...</CardTitle>
-            <CardDescription>请稍候，我们正在为您领取徽章。</CardDescription>
-          </>
-        );
-      case 'success':
-        return (
-          <>
-            <CheckCircle2 className="h-16 w-16 text-green-500" />
-            <CardTitle>领取成功！</CardTitle>
-            <CardDescription>{message}</CardDescription>
-          </>
-        );
-      case 'already-owned':
-         return (
-          <>
-            <AlertTriangle className="h-16 w-16 text-yellow-500" />
-            <CardTitle>操作提醒</CardTitle>
-            <CardDescription>{message}</CardDescription>
-          </>
-        );
-      case 'already-claimed':
-        return (
-          <>
-            <XCircle className="h-16 w-16 text-red-500" />
-            <CardTitle>领取失败</CardTitle>
-            <CardDescription>{message}</CardDescription>
-          </>
-        );
+        return renderLoading();
       case 'error':
-        return (
-          <>
-            <XCircle className="h-16 w-16 text-red-500" />
-            <CardTitle>领取失败</CardTitle>
-            <CardDescription>{message}</CardDescription>
-          </>
-        );
+        return renderError();
+      case 'confirmation':
+        return renderConfirmation();
+      case 'submitting':
+          return renderSubmitting();
       default:
         return null;
     }
@@ -116,26 +150,7 @@ export default function ClaimBadgePage() {
 
   return (
     <div className="max-w-md mx-auto">
-      <Card>
-        <CardHeader className="items-center text-center space-y-4">
-            {renderStatus()}
-        </CardHeader>
-        <CardContent className="flex flex-col items-center">
-          {claimedBadge && (
-            <div className="flex flex-col items-center gap-2">
-              <Image src={claimedBadge.imageUrl} alt={claimedBadge.name} width={128} height={128} />
-              <p className="font-semibold">{claimedBadge.name}</p>
-            </div>
-          )}
-        </CardContent>
-        <CardFooter>
-          {claimStatus !== 'loading' && (
-            <Button className="w-full" onClick={() => router.push('/my-badges')}>
-              查看我的徽章
-            </Button>
-          )}
-        </CardFooter>
-      </Card>
+      {renderContent()}
     </div>
   );
 }

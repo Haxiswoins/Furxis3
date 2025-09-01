@@ -543,27 +543,13 @@ export async function generateBadgeQRCode(badgeId: string, type: 'single' | 'lon
     return newQRCode;
 }
 
-// User Badges
-export async function getUserBadges(userId: string): Promise<(UserBadge & { badge?: Badge })[]> {
-    const userBadges = await readData<UserBadge[]>('userBadges.json');
-    const badges = await getBadges();
-    const userBadgesForUser = userBadges.filter(ub => ub.userId === userId);
-    
-    return userBadgesForUser.map(ub => {
-        const badge = badges.find(b => b.id === ub.badgeId);
-        return { ...ub, badge };
-    }).sort((a, b) => new Date(b.claimedAt).getTime() - new Date(a.claimedAt).getTime());
-}
-
-export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ success: boolean; message: string; badge?: Badge }> {
+export async function validateBadgeQRCode(qrId: string, userId: string): Promise<{ success: boolean; message: string; badge?: Badge }> {
     const allQRCodes = await readData<BadgeQRCode[]>('badgeQRCodes.json');
     const allBadges = await getBadges();
     const allUserBadges = await readData<UserBadge[]>('userBadges.json');
 
-    // --- Create a "snapshot" of the state at the beginning ---
     const qrCode = allQRCodes.find(qr => qr.id === qrId);
     
-    // --- Validation based ONLY on the snapshot ---
     if (!qrCode) {
         return { success: false, message: '无效的二维码。' };
     }
@@ -585,10 +571,22 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     if (userAlreadyHasBadge) {
         return { success: false, message: '您已拥有此徽章。', badge };
     }
-    // --- End of validation ---
+    
+    return { success: true, message: '验证通过', badge };
+}
 
+export async function confirmAndGrantBadge(qrId: string, userId: string): Promise<{ success: boolean; message: string }> {
+    // We re-read the data to ensure we have the latest state before writing.
+    const allQRCodes = await readData<BadgeQRCode[]>('badgeQRCodes.json');
+    const allUserBadges = await readData<UserBadge[]>('userBadges.json');
+    
+    const qrCode = allQRCodes.find(qr => qr.id === qrId);
 
-    // --- If all validations pass, this is the ONLY success path ---
+    // Re-validate before any write operation
+    if (!qrCode || (qrCode.type === 'single' && qrCode.isClaimed) || allUserBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode.badgeId)) {
+        return { success: false, message: '无法领取徽章，状态可能已改变。' };
+    }
+
     const now = new Date().toISOString();
     
     // 1. Grant the badge to the user
@@ -609,15 +607,27 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
             allQRCodes[qrCodeIndex].claimedAt = now;
         }
     }
-
+    
     // 3. Write all changes to disk
     await Promise.all([
         writeData('userBadges.json', allUserBadges),
         writeData('badgeQRCodes.json', allQRCodes)
     ]);
+
+    return { success: true, message: '徽章领取成功。' };
+}
+
+
+// User Badges
+export async function getUserBadges(userId: string): Promise<(UserBadge & { badge?: Badge })[]> {
+    const userBadges = await readData<UserBadge[]>('userBadges.json');
+    const badges = await getBadges();
+    const userBadgesForUser = userBadges.filter(ub => ub.userId === userId);
     
-    // 4. Return the definitive success message
-    return { success: true, message: '恭喜您，获取成功！', badge };
+    return userBadgesForUser.map(ub => {
+        const badge = badges.find(b => b.id === ub.badgeId);
+        return { ...ub, badge };
+    }).sort((a, b) => new Date(b.claimedAt).getTime() - new Date(a.claimedAt).getTime());
 }
 
 export async function grantBadgeConditionally(
