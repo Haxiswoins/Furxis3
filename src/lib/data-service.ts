@@ -543,6 +543,9 @@ export async function getUserBadges(userId: string): Promise<(UserBadge & { badg
 
 export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ success: boolean; message: string; badge?: Badge }> {
     const allQRCodes = await readData<BadgeQRCode[]>('badgeQRCodes.json');
+    const allBadges = await getBadges();
+    const userBadges = await readData<UserBadge[]>('userBadges.json');
+    
     const qrCodeIndex = allQRCodes.findIndex(qr => qr.id === qrId);
 
     if (qrCodeIndex === -1) {
@@ -550,25 +553,26 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     }
 
     const qrCode = allQRCodes[qrCodeIndex];
+    const badge = allBadges.find(b => b.id === qrCode.badgeId);
 
-    const userBadges = await readData<UserBadge[]>('userBadges.json');
+    if (qrCode.isClaimed) {
+        return { success: false, message: '此二维码已被领取。', badge };
+    }
+
     const alreadyHasBadge = userBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode.badgeId);
     if (alreadyHasBadge) {
-        const allBadges = await getBadges();
-        const badge = allBadges.find(b => b.id === qrCode.badgeId);
         return { success: false, message: '您已拥有此徽章。', badge };
     }
     
-    if (qrCode.isClaimed) {
-        return { success: false, message: '此二维码已被领取。' };
-    }
-
-    // Claim the badge
+    // If we reach here, the claim is successful.
     const now = new Date().toISOString();
+    
+    // Mark QR code as claimed
     allQRCodes[qrCodeIndex].isClaimed = true;
     allQRCodes[qrCodeIndex].claimedBy = userId;
     allQRCodes[qrCodeIndex].claimedAt = now;
 
+    // Add badge to user's collection
     const newUserBadge: UserBadge = {
         id: `userbadge_${Date.now()}`,
         userId: userId,
@@ -577,11 +581,9 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     };
     userBadges.push(newUserBadge);
 
+    // Write all changes to files
     await writeData('badgeQRCodes.json', allQRCodes);
     await writeData('userBadges.json', userBadges);
-    
-    const allBadges = await getBadges();
-    const badge = allBadges.find(b => b.id === qrCode.badgeId);
 
     return { success: true, message: '徽章领取成功！', badge };
 }
