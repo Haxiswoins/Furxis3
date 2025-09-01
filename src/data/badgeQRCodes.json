@@ -34,5 +34,14 @@
     "isClaimed": true,
     "claimedBy": "mock-admin-uid",
     "claimedAt": "2025-09-01T08:53:31.386Z"
+  },
+  {
+    "id": "ebbd6a0c-8e91-43f4-8502-fcbe6f6cd83f",
+    "badgeId": "badge_1756717020752",
+    "type": "single",
+    "createdAt": "2025-09-01T08:57:02.808Z",
+    "isClaimed": true,
+    "claimedBy": "mock-admin-uid",
+    "claimedAt": "2025-09-01T08:57:34.419Z"
   }
 ]
