@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": "userbadge_1756713721688",
+    "userId": "mock-admin-uid",
+    "badgeId": "badge_1723616298587",
+    "claimedAt": "2025-09-01T08:02:01.688Z"
+  },
+  {
+    "id": "userbadge_1756713821487",
+    "userId": "mock-admin-uid",
+    "badgeId": "badge_1723616300002",
+    "claimedAt": "2025-09-01T08:03:41.486Z"
+  },
+  {
+    "id": "userbadge_1756713863667",
+    "userId": "mock-admin-uid",
+    "badgeId": "badge_1723616300003",
+    "claimedAt": "2025-09-01T08:04:23.667Z"
+  }
+]
