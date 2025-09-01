@@ -4,7 +4,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, PawPrint, ShoppingCart, LogOut, LayoutDashboard, Settings, Package, Component, Layers, Briefcase, FileText, Badge } from 'lucide-react';
+import { Home, PawPrint, ShoppingCart, LogOut, LayoutDashboard, Settings, Package, Component, Layers, Briefcase, FileText, Badge, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 const navItems = [
   { href: '/admin/dashboard', label: '仪表盘', icon: LayoutDashboard },
   { href: '/admin/orders', label: '订单管理', icon: Package },
+  { href: '/admin/users', label: '用户管理', icon: Users },
   { href: '/admin/works', label: '作品管理', icon: Briefcase },
   { href: '/admin/character-series', label: '设定系列管理', icon: Layers },
   { href: '/admin/characters', label: '领养角色管理', icon: PawPrint },

@@ -4,7 +4,7 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, Work, CharacterSeries, Badge, BadgeQRCode, UserBadge } from '@/types';
+import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, Work, CharacterSeries, Badge, BadgeQRCode, UserBadge, AggregatedUser } from '@/types';
 import { sendEmail } from '@/ai/flows/send-email-flow';
 import { randomUUID } from 'crypto';
 
@@ -702,4 +702,96 @@ export async function grantBadgeConditionally(
       message: '没有找到满足所有条件且尚未拥有结果徽章的用户。未发放任何徽章。'
     };
   }
+}
+
+// User Management
+export async function getAggregatedUsers(): Promise<AggregatedUser[]> {
+    const allOrders = await getAllOrders();
+    
+    const usersMap: Map<string, AggregatedUser> = new Map();
+
+    // Sort orders by date to find the registration date correctly
+    allOrders.sort((a, b) => new Date(a.orderDate).getTime() - new Date(b.orderDate).getTime());
+
+    for (const order of allOrders) {
+        if (!order.userId || !order.applicationData) continue;
+
+        if (!usersMap.has(order.userId)) {
+            // First time seeing this user, initialize their data
+            usersMap.set(order.userId, {
+                id: order.userId,
+                name: order.applicationData.userName,
+                email: order.applicationData.email,
+                registrationDate: order.orderDate, // First order date is registration date
+                monthlyActiveDays: 0,
+                orderStats: {
+                    completedCommission: 0,
+                    completedAdoption: 0,
+                    notSelected: 0,
+                    cancelled: 0,
+                },
+            });
+        }
+        
+        const user = usersMap.get(order.userId)!;
+
+        // Update name/email with the latest one, in case it was changed
+        user.name = order.applicationData.userName;
+        user.email = order.applicationData.email;
+
+        // Aggregate order stats
+        switch (order.status) {
+            case '已完成':
+                if (order.orderType === '委托订单') user.orderStats.completedCommission++;
+                else user.orderStats.completedAdoption++;
+                break;
+            case '未中标':
+                user.orderStats.notSelected++;
+                break;
+            case '已取消':
+            case '退养中':
+                user.orderStats.cancelled++;
+                break;
+        }
+    }
+
+    // Calculate monthly active days
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    for (const user of usersMap.values()) {
+        const userOrders = allOrders.filter(o => o.userId === user.id);
+        const monthlyActiveDates = new Set<string>();
+        
+        userOrders.forEach(order => {
+            const orderDate = new Date(order.orderDate);
+            if (orderDate >= firstDayOfMonth) {
+                monthlyActiveDates.add(orderDate.toISOString().split('T')[0]);
+            }
+        });
+        user.monthlyActiveDays = monthlyActiveDates.size;
+    }
+
+    return Array.from(usersMap.values()).sort((a,b) => new Date(b.registrationDate).getTime() - new Date(a.registrationDate).getTime());
+}
+
+export async function grantBadgeToUser(userId: string, badgeId: string): Promise<UserBadge> {
+    const allUserBadges = await readData<UserBadge[]>('userBadges.json');
+
+    const alreadyHasBadge = allUserBadges.some(ub => ub.userId === userId && ub.badgeId === badgeId);
+    if (alreadyHasBadge) {
+        throw new Error('用户已拥有此徽章。');
+    }
+
+    const newUserBadge: UserBadge = {
+        id: `userbadge_manual_${Date.now()}`,
+        userId,
+        badgeId,
+        claimedAt: new Date().toISOString(),
+    };
+
+    allUserBadges.push(newUserBadge);
+    await writeData('userBadges.json', allUserBadges);
+
+    return newUserBadge;
 }

@@ -151,3 +151,18 @@ export type UserBadge = {
   badgeId: string;
   claimedAt: string; // ISO String
 };
+
+// User Management Types
+export type AggregatedUser = {
+  id: string; // userId
+  name: string | undefined;
+  email: string | undefined;
+  registrationDate: string; // ISO string of the first order
+  monthlyActiveDays: number;
+  orderStats: {
+    completedCommission: number;
+    completedAdoption: number;
+    notSelected: number;
+    cancelled: number;
+  };
+};
