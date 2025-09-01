@@ -9,8 +9,8 @@ import { memo } from 'react';
 export const AmbientLightBackground = memo(function AmbientLightBackground() {
   const initializeBackground = () => {
       try {
-        if (window.Color4Bg && window.Color4Bg.AmbientLightBg) {
-            new window.Color4Bg.AmbientLightBg({
+        if (window.Color4Bg && window.Color4Bg.CurveGradientBg) {
+            new window.Color4Bg.CurveGradientBg({
                 dom: "box",
                 colors: ["#007FFE","#3099FE","#60B2FE","#90CCFE","#C0E5FE","#F0FFFE"],
                 loop: true
@@ -34,16 +34,3 @@ export const AmbientLightBackground = memo(function AmbientLightBackground() {
     />
   );
 });
-
-// Define the custom type on the Window interface
-declare global {
-    interface Window {
-        Color4Bg?: {
-            AmbientLightBg: new (options: {
-                dom: string,
-                colors: string[],
-                loop: boolean
-            }) => any;
-        }
-    }
-}

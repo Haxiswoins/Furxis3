@@ -18,12 +18,8 @@ const nextConfig = {
         },
         // For self-hosted images on the production server
         {
-            protocol: 'http',
-            hostname: '**',
-        },
-        {
             protocol: 'https',
-            hostname: '**',
+            hostname: 'cdn.markjoker.top',
         }
     ],
   },

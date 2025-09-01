@@ -636,7 +636,7 @@ export async function confirmAndGrantBadge(qrId: string, userId: string): Promis
 
 
 // User Badges
-export async function getUserBadges(userId: string): Promise<(UserBadge & { badge?: BadgeType })[]> {
+export async function getUserBadges(userId: string): Promise<(UserBadge & { badge?: Badge })[]> {
     const userBadges = await readData<UserBadge[]>('userBadges.json');
     const badges = await getBadges();
     const userBadgesForUser = userBadges.filter(ub => ub.userId === userId);

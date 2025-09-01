@@ -32,8 +32,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { getAggregatedUsers, grantBadgeToUser, grantBadgeToUsers, AggregatedUser } from '@/lib/data-service';
-import type { Badge } from '@/types';
+import { getAggregatedUsers, grantBadgeToUser, grantBadgeToUsers } from '@/lib/data-service';
+import type { Badge, AggregatedUser } from '@/types';
 import { getBadges } from '@/lib/data-service';
 import { Badge as BadgeIcon, Search, ChevronRight, ArrowUpDown, X } from 'lucide-react';
 import { format } from 'date-fns';
@@ -361,7 +361,7 @@ export default function UserManagementPage() {
           <TableHeader>
             <TableRow>
               {isSelectionMode && (
-                <TableHead padding="checkbox">
+                <TableHead className="checkbox">
                   <Checkbox
                     checked={selectedUserIds.length > 0 && selectedUserIds.length === sortedAndFilteredUsers.length}
                     onCheckedChange={(checked) => handleSelectAll(checked as boolean)}
@@ -383,7 +383,7 @@ export default function UserManagementPage() {
               sortedAndFilteredUsers.map(user => (
                 <TableRow key={user.id} data-state={selectedUserIds.includes(user.id) && "selected"}>
                     {isSelectionMode && (
-                      <TableCell padding="checkbox">
+                      <TableCell className="checkbox">
                           <Checkbox
                             checked={selectedUserIds.includes(user.id)}
                             onCheckedChange={(checked) => handleSelectOne(user.id, checked as boolean)}
