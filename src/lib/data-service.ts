@@ -562,22 +562,27 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
 
     // --- Create a "snapshot" of the state at the beginning ---
     const qrCode = allQRCodes.find(qr => qr.id === qrId);
-    const badge = qrCode ? allBadges.find(b => b.id === qrCode.badgeId) : undefined;
-    const userAlreadyHadBadge = qrCode ? allUserBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode.badgeId) : false;
-    const qrWasAlreadyClaimed = qrCode?.type === 'single' && qrCode.isClaimed;
-    // --- End of snapshot ---
-
+    
     // --- Validation based ONLY on the snapshot ---
-    if (!qrCode || !badge) {
+    if (!qrCode) {
         return { success: false, message: '无效的二维码。' };
     }
+    
+    const badge = allBadges.find(b => b.id === qrCode.badgeId);
+    if (!badge) {
+        return { success: false, message: '二维码关联的徽章不存在。' };
+    }
+
     if (qrCode.expiresAt && new Date(qrCode.expiresAt) < new Date()) {
         return { success: false, message: '此二维码已过期。', badge };
     }
-    if (qrWasAlreadyClaimed) {
+    
+    if (qrCode.type === 'single' && qrCode.isClaimed) {
         return { success: false, message: '此二维码已被使用。', badge };
     }
-    if (userAlreadyHadBadge) {
+
+    const userAlreadyHasBadge = allUserBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode.badgeId);
+    if (userAlreadyHasBadge) {
         return { success: false, message: '您已拥有此徽章。', badge };
     }
     // --- End of validation ---

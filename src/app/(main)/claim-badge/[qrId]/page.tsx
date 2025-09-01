@@ -22,37 +22,48 @@ export default function ClaimBadgePage() {
   const claimTriggered = useRef(false);
 
   const processClaim = useCallback(async (userId: string, codeId: string) => {
-    const result = await claimBadgeQRCode(codeId, userId);
-    
-    setMessage(result.message);
-    if (result.badge) {
-      setClaimedBadge(result.badge);
-    }
-    
-    if (result.success) {
-      setClaimStatus('success');
-    } else {
-      if (result.message.includes('已拥有')) {
-        setClaimStatus('already-owned');
-      } else if (result.message.includes('已被使用') || result.message.includes('已被领取')) {
-        setClaimStatus('already-claimed');
-      } else {
+    try {
+        const result = await claimBadgeQRCode(codeId, userId);
+        
+        setMessage(result.message);
+        if (result.badge) {
+          setClaimedBadge(result.badge);
+        }
+        
+        if (result.success) {
+          setClaimStatus('success');
+        } else {
+          if (result.message.includes('已拥有')) {
+            setClaimStatus('already-owned');
+          } else if (result.message.includes('已被使用') || result.message.includes('已被领取')) {
+            setClaimStatus('already-claimed');
+          } else {
+            setClaimStatus('error');
+          }
+        }
+    } catch (e) {
         setClaimStatus('error');
-      }
+        setMessage(e instanceof Error ? e.message : "发生未知错误。");
     }
   }, []);
 
   useEffect(() => {
+    // If auth is still loading, do nothing.
     if (authLoading) return;
 
+    // If user is not logged in, redirect them.
     if (!user) {
       login(`/claim-badge/${qrId}`);
       return;
     }
 
-    if (user && qrId && !claimTriggered.current) {
-      claimTriggered.current = true; // Mark as triggered immediately
-      processClaim(user.uid, qrId as string);
+    // If a claim has already been triggered, do nothing.
+    if (claimTriggered.current) return;
+    
+    // Trigger the claim and mark it as triggered.
+    if (user && qrId) {
+        claimTriggered.current = true; 
+        processClaim(user.uid, qrId as string);
     }
   }, [user, qrId, authLoading, login, processClaim]);
 
