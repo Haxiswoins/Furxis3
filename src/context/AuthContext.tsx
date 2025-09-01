@@ -1,4 +1,3 @@
-
 'use client';
 
 import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
@@ -21,18 +20,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   const fetchUser = useCallback(async () => {
-    // --- ADMIN TEST MODE ---
-    // This simulates a logged-in admin user for testing purposes.
-    // Ensure this is reverted to the original fetch('/api/auth/me') logic before deployment.
-    setUser({
-        uid: 'admin_test_user_001',
-        email: 'admin@test.com',
-        name: '测试管理员',
-        picture: null,
-        isAdmin: true,
-    });
-    setLoading(false);
-    // --- END ADMIN TEST MODE ---
+    try {
+      const response = await fetch('/api/auth/me');
+      const data = await response.json();
+      setUser(data.user || null);
+    } catch (error) {
+      console.error('Failed to fetch user', error);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
