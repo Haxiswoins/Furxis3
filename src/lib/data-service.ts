@@ -560,13 +560,14 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     const allBadges = await getBadges();
     const allUserBadges = await readData<UserBadge[]>('userBadges.json');
 
-    // --- State Snapshot ---
+    // --- Create a "snapshot" of the state at the beginning ---
     const qrCode = allQRCodes.find(qr => qr.id === qrId);
     const badge = qrCode ? allBadges.find(b => b.id === qrCode.badgeId) : undefined;
     const userAlreadyHadBadge = qrCode ? allUserBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode.badgeId) : false;
     const qrWasAlreadyClaimed = qrCode?.type === 'single' && qrCode.isClaimed;
-    // --- End Snapshot ---
-    
+    // --- End of snapshot ---
+
+    // --- Validation based ONLY on the snapshot ---
     if (!qrCode || !badge) {
         return { success: false, message: '无效的二维码。' };
     }
@@ -579,9 +580,13 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     if (userAlreadyHadBadge) {
         return { success: false, message: '您已拥有此徽章。', badge };
     }
+    // --- End of validation ---
 
-    // --- Success Path ---
+
+    // --- If all validations pass, this is the ONLY success path ---
     const now = new Date().toISOString();
+    
+    // 1. Grant the badge to the user
     const newUserBadge: UserBadge = {
         id: `userbadge_${Date.now()}`,
         userId: userId,
@@ -590,6 +595,7 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     };
     allUserBadges.push(newUserBadge);
 
+    // 2. Mark the single-use QR code as claimed
     if (qrCode.type === 'single') {
         const qrCodeIndex = allQRCodes.findIndex(qr => qr.id === qrId);
         if (qrCodeIndex !== -1) {
@@ -599,11 +605,13 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
         }
     }
 
+    // 3. Write all changes to disk
     await Promise.all([
         writeData('userBadges.json', allUserBadges),
         writeData('badgeQRCodes.json', allQRCodes)
     ]);
     
+    // 4. Return the definitive success message
     return { success: true, message: '恭喜您，获取成功！', badge };
 }
 

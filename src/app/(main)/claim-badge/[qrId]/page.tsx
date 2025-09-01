@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { claimBadgeQRCode } from '@/lib/data-service';
@@ -19,7 +19,7 @@ export default function ClaimBadgePage() {
   const [claimStatus, setClaimStatus] = useState<'loading' | 'success' | 'already-claimed' | 'already-owned' | 'error'>('loading');
   const [message, setMessage] = useState('');
   const [claimedBadge, setClaimedBadge] = useState<Badge | null>(null);
-  const [hasAttemptedClaim, setHasAttemptedClaim] = useState(false);
+  const claimTriggered = useRef(false);
 
   const processClaim = useCallback(async (userId: string, codeId: string) => {
     const result = await claimBadgeQRCode(codeId, userId);
@@ -50,11 +50,11 @@ export default function ClaimBadgePage() {
       return;
     }
 
-    if (user && qrId && !hasAttemptedClaim) {
-      setHasAttemptedClaim(true);
+    if (user && qrId && !claimTriggered.current) {
+      claimTriggered.current = true; // Mark as triggered immediately
       processClaim(user.uid, qrId as string);
     }
-  }, [user, qrId, authLoading, login, hasAttemptedClaim, processClaim]);
+  }, [user, qrId, authLoading, login, processClaim]);
 
   const renderStatus = () => {
     switch (claimStatus) {
