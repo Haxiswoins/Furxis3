@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": "bf99886b-6568-4cfa-9f38-5c3fdb586eb1",
+    "badgeId": "badge_1756718670214",
+    "type": "single",
+    "createdAt": "2025-09-01T09:24:36.513Z",
+    "isClaimed": true,
+    "claimedBy": "mock-admin-uid",
+    "claimedAt": "2025-09-01T09:25:25.106Z"
+  }
+]
