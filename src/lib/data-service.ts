@@ -258,33 +258,48 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
 
     await writeData('orders.json', allOrders);
     
-    // Side effect: Send confirmation email if status changes to '待确认'
-    const shouldSendEmail = data.status === '待确认' && originalOrder.status !== '待确认';
+    // --- Side Effects: Send Emails ---
+    const siteContent = await getSiteContent();
+    const senderEmail = siteContent?.senderEmail;
+    
+    if (!process.env.RESEND_API_KEY || !senderEmail || !updatedOrder.applicationData?.email) {
+        if (data.status === '待确认' || data.status === '未中标') {
+            console.error("Cannot send email: Resend API key, sender email, or recipient email is not configured.");
+        }
+        return;
+    }
 
-    if (shouldSendEmail && process.env.RESEND_API_KEY && updatedOrder.applicationData?.email) {
-        const siteContent = await getSiteContent();
-        if(siteContent && siteContent.senderEmail) {
-            let emailBody = siteContent.confirmationEmailBody || '';
-            emailBody = emailBody.replace('{productName}', updatedOrder.productName);
-            // Safely replace the commission option name
-            if (updatedOrder.commissionOptionName) {
-                emailBody = emailBody.replace('{commissionOptionName}', updatedOrder.commissionOptionName);
-            } else {
-                 emailBody = emailBody.replace('{commissionOptionName}', '');
-            }
-            
-            try {
-                await sendEmail({
-                    to: updatedOrder.applicationData.email,
-                    from: siteContent.senderEmail,
-                    subject: siteContent.confirmationEmailSubject || '您的委托申请已中标！',
-                    html: emailBody.replace(/\n/g, '<br>'),
-                });
-            } catch (emailError) {
-                console.error("Failed to send confirmation email, but order was updated successfully. Error:", emailError);
-            }
+    const wasJustSetToConfirm = data.status === '待确认' && originalOrder.status !== '待确认';
+    const wasJustSetToNotSelected = data.status === '未中标' && originalOrder.status !== '未中标';
+
+    let emailSubject: string | undefined;
+    let emailBody: string | undefined;
+
+    if (wasJustSetToConfirm) {
+        emailSubject = siteContent.confirmationEmailSubject || '您的委托申请已中标！';
+        emailBody = siteContent.confirmationEmailBody || '';
+    } else if (wasJustSetToNotSelected && updatedOrder.orderType === '委托订单') {
+        emailSubject = siteContent.notSelectedEmailSubject || '关于您的委托申请结果';
+        emailBody = siteContent.notSelectedEmailBody || '';
+    }
+
+    if (emailSubject && emailBody) {
+        emailBody = emailBody.replace(/\{productName\}/g, updatedOrder.productName);
+        if (updatedOrder.commissionOptionName) {
+            emailBody = emailBody.replace(/\{commissionOptionName\}/g, updatedOrder.commissionOptionName);
         } else {
-             console.error("Failed to send confirmation email: senderEmail is not configured in site content.");
+             emailBody = emailBody.replace(/\{commissionOptionName\}/g, '');
+        }
+
+        try {
+            await sendEmail({
+                to: updatedOrder.applicationData.email,
+                from: senderEmail,
+                subject: emailSubject,
+                html: emailBody.replace(/\n/g, '<br>'),
+            });
+        } catch (emailError) {
+            console.error(`Failed to send '${data.status}' email, but order was updated. Error:`, emailError);
         }
     }
 }
@@ -336,19 +351,17 @@ export async function createAdoptionApplication(character: Character, userId: st
     await writeData('characters.json', allCharacters);
 
     // Admin Email Notification
-    if (process.env.RESEND_API_KEY) {
-        const siteContent = await getSiteContent();
-        if (siteContent?.adminEmail && siteContent.senderEmail) {
-            try {
-                await sendEmail({
-                    to: siteContent.adminEmail,
-                    from: siteContent.senderEmail,
-                    subject: `[新领养申请] ${character.name}`,
-                    html: `<p>新领养申请: ${character.name} by ${applicationData.userName}.</p>`
-                });
-            } catch(e) {
-                console.error("Failed to send admin notification email:", e);
-            }
+    const siteContent = await getSiteContent();
+    if (process.env.RESEND_API_KEY && siteContent?.adminEmail && siteContent.senderEmail) {
+        try {
+            await sendEmail({
+                to: siteContent.adminEmail,
+                from: siteContent.senderEmail,
+                subject: `[新领养申请] ${character.name}`,
+                html: `<p>新领养申请: ${character.name} by ${applicationData.userName}.</p>`
+            });
+        } catch(e) {
+            console.error("Failed to send admin notification email:", e);
         }
     }
     return newId;
@@ -392,19 +405,17 @@ export async function createCommissionApplication(userId: string, commissionInfo
     await writeData('orders.json', allOrders);
 
     // Admin Email Notification
-    if (process.env.RESEND_API_KEY) {
-        const siteContent = await getSiteContent();
-        if (siteContent?.adminEmail && siteContent.senderEmail) {
-            try {
-                await sendEmail({
-                    to: siteContent.adminEmail,
-                    from: siteContent.senderEmail,
-                    subject: `[新委托申请] ${commissionInfo.styleName}`,
-                    html: `<p>新委托申请: ${commissionInfo.styleName} by ${applicationData.userName}.</p>`
-                });
-            } catch(e) {
-                console.error("Failed to send admin notification email:", e);
-            }
+    const siteContent = await getSiteContent();
+    if (process.env.RESEND_API_KEY && siteContent?.adminEmail && siteContent.senderEmail) {
+        try {
+            await sendEmail({
+                to: siteContent.adminEmail,
+                from: siteContent.senderEmail,
+                subject: `[新委托申请] ${commissionInfo.styleName}`,
+                html: `<p>新委托申请: ${commissionInfo.styleName} by ${applicationData.userName}.</p>`
+            });
+        } catch(e) {
+            console.error("Failed to send admin notification email:", e);
         }
     }
 
@@ -423,19 +434,17 @@ export async function cancelOrder(orderId: string, reason: string): Promise<void
 
   // Admin Email Notification
   const order = allOrders[orderIndex];
-  if (process.env.RESEND_API_KEY && order) {
-      const siteContent = await getSiteContent();
-      if (siteContent?.adminEmail && siteContent.senderEmail) {
-          try {
-            await sendEmail({
-                to: siteContent.adminEmail,
-                from: siteContent.senderEmail,
-                subject: `[退养申请] 订单 #${order.orderNumber}`,
-                html: `<p>用户申请取消订单: ${order.orderNumber}. 理由: ${reason}.</p>`
-            });
-          } catch(e) {
-              console.error("Failed to send admin notification email for cancellation:", e);
-          }
+  const siteContent = await getSiteContent();
+  if (process.env.RESEND_API_KEY && order && siteContent?.adminEmail && siteContent.senderEmail) {
+      try {
+        await sendEmail({
+            to: siteContent.adminEmail,
+            from: siteContent.senderEmail,
+            subject: `[退养申请] 订单 #${order.orderNumber}`,
+            html: `<p>用户申请取消订单: ${order.orderNumber}. 理由: ${reason}.</p>`
+        });
+      } catch(e) {
+          console.error("Failed to send admin notification email for cancellation:", e);
       }
   }
 }

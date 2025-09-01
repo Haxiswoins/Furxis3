@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -42,6 +43,7 @@ const lightStatusStyles: { [key: string]: string } = {
   '已确认': 'bg-teal-100 text-teal-800 border-teal-200',
   '排队中': 'bg-cyan-100 text-cyan-800 border-cyan-200',
   '制作中': 'bg-indigo-100 text-indigo-800 border-indigo-200',
+  '未中标': 'bg-gray-100 text-gray-800 border-gray-200',
 };
 
 const darkStatusStyles: { [key: string]: string } = {
@@ -54,6 +56,7 @@ const darkStatusStyles: { [key: string]: string } = {
   '已确认': 'bg-teal-500/20 text-teal-300 border-teal-500/30',
   '排队中': 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
   '制作中': 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+  '未中标': 'bg-gray-500/20 text-gray-300 border-gray-500/30',
 };
 
 function AdminOrdersPageSkeleton() {

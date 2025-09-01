@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -22,12 +23,15 @@ import {
 } from '@/components/ui/form';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   adoptionContractText: z.string().min(1, '领养合同内容不能为空'),
   commissionContractText: z.string().min(1, '委托合同内容不能为空'),
   confirmationEmailSubject: z.string().min(1, '邮件主题不能为空'),
   confirmationEmailBody: z.string().min(1, '邮件正文不能为空'),
+  notSelectedEmailSubject: z.string().min(1, '邮件主题不能为空'),
+  notSelectedEmailBody: z.string().min(1, '邮件正文不能为空'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -82,6 +86,8 @@ export default function ContractsPage() {
       commissionContractText: '',
       confirmationEmailSubject: '',
       confirmationEmailBody: '',
+      notSelectedEmailSubject: '',
+      notSelectedEmailBody: '',
     },
   });
 
@@ -95,6 +101,8 @@ export default function ContractsPage() {
           commissionContractText: content.commissionContractText || '',
           confirmationEmailSubject: content.confirmationEmailSubject || '',
           confirmationEmailBody: content.confirmationEmailBody || '',
+          notSelectedEmailSubject: content.notSelectedEmailSubject || '',
+          notSelectedEmailBody: content.notSelectedEmailBody || '',
         });
       }
       setInitialLoading(false);
@@ -179,38 +187,78 @@ export default function ContractsPage() {
 
            <Card>
             <CardHeader>
-              <CardTitle>中标通知邮件模板</CardTitle>
+              <CardTitle>邮件模板</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <FormField
-                control={form.control}
-                name="confirmationEmailSubject"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>邮件主题</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="恭喜！您的委托申请已中标！" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="confirmationEmailBody"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>邮件正文</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} rows={8} />
-                    </FormControl>
-                    <FormDescription>
-                      可用变量: {"{productName}"}, {"{commissionOptionName}"}.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div>
+                <h3 className="text-lg font-semibold mb-4">中标通知邮件</h3>
+                <div className="pl-4 border-l-2 border-primary space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="confirmationEmailSubject"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>邮件主题</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="恭喜！您的委托申请已中标！" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="confirmationEmailBody"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>邮件正文</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} rows={8} />
+                        </FormControl>
+                        <FormDescription>
+                          可用变量: {"{productName}"}, {"{commissionOptionName}"}.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              <Separator />
+               <div>
+                <h3 className="text-lg font-semibold mb-4">未中标通知邮件</h3>
+                <div className="pl-4 border-l-2 border-primary space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="notSelectedEmailSubject"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>邮件主题</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="关于您的委托申请结果" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="notSelectedEmailBody"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>邮件正文</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} rows={8} />
+                        </FormControl>
+                        <FormDescription>
+                          可用变量: {"{productName}"}, {"{commissionOptionName}"}.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
             </CardContent>
           </Card>
           

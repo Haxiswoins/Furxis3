@@ -34,7 +34,7 @@ import { chinaDivisions } from '@/lib/china-divisions';
 const formSchema = z.object({
   // Order status fields
   total: z.string().min(1, { message: '总价不能为空。' }),
-  status: z.enum(['处理中', '待确认', '已确认', '排队中', '制作中', '退养中', '已发货', '已完成', '已取消']),
+  status: z.enum(['处理中', '待确认', '已确认', '排队中', '制作中', '退养中', '已发货', '已完成', '已取消', '未中标']),
   shippingTrackingId: z.string().optional(),
   
   // Application data fields
@@ -342,6 +342,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
                                 <SelectContent>
                                     <SelectItem value="处理中">处理中</SelectItem>
                                     <SelectItem value="待确认">待确认</SelectItem>
+                                    <SelectItem value="未中标">未中标</SelectItem>
                                     <SelectItem value="已确认">已确认</SelectItem>
                                     <SelectItem value="排队中">排队中</SelectItem>
                                     <SelectItem value="制作中">制作中</SelectItem>
@@ -351,7 +352,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
                                     <SelectItem value="已取消">已取消</SelectItem>
                                 </SelectContent>
                             </Select>
-                            <FormDescription>将状态改为“待确认”会自动向用户发送邮件，提醒他们去网站确认合同。</FormDescription>
+                            <FormDescription>将状态改为“待确认”或“未中标”会自动向用户发送邮件。</FormDescription>
                             <FormMessage />
                             </FormItem>
                         )}
