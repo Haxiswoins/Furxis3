@@ -60,7 +60,7 @@ export async function notifyAdminOfPendingOrders(): Promise<string> {
     try {
       await sendEmail({
         to: adminEmail,
-        from: 'notification@suitopia.club', // IMPORTANT: This address's domain must be verified in Resend.
+        from: 'notification@markjoker.top', // IMPORTANT: This address's domain must be verified in Resend.
         subject: subject,
         html: htmlBody,
       });
