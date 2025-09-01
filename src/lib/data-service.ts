@@ -563,6 +563,8 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     const qrCode = allQRCodes.find(qr => qr.id === qrId);
 
     // ========== 1. VALIDATION STAGE ==========
+    // First, check all possible failure conditions and return immediately if any are met.
+    
     if (!qrCode) {
         return { success: false, message: '无效的二维码。' };
     }
@@ -571,7 +573,7 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     if (!badge) {
         return { success: false, message: '二维码关联的徽章不存在。' };
     }
-
+    
     if (qrCode.type === 'single' && qrCode.isClaimed) {
         return { success: false, message: '此二维码已被使用。', badge };
     }
@@ -586,7 +588,8 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     }
 
     // ========== 2. EXECUTION STAGE ==========
-    // All checks passed, this is a successful claim.
+    // If all checks passed, we are in the sole "success" path.
+    // Perform the necessary data mutations and then return the success message.
     
     const now = new Date().toISOString();
 
@@ -615,5 +618,6 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
         writeData('badgeQRCodes.json', allQRCodes)
     ]);
     
-    return { success: true, message: '恭喜您，获取成功', badge };
+    // Return the success message.
+    return { success: true, message: '恭喜您，获取成功！', badge };
 }
