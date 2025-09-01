@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -28,7 +28,6 @@ import { deleteCharacterSeries, getCharacterSeries } from '@/lib/data-service';
 import type { CharacterSeries } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
-import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 function AdminCharacterSeriesPageSkeleton() {
@@ -79,12 +78,17 @@ export default function AdminCharacterSeriesPage() {
   useEffect(() => {
     async function fetchSeries() {
         setLoading(true);
-        const seriesData = await getCharacterSeries();
-        setSeries(seriesData);
-        setLoading(false);
+        try {
+            const seriesData = await getCharacterSeries();
+            setSeries(seriesData);
+        } catch (error) {
+            toast({ title: "加载系列失败", description: "无法从服务器获取数据。", variant: "destructive" });
+        } finally {
+            setLoading(false);
+        }
     }
     fetchSeries();
-  }, []);
+  }, [toast]);
 
   const handleDelete = async (id: string) => {
     setIsDeleting(id);

@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext } from 'react';
 
 type Theme = 'dark' | 'light';
 
@@ -12,13 +12,14 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme] = useState<Theme | null>(() => {
-    // This now runs only once on the client, reading the class set by the inline script.
-    if (typeof window === 'undefined') {
-      return null; // On the server, we don't know the theme.
-    }
-    return document.documentElement.classList.contains('light') ? 'light' : 'dark';
-  });
+  // This hook is simplified to just read from the DOM, as the initial script
+  // in RootLayout is the source of truth on initial load.
+  const theme: Theme | null =
+    typeof window !== 'undefined'
+      ? document.documentElement.classList.contains('light')
+        ? 'light'
+        : 'dark'
+      : null; // Return null on the server.
 
   return (
     <ThemeContext.Provider value={{ theme }}>

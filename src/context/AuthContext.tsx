@@ -14,37 +14,50 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// --- MOCK IMPLEMENTATION FOR ADMIN TESTING ---
-
-const mockAdminUser: CustomUser = {
-  uid: 'mock-admin-uid-for-testing',
-  email: 'admin-test-mode@example.com',
-  name: '测试管理员 (临时)',
-  picture: 'https://placehold.co/100x100/orange/white?text=A',
-  isAdmin: true,
-};
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<CustomUser | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
-  useEffect(() => {
-    // In this test mode, we just set the mock admin user and stop loading.
-    setUser(mockAdminUser);
-    setLoading(false);
+  const fetchUser = useCallback(async () => {
+    try {
+      const response = await fetch('/api/auth/me');
+      if (response.ok) {
+        const { user } = await response.json();
+        setUser(user);
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Failed to fetch user:', error);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser, pathname]); // Re-fetch user on path change for SPA-style navigation
+
   const login = (returnTo?: string) => {
-    // Mock login does nothing.
-    console.log("Login function called in test mode. No action taken.");
+    const targetUrl = `/api/auth/authing/login?returnTo=${encodeURIComponent(returnTo || pathname)}`;
+    router.push(targetUrl);
   };
 
   const logout = async () => {
-    // Mock logout just clears the user state.
-    console.log("Logout function called in test mode.");
-    setUser(null);
-    router.push('/');
+    setLoading(true);
+    try {
+      await fetch('/api/auth/logout');
+      setUser(null);
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      setLoading(false);
+      // Ensure redirect happens after state is cleared
+      router.push('/home'); 
+    }
   };
 
   const value = {
@@ -56,7 +69,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
-
 
 export function useAuth() {
   const context = useContext(AuthContext);
