@@ -14,41 +14,49 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// --- Admin Test Mode ---
-// This is a mock admin user for testing purposes.
-const mockAdminUser: CustomUser = {
-    uid: 'admin_test_uid',
-    email: 'admin_test@example.com',
-    name: '测试管理员',
-    picture: 'https://placehold.co/100x100.png',
-    isAdmin: true,
-};
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<CustomUser | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    // In test mode, immediately set the mock admin user.
-    setUser(mockAdminUser);
-    setLoading(false);
+  const fetchUser = useCallback(async () => {
+    try {
+      const response = await fetch('/api/auth/me');
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Failed to fetch user', error);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const login = (returnTo?: string) => {
-    // In test mode, login does nothing as user is already mocked.
-    console.log("Login function called in test mode. No action taken.");
-    const targetUrl = returnTo || pathname;
-    router.push(targetUrl);
-  };
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
+
+  const login = useCallback((returnTo?: string) => {
+    const target = returnTo || pathname;
+    const loginUrl = new URL('/api/auth/authing/login', window.location.origin);
+    loginUrl.searchParams.set('returnTo', target);
+    router.push(loginUrl.toString());
+  }, [router, pathname]);
 
   const logout = async () => {
-    // In test mode, logout simulates clearing the user.
-    console.log("Logout function called in test mode.");
-    setUser(null);
-    setLoading(false);
-    router.push('/home'); 
+    try {
+      await fetch('/api/auth/logout');
+      setUser(null);
+      // Redirect to home page after logout
+      router.push('/home');
+    } catch (error) {
+      console.error('Logout failed', error);
+    }
   };
 
   const value = {
