@@ -3,19 +3,29 @@
   {
     "id": "badge_1723456789000",
     "name": "创始成员",
+    "description": "授予网站最早的一批支持者和贡献者，感谢您的远见与信任。",
     "imageUrl": "https://placehold.co/96x96/png?text=⭐",
     "createdAt": "2024-08-12T12:00:00.000Z"
   },
   {
     "id": "badge_1723456789001",
     "name": "测试徽章",
+    "description": "一个用于功能测试的普通徽章。",
     "imageUrl": "https://placehold.co/96x96/png?text=Test",
     "createdAt": "2024-08-13T10:00:00.000Z"
   },
   {
     "id": "badge_1725174431000",
     "name": "测试徽章",
+    "description": "一个用于功能测试的普通徽章。",
     "imageUrl": "https://placehold.co/96x96/png?text=B",
     "createdAt": "2024-09-01T08:07:11.000Z"
+  },
+  {
+    "id": "badge_1725184200000",
+    "name": "测试徽章2",
+    "description": "另一个用于开发和调试的测试徽章。",
+    "imageUrl": "https://placehold.co/96x96/png?text=T2",
+    "createdAt": "2024-09-01T10:30:00.000Z"
   }
 ]

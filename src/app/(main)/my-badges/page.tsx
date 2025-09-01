@@ -253,13 +253,28 @@ export default function MyBadgesPage() {
           {badges.length > 0 ? (
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
               {badges.map(({ id, badge, claimedAt }) => badge ? (
-                <div key={id} className="flex flex-col items-center text-center gap-2">
-                  <div className="relative h-24 w-24">
-                     <Image src={badge.imageUrl} alt={badge.name} width={96} height={96} className="object-contain" />
-                  </div>
-                  <p className="text-sm font-medium">{badge.name}</p>
-                  <p className="text-xs text-muted-foreground">{format(new Date(claimedAt), 'yyyy-MM-dd')}</p>
-                </div>
+                <Dialog key={id}>
+                    <DialogTrigger asChild>
+                        <div className="flex flex-col items-center text-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-muted transition-colors">
+                            <div className="relative h-24 w-24">
+                                <Image src={badge.imageUrl} alt={badge.name} width={96} height={96} className="object-contain" />
+                            </div>
+                            <p className="text-sm font-medium">{badge.name}</p>
+                            <p className="text-xs text-muted-foreground">{format(new Date(claimedAt), 'yyyy-MM-dd')}</p>
+                        </div>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader className="items-center text-center">
+                             <div className="relative h-32 w-32 mb-4">
+                                <Image src={badge.imageUrl} alt={badge.name} width={128} height={128} className="object-contain" />
+                            </div>
+                            <DialogTitle className="text-2xl">{badge.name}</DialogTitle>
+                        </DialogHeader>
+                         <div className="my-4 text-center text-sm text-muted-foreground">
+                            {badge.description}
+                        </div>
+                    </DialogContent>
+                </Dialog>
               ) : null)}
             </div>
           ) : (

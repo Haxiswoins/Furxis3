@@ -18,9 +18,11 @@ import QRCodeComponent from 'qrcode.react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Trash2 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
   name: z.string().min(1, '徽章名称不能为空'),
+  description: z.string().min(1, '徽章说明不能为空'),
   imageUrl: z.string().url('请输入有效的URL'),
 });
 
@@ -37,7 +39,7 @@ export default function BadgesPage() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { name: '', imageUrl: '' },
+    defaultValues: { name: '', description: '', imageUrl: '' },
   });
 
   useEffect(() => {
@@ -116,6 +118,7 @@ export default function BadgesPage() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSave)} className="space-y-4">
               <FormField control={form.control} name="name" render={({ field }) => ( <FormItem> <FormLabel>徽章名称</FormLabel> <FormControl><Input {...field} placeholder="例如：创始成员" /></FormControl> <FormMessage /> </FormItem> )}/>
+              <FormField control={form.control} name="description" render={({ field }) => ( <FormItem> <FormLabel>徽章说明</FormLabel> <FormControl><Textarea {...field} placeholder="关于这个徽章的描述..." /></FormControl> <FormMessage /> </FormItem> )}/>
               <FormField control={form.control} name="imageUrl" render={({ field }) => ( <FormItem> <FormLabel>图片URL</FormLabel> <FormControl><Input {...field} placeholder="https://example.com/badge.png" /></FormControl> <FormMessage /> </FormItem> )}/>
               <Button type="submit" disabled={submitting}>{submitting ? '保存中...' : '创建徽章'}</Button>
             </form>

@@ -126,6 +126,7 @@ export interface CustomUser {
 export type Badge = {
   id: string;
   name: string;
+  description: string;
   imageUrl: string;
   createdAt: string; // ISO String
 };
