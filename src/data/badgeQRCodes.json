@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "id": "1a2540e6-113e-4d65-b299-86df95b7b468",
+    "badgeId": "badge_1723456789000",
+    "createdAt": "2025-09-01T07:07:40.479Z",
+    "isClaimed": false
+  },
+  {
+    "id": "26075007-2dd6-4dc0-b5f4-6339a1b0dcf8",
+    "badgeId": "badge_1723456789000",
+    "createdAt": "2025-09-01T07:07:46.626Z",
+    "isClaimed": false
+  },
+  {
+    "id": "5fa3fed7-2a54-4316-ab62-11f260ed148a",
+    "badgeId": "badge_1723456789000",
+    "createdAt": "2025-09-01T07:08:31.266Z",
+    "isClaimed": true,
+    "claimedBy": "mock-admin-uid",
+    "claimedAt": "2025-09-01T07:09:15.901Z"
+  }
+]

@@ -5,5 +5,11 @@
     "name": "创始成员",
     "imageUrl": "https://placehold.co/96x96/png?text=⭐",
     "createdAt": "2024-08-12T12:00:00.000Z"
+  },
+  {
+    "id": "badge_1723456789001",
+    "name": "测试徽章",
+    "imageUrl": "https://placehold.co/96x96/png?text=Test",
+    "createdAt": "2024-08-13T10:00:00.000Z"
   }
 ]
