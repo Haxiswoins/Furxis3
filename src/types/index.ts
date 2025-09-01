@@ -164,4 +164,6 @@ export type AggregatedUser = {
     notSelected: number;
     cancelled: number;
   };
+  totalOrders: number;
+  badgeCount: number;
 };

@@ -706,52 +706,60 @@ export async function grantBadgeConditionally(
 
 // User Management
 export async function getAggregatedUsers(): Promise<AggregatedUser[]> {
-    const allOrders = await getAllOrders();
+    const [allOrders, allUserBadges] = await Promise.all([
+      getAllOrders(),
+      readData<UserBadge[]>('userBadges.json')
+    ]);
     
     const usersMap: Map<string, AggregatedUser> = new Map();
 
-    // Sort orders by date to find the registration date correctly
-    allOrders.sort((a, b) => new Date(a.orderDate).getTime() - new Date(b.orderDate).getTime());
+    const badgesByUser = allUserBadges.reduce<Record<string, number>>((acc, ub) => {
+        acc[ub.userId] = (acc[ub.userId] || 0) + 1;
+        return acc;
+    }, {});
 
-    for (const order of allOrders) {
-        if (!order.userId || !order.applicationData) continue;
-
-        if (!usersMap.has(order.userId)) {
-            // First time seeing this user, initialize their data
-            usersMap.set(order.userId, {
-                id: order.userId,
-                name: order.applicationData.userName,
-                email: order.applicationData.email,
-                registrationDate: order.orderDate, // First order date is registration date
-                orderStats: {
-                    completedCommission: 0,
-                    completedAdoption: 0,
-                    notSelected: 0,
-                    cancelled: 0,
-                },
-            });
+    const ordersByUser = allOrders.reduce<Record<string, Order[]>>((acc, order) => {
+        if (!acc[order.userId]) {
+            acc[order.userId] = [];
         }
+        acc[order.userId].push(order);
+        return acc;
+    }, {});
+
+
+    for (const userId in ordersByUser) {
+        const userOrders = ordersByUser[userId].sort((a,b) => new Date(a.orderDate).getTime() - new Date(b.orderDate).getTime());
+        if(userOrders.length === 0) continue;
         
-        const user = usersMap.get(order.userId)!;
+        const firstOrder = userOrders[0];
+        const latestOrder = userOrders[userOrders.length - 1];
 
-        // Update name/email with the latest one, in case it was changed
-        user.name = order.applicationData.userName;
-        user.email = order.applicationData.email;
+        const stats = userOrders.reduce((acc, order) => {
+             switch (order.status) {
+                case '已完成':
+                    if (order.orderType === '委托订单') acc.completedCommission++;
+                    else acc.completedAdoption++;
+                    break;
+                case '未中标':
+                    acc.notSelected++;
+                    break;
+                case '已取消':
+                case '退养中':
+                    acc.cancelled++;
+                    break;
+            }
+            return acc;
+        }, { completedCommission: 0, completedAdoption: 0, notSelected: 0, cancelled: 0 });
 
-        // Aggregate order stats
-        switch (order.status) {
-            case '已完成':
-                if (order.orderType === '委托订单') user.orderStats.completedCommission++;
-                else user.orderStats.completedAdoption++;
-                break;
-            case '未中标':
-                user.orderStats.notSelected++;
-                break;
-            case '已取消':
-            case '退养中':
-                user.orderStats.cancelled++;
-                break;
-        }
+        usersMap.set(userId, {
+            id: userId,
+            name: latestOrder.applicationData?.userName,
+            email: latestOrder.applicationData?.email,
+            registrationDate: firstOrder.orderDate,
+            orderStats: stats,
+            totalOrders: userOrders.length,
+            badgeCount: badgesByUser[userId] || 0,
+        });
     }
 
     return Array.from(usersMap.values()).sort((a,b) => new Date(b.registrationDate).getTime() - new Date(a.registrationDate).getTime());

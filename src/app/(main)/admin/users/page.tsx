@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -33,9 +34,14 @@ import { useToast } from '@/hooks/use-toast';
 import { getAggregatedUsers, grantBadgeToUser, AggregatedUser } from '@/lib/data-service';
 import type { Badge } from '@/types';
 import { getBadges } from '@/lib/data-service';
-import { Badge as BadgeIcon, Search, ChevronRight } from 'lucide-react';
+import { Badge as BadgeIcon, Search, ChevronRight, ArrowUpDown } from 'lucide-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
+
+
+type SortKey = 'name' | 'registrationDate' | 'totalOrders' | 'badgeCount';
+type SortDirection = 'asc' | 'desc';
 
 function UserManagementPageSkeleton() {
   return (
@@ -142,6 +148,8 @@ export default function UserManagementPage() {
   const [badges, setBadges] = useState<Badge[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortKey, setSortKey] = useState<SortKey>('registrationDate');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   const fetchData = async () => {
     setLoading(true);
@@ -168,16 +176,56 @@ export default function UserManagementPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
-  const filteredUsers = useMemo(() => {
-    if (!searchTerm) return users;
-    return users.filter(user => 
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDirection('desc'); // Default to descending for new columns
+    }
+  };
+
+  const sortedAndFilteredUsers = useMemo(() => {
+    let sortedUsers = [...users];
+
+    sortedUsers.sort((a, b) => {
+      let comparison = 0;
+      switch (sortKey) {
+        case 'name':
+          comparison = (a.name || '').localeCompare(b.name || '');
+          break;
+        case 'registrationDate':
+          comparison = new Date(a.registrationDate).getTime() - new Date(b.registrationDate).getTime();
+          break;
+        case 'totalOrders':
+          comparison = a.totalOrders - b.totalOrders;
+          break;
+        case 'badgeCount':
+          comparison = a.badgeCount - b.badgeCount;
+          break;
+      }
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
+
+    if (!searchTerm) return sortedUsers;
+    
+    return sortedUsers.filter(user => 
         user.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [users, searchTerm]);
+  }, [users, searchTerm, sortKey, sortDirection]);
 
   if (loading) {
     return <UserManagementPageSkeleton />;
   }
+
+  const SortableHeader = ({ sortKey: key, children }: { sortKey: SortKey, children: React.ReactNode }) => (
+    <TableHead>
+        <Button variant="ghost" onClick={() => handleSort(key)} className="px-0 hover:bg-transparent">
+            {children}
+            <ArrowUpDown className={cn("ml-2 h-4 w-4", sortKey === key ? "text-foreground" : "text-muted-foreground")} />
+        </Button>
+    </TableHead>
+  );
 
   return (
     <div>
@@ -197,28 +245,24 @@ export default function UserManagementPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>用户名</TableHead>
+              <SortableHeader sortKey="name">用户名</SortableHeader>
               <TableHead>邮箱</TableHead>
-              <TableHead>注册日期</TableHead>
-              <TableHead>订单统计</TableHead>
+              <SortableHeader sortKey="registrationDate">注册日期</SortableHeader>
+              <SortableHeader sortKey="totalOrders">订单总数</SortableHeader>
+              <SortableHeader sortKey="badgeCount">徽章数</SortableHeader>
               <TableHead className="text-right">操作</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredUsers.length > 0 ? (
-              filteredUsers.map(user => (
+            {sortedAndFilteredUsers.length > 0 ? (
+              sortedAndFilteredUsers.map(user => (
                 <Link key={user.id} href={`/admin/users/${user.id}`} passHref legacyBehavior>
                     <TableRow className="cursor-pointer">
                         <TableCell className="font-medium">{user.name || '(未设置)'}</TableCell>
                         <TableCell className="text-muted-foreground text-xs">{user.email || 'N/A'}</TableCell>
                         <TableCell>{format(new Date(user.registrationDate), 'yyyy-MM-dd')}</TableCell>
-                        <TableCell>
-                            <div className="flex flex-col text-xs">
-                                <span title="已完成委托 / 已完成领养">✅ {user.orderStats.completedCommission} / {user.orderStats.completedAdoption}</span>
-                                <span title="已取消">🚫 {user.orderStats.cancelled}</span>
-                                <span title="未中标">💔 {user.orderStats.notSelected}</span>
-                            </div>
-                        </TableCell>
+                        <TableCell>{user.totalOrders}</TableCell>
+                        <TableCell>{user.badgeCount}</TableCell>
                         <TableCell className="text-right">
                            <div className="flex items-center justify-end gap-2">
                              <GrantBadgeDialog user={user} badges={badges} onBadgeGranted={fetchData} />
@@ -231,7 +275,7 @@ export default function UserManagementPage() {
             ) : (
               <TableRow>
                 <TableCell colSpan={6} className="text-center h-24">
-                  沒有找到任何用戶。
+                  没有找到任何用户。
                 </TableCell>
               </TableRow>
             )}
