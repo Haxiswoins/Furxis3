@@ -19,13 +19,12 @@ export default function ClaimBadgePage() {
   const [claimStatus, setClaimStatus] = useState<'loading' | 'success' | 'already-claimed' | 'already-owned' | 'error'>('loading');
   const [message, setMessage] = useState('');
   const [claimedBadge, setClaimedBadge] = useState<Badge | null>(null);
+  const [hasAttemptedClaim, setHasAttemptedClaim] = useState(false);
 
-  const processClaim = useCallback(async () => {
-    if (!user || !qrId) return;
-
-    const result = await claimBadgeQRCode(qrId as string, user.uid);
-    setMessage(result.message);
+  const processClaim = useCallback(async (userId: string, codeId: string) => {
+    const result = await claimBadgeQRCode(codeId, userId);
     
+    setMessage(result.message);
     if (result.badge) {
       setClaimedBadge(result.badge);
     }
@@ -41,8 +40,7 @@ export default function ClaimBadgePage() {
         setClaimStatus('error');
       }
     }
-  }, [qrId, user]);
-
+  }, []);
 
   useEffect(() => {
     if (authLoading) return;
@@ -52,8 +50,11 @@ export default function ClaimBadgePage() {
       return;
     }
 
-    processClaim();
-  }, [qrId, user, authLoading, login, processClaim]);
+    if (user && qrId && !hasAttemptedClaim) {
+      setHasAttemptedClaim(true);
+      processClaim(user.uid, qrId as string);
+    }
+  }, [user, qrId, authLoading, login, hasAttemptedClaim, processClaim]);
 
   const renderStatus = () => {
     switch (claimStatus) {

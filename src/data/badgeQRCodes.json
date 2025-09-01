@@ -52,5 +52,21 @@
     "isClaimed": true,
     "claimedBy": "mock-admin-uid",
     "claimedAt": "2025-09-01T09:02:40.181Z"
+  },
+  {
+    "id": "44747df5-f41a-4a76-b261-3e8ccd711a7a",
+    "badgeId": "badge_1756717601228",
+    "type": "single",
+    "createdAt": "2025-09-01T09:06:43.968Z",
+    "isClaimed": false
+  },
+  {
+    "id": "3da28383-20fb-4529-9ed9-a0bc524b8ccb",
+    "badgeId": "badge_1756717601228",
+    "type": "single",
+    "createdAt": "2025-09-01T09:06:51.385Z",
+    "isClaimed": true,
+    "claimedBy": "mock-admin-uid",
+    "claimedAt": "2025-09-01T09:07:26.072Z"
   }
 ]
