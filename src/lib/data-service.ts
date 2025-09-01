@@ -563,8 +563,6 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     const qrCode = allQRCodes.find(qr => qr.id === qrId);
 
     // ========== 1. VALIDATION STAGE ==========
-    // First, perform all checks on the data as it was read from the file.
-
     if (!qrCode) {
         return { success: false, message: '无效的二维码。' };
     }
@@ -575,20 +573,20 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     }
 
     if (qrCode.type === 'single' && qrCode.isClaimed) {
-        return { success: false, message: '此二维码已被领取。', badge };
+        return { success: false, message: '此二维码已被使用。', badge };
     }
 
-    if (qrCode.type === 'long-term' && qrCode.expiresAt && new Date(qrCode.expiresAt) < new Date()) {
+    if (qrCode.expiresAt && new Date(qrCode.expiresAt) < new Date()) {
         return { success: false, message: '此二维码已过期。', badge };
     }
-    
+
     const alreadyHasBadge = allUserBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode.badgeId);
     if (alreadyHasBadge) {
         return { success: false, message: '您已拥有此徽章。', badge };
     }
 
     // ========== 2. EXECUTION STAGE ==========
-    // If all validations pass, proceed to modify the data and write it back.
+    // All checks passed, this is a successful claim.
     
     const now = new Date().toISOString();
 
@@ -612,8 +610,10 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     }
 
     // Persist all changes back to the files
-    await writeData('userBadges.json', allUserBadges);
-    await writeData('badgeQRCodes.json', allQRCodes);
+    await Promise.all([
+        writeData('userBadges.json', allUserBadges),
+        writeData('badgeQRCodes.json', allQRCodes)
+    ]);
     
-    return { success: true, message: '徽章领取成功！', badge };
+    return { success: true, message: '恭喜您，获取成功', badge };
 }
