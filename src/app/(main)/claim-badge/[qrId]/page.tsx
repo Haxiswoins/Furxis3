@@ -31,16 +31,22 @@ export default function ClaimBadgePage() {
 
     async function processClaim() {
       const result = await claimBadgeQRCode(qrId as string, user!.uid);
-      setClaimStatus(result.success ? 'success' : 'error');
       setMessage(result.message);
+      
       if (result.badge) {
         setClaimedBadge(result.badge);
       }
-      if (result.message.includes('已拥有')) {
-        setClaimStatus('already-owned');
-      }
-      if (result.message.includes('已被领取')) {
-        setClaimStatus('already-claimed');
+      
+      if (result.success) {
+        setClaimStatus('success');
+      } else {
+        if (result.message.includes('已拥有')) {
+          setClaimStatus('already-owned');
+        } else if (result.message.includes('已被领取')) {
+          setClaimStatus('already-claimed');
+        } else {
+          setClaimStatus('error');
+        }
       }
     }
 

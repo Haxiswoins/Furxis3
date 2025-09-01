@@ -18,5 +18,19 @@
     "isClaimed": true,
     "claimedBy": "mock-admin-uid",
     "claimedAt": "2025-09-01T07:09:15.901Z"
+  },
+  {
+    "id": "2248a394-e9cc-4a0c-9a8c-6ac469308ebf",
+    "badgeId": "badge_1723456789001",
+    "createdAt": "2025-09-01T07:10:53.966Z",
+    "isClaimed": true,
+    "claimedBy": "mock-admin-uid",
+    "claimedAt": "2025-09-01T07:11:47.308Z"
+  },
+  {
+    "id": "90fd4c45-2ccd-4885-9dd6-030085650648",
+    "badgeId": "badge_1723456789001",
+    "createdAt": "2025-09-01T07:11:12.360Z",
+    "isClaimed": false
   }
 ]
