@@ -8,7 +8,7 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { getBadges, saveBadge, generateBadgeQRCode, deleteBadge } from '@/lib/data-service';
+import { getBadges, saveBadge, generateBadgeQRCode, deleteBadge, grantBadgeConditionally } from '@/lib/data-service';
 import type { Badge, BadgeQRCode } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -19,6 +19,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Trash2 } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MultiSelect } from '@/components/ui/multi-select';
+import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   name: z.string().min(1, '徽章名称不能为空'),
@@ -26,7 +29,16 @@ const formSchema = z.object({
   imageUrl: z.string().url('请输入有效的URL'),
 });
 
+const conditionalGrantSchema = z.object({
+    conditionBadgeIds: z.array(z.string()).min(1, '请至少选择一个条件徽章。'),
+    resultBadgeId: z.string().min(1, '请选择一个结果徽章。'),
+}).refine(data => !data.conditionBadgeIds.includes(data.resultBadgeId), {
+    message: '结果徽章不能和条件徽章相同。',
+    path: ['resultBadgeId'],
+});
+
 type FormValues = z.infer<typeof formSchema>;
+type ConditionalGrantValues = z.infer<typeof conditionalGrantSchema>;
 
 export default function BadgesPage() {
   const { toast } = useToast();
@@ -40,6 +52,11 @@ export default function BadgesPage() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: { name: '', description: '', imageUrl: '' },
+  });
+
+  const conditionalGrantForm = useForm<ConditionalGrantValues>({
+    resolver: zodResolver(conditionalGrantSchema),
+    defaultValues: { conditionBadgeIds: [], resultBadgeId: '' },
   });
 
   useEffect(() => {
@@ -97,6 +114,21 @@ export default function BadgesPage() {
         setDeletingId(null);
     }
   }
+  
+  async function handleConditionalGrant(values: ConditionalGrantValues) {
+    setSubmitting(true);
+    try {
+      const result = await grantBadgeConditionally(values.conditionBadgeIds, values.resultBadgeId);
+      toast({ title: '操作成功', description: result.message });
+      conditionalGrantForm.reset();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '发生未知错误';
+      toast({ title: '操作失败', description: message, variant: 'destructive' });
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
 
   function getQRCodeUrl(qrId: string) {
     if (typeof window !== 'undefined') {
@@ -104,6 +136,12 @@ export default function BadgesPage() {
     }
     return '';
   }
+
+  const badgeOptions = badges.map(b => ({ value: b.id, label: b.name }));
+  const resultBadgeOptions = badgeOptions.filter(
+    b => !conditionalGrantForm.watch('conditionBadgeIds')?.includes(b.value)
+  );
+
 
   return (
     <div className="space-y-8">
@@ -217,6 +255,68 @@ export default function BadgesPage() {
           )}
         </CardContent>
       </Card>
+      
+      <Card>
+        <CardHeader>
+            <CardTitle>条件徽章发放</CardTitle>
+            <CardDescription>为满足特定徽章组合条件的用户，发放一个新的徽章。</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <Form {...conditionalGrantForm}>
+                <form onSubmit={conditionalGrantForm.handleSubmit(handleConditionalGrant)} className="space-y-6">
+                    <FormField
+                        control={conditionalGrantForm.control}
+                        name="conditionBadgeIds"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>条件徽章</FormLabel>
+                                <FormControl>
+                                   <MultiSelect
+                                        options={badgeOptions}
+                                        selected={field.value}
+                                        onChange={field.onChange}
+                                        placeholder="选择一个或多个条件徽章..."
+                                    />
+                                </FormControl>
+                                <FormDescription>用户必须拥有此处选择的所有徽章。</FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                     <FormField
+                        control={conditionalGrantForm.control}
+                        name="resultBadgeId"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>结果徽章</FormLabel>
+                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                        <SelectValue placeholder="选择一个结果徽章" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {resultBadgeOptions.map(option => (
+                                            <SelectItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormDescription>满足条件的用户将被授予这个徽章。</FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <Separator />
+                    <Button type="submit" disabled={submitting}>
+                       {submitting ? '执行中...' : '确认发放'}
+                    </Button>
+                </form>
+            </Form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
+
