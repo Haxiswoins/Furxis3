@@ -561,12 +561,12 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     const allUserBadges = await readData<UserBadge[]>('userBadges.json');
 
     const qrCode = allQRCodes.find(qr => qr.id === qrId);
+    
+    // --- Initial State Snapshot ---
+    const userAlreadyHadBadge = qrCode ? allUserBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode.badgeId) : false;
+    const qrWasAlreadyClaimed = qrCode?.type === 'single' && qrCode.isClaimed;
     const badge = qrCode ? allBadges.find(b => b.id === qrCode.badgeId) : undefined;
     
-    // --- State Snapshot ---
-    const userAlreadyHadBadge = allUserBadges.some(ub => ub.userId === userId && ub.badgeId === qrCode?.badgeId);
-    const qrWasAlreadyClaimed = qrCode?.type === 'single' && qrCode.isClaimed;
-
     // --- Validation based on Snapshot ---
     if (!qrCode) {
         return { success: false, message: '无效的二维码。' };
@@ -598,13 +598,11 @@ export async function claimBadgeQRCode(qrId: string, userId: string): Promise<{ 
     allUserBadges.push(newUserBadge);
 
     // 2. If it's a single-use QR code, mark it as claimed
-    if (qrCode.type === 'single') {
-        const qrCodeIndex = allQRCodes.findIndex(qr => qr.id === qrId);
-        if (qrCodeIndex !== -1) {
-            allQRCodes[qrCodeIndex].isClaimed = true;
-            allQRCodes[qrCodeIndex].claimedBy = userId;
-            allQRCodes[qrCodeIndex].claimedAt = now;
-        }
+    const qrCodeIndex = allQRCodes.findIndex(qr => qr.id === qrId);
+    if (qrCodeIndex !== -1 && allQRCodes[qrCodeIndex].type === 'single') {
+        allQRCodes[qrCodeIndex].isClaimed = true;
+        allQRCodes[qrCodeIndex].claimedBy = userId;
+        allQRCodes[qrCodeIndex].claimedAt = now;
     }
 
     // 3. Write updated data to files

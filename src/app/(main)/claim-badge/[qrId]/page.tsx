@@ -1,8 +1,7 @@
 
-
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { claimBadgeQRCode } from '@/lib/data-service';
@@ -21,6 +20,30 @@ export default function ClaimBadgePage() {
   const [message, setMessage] = useState('');
   const [claimedBadge, setClaimedBadge] = useState<Badge | null>(null);
 
+  const processClaim = useCallback(async () => {
+    if (!user || !qrId) return;
+
+    const result = await claimBadgeQRCode(qrId as string, user.uid);
+    setMessage(result.message);
+    
+    if (result.badge) {
+      setClaimedBadge(result.badge);
+    }
+    
+    if (result.success) {
+      setClaimStatus('success');
+    } else {
+      if (result.message.includes('已拥有')) {
+        setClaimStatus('already-owned');
+      } else if (result.message.includes('已被使用') || result.message.includes('已被领取')) {
+        setClaimStatus('already-claimed');
+      } else {
+        setClaimStatus('error');
+      }
+    }
+  }, [qrId, user]);
+
+
   useEffect(() => {
     if (authLoading) return;
 
@@ -29,29 +52,8 @@ export default function ClaimBadgePage() {
       return;
     }
 
-    async function processClaim() {
-      const result = await claimBadgeQRCode(qrId as string, user!.uid);
-      setMessage(result.message);
-      
-      if (result.badge) {
-        setClaimedBadge(result.badge);
-      }
-      
-      if (result.success) {
-        setClaimStatus('success');
-      } else {
-        if (result.message.includes('已拥有')) {
-          setClaimStatus('already-owned');
-        } else if (result.message.includes('已被领取')) {
-          setClaimStatus('already-claimed');
-        } else {
-          setClaimStatus('error');
-        }
-      }
-    }
-
     processClaim();
-  }, [qrId, user, authLoading, login, router]);
+  }, [qrId, user, authLoading, login, processClaim]);
 
   const renderStatus = () => {
     switch (claimStatus) {
