@@ -40,7 +40,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 
-type SortKey = 'name' | 'registrationDate' | 'totalOrders' | 'badgeCount';
+type SortKey = 'name' | 'registrationDate' | 'completedOrders' | 'notSelectedOrders' | 'badgeCount';
 type SortDirection = 'asc' | 'desc';
 
 function UserManagementPageSkeleton() {
@@ -197,8 +197,11 @@ export default function UserManagementPage() {
         case 'registrationDate':
           comparison = new Date(a.registrationDate).getTime() - new Date(b.registrationDate).getTime();
           break;
-        case 'totalOrders':
-          comparison = a.totalOrders - b.totalOrders;
+        case 'completedOrders':
+          comparison = a.completedOrders - b.completedOrders;
+          break;
+        case 'notSelectedOrders':
+          comparison = a.notSelectedOrders - b.notSelectedOrders;
           break;
         case 'badgeCount':
           comparison = a.badgeCount - b.badgeCount;
@@ -248,7 +251,8 @@ export default function UserManagementPage() {
               <SortableHeader sortKey="name">用户名</SortableHeader>
               <TableHead>邮箱</TableHead>
               <SortableHeader sortKey="registrationDate">注册日期</SortableHeader>
-              <SortableHeader sortKey="totalOrders">订单总数</SortableHeader>
+              <SortableHeader sortKey="completedOrders">已完成</SortableHeader>
+              <SortableHeader sortKey="notSelectedOrders">未中标</SortableHeader>
               <SortableHeader sortKey="badgeCount">徽章数</SortableHeader>
               <TableHead className="text-right">操作</TableHead>
             </TableRow>
@@ -261,7 +265,8 @@ export default function UserManagementPage() {
                         <TableCell className="font-medium">{user.name || '(未设置)'}</TableCell>
                         <TableCell className="text-muted-foreground text-xs">{user.email || 'N/A'}</TableCell>
                         <TableCell>{format(new Date(user.registrationDate), 'yyyy-MM-dd')}</TableCell>
-                        <TableCell>{user.totalOrders}</TableCell>
+                        <TableCell>{user.completedOrders}</TableCell>
+                        <TableCell>{user.notSelectedOrders}</TableCell>
                         <TableCell>{user.badgeCount}</TableCell>
                         <TableCell className="text-right">
                            <div className="flex items-center justify-end gap-2">
@@ -274,8 +279,8 @@ export default function UserManagementPage() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="text-center h-24">
-                  没有找到任何用户。
+                <TableCell colSpan={7} className="text-center h-24">
+                  沒有找到任何用戶。
                 </TableCell>
               </TableRow>
             )}

@@ -737,8 +737,7 @@ export async function getAggregatedUsers(): Promise<AggregatedUser[]> {
         const stats = userOrders.reduce((acc, order) => {
              switch (order.status) {
                 case '已完成':
-                    if (order.orderType === '委托订单') acc.completedCommission++;
-                    else acc.completedAdoption++;
+                    acc.completed++;
                     break;
                 case '未中标':
                     acc.notSelected++;
@@ -749,15 +748,16 @@ export async function getAggregatedUsers(): Promise<AggregatedUser[]> {
                     break;
             }
             return acc;
-        }, { completedCommission: 0, completedAdoption: 0, notSelected: 0, cancelled: 0 });
+        }, { completed: 0, notSelected: 0, cancelled: 0 });
 
         usersMap.set(userId, {
             id: userId,
             name: latestOrder.applicationData?.userName,
             email: latestOrder.applicationData?.email,
             registrationDate: firstOrder.orderDate,
-            orderStats: stats,
-            totalOrders: userOrders.length,
+            completedOrders: stats.completed,
+            notSelectedOrders: stats.notSelected,
+            cancelledOrders: stats.cancelled,
             badgeCount: badgesByUser[userId] || 0,
         });
     }
