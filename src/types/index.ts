@@ -158,7 +158,6 @@ export type AggregatedUser = {
   name: string | undefined;
   email: string | undefined;
   registrationDate: string; // ISO string of the first order
-  monthlyActiveDays: number;
   orderStats: {
     completedCommission: number;
     completedAdoption: number;

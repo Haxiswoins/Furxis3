@@ -636,7 +636,7 @@ export async function confirmAndGrantBadge(qrId: string, userId: string): Promis
 
 
 // User Badges
-export async function getUserBadges(userId: string): Promise<(UserBadge & { badge?: Badge })[]> {
+export async function getUserBadges(userId: string): Promise<(UserBadge & { badge?: BadgeType })[]> {
     const userBadges = await readData<UserBadge[]>('userBadges.json');
     const badges = await getBadges();
     const userBadgesForUser = userBadges.filter(ub => ub.userId === userId);
@@ -723,7 +723,6 @@ export async function getAggregatedUsers(): Promise<AggregatedUser[]> {
                 name: order.applicationData.userName,
                 email: order.applicationData.email,
                 registrationDate: order.orderDate, // First order date is registration date
-                monthlyActiveDays: 0,
                 orderStats: {
                     completedCommission: 0,
                     completedAdoption: 0,
@@ -755,25 +754,14 @@ export async function getAggregatedUsers(): Promise<AggregatedUser[]> {
         }
     }
 
-    // Calculate monthly active days
-    const now = new Date();
-    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-    for (const user of usersMap.values()) {
-        const userOrders = allOrders.filter(o => o.userId === user.id);
-        const monthlyActiveDates = new Set<string>();
-        
-        userOrders.forEach(order => {
-            const orderDate = new Date(order.orderDate);
-            if (orderDate >= firstDayOfMonth) {
-                monthlyActiveDates.add(orderDate.toISOString().split('T')[0]);
-            }
-        });
-        user.monthlyActiveDays = monthlyActiveDates.size;
-    }
-
     return Array.from(usersMap.values()).sort((a,b) => new Date(b.registrationDate).getTime() - new Date(a.registrationDate).getTime());
 }
+
+export async function getAggregatedUserById(userId: string): Promise<AggregatedUser | null> {
+    const users = await getAggregatedUsers();
+    return users.find(u => u.id === userId) || null;
+}
+
 
 export async function grantBadgeToUser(userId: string, badgeId: string): Promise<UserBadge> {
     const allUserBadges = await readData<UserBadge[]>('userBadges.json');

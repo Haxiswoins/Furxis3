@@ -33,8 +33,9 @@ import { useToast } from '@/hooks/use-toast';
 import { getAggregatedUsers, grantBadgeToUser, AggregatedUser } from '@/lib/data-service';
 import type { Badge } from '@/types';
 import { getBadges } from '@/lib/data-service';
-import { Badge as BadgeIcon, Search } from 'lucide-react';
+import { Badge as BadgeIcon, Search, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
+import Link from 'next/link';
 
 function UserManagementPageSkeleton() {
   return (
@@ -47,7 +48,7 @@ function UserManagementPageSkeleton() {
         <Table>
           <TableHeader>
             <TableRow>
-              {[...Array(7)].map((_, i) => (
+              {[...Array(6)].map((_, i) => (
                 <TableHead key={i}>
                   <Skeleton className="h-5 w-full" />
                 </TableHead>
@@ -57,7 +58,7 @@ function UserManagementPageSkeleton() {
           <TableBody>
             {[...Array(5)].map((_, i) => (
               <TableRow key={i}>
-                {[...Array(6)].map((_, j) => (
+                {[...Array(5)].map((_, j) => (
                   <TableCell key={j}>
                     <Skeleton className="h-5 w-full" />
                   </TableCell>
@@ -101,9 +102,9 @@ function GrantBadgeDialog({ user, badges, onBadgeGranted }: { user: AggregatedUs
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" size="sm"><BadgeIcon className="mr-2 h-4 w-4" />发放徽章</Button>
+                <Button variant="outline" size="sm" onClick={(e) => e.stopPropagation()}><BadgeIcon className="mr-2 h-4 w-4" />发放徽章</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent onClick={(e) => e.stopPropagation()}>
                 <DialogHeader>
                     <DialogTitle>为 {user.name} 发放徽章</DialogTitle>
                     <DialogDescription>
@@ -164,7 +165,8 @@ export default function UserManagementPage() {
 
   useEffect(() => {
     fetchData();
-  }, [toast]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   const filteredUsers = useMemo(() => {
     if (!searchTerm) return users;
@@ -198,7 +200,6 @@ export default function UserManagementPage() {
               <TableHead>用户名</TableHead>
               <TableHead>邮箱</TableHead>
               <TableHead>注册日期</TableHead>
-              <TableHead>本月活跃</TableHead>
               <TableHead>订单统计</TableHead>
               <TableHead className="text-right">操作</TableHead>
             </TableRow>
@@ -206,27 +207,31 @@ export default function UserManagementPage() {
           <TableBody>
             {filteredUsers.length > 0 ? (
               filteredUsers.map(user => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.name || '(未设置)'}</TableCell>
-                  <TableCell className="text-muted-foreground text-xs">{user.email || 'N/A'}</TableCell>
-                  <TableCell>{format(new Date(user.registrationDate), 'yyyy-MM-dd')}</TableCell>
-                  <TableCell>{user.monthlyActiveDays} 天</TableCell>
-                  <TableCell>
-                    <div className="flex flex-col text-xs">
-                        <span title="已完成委托 / 已完成领养">✅ {user.orderStats.completedCommission} / {user.orderStats.completedAdoption}</span>
-                        <span title="已取消">🚫 {user.orderStats.cancelled}</span>
-                        <span title="未中标">💔 {user.orderStats.notSelected}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <GrantBadgeDialog user={user} badges={badges} onBadgeGranted={fetchData} />
-                  </TableCell>
-                </TableRow>
+                <Link key={user.id} href={`/admin/users/${user.id}`} passHref legacyBehavior>
+                    <TableRow className="cursor-pointer">
+                        <TableCell className="font-medium">{user.name || '(未设置)'}</TableCell>
+                        <TableCell className="text-muted-foreground text-xs">{user.email || 'N/A'}</TableCell>
+                        <TableCell>{format(new Date(user.registrationDate), 'yyyy-MM-dd')}</TableCell>
+                        <TableCell>
+                            <div className="flex flex-col text-xs">
+                                <span title="已完成委托 / 已完成领养">✅ {user.orderStats.completedCommission} / {user.orderStats.completedAdoption}</span>
+                                <span title="已取消">🚫 {user.orderStats.cancelled}</span>
+                                <span title="未中标">💔 {user.orderStats.notSelected}</span>
+                            </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                           <div className="flex items-center justify-end gap-2">
+                             <GrantBadgeDialog user={user} badges={badges} onBadgeGranted={fetchData} />
+                             <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                           </div>
+                        </TableCell>
+                    </TableRow>
+                </Link>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className="text-center h-24">
-                  没有找到任何用户。
+                <TableCell colSpan={6} className="text-center h-24">
+                  沒有找到任何用戶。
                 </TableCell>
               </TableRow>
             )}
