@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Table,
   TableBody,
@@ -35,10 +35,12 @@ import { useToast } from '@/hooks/use-toast';
 import { getAggregatedUsers, grantBadgeToUser, grantBadgeToUsers, AggregatedUser } from '@/lib/data-service';
 import type { Badge } from '@/types';
 import { getBadges } from '@/lib/data-service';
-import { Badge as BadgeIcon, Search, ChevronRight, ArrowUpDown } from 'lucide-react';
+import { Badge as BadgeIcon, Search, ChevronRight, ArrowUpDown, X } from 'lucide-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { AnimatePresence, motion } from 'framer-motion';
 
 
 type SortKey = 'name' | 'registrationDate' | 'completedOrders' | 'notSelectedOrders' | 'badgeCount';
@@ -55,7 +57,7 @@ function UserManagementPageSkeleton() {
         <Table>
           <TableHeader>
             <TableRow>
-              {[...Array(7)].map((_, i) => (
+              {[...Array(6)].map((_, i) => (
                 <TableHead key={i}>
                   <Skeleton className="h-5 w-full" />
                 </TableHead>
@@ -65,7 +67,7 @@ function UserManagementPageSkeleton() {
           <TableBody>
             {[...Array(5)].map((_, i) => (
               <TableRow key={i}>
-                {[...Array(6)].map((_, j) => (
+                {[...Array(5)].map((_, j) => (
                   <TableCell key={j}>
                     <Skeleton className="h-5 w-full" />
                   </TableCell>
@@ -109,9 +111,9 @@ function GrantBadgeDialog({ user, badges, onBadgeGranted }: { user: AggregatedUs
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" size="sm" onClick={(e) => e.stopPropagation()}><BadgeIcon className="mr-2 h-4 w-4" />发放徽章</Button>
+                <Button variant="outline" size="sm"><BadgeIcon className="mr-2 h-4 w-4" />发放徽章</Button>
             </DialogTrigger>
-            <DialogContent onClick={(e) => e.stopPropagation()}>
+            <DialogContent>
                 <DialogHeader>
                     <DialogTitle>为 {user.name} 发放徽章</DialogTitle>
                     <DialogDescription>
@@ -143,60 +145,68 @@ function GrantBadgeDialog({ user, badges, onBadgeGranted }: { user: AggregatedUs
     )
 }
 
-function BulkGrantBadgeDialog({ selectedUserIds, badges, onBulkGranted, onCancel }: { selectedUserIds: string[], badges: Badge[], onBulkGranted: () => void, onCancel: () => void }) {
-    const { toast } = useToast();
-    const [selectedBadgeId, setSelectedBadgeId] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
+function BulkGrantFloatPanel({
+  selectedCount,
+  badges,
+  onGrant,
+  onCancel,
+}: {
+  selectedCount: number;
+  badges: Badge[];
+  onGrant: (badgeId: string) => Promise<void>;
+  onCancel: () => void;
+}) {
+  const [selectedBadgeId, setSelectedBadgeId] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleBulkGrant = async () => {
-        if (!selectedBadgeId) {
-            toast({ title: '请选择徽章', description: '您需要选择一个徽章才能发放。', variant: 'destructive' });
-            return;
-        }
-        setIsSubmitting(true);
-        try {
-            const result = await grantBadgeToUsers(selectedUserIds, selectedBadgeId);
-            toast({ title: result.message });
-            onBulkGranted();
-        } catch (error) {
-            toast({ title: '批量发放失败', description: error instanceof Error ? error.message : '发生未知错误。', variant: 'destructive' });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+  const handleGrant = async () => {
+    setIsSubmitting(true);
+    await onGrant(selectedBadgeId);
+    setIsSubmitting(false);
+  };
 
-    return (
-        <Dialog open={true} onOpenChange={(isOpen) => !isOpen && onCancel()}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>批量发放徽章</DialogTitle>
-                    <DialogDescription>
-                        您已选择 {selectedUserIds.length} 位用户。请选择要授予他们的徽章。系统会自动跳过已拥有该徽章的用户。
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="py-4">
-                     <Select onValueChange={setSelectedBadgeId} value={selectedBadgeId}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="选择一个徽章..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {badges.map(badge => (
-                                <SelectItem key={badge.id} value={badge.id}>
-                                    {badge.name}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <DialogFooter>
-                    <Button variant="outline" onClick={onCancel}>取消</Button>
-                    <Button onClick={handleBulkGrant} disabled={isSubmitting || !selectedBadgeId}>
-                        {isSubmitting ? '发放中...' : '确认发放'}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    )
+  return (
+    <motion.div
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 100 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        className="fixed bottom-8 right-8 z-50"
+    >
+      <Card className="w-80 shadow-2xl">
+        <CardHeader>
+          <CardTitle className="flex justify-between items-center text-lg">
+            <span>批量操作</span>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onCancel}>
+              <X className="h-4 w-4" />
+            </Button>
+          </CardTitle>
+          <CardDescription>您已选择 {selectedCount} 位用户。</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Select onValueChange={setSelectedBadgeId} value={selectedBadgeId} disabled={isSubmitting}>
+            <SelectTrigger>
+              <SelectValue placeholder="选择要发放的徽章..." />
+            </SelectTrigger>
+            <SelectContent>
+              {badges.map((badge) => (
+                <SelectItem key={badge.id} value={badge.id}>
+                  {badge.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            className="w-full"
+            onClick={handleGrant}
+            disabled={isSubmitting || !selectedBadgeId || selectedCount === 0}
+          >
+            {isSubmitting ? '发放中...' : '确认发放'}
+          </Button>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
 }
 
 
@@ -209,10 +219,9 @@ export default function UserManagementPage() {
   const [sortKey, setSortKey] = useState<SortKey>('registrationDate');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const [isBulkGranting, setIsBulkGranting] = useState(false);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
 
   const fetchData = async () => {
-    // We don't set loading to true here to avoid skeleton on refresh
     try {
       const [userData, badgeData] = await Promise.all([
         getAggregatedUsers(),
@@ -227,7 +236,7 @@ export default function UserManagementPage() {
         variant: 'destructive',
       });
     } finally {
-      setLoading(false); // Ensure loading is false after fetch
+      setLoading(false);
     }
   };
 
@@ -242,49 +251,46 @@ export default function UserManagementPage() {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortKey(key);
-      setSortDirection('desc'); // Default to descending for new columns
+      setSortDirection('desc');
     }
   };
 
   const sortedAndFilteredUsers = useMemo(() => {
-    let sortedUsers = [...users];
-
-    sortedUsers.sort((a, b) => {
-      let comparison = 0;
-      switch (sortKey) {
-        case 'name':
-          comparison = (a.name || '').localeCompare(b.name || '');
-          break;
-        case 'registrationDate':
-          comparison = new Date(a.registrationDate).getTime() - new Date(b.registrationDate).getTime();
-          break;
-        case 'completedOrders':
-          comparison = a.completedOrders - b.completedOrders;
-          break;
-        case 'notSelectedOrders':
-          comparison = a.notSelectedOrders - b.notSelectedOrders;
-          break;
-        case 'badgeCount':
-          comparison = a.badgeCount - b.badgeCount;
-          break;
-      }
-      return sortDirection === 'asc' ? comparison : -comparison;
-    });
-
-    if (!searchTerm) return sortedUsers;
-    
-    return sortedUsers.filter(user => 
-        user.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    return [...users]
+      .sort((a, b) => {
+        let comparison = 0;
+        switch (sortKey) {
+          case 'name':
+            comparison = (a.name || '').localeCompare(b.name || '');
+            break;
+          case 'registrationDate':
+            comparison = new Date(a.registrationDate).getTime() - new Date(b.registrationDate).getTime();
+            break;
+          case 'completedOrders':
+            comparison = a.completedOrders - b.completedOrders;
+            break;
+          case 'notSelectedOrders':
+            comparison = a.notSelectedOrders - b.notSelectedOrders;
+            break;
+          case 'badgeCount':
+            comparison = a.badgeCount - b.badgeCount;
+            break;
+        }
+        return sortDirection === 'asc' ? comparison : -comparison;
+      })
+      .filter(user => 
+        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
   }, [users, searchTerm, sortKey, sortDirection]);
 
-  const handleSelectAll = (checked: boolean) => {
+  const handleSelectAll = useCallback((checked: boolean) => {
     if (checked) {
         setSelectedUserIds(sortedAndFilteredUsers.map(u => u.id));
     } else {
         setSelectedUserIds([]);
     }
-  }
+  }, [sortedAndFilteredUsers]);
 
   const handleSelectOne = (userId: string, checked: boolean) => {
     if(checked) {
@@ -293,12 +299,30 @@ export default function UserManagementPage() {
         setSelectedUserIds(prev => prev.filter(id => id !== userId));
     }
   }
+
+  const handleToggleSelectionMode = () => {
+    setIsSelectionMode(!isSelectionMode);
+    setSelectedUserIds([]); // Clear selections when toggling mode
+  };
   
-  const handleBulkGrantSuccess = () => {
-    setIsBulkGranting(false);
-    setSelectedUserIds([]);
-    fetchData(); // Refresh data to show new badge counts
-  }
+  const handleBulkGrant = async (badgeId: string) => {
+    if (!badgeId) {
+      toast({ title: '请选择徽章', variant: 'destructive' });
+      return;
+    }
+    try {
+      const result = await grantBadgeToUsers(selectedUserIds, badgeId);
+      toast({ title: result.message });
+      if (result.success) {
+        setIsSelectionMode(false);
+        setSelectedUserIds([]);
+        await fetchData();
+      }
+    } catch (error) {
+      toast({ title: '批量发放失败', description: error instanceof Error ? error.message : '发生未知错误。', variant: 'destructive' });
+    }
+  };
+
 
   if (loading) {
     return <UserManagementPageSkeleton />;
@@ -321,36 +345,30 @@ export default function UserManagementPage() {
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input 
-                    placeholder="按用户名搜索..."
+                    placeholder="按用户名或邮箱搜索..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 w-full sm:w-64"
                 />
             </div>
-            <Button onClick={() => setIsBulkGranting(true)} disabled={selectedUserIds.length === 0}>
-                批量发放徽章 ({selectedUserIds.length})
+            <Button onClick={handleToggleSelectionMode} variant={isSelectionMode ? 'secondary' : 'default'}>
+                {isSelectionMode ? '取消批量操作' : '批量发放徽章'}
             </Button>
-             {isBulkGranting && (
-                <BulkGrantBadgeDialog 
-                    selectedUserIds={selectedUserIds}
-                    badges={badges}
-                    onBulkGranted={handleBulkGrantSuccess}
-                    onCancel={() => setIsBulkGranting(false)}
-                />
-             )}
         </div>
       </div>
       <div className="border rounded-lg">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead padding="checkbox">
-                <Checkbox
-                  checked={selectedUserIds.length > 0 && selectedUserIds.length === sortedAndFilteredUsers.length}
-                  onCheckedChange={(checked) => handleSelectAll(checked as boolean)}
-                  aria-label="Select all"
-                />
-              </TableHead>
+              {isSelectionMode && (
+                <TableHead padding="checkbox">
+                  <Checkbox
+                    checked={selectedUserIds.length > 0 && selectedUserIds.length === sortedAndFilteredUsers.length}
+                    onCheckedChange={(checked) => handleSelectAll(checked as boolean)}
+                    aria-label="Select all"
+                  />
+                </TableHead>
+              )}
               <SortableHeader sortKey="name">用户名</SortableHeader>
               <TableHead>邮箱</TableHead>
               <SortableHeader sortKey="registrationDate">注册日期</SortableHeader>
@@ -364,13 +382,15 @@ export default function UserManagementPage() {
             {sortedAndFilteredUsers.length > 0 ? (
               sortedAndFilteredUsers.map(user => (
                 <TableRow key={user.id} data-state={selectedUserIds.includes(user.id) && "selected"}>
-                    <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={selectedUserIds.includes(user.id)}
-                          onCheckedChange={(checked) => handleSelectOne(user.id, checked as boolean)}
-                          aria-label="Select row"
-                        />
-                    </TableCell>
+                    {isSelectionMode && (
+                      <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={selectedUserIds.includes(user.id)}
+                            onCheckedChange={(checked) => handleSelectOne(user.id, checked as boolean)}
+                            aria-label="Select row"
+                          />
+                      </TableCell>
+                    )}
                     <TableCell className="font-medium">
                         <Link href={`/admin/users/${user.id}`} className="hover:underline">{user.name || '(未设置)'}</Link>
                     </TableCell>
@@ -383,7 +403,9 @@ export default function UserManagementPage() {
                        <div className="flex items-center justify-end gap-2">
                          <GrantBadgeDialog user={user} badges={badges} onBadgeGranted={fetchData} />
                           <Link href={`/admin/users/${user.id}`} passHref>
-                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                            <Button variant="ghost" size="icon">
+                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                            </Button>
                           </Link>
                        </div>
                     </TableCell>
@@ -391,7 +413,7 @@ export default function UserManagementPage() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="text-center h-24">
+                <TableCell colSpan={isSelectionMode ? 8 : 7} className="text-center h-24">
                   沒有找到任何用戶。
                 </TableCell>
               </TableRow>
@@ -399,6 +421,18 @@ export default function UserManagementPage() {
           </TableBody>
         </Table>
       </div>
+
+       <AnimatePresence>
+        {isSelectionMode && (
+          <BulkGrantFloatPanel
+            selectedCount={selectedUserIds.length}
+            badges={badges}
+            onGrant={handleBulkGrant}
+            onCancel={handleToggleSelectionMode}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+
