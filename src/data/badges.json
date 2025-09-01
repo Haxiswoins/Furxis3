@@ -1,26 +1,4 @@
-
 [
-  {
-    "id": "badge_1723542289473",
-    "name": "创始成员",
-    "createdAt": "2024-08-13T09:44:49.473Z",
-    "imageUrl": "https://placehold.co/128x128.png",
-    "description": "感谢您在Suitopia旅程最初的陪伴与支持！"
-  },
-  {
-    "id": "badge_1723543168853",
-    "name": "测试徽章",
-    "createdAt": "2024-08-13T09:59:28.853Z",
-    "imageUrl": "https://placehold.co/128x128.png",
-    "description": "这是一个用于测试的徽章。"
-  },
-  {
-    "id": "badge_1723616238692",
-    "name": "测试徽章2",
-    "createdAt": "2024-08-14T06:17:18.692Z",
-    "imageUrl": "https://placehold.co/128x128.png",
-    "description": "这是第二个测试徽章的描述。"
-  },
   {
     "id": "badge_1723616298587",
     "name": "测试徽章3",
@@ -34,20 +12,6 @@
     "createdAt": "2024-08-14T06:18:18.588Z",
     "imageUrl": "https://placehold.co/128x128.png",
     "description": "这是第四个测试徽章的描述。"
-  },
-  {
-    "id": "badge_1723616298589",
-    "name": "测试徽章5",
-    "createdAt": "2024-08-14T06:18:18.589Z",
-    "imageUrl": "https://placehold.co/128x128.png",
-    "description": "这是第五个测试徽章的描述。"
-  },
-  {
-    "id": "badge_1723616300001",
-    "name": "备用徽章 Alpha",
-    "imageUrl": "https://placehold.co/128x128.png",
-    "description": "Alpha测试专用。",
-    "createdAt": "2024-08-14T08:00:01.000Z"
   },
   {
     "id": "badge_1723616300002",
