@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getBadges, saveBadge, generateBadgeQRCode, deleteBadge, grantBadgeConditionally } from '@/lib/data-service';
 import type { Badge, BadgeQRCode } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import QRCodeComponent from 'qrcode.react';
@@ -319,4 +319,3 @@ export default function BadgesPage() {
     </div>
   );
 }
-
