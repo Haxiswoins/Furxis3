@@ -32,5 +32,14 @@
     "createdAt": "2025-09-01T08:03:13.650Z",
     "expiresAt": "2025-10-01T08:03:13.650Z",
     "isClaimed": false
+  },
+  {
+    "id": "b5fd3b67-0304-43fc-9664-471ff8ca0dac",
+    "badgeId": "badge_1723616300005",
+    "type": "single",
+    "createdAt": "2025-09-01T08:08:12.668Z",
+    "isClaimed": true,
+    "claimedBy": "mock-admin-uid",
+    "claimedAt": "2025-09-01T08:08:45.666Z"
   }
 ]
