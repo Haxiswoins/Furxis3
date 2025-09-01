@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -32,21 +33,22 @@ type AdminWorksClientProps = {
     works: Work[];
 }
 
-export function AdminWorksClient({ works }: AdminWorksClientProps) {
+export function AdminWorksClient({ works: initialWorks }: AdminWorksClientProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [works, setWorks] = useState<Work[]>(initialWorks);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
   
   const handleDelete = async (id: string) => {
-    setIsDeleting(true);
+    setIsDeleting(id);
     try {
         await deleteWork(id);
-        toast({ title: '删除成功', description: '作品已从数据库中移除。页面即将刷新...' });
-        router.refresh();
+        setWorks(prevWorks => prevWorks.filter(w => w.id !== id));
+        toast({ title: '删除成功', description: '作品已从数据库中移除。' });
     } catch (error) {
         toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
     } finally {
-        setIsDeleting(false);
+        setIsDeleting(null);
     }
   };
 
@@ -84,7 +86,7 @@ export function AdminWorksClient({ works }: AdminWorksClientProps) {
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" disabled={isDeleting}>
+                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" disabled={!!isDeleting}>
                            <Trash2 className="h-4 w-4" />
                          </Button>
                       </AlertDialogTrigger>
@@ -97,8 +99,8 @@ export function AdminWorksClient({ works }: AdminWorksClientProps) {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>取消</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(item.id)} disabled={isDeleting}>
-                            {isDeleting ? '删除中...' : '确认删除'}
+                          <AlertDialogAction onClick={() => handleDelete(item.id)} disabled={isDeleting === item.id}>
+                            {isDeleting === item.id ? '删除中...' : '确认删除'}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -108,7 +110,7 @@ export function AdminWorksClient({ works }: AdminWorksClientProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="text-center">
+                <TableCell colSpan={5} className="text-center h-24">
                   没有找到任何作品。
                 </TableCell>
               </TableRow>

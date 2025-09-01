@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -58,24 +59,25 @@ type AdminOrdersClientProps = {
     orders: Order[];
 }
 
-export function AdminOrdersClient({ orders }: AdminOrdersClientProps) {
+export function AdminOrdersClient({ orders: initialOrders }: AdminOrdersClientProps) {
   const router = useRouter();
   const { toast } = useToast();
   const { theme } = useTheme();
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [orders, setOrders] = useState<Order[]>(initialOrders);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const statusStyles = theme === 'dark' ? darkStatusStyles : lightStatusStyles;
   
   const handleDelete = async (id: string) => {
-    setIsDeleting(true);
+    setIsDeleting(id);
     try {
         await deleteOrder(id);
-        toast({ title: '删除成功', description: '订单已从数据库中移除。页面即将刷新...' });
-        router.refresh();
+        setOrders(prevOrders => prevOrders.filter(o => o.id !== id));
+        toast({ title: '删除成功', description: '订单已从数据库中移除。' });
     } catch (error) {
         toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
     } finally {
-        setIsDeleting(false);
+        setIsDeleting(null);
     }
   };
 
@@ -115,7 +117,7 @@ export function AdminOrdersClient({ orders }: AdminOrdersClientProps) {
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" disabled={isDeleting}>
+                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" disabled={!!isDeleting}>
                            <Trash2 className="h-4 w-4" />
                          </Button>
                       </AlertDialogTrigger>
@@ -128,8 +130,8 @@ export function AdminOrdersClient({ orders }: AdminOrdersClientProps) {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>取消</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(order.id)} disabled={isDeleting}>
-                            {isDeleting ? '删除中...' : '确认删除'}
+                          <AlertDialogAction onClick={() => handleDelete(order.id)} disabled={isDeleting === order.id}>
+                            {isDeleting === order.id ? '删除中...' : '确认删除'}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>

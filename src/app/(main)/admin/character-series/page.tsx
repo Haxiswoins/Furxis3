@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -73,7 +74,7 @@ export default function AdminCharacterSeriesPage() {
   const { toast } = useToast();
   const [series, setSeries] = useState<CharacterSeries[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
   
   useEffect(() => {
     async function fetchSeries() {
@@ -86,17 +87,15 @@ export default function AdminCharacterSeriesPage() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    setIsDeleting(true);
+    setIsDeleting(id);
     try {
         await deleteCharacterSeries(id);
+        setSeries(prevSeries => prevSeries.filter(s => s.id !== id));
         toast({ title: '删除成功', description: '系列已从数据库中移除。' });
-        // After deleting, refetch the data to update the UI
-        const seriesData = await getCharacterSeries();
-        setSeries(seriesData);
     } catch (error) {
         toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
     } finally {
-        setIsDeleting(false);
+        setIsDeleting(null);
     }
   };
 
@@ -136,7 +135,7 @@ export default function AdminCharacterSeriesPage() {
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" disabled={isDeleting}>
+                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" disabled={!!isDeleting}>
                            <Trash2 className="h-4 w-4" />
                          </Button>
                       </AlertDialogTrigger>
@@ -149,8 +148,8 @@ export default function AdminCharacterSeriesPage() {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>取消</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(item.id)} disabled={isDeleting}>
-                            {isDeleting ? '删除中...' : '确认删除'}
+                          <AlertDialogAction onClick={() => handleDelete(item.id)} disabled={isDeleting === item.id}>
+                            {isDeleting === item.id ? '删除中...' : '确认删除'}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -32,21 +33,22 @@ type AdminCharactersClientProps = {
     characters: Character[];
 }
 
-export function AdminCharactersClient({ characters }: AdminCharactersClientProps) {
+export function AdminCharactersClient({ characters: initialCharacters }: AdminCharactersClientProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [characters, setCharacters] = useState<Character[]>(initialCharacters);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
   
   const handleDelete = async (id: string) => {
-    setIsDeleting(true);
+    setIsDeleting(id);
     try {
         await deleteCharacter(id);
-        toast({ title: '删除成功', description: '角色已从数据库中移除。页面即将刷新...' });
-        router.refresh();
+        setCharacters(prevChars => prevChars.filter(c => c.id !== id));
+        toast({ title: '删除成功', description: '角色已从数据库中移除。' });
     } catch (error) {
         toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
     } finally {
-        setIsDeleting(false);
+        setIsDeleting(null);
     }
   };
 
@@ -85,7 +87,7 @@ export function AdminCharactersClient({ characters }: AdminCharactersClientProps
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" disabled={isDeleting}>
+                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" disabled={!!isDeleting}>
                            <Trash2 className="h-4 w-4" />
                          </Button>
                       </AlertDialogTrigger>
@@ -98,8 +100,8 @@ export function AdminCharactersClient({ characters }: AdminCharactersClientProps
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>取消</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(char.id)} disabled={isDeleting}>
-                            {isDeleting ? '删除中...' : '确认删除'}
+                          <AlertDialogAction onClick={() => handleDelete(char.id)} disabled={isDeleting === char.id}>
+                            {isDeleting === char.id ? '删除中...' : '确认删除'}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -109,7 +111,7 @@ export function AdminCharactersClient({ characters }: AdminCharactersClientProps
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="text-center">
+                <TableCell colSpan={5} className="text-center h-24">
                   没有找到任何角色。
                 </TableCell>
               </TableRow>
