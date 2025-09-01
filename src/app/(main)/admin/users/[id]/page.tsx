@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -158,6 +159,7 @@ export default function UserDetailPage() {
                     <CardTitle className="text-base">订单统计</CardTitle>
                  </CardHeader>
                  <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div><p className="text-2xl font-bold">{user.inProgressOrders}</p><p className="text-xs text-muted-foreground">进行中订单</p></div>
                     <div><p className="text-2xl font-bold">{user.completedOrders}</p><p className="text-xs text-muted-foreground">已完成订单</p></div>
                     <div><p className="text-2xl font-bold">{user.notSelectedOrders}</p><p className="text-xs text-muted-foreground">未中标订单</p></div>
                     <div><p className="text-2xl font-bold">{user.cancelledOrders}</p><p className="text-xs text-muted-foreground">已取消订单</p></div>

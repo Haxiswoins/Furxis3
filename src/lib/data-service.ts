@@ -746,9 +746,17 @@ export async function getAggregatedUsers(): Promise<AggregatedUser[]> {
                 case '退养中':
                     acc.cancelled++;
                     break;
+                case '处理中':
+                case '待确认':
+                case '已确认':
+                case '排队中':
+                case '制作中':
+                case '已发货':
+                    acc.inProgress++;
+                    break;
             }
             return acc;
-        }, { completed: 0, notSelected: 0, cancelled: 0 });
+        }, { completed: 0, notSelected: 0, cancelled: 0, inProgress: 0 });
 
         usersMap.set(userId, {
             id: userId,
@@ -758,6 +766,7 @@ export async function getAggregatedUsers(): Promise<AggregatedUser[]> {
             completedOrders: stats.completed,
             notSelectedOrders: stats.notSelected,
             cancelledOrders: stats.cancelled,
+            inProgressOrders: stats.inProgress,
             badgeCount: badgesByUser[userId] || 0,
         });
     }
