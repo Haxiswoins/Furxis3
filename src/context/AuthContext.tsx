@@ -14,47 +14,37 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// --- MOCK IMPLEMENTATION FOR ADMIN TESTING ---
+
+const mockAdminUser: CustomUser = {
+  uid: 'mock-admin-uid-for-testing',
+  email: 'admin-test-mode@example.com',
+  name: '测试管理员 (临时)',
+  picture: 'https://placehold.co/100x100/orange/white?text=A',
+  isAdmin: true,
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<CustomUser | null>(null);
-  const [loading, setLoading] = useState(true); // Start with loading true
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const pathname = usePathname();
-
-  const fetchUser = useCallback(async () => {
-    try {
-      const res = await fetch('/api/auth/me');
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data.user);
-      } else {
-        setUser(null);
-      }
-    } catch (error) {
-      console.error("Failed to fetch user session", error);
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+    // In this test mode, we just set the mock admin user and stop loading.
+    setUser(mockAdminUser);
+    setLoading(false);
+  }, []);
 
   const login = (returnTo?: string) => {
-    const finalReturnTo = returnTo || pathname;
-    router.push(`/api/auth/authing/login?returnTo=${encodeURIComponent(finalReturnTo)}`);
+    // Mock login does nothing.
+    console.log("Login function called in test mode. No action taken.");
   };
 
   const logout = async () => {
-    try {
-      await fetch('/api/auth/logout');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    } finally {
-      setUser(null); // Clear user state immediately
-      router.push('/'); // Redirect to home page
-    }
+    // Mock logout just clears the user state.
+    console.log("Logout function called in test mode.");
+    setUser(null);
+    router.push('/');
   };
 
   const value = {
@@ -66,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
+
 
 export function useAuth() {
   const context = useContext(AuthContext);
