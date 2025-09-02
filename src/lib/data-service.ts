@@ -7,6 +7,7 @@ import path from 'path';
 import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, Work, CharacterSeries, Badge, BadgeQRCode, UserBadge, AggregatedUser } from '@/types';
 import { sendEmail } from '@/ai/flows/send-email-flow';
 import { randomUUID } from 'crypto';
+import { revalidatePath } from 'next/cache';
 
 // Helper to get the path to our JSON data file
 const getDataPath = (fileName: string) => path.join(process.cwd(), 'src', 'data', fileName);
@@ -43,6 +44,9 @@ export async function getSiteContent(): Promise<SiteContent> {
 
 export async function saveSiteContent(content: SiteContent): Promise<void> {
     await writeData('siteContent.json', content);
+    revalidatePath('/(main)/home', 'page');
+    revalidatePath('/(main)/commission', 'layout');
+    revalidatePath('/(main)/adoption', 'layout');
 }
 
 
@@ -70,12 +74,14 @@ export async function saveCharacterSeries(seriesData: Omit<CharacterSeries, 'id'
             allSeries[index] = { ...allSeries[index], ...seriesData };
         }
         await writeData('characterSeries.json', allSeries);
+        revalidatePath('/(main)/adoption', 'layout');
         return id;
     } else {
         const newId = `series_${Date.now()}`;
         const newSeries = { id: newId, ...seriesData };
         allSeries.push(newSeries);
         await writeData('characterSeries.json', allSeries);
+        revalidatePath('/(main)/adoption', 'layout');
         return newId;
     }
 }
@@ -93,6 +99,7 @@ export async function deleteCharacterSeries(id: string): Promise<void> {
     // Write both updated lists back to their files
     await writeData('characterSeries.json', allSeries);
     await writeData('characters.json', allCharacters);
+    revalidatePath('/(main)/adoption', 'layout');
 }
 
 // Characters (Adoption)
@@ -128,6 +135,7 @@ export async function saveCharacter(character: Omit<Character, 'id'>, id?: strin
     id = newId;
   }
   await writeData('characters.json', allCharacters);
+  revalidatePath('/(main)/adoption', 'layout');
   return id;
 }
 
@@ -135,6 +143,7 @@ export async function deleteCharacter(id: string): Promise<void> {
     let allCharacters = await getCharacters();
     allCharacters = allCharacters.filter(c => c.id !== id);
     await writeData('characters.json', allCharacters);
+    revalidatePath('/(main)/adoption', 'layout');
 }
 
 
@@ -171,6 +180,7 @@ export async function saveCommissionOption(optionData: Omit<CommissionOption, 'i
         id = newId;
     }
     await writeData('commissionOptions.json', allOptions);
+    revalidatePath('/(main)/commission', 'layout');
     return id;
 }
 
@@ -178,6 +188,7 @@ export async function deleteCommissionOption(id: string): Promise<void> {
     let allOptions = await getCommissionOptions();
     allOptions = allOptions.filter(o => o.id !== id);
     await writeData('commissionOptions.json', allOptions);
+    revalidatePath('/(main)/commission', 'layout');
 }
 
 
@@ -209,6 +220,7 @@ export async function saveCommissionStyle(style: Omit<CommissionStyle, 'id'>, id
         id = newId;
     }
     await writeData('commissionStyles.json', allStyles);
+    revalidatePath('/(main)/commission', 'layout');
     return id;
 }
 
@@ -216,6 +228,7 @@ export async function deleteCommissionStyle(id: string): Promise<void> {
     let allStyles = await getAllCommissionStyles();
     allStyles = allStyles.filter(s => s.id !== id);
     await writeData('commissionStyles.json', allStyles);
+    revalidatePath('/(main)/commission', 'layout');
 }
 
 
@@ -257,6 +270,7 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
     allOrders[orderIndex] = updatedOrder;
 
     await writeData('orders.json', allOrders);
+    revalidatePath('/(main)/orders', 'layout');
     
     // --- Side Effects: Send Emails ---
     const siteContent = await getSiteContent();
@@ -309,6 +323,7 @@ export async function deleteOrder(id: string): Promise<void> {
     let allOrders = await getAllOrders();
     allOrders = allOrders.filter(o => o.id !== id);
     await writeData('orders.json', allOrders);
+    revalidatePath('/(main)/orders', 'layout');
 }
 
 
@@ -349,6 +364,8 @@ export async function createAdoptionApplication(character: Character, userId: st
     
     await writeData('orders.json', allOrders);
     await writeData('characters.json', allCharacters);
+    revalidatePath('/(main)/orders', 'layout');
+    revalidatePath('/(main)/adoption', 'layout');
 
     // Admin Email Notification
     const siteContent = await getSiteContent();
@@ -403,6 +420,7 @@ export async function createCommissionApplication(userId: string, commissionInfo
     
     allOrders.push(newOrderData);
     await writeData('orders.json', allOrders);
+    revalidatePath('/(main)/orders', 'layout');
 
     // Admin Email Notification
     const siteContent = await getSiteContent();
@@ -431,6 +449,7 @@ export async function cancelOrder(orderId: string, reason: string): Promise<void
     allOrders[orderIndex].cancellationReason = reason;
     await writeData('orders.json', allOrders);
   }
+  revalidatePath('/(main)/orders', 'layout');
 
   // Admin Email Notification
   const order = allOrders[orderIndex];
@@ -457,6 +476,7 @@ export async function reinstateOrder(orderId: string): Promise<void> {
         allOrders[orderIndex].cancellationReason = '';
         await writeData('orders.json', allOrders);
     }
+    revalidatePath('/(main)/orders', 'layout');
 }
 
 // Works
@@ -483,6 +503,7 @@ export async function saveWork(workData: Omit<Work, 'id'>, id?: string): Promise
         id = newId;
     }
     await writeData('works.json', allWorks);
+    revalidatePath('/(main)/works', 'layout');
     return id;
 }
 
@@ -490,6 +511,7 @@ export async function deleteWork(id: string): Promise<void> {
     let allWorks = await getWorks();
     allWorks = allWorks.filter(w => w.id !== id);
     await writeData('works.json', allWorks);
+    revalidatePath('/(main)/works', 'layout');
 }
 
 
