@@ -48,6 +48,40 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const fanPrice = siteContent?.fanPrice ?? 150;
+  
+  const [timeLeft, setTimeLeft] = useState<string | null>(null);
+  const [isCommissionOpen, setIsCommissionOpen] = useState(commissionOption.status !== '即将开放');
+
+  useEffect(() => {
+    if (commissionOption.status !== '即将开放') {
+      return;
+    }
+
+    const calculateTimeLeft = () => {
+      const difference = +new Date(commissionOption.commissionDate) - +new Date();
+      let timeLeftString = null;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((difference / 1000 / 60) % 60);
+        
+        timeLeftString = `剩余 ${days}天 ${hours}小时 ${minutes}分`;
+        setIsCommissionOpen(false);
+      } else {
+        timeLeftString = null;
+        setIsCommissionOpen(true);
+      }
+      
+      setTimeLeft(timeLeftString);
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, [commissionOption]);
+
 
   const handleProvinceChange = (province: string) => {
     setSelectedProvince(province);
@@ -96,6 +130,15 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user || !commissionStyle || !commissionOption) return;
+
+    if (!isCommissionOpen) {
+      toast({
+        title: "委托尚未开放",
+        description: "请等待倒计时结束后再提交。",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setFormSubmitting(true);
     let referenceImageUrl: string | null = null;
@@ -168,11 +211,21 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     </AlertDialog>
   );
 
-  const renderSubmitButton = () => (
-    <Button size="lg" className="w-full" type="submit" disabled={formSubmitting || !agreedToTerms}>
+  const renderSubmitButton = () => {
+    if (!isCommissionOpen) {
+      return (
+        <Button size="lg" className="w-full" type="submit" disabled>
+          {timeLeft || '即将开放...'}
+        </Button>
+      );
+    }
+
+    return (
+      <Button size="lg" className="w-full" type="submit" disabled={formSubmitting || !agreedToTerms}>
         {formSubmitting ? '提交中...' : '申请估价'}
-    </Button>
-  );
+      </Button>
+    )
+  };
   
   const contractText = siteContent?.commissionContractText;
 
