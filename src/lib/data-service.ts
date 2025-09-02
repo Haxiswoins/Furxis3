@@ -148,9 +148,17 @@ export async function deleteCharacter(id: string): Promise<void> {
 
 
 // Commission Options
+function checkAndUpdateCommissionStatus(option: CommissionOption): CommissionOption {
+    if (option.status === '即将开放' && new Date(option.commissionDate) <= new Date()) {
+        return { ...option, status: '开放中' };
+    }
+    return option;
+}
+
 export async function getCommissionOptions(): Promise<CommissionOption[]> {
     const options = await readData<CommissionOption[]>('commissionOptions.json');
-    return options.sort((a, b) => {
+    const updatedOptions = options.map(checkAndUpdateCommissionStatus);
+    return updatedOptions.sort((a, b) => {
         const timeA = parseInt(a.id.split('_')[1] || '0');
         const timeB = parseInt(b.id.split('_')[1] || '0');
         return timeB - timeA;
@@ -158,17 +166,26 @@ export async function getCommissionOptions(): Promise<CommissionOption[]> {
 }
 
 export async function getCommissionOptionById(id: string): Promise<CommissionOption | null> {
-    const options = await getCommissionOptions();
-    return options.find(o => o.id === id) || null;
+    const options = await readData<CommissionOption[]>('commissionOptions.json');
+    const option = options.find(o => o.id === id);
+    if (!option) {
+        return null;
+    }
+    return checkAndUpdateCommissionStatus(option);
 }
 
 export async function getCommissionOptionByName(name: string): Promise<CommissionOption | null> {
-  const options = await getCommissionOptions();
-  return options.find(o => o.name === name) || null;
+    const options = await readData<CommissionOption[]>('commissionOptions.json');
+    const option = options.find(o => o.name === name);
+    if (!option) {
+        return null;
+    }
+    return checkAndUpdateCommissionStatus(option);
 }
 
 export async function saveCommissionOption(optionData: Omit<CommissionOption, 'id'>, id?: string): Promise<string> {
-    const allOptions = await getCommissionOptions();
+    // Read raw data without status updates for saving
+    const allOptions = await readData<CommissionOption[]>('commissionOptions.json');
     if (id) {
         const index = allOptions.findIndex(o => o.id === id);
         if (index > -1) {
@@ -864,3 +881,4 @@ export async function grantBadgeToUsers(userIds: string[], badgeId: string): Pro
         return { success: true, message: '所有选中的用户都已经拥有该徽章，未执行任何操作。' };
     }
 }
+
