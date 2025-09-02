@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -62,7 +61,7 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
             <motion.div key={char.id} variants={itemVariants}>
                 <Card className="overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col md:flex-row h-full group hover:-translate-y-1">
                     {/* Image Section - now larger */}
-                    <div className="md:w-2/3 w-full relative aspect-video md:aspect-[4/3] overflow-hidden flex-shrink-0">
+                    <div className="w-full md:w-2/3 relative aspect-video md:aspect-[4/3] overflow-hidden flex-shrink-0">
                          <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
                             <Image
                                 src={char.imageUrl}
@@ -76,7 +75,7 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
                     </div>
                     
                     {/* Content Section - now smaller */}
-                    <div className="flex flex-col md:w-1/3 w-full">
+                    <div className="flex flex-col w-full md:w-1/3">
                         <CardContent className="p-6 flex-grow">
                             <CardTitle className="text-2xl font-headline mb-2 truncate">{char.name}</CardTitle>
                             <CardDescription className="text-base text-muted-foreground mb-4">{char.species}</CardDescription>
