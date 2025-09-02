@@ -62,7 +62,7 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
               <Card className="overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col h-full group hover:-translate-y-1">
                 <CardHeader className="p-0">
                    <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
-                      <div className="relative aspect-[4/3] overflow-hidden">
+                      <div className="relative aspect-[3/4] overflow-hidden">
                         <Image
                           src={char.imageUrl}
                           alt={char.name}
