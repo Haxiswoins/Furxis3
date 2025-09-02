@@ -46,7 +46,7 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
     >
       <div className="text-center mb-12">
         <h1 className="text-4xl font-headline">{series?.name}</h1>
-        <p className="mt-2 text-lg text-muted-foreground max-w-2xl text-left">
+        <p className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto whitespace-pre-wrap">
           {series?.description || '给这些预先设计的角色一个家。'}
         </p>
       </div>
