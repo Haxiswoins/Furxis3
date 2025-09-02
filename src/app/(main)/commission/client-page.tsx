@@ -81,7 +81,7 @@ export function CommissionClientPage({ commissionOptions }: CommissionClientPage
                   
                   {/* Bottom-right content */}
                   <div className="absolute bottom-4 right-4 md:bottom-8 md:right-8 text-right">
-                     <p className="text-xs opacity-80 mt-2 line-clamp-2 md:line-clamp-3 max-w-md" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.description}</p>
+                     <p className="text-sm opacity-80 line-clamp-2 md:line-clamp-3 max-w-md" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.description}</p>
                   </div>
                   
                   {/* Status Badge */}
