@@ -53,27 +53,25 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
   const [isCommissionOpen, setIsCommissionOpen] = useState(commissionOption.status !== '即将开放');
 
   useEffect(() => {
-    if (commissionOption.status !== '即将开放') {
+    if (commissionOption.status !== '即将开放' || !commissionOption.commissionDate) {
+      setIsCommissionOpen(commissionOption.status === '开放中');
       return;
     }
 
     const calculateTimeLeft = () => {
       const difference = +new Date(commissionOption.commissionDate) - +new Date();
-      let timeLeftString = null;
-
+      
       if (difference > 0) {
         const days = Math.floor(difference / (1000 * 60 * 60 * 24));
         const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
         const minutes = Math.floor((difference / 1000 / 60) % 60);
         
-        timeLeftString = `剩余 ${days}天 ${hours}小时 ${minutes}分`;
+        setTimeLeft(`剩余 ${days}天 ${hours}小时 ${minutes}分`);
         setIsCommissionOpen(false);
       } else {
-        timeLeftString = null;
+        setTimeLeft(null);
         setIsCommissionOpen(true);
       }
-      
-      setTimeLeft(timeLeftString);
     };
 
     calculateTimeLeft();
@@ -267,7 +265,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
                   <Upload className="mr-2 h-4 w-4" />
                   {referenceImagePreview ? '更换图片' : '选择图片'}
-              </Button>
+               </Button>
             </div>
             <p className="text-xs text-muted-foreground pt-1">上传一张角色的设定图，大小不超过5MB。如果没有也可以不上传。</p>
           </div>

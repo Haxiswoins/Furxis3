@@ -43,7 +43,7 @@ const formSchema = z.object({
   description: z.string().min(10, { message: '描述至少需要10个字符。' }),
   tags: z.string(),
   status: z.enum(['开放中', '已结束', '即将开放']),
-  commissionDate: z.date({ required_error: '必须选择一个年月' }),
+  commissionDate: z.date({ required_error: '必须选择一个日期' }),
   imageUrl: z.string().optional(),
 });
 
@@ -163,7 +163,7 @@ export function AdminCommissionForm({ commissionOption }: AdminCommissionFormPro
             name="commissionDate"
             render={({ field }) => (
                 <FormItem className="flex flex-col">
-                    <FormLabel>委托年月</FormLabel>
+                    <FormLabel>委托开放日期</FormLabel>
                     <Popover>
                         <PopoverTrigger asChild>
                         <FormControl>
@@ -174,7 +174,7 @@ export function AdminCommissionForm({ commissionOption }: AdminCommissionFormPro
                                 !field.value && "text-muted-foreground"
                             )}
                             >
-                            {field.value ? format(field.value, "yyyy年 M月") : <span>选择年月</span>}
+                            {field.value ? format(field.value, "PPP") : <span>选择日期</span>}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                         </FormControl>
@@ -188,7 +188,7 @@ export function AdminCommissionForm({ commissionOption }: AdminCommissionFormPro
                         />
                         </PopoverContent>
                     </Popover>
-                    <FormDescription>设置该委托所属的年份和月份，用于前台排序。</FormDescription>
+                    <FormDescription>设置该委托的精确开放日期，用于前台倒计时和排序。</FormDescription>
                     <FormMessage />
                 </FormItem>
             )}
