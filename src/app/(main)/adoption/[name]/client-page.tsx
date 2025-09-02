@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -68,7 +69,7 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
                                 alt={char.name}
                                 width={800}
                                 height={600}
-                                className="w-full h-auto md:h-full md:w-auto md:object-cover transition-transform duration-500 group-hover:scale-105"
+                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                             />
                         </Link>
                     </div>
