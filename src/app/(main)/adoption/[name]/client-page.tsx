@@ -52,7 +52,7 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
         </p>
       </div>
       <motion.div 
-        className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+        className="grid grid-cols-1 gap-8"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -61,35 +61,35 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
           characters.map((char) => (
             <motion.div key={char.id} variants={itemVariants}>
                 <Card className="overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col md:flex-row h-full group hover:-translate-y-1">
-                    {/* Image Section */}
-                    <div className="md:w-1/3 w-full relative aspect-[3/4] overflow-hidden flex-shrink-0">
+                    {/* Image Section - now larger */}
+                    <div className="md:w-2/3 w-full relative aspect-video md:aspect-[4/3] overflow-hidden flex-shrink-0">
                          <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
                             <Image
                                 src={char.imageUrl}
                                 alt={char.name}
                                 fill
-                                sizes="(max-width: 768px) 100vw, 33vw"
+                                sizes="(max-width: 768px) 100vw, 66vw"
                                 style={{objectFit: 'cover'}}
                                 className="transition-transform duration-500 group-hover:scale-105"
                             />
                         </Link>
                     </div>
                     
-                    {/* Content Section */}
-                    <div className="flex flex-col flex-grow">
-                        <CardContent className="p-4 flex-grow">
-                            <CardTitle className="text-xl font-headline mb-1 truncate">{char.name}</CardTitle>
-                            <CardDescription className="text-sm text-muted-foreground mb-2">{char.species}</CardDescription>
-                            <p className="text-foreground/80 mb-3 text-sm line-clamp-3 md:line-clamp-4">{char.description}</p>
-                            <div className="flex flex-wrap gap-1.5">
-                            {char.tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
+                    {/* Content Section - now smaller */}
+                    <div className="flex flex-col md:w-1/3 w-full">
+                        <CardContent className="p-6 flex-grow">
+                            <CardTitle className="text-2xl font-headline mb-2 truncate">{char.name}</CardTitle>
+                            <CardDescription className="text-base text-muted-foreground mb-4">{char.species}</CardDescription>
+                            <p className="text-foreground/80 mb-4 text-sm line-clamp-4">{char.description}</p>
+                            <div className="flex flex-wrap gap-2">
+                            {char.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                             </div>
                         </CardContent>
-                        <CardFooter className="p-4 bg-muted/50 flex justify-between items-center mt-auto">
-                            <p className="text-lg font-bold text-primary">¥{char.price}</p>
+                        <CardFooter className="p-6 bg-muted/50 flex justify-between items-center mt-auto">
+                            <p className="text-xl font-bold text-primary">¥{char.price}</p>
                             <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
-                            <Button size="sm">
-                                <Heart className="mr-1 h-3 w-3" /> 详情
+                            <Button>
+                                <Heart className="mr-2 h-4 w-4" /> 详情
                             </Button>
                             </Link>
                         </CardFooter>
