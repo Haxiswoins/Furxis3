@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -72,9 +71,8 @@ export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeries
                             className="transition-transform duration-500 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 flex items-end p-6 md:p-8 text-white bg-gradient-to-t from-black/60 via-black/30 to-transparent transition-colors duration-300">
-                           <div className="w-full flex justify-between items-end">
-                                <h3 className="font-headline text-2xl md:text-4xl w-1/2" style={{textShadow: '2px 2px 6px rgba(0,0,0,0.8)'}}>{s.name}</h3>
-                                <p className="text-xs md:text-sm opacity-90 w-1/2 text-right line-clamp-2" style={{textShadow: '1px 1px 4px rgba(0,0,0,0.7)'}}>{s.description}</p>
+                           <div className="w-full flex justify-start items-end">
+                                <h3 className="font-headline text-2xl md:text-4xl" style={{textShadow: '2px 2px 6px rgba(0,0,0,0.8)'}}>{s.name}</h3>
                            </div>
                         </div>
                     </Link>
