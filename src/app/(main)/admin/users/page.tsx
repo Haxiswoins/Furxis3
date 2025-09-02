@@ -221,7 +221,7 @@ export default function UserManagementPage() {
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [userData, badgeData] = await Promise.all([
         getAggregatedUsers(),
@@ -238,13 +238,12 @@ export default function UserManagementPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     setLoading(true);
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchData]);
   
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -435,4 +434,3 @@ export default function UserManagementPage() {
     </div>
   );
 }
-
