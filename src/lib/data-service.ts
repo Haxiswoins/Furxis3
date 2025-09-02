@@ -448,8 +448,9 @@ export async function cancelOrder(orderId: string, reason: string): Promise<void
     allOrders[orderIndex].status = '退养中';
     allOrders[orderIndex].cancellationReason = reason;
     await writeData('orders.json', allOrders);
+    revalidatePath(`/orders/${orderId}`);
+    revalidatePath('/orders');
   }
-  revalidatePath('/orders', 'layout');
 
   // Admin Email Notification
   const order = allOrders[orderIndex];
@@ -475,8 +476,9 @@ export async function reinstateOrder(orderId: string): Promise<void> {
         allOrders[orderIndex].status = '处理中';
         allOrders[orderIndex].cancellationReason = '';
         await writeData('orders.json', allOrders);
+        revalidatePath(`/orders/${orderId}`);
+        revalidatePath('/orders');
     }
-    revalidatePath('/orders', 'layout');
 }
 
 // Works
@@ -819,6 +821,8 @@ export async function grantBadgeToUser(userId: string, badgeId: string): Promise
 
     allUserBadges.push(newUserBadge);
     await writeData('userBadges.json', allUserBadges);
+    revalidatePath(`/admin/users`);
+    revalidatePath(`/admin/users/${userId}`);
 
     return newUserBadge;
 }
@@ -854,6 +858,7 @@ export async function grantBadgeToUsers(userIds: string[], badgeId: string): Pro
 
     if (grantedCount > 0) {
         await writeData('userBadges.json', allUserBadges);
+        revalidatePath(`/admin/users`);
         return { success: true, message: `操作完成！已成功为 ${grantedCount} 位用户发放了徽章“${badgeToGrant.name}”。` };
     } else {
         return { success: true, message: '所有选中的用户都已经拥有该徽章，未执行任何操作。' };

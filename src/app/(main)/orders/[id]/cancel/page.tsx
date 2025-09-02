@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -30,10 +31,11 @@ export default function CancelOrderPage() {
     getOrderById(orderId)
       .then(orderData => {
         if (orderData && orderData.userId === user.uid) {
-          if (orderData.status !== '处理中') {
+          const cancellableStatuses = ['处理中', '待确认', '已确认', '排队中', '制作中'];
+          if (!cancellableStatuses.includes(orderData.status)) {
              toast({
                 title: "无法取消",
-                description: "此订单当前状态无法取消。",
+                description: "此订单当前状态无法发起取消/退养申请。",
                 variant: "destructive",
               });
              router.back();
@@ -91,7 +93,7 @@ export default function CancelOrderPage() {
         title: "申请已提出",
         description: "您的取消申请已提交至管理员审核。",
       });
-      router.push('/orders');
+      router.push(`/orders/${orderId}`); // Navigate back to the detail page
     } catch (error) {
        toast({
         title: "操作失败",

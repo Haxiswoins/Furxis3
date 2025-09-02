@@ -13,7 +13,7 @@ import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/context/AuthContext';
-import { getOrderById, reinstateOrder, getSiteContent, updateOrder } from '@/lib/data-service';
+import { getOrderById, reinstateOrder, getSiteContent, updateOrder, cancelOrder } from '@/lib/data-service';
 import type { Order, SiteContent } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from "@/hooks/use-toast";
@@ -181,11 +181,27 @@ export default function OrderDetailPage() {
     return null;
   }
 
-  const handleCancelClick = () => {
-    if (['处理中', '已确认', '待确认', '排队中', '制作中'].includes(order.status)) {
-      router.push(`/orders/${order.id}/cancel`);
+  const handleCancelClick = async (reason: string) => {
+    if (!order) return;
+    setIsActionLoading(true);
+    try {
+      await cancelOrder(order.id, reason);
+      toast({
+        title: "申请已提出",
+        description: "您的取消申请已提交至管理员审核。",
+      });
+      await fetchOrderAndContent(); // Refresh
+    } catch (error) {
+      toast({
+        title: "操作失败",
+        description: "更新订单状态时出错，请稍后再试。",
+        variant: "destructive",
+      });
+    } finally {
+      setIsActionLoading(false);
     }
   };
+
 
   const handleUndoCancel = async () => {
     setIsActionLoading(true);
@@ -202,9 +218,9 @@ export default function OrderDetailPage() {
   
   const renderCancelButton = () => {
     if (['处理中', '已确认', '待确认', '排队中', '制作中'].includes(order.status)) {
-      return (
-        <Button variant="destructive" onClick={handleCancelClick} disabled={isActionLoading}>申请退养/取消</Button>
-      );
+        return (
+             <Button variant="destructive" onClick={() => router.push(`/orders/${order.id}/cancel`)} disabled={isActionLoading}>申请退养/取消</Button>
+        )
     }
     if (order.status === '退养中') {
       return (
