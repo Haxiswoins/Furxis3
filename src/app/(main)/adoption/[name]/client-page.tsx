@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -67,8 +66,7 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
                             <Image
                                 src={char.imageUrl}
                                 alt={char.name}
-                                width={800}
-                                height={600}
+                                fill
                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                             />
                         </Link>
@@ -76,18 +74,18 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
                     
                     {/* Content Section */}
                     <div className="flex flex-col w-1/3">
-                        <CardContent className="p-6 flex-grow">
-                            <CardTitle className="text-2xl font-headline mb-2 truncate">{char.name}</CardTitle>
-                            <CardDescription className="text-base text-muted-foreground mb-4">{char.species}</CardDescription>
-                            <p className="text-foreground/80 mb-4 text-sm line-clamp-4">{char.description}</p>
+                        <CardContent className="p-[clamp(1rem,2.5vw,1.5rem)] flex-grow flex flex-col">
+                            <CardTitle style={{fontSize: 'clamp(1rem, 2.5vw, 1.5rem)'}} className="font-headline mb-[clamp(0.25rem,1vw,0.5rem)] truncate">{char.name}</CardTitle>
+                            <CardDescription style={{fontSize: 'clamp(0.875rem, 2vw, 1rem)'}} className="text-muted-foreground mb-[clamp(0.5rem,1.5vw,1rem)]">{char.species}</CardDescription>
+                            <p style={{fontSize: 'clamp(0.75rem, 1.8vw, 0.875rem)'}} className="text-foreground/80 mb-[clamp(0.5rem,1.5vw,1rem)] line-clamp-4">{char.description}</p>
                             <div className="flex flex-wrap gap-2">
-                            {char.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+                            {char.tags.map(tag => <Badge key={tag} variant="secondary" style={{fontSize: 'clamp(0.65rem, 1.5vw, 0.75rem)'}}>{tag}</Badge>)}
                             </div>
                         </CardContent>
-                        <CardFooter className="p-6 bg-muted/50 flex flex-col sm:flex-row sm:justify-between sm:items-center mt-auto gap-4">
-                            <p className="text-xl font-bold text-primary">¥{char.price}</p>
+                        <CardFooter className="p-[clamp(1rem,2.5vw,1.5rem)] bg-muted/50 flex flex-col sm:flex-row sm:justify-between sm:items-center mt-auto gap-4">
+                            <p style={{fontSize: 'clamp(1rem, 2.2vw, 1.25rem)'}} className="font-bold text-primary">¥{char.price}</p>
                             <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref className="w-full sm:w-auto">
-                            <Button className="w-full sm:w-auto">
+                            <Button className="w-full sm:w-auto" size="sm">
                                 <Heart className="mr-2 h-4 w-4" /> 详情
                             </Button>
                             </Link>
