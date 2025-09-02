@@ -59,11 +59,7 @@ export async function GET(req: NextRequest) {
     session.email = userInfo.email;
     session.name = userInfo.name || userInfo.preferred_username;
     session.picture = userInfo.picture;
-    // Temporarily grant admin rights to all users for testing.
-    // Make sure to revert this change before final deployment!
-    session.isAdmin = true;
-    // Original line:
-    // session.isAdmin = userInfo.email === process.env.ADMIN_EMAIL;
+    session.isAdmin = userInfo.email === process.env.ADMIN_EMAIL;
 
     await session.save();
 
