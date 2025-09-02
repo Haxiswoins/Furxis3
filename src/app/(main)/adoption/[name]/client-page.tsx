@@ -51,7 +51,7 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
         </p>
       </div>
       <motion.div 
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -67,7 +67,7 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
                             src={char.imageUrl}
                             alt={char.name}
                             fill
-                            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                             style={{objectFit: 'cover'}}
                             className="transition-transform duration-500 group-hover:scale-105"
                         />
