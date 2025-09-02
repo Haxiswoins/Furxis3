@@ -51,7 +51,7 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
         </p>
       </div>
       <motion.div 
-        className="grid grid-cols-1 gap-8"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -59,39 +59,37 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
         {characters.length > 0 ? (
           characters.map((char) => (
             <motion.div key={char.id} variants={itemVariants}>
-                <Card className="overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-row h-full group hover:-translate-y-1">
-                    {/* Image Section */}
-                    <div className="w-2/3 relative aspect-[4/3] overflow-hidden flex-shrink-0">
-                         <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
-                            <Image
-                                src={char.imageUrl}
-                                alt={char.name}
-                                fill
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                        </Link>
-                    </div>
-                    
-                    {/* Content Section */}
-                    <div className="flex flex-col w-1/3">
-                        <CardContent className="p-[clamp(1rem,2.5vw,1.5rem)] flex-grow flex flex-col">
-                            <CardTitle style={{fontSize: 'clamp(1rem, 2.5vw, 1.5rem)'}} className="font-headline mb-[clamp(0.25rem,1vw,0.5rem)] truncate">{char.name}</CardTitle>
-                            <CardDescription style={{fontSize: 'clamp(0.875rem, 2vw, 1rem)'}} className="text-muted-foreground mb-[clamp(0.5rem,1.5vw,1rem)]">{char.species}</CardDescription>
-                            <p style={{fontSize: 'clamp(0.75rem, 1.8vw, 0.875rem)'}} className="text-foreground/80 mb-[clamp(0.5rem,1.5vw,1rem)] line-clamp-4">{char.description}</p>
-                            <div className="flex flex-wrap gap-2">
-                            {char.tags.map(tag => <Badge key={tag} variant="secondary" style={{fontSize: 'clamp(0.65rem, 1.5vw, 0.75rem)'}}>{tag}</Badge>)}
-                            </div>
-                        </CardContent>
-                        <CardFooter className="p-[clamp(1rem,2.5vw,1.5rem)] bg-muted/50 flex flex-col sm:flex-row sm:justify-between sm:items-center mt-auto gap-4">
-                            <p style={{fontSize: 'clamp(1rem, 2.2vw, 1.25rem)'}} className="font-bold text-primary">¥{char.price}</p>
-                            <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref className="w-full sm:w-auto">
-                            <Button className="w-full sm:w-auto" size="sm">
-                                <Heart className="mr-2 h-4 w-4" /> 详情
-                            </Button>
-                            </Link>
-                        </CardFooter>
-                    </div>
-                </Card>
+              <Card className="overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col h-full group hover:-translate-y-1">
+                <CardHeader className="p-0">
+                   <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
+                      <div className="relative aspect-[4/3] overflow-hidden">
+                        <Image
+                          src={char.imageUrl}
+                          alt={char.name}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
+                  </Link>
+                </CardHeader>
+                <CardContent className="p-4 flex-grow flex flex-col">
+                  <CardTitle className="text-xl font-headline mb-1">{char.name}</CardTitle>
+                  <CardDescription className="text-muted-foreground">{char.species}</CardDescription>
+                  <p className="text-foreground/80 my-3 text-sm line-clamp-3 flex-grow">{char.description}</p>
+                  <div className="flex flex-wrap gap-2 mt-auto">
+                    {char.tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
+                  </div>
+                </CardContent>
+                <CardFooter className="p-4 bg-muted/50 flex justify-between items-center">
+                  <p className="text-lg font-bold text-primary">¥{char.price}</p>
+                   <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
+                      <Button size="sm">
+                        <Heart className="mr-2 h-4 w-4" /> 详情
+                      </Button>
+                  </Link>
+                </CardFooter>
+              </Card>
             </motion.div>
           ))
         ) : (
