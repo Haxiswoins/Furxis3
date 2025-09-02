@@ -76,12 +76,12 @@ export function CommissionClientPage({ commissionOptions }: CommissionClientPage
                   <div className="max-w-md">
                     <h3 className="font-headline text-2xl md:text-4xl font-bold" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.8)' }}>{item.name}</h3>
                     <p className="text-sm md:text-base opacity-90 mt-1" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.category}</p>
-                     <Badge variant="outline" className={cn("text-xs font-semibold backdrop-blur-sm mt-3", statusStyles[item.status])}>
-                      {item.status}
-                    </Badge>
                     <p className="text-sm opacity-80 mt-4 line-clamp-3" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.description}</p>
                   </div>
                 </div>
+                 <Badge variant="outline" className={cn("absolute top-4 right-4 text-xs font-semibold backdrop-blur-sm", statusStyles[item.status])}>
+                  {item.status}
+                </Badge>
               </div>
             </Link>
           </motion.div>
