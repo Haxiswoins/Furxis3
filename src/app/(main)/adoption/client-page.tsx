@@ -71,16 +71,11 @@ export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeries
                             style={{objectFit: 'cover'}}
                             className="transition-transform duration-500 group-hover:scale-105"
                         />
-                        <div className="absolute inset-0 flex flex-col justify-center items-center p-8 text-white bg-black/40 hover:bg-black/50 transition-colors duration-300">
-                           <div className="text-center max-w-2xl">
-                                <h3 className="font-headline text-3xl md:text-5xl" style={{textShadow: '2px 2px 6px rgba(0,0,0,0.8)'}}>{s.name}</h3>
-                                <p className="text-sm md:text-base opacity-90 mt-2 line-clamp-2" style={{textShadow: '1px 1px 4px rgba(0,0,0,0.7)'}}>{s.description}</p>
-                                <div className="mt-6">
-                                    <div className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold border border-white/50 rounded-full bg-white/10 backdrop-blur-sm group-hover:bg-white/20 group-hover:border-white transition-all duration-300">
-                                        进入系列 <ArrowRight className="h-4 w-4 transform transition-transform group-hover:translate-x-1" />
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="absolute inset-0 flex items-end p-6 md:p-8 text-white bg-gradient-to-t from-black/60 via-black/30 to-transparent transition-colors duration-300">
+                           <div className="w-full flex justify-between items-end">
+                                <h3 className="font-headline text-2xl md:text-4xl w-1/2" style={{textShadow: '2px 2px 6px rgba(0,0,0,0.8)'}}>{s.name}</h3>
+                                <p className="text-xs md:text-sm opacity-90 w-1/2 text-right line-clamp-2" style={{textShadow: '1px 1px 4px rgba(0,0,0,0.7)'}}>{s.description}</p>
+                           </div>
                         </div>
                     </Link>
                 </motion.div>
