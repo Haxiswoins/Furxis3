@@ -44,7 +44,7 @@ export async function getSiteContent(): Promise<SiteContent> {
 
 export async function saveSiteContent(content: SiteContent): Promise<void> {
     await writeData('siteContent.json', content);
-    revalidatePath('/home', 'page');
+    revalidatePath('/home', 'layout');
     revalidatePath('/commission', 'layout');
     revalidatePath('/adoption', 'layout');
 }
