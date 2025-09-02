@@ -1,3 +1,4 @@
+
 'use client';
 
 import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
@@ -47,8 +48,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await fetch('/api/auth/logout');
       setUser(null);
-      // Redirect to home page after logout
-      router.push('/home');
+      // Redirect to welcome page after logout
+      router.push('/');
     } catch (error) {
       console.error('Logout failed', error);
     }

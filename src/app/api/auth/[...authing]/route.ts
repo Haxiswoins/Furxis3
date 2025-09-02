@@ -23,6 +23,10 @@ export function GET(req: NextRequest) {
         loginUrl.searchParams.set('redirect_uri', redirectUri);
         loginUrl.searchParams.set('response_type', 'code');
         loginUrl.searchParams.set('scope', 'openid profile email phone');
+        
+        // Add prompt=login to force re-authentication
+        loginUrl.searchParams.set('prompt', 'login');
+
         if (returnTo) {
             loginUrl.searchParams.set('state', Buffer.from(JSON.stringify({ returnTo })).toString('base64'));
         }
