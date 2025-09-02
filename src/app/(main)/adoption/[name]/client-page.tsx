@@ -84,10 +84,10 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
                             {char.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                             </div>
                         </CardContent>
-                        <CardFooter className="p-6 bg-muted/50 flex justify-between items-center mt-auto">
+                        <CardFooter className="p-6 bg-muted/50 flex flex-col sm:flex-row sm:justify-between sm:items-center mt-auto gap-4">
                             <p className="text-xl font-bold text-primary">¥{char.price}</p>
-                            <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
-                            <Button>
+                            <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref className="w-full sm:w-auto">
+                            <Button className="w-full sm:w-auto">
                                 <Heart className="mr-2 h-4 w-4" /> 详情
                             </Button>
                             </Link>
