@@ -17,13 +17,10 @@ const nextConfig = {
             hostname: 'files.authing.co',
         },
         // For self-hosted images on the production server
-        // This will be dynamically set from the environment variable
-        process.env.NEXT_PUBLIC_BASE_URL
-        ? {
-            protocol: new URL(process.env.NEXT_PUBLIC_BASE_URL).protocol.slice(0, -1) as 'http' | 'https',
-            hostname: new URL(process.env.NEXT_PUBLIC_BASE_URL).hostname,
-          }
-        : {},
+        {
+            protocol: 'https',
+            hostname: 'cdn.markjoker.top',
+        },
     ].filter(Boolean),
   },
   env: {
