@@ -6,6 +6,7 @@ import type { SessionData } from '@/lib/session';
 
 export async function GET() {
   
+  /*
   // --- TEMPORARY ADMIN MODE ---
   // This will make the application behave as if an admin is always logged in.
   // Remember to revert this change before going to production.
@@ -20,9 +21,9 @@ export async function GET() {
     },
   };
   return NextResponse.json(adminUser);
-  
+  */
 
-  /*
+  
   // --- ORIGINAL CODE ---
   const session = await getIronSession<SessionData>(cookies(), {
     password: process.env.AUTHING_SECRET!,
@@ -42,5 +43,4 @@ export async function GET() {
       isAdmin: session.isAdmin,
     },
   });
-  */
 }
