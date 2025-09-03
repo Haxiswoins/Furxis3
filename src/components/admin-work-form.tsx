@@ -27,6 +27,7 @@ import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { Textarea } from './ui/textarea';
 import { CustomDatePicker } from './ui/date-picker';
+import { ImageCropper } from './image-cropper';
 
 const formSchema = z.object({
   workName: z.string().min(1, '作品名称不能为空'),
@@ -53,6 +54,9 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
   
   const [imageFiles, setImageFiles] = useState<(File | null)[]>(Array(5).fill(null));
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
 
   const fileInputRefs = Array(5).fill(null).map(() => useRef<HTMLInputElement>(null));
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -87,13 +91,26 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
     }
   };
   
-  const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setAvatarFile(file);
-      form.setValue('avatarUrl', URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageToCrop(reader.result as string);
+        setCropperOpen(true);
+      };
+      reader.readAsDataURL(file);
     }
   };
+
+  const handleCropComplete = (croppedImageBlob: Blob) => {
+      const croppedFile = new File([croppedImageBlob], 'avatar.png', { type: 'image/png' });
+      setAvatarFile(croppedFile);
+      form.setValue('avatarUrl', URL.createObjectURL(croppedFile));
+      setCropperOpen(false);
+      setImageToCrop(null);
+  };
+
 
   const clearImage = (index: number) => {
     const newImageFiles = [...imageFiles];
@@ -183,6 +200,14 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
   }
 
   return (
+    <>
+    {cropperOpen && imageToCrop && (
+      <ImageCropper 
+        imageSrc={imageToCrop}
+        onCropComplete={handleCropComplete}
+        onClose={() => setCropperOpen(false)}
+      />
+    )}
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSave)} className="space-y-8 max-w-2xl">
         <FormField control={form.control} name="workName" render={({ field }) => ( <FormItem> <FormLabel>作品名称</FormLabel> <FormControl><Input placeholder="例如：青风" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
@@ -250,7 +275,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
                             <Input 
                                 type="file" 
                                 accept="image/*"
-                                onChange={handleAvatarFileChange}
+                                onChange={handleAvatarFileSelect}
                                 className="hidden"
                                 ref={avatarInputRef}
                                 id="avatar-file-input"
@@ -260,6 +285,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
                                     field.onChange(e);
                                     if (e.target.value) {
                                        setAvatarFile(null);
+                                       setImageToCrop(null);
                                     }
                                 }}/>
                             </FormControl>
@@ -332,5 +358,6 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
         </div>
       </form>
     </Form>
+    </>
   );
 }

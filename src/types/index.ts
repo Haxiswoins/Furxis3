@@ -105,6 +105,13 @@ export type SiteContent = {
   fanPrice?: number;
 };
 
+export type CroppedAreaPixels = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
 export type Work = {
   id: string;
   workName: string;
@@ -115,6 +122,11 @@ export type Work = {
   imageUrls: string[];
   avatarUrl?: string; // New field for the avatar
   description?: string;
+  croppedAvatarData?: {
+    croppedAreaPixels: CroppedAreaPixels;
+    rotation: number;
+    sourceUrl: string; // The original URL before cropping
+  }
 };
 
 // Represents the user object available throughout the app
