@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,11 +30,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import Image from 'next/image';
-import { CalendarIcon, Upload } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Calendar } from './ui/calendar';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { Upload } from 'lucide-react';
+import { CustomDatePicker } from '../ui/date-picker';
 
 
 const formSchema = z.object({
@@ -164,30 +161,12 @@ export function AdminCommissionForm({ commissionOption }: AdminCommissionFormPro
             render={({ field }) => (
                 <FormItem className="flex flex-col">
                     <FormLabel>委托开放日期</FormLabel>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                        <FormControl>
-                            <Button
-                            variant={"outline"}
-                            className={cn(
-                                "w-[240px] pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                            )}
-                            >
-                            {field.value ? format(field.value, "PPP") : <span>选择日期</span>}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                        </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            initialFocus
-                        />
-                        </PopoverContent>
-                    </Popover>
+                    <FormControl>
+                      <CustomDatePicker
+                        date={field.value}
+                        setDate={field.onChange}
+                      />
+                    </FormControl>
                     <FormDescription>设置该委托的精确开放日期，用于前台倒计时和排序。</FormDescription>
                     <FormMessage />
                 </FormItem>
