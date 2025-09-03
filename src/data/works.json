@@ -11,6 +11,7 @@
       "https://placehold.co/600x800.png",
       "https://placehold.co/600x800.png"
     ],
+    "avatarUrl": "https://placehold.co/600x800.png",
     "description": "以风为灵感，整体采用青色与白色长毛，营造飘逸的感觉。"
   },
   {
@@ -23,6 +24,7 @@
     "imageUrls": [
       "https://placehold.co/600x800.png"
     ],
+    "avatarUrl": "https://placehold.co/600x800.png",
     "description": "以火为主题，使用了渐变的红色毛皮，眼神犀利。"
   }
 ]

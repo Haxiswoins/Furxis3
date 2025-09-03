@@ -37,6 +37,7 @@ const formSchema = z.object({
   makerName: z.string().optional(),
   completionDate: z.date({ required_error: '必须选择一个完成日期' }),
   description: z.string().optional(),
+  avatarUrl: z.string().optional(),
   imageUrls: z.array(z.string()).default([]),
 });
 
@@ -52,10 +53,11 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   
-  // Only store files for new uploads, not existing URLs
   const [imageFiles, setImageFiles] = useState<(File | null)[]>(Array(5).fill(null));
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   const fileInputRefs = Array(5).fill(null).map(() => useRef<HTMLInputElement>(null));
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -66,12 +68,13 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
       makerName: work?.makerName || '',
       completionDate: work ? new Date(work.completionDate) : new Date(),
       description: work?.description || '',
-      // Ensure the array has 5 elements for the form fields, padding with empty strings
+      avatarUrl: work?.avatarUrl || '',
       imageUrls: work?.imageUrls ? [...work.imageUrls, ...Array(5 - work.imageUrls.length).fill('')].slice(0, 5) : Array(5).fill(''),
     },
   });
 
   const watchedImageUrls = form.watch('imageUrls');
+  const watchedAvatarUrl = form.watch('avatarUrl');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0];
@@ -81,8 +84,16 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
       setImageFiles(newImageFiles);
       
       const newUrls = [...form.getValues('imageUrls')];
-      newUrls[index] = URL.createObjectURL(file); // Show preview
+      newUrls[index] = URL.createObjectURL(file);
       form.setValue('imageUrls', newUrls, { shouldValidate: true });
+    }
+  };
+  
+  const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      form.setValue('avatarUrl', URL.createObjectURL(file));
     }
   };
 
@@ -92,30 +103,43 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
     setImageFiles(newImageFiles);
     
     const newUrls = [...form.getValues('imageUrls')];
-    newUrls[index] = ''; // Set to empty string instead of undefined
+    newUrls[index] = '';
     form.setValue('imageUrls', newUrls, { shouldValidate: true });
 
     if (fileInputRefs[index].current) {
         fileInputRefs[index].current!.value = '';
     }
   };
+  
+  const clearAvatar = () => {
+    setAvatarFile(null);
+    form.setValue('avatarUrl', '');
+     if (avatarInputRef.current) {
+        avatarInputRef.current!.value = '';
+    }
+  }
 
   const handleSave = async (values: FormValues) => {
     setIsUploading(true);
     setLoading(true);
 
     try {
+        let finalAvatarUrl = work?.avatarUrl;
+        if (avatarFile && watchedAvatarUrl?.startsWith('blob:')) {
+            finalAvatarUrl = await uploadImage(avatarFile, `works/${values.workName}_avatar_${Date.now()}`);
+        } else if (watchedAvatarUrl) {
+            finalAvatarUrl = watchedAvatarUrl;
+        }
+
         const finalImageUrls: string[] = [];
 
         for (let i = 0; i < values.imageUrls.length; i++) {
             const file = imageFiles[i];
             const url = values.imageUrls[i];
             if (file && url?.startsWith('blob:')) {
-                // This is a new file upload
                 const uploadedUrl = await uploadImage(file, `works/${values.workName}_${i}_${Date.now()}`);
                 finalImageUrls.push(uploadedUrl);
             } else if (url && url.trim() !== '') {
-                // This is an existing or pasted URL
                 finalImageUrls.push(url.trim());
             }
         }
@@ -135,6 +159,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
             makerName: values.makerName,
             completionDate: values.completionDate.toISOString(),
             description: values.description || '',
+            avatarUrl: finalAvatarUrl,
             imageUrls: finalImageUrls,
         };
       
@@ -212,6 +237,51 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
               <FormMessage />
             </FormItem>
           )}
+        />
+
+        <FormField
+            control={form.control}
+            name="avatarUrl"
+            render={({ field }) => (
+                <FormItem className="space-y-2 p-4 border rounded-md">
+                    <FormLabel>作品头像</FormLabel>
+                     <FormDescription>这张图片将用于作品一览的“头像模式”。</FormDescription>
+                    <div className="flex items-center gap-4">
+                        <div className="w-32 h-32 relative rounded-full border bg-muted flex-shrink-0">
+                            { watchedAvatarUrl ? (
+                                <>
+                                    <Image src={watchedAvatarUrl} alt="头像预览" fill style={{objectFit:'cover'}} className="rounded-full" />
+                                    <Button type="button" variant="ghost" size="icon" className="absolute top-0 right-0 bg-black/50 hover:bg-black/70 text-white rounded-full h-6 w-6" onClick={clearAvatar}>
+                                        <X className="h-4 w-4" />
+                                    </Button>
+                                </>
+                            ) : null }
+                        </div>
+                        <div className="space-y-2">
+                            <Button type="button" variant="outline" onClick={() => avatarInputRef.current?.click()}>
+                                <Upload className="mr-2 h-4 w-4" />
+                                {watchedAvatarUrl ? '更换头像' : '本地上传'}
+                            </Button>
+                            <Input 
+                                type="file" 
+                                accept="image/*"
+                                onChange={handleAvatarFileChange}
+                                className="hidden"
+                                ref={avatarInputRef}
+                                id="avatar-file-input"
+                            />
+                            <FormControl>
+                                <Input placeholder="或在此处粘贴图片URL" {...field} value={field.value ?? ''} onChange={(e) => {
+                                    field.onChange(e);
+                                    if (e.target.value) {
+                                       setAvatarFile(null);
+                                    }
+                                }}/>
+                            </FormControl>
+                        </div>
+                    </div>
+                </FormItem>
+            )}
         />
         
         <div className="space-y-4">

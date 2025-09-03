@@ -113,6 +113,7 @@ export type Work = {
   makerName?: string;
   completionDate: string; // ISO String
   imageUrls: string[];
+  avatarUrl?: string; // New field for the avatar
   description?: string;
 };
 
