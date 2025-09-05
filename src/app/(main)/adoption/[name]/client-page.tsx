@@ -46,8 +46,8 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
         transition={{ duration: 0.5, ease: "easeOut" }}
     >
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-headline">{series?.name}</h1>
-        <p className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto whitespace-pre-wrap">
+        <h1 className="text-3xl md:text-4xl font-headline">{series?.name}</h1>
+        <p className="mt-2 text-base md:text-lg text-muted-foreground max-w-2xl mx-auto whitespace-pre-wrap">
           {series?.description || '给这些预先设计的角色一个家。'}
         </p>
       </div>
@@ -75,7 +75,7 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
                   </Link>
                 </CardHeader>
                 <CardContent className="p-4 flex-grow flex flex-col">
-                  <CardTitle className="text-lg font-headline mb-1">{char.name}</CardTitle>
+                  <CardTitle className="text-base md:text-lg font-headline mb-1">{char.name}</CardTitle>
                   <CardDescription className="text-sm text-muted-foreground">{char.species}</CardDescription>
                   <p className="text-foreground/80 my-3 text-xs line-clamp-3 flex-grow">{char.description}</p>
                   <div className="flex flex-wrap gap-2 mt-auto">
