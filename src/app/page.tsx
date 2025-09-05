@@ -49,7 +49,7 @@ export default function WelcomePage() {
         
             if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
                 try {
-                    const lightThemeColors = ["#ff7300","#24428a","#8EDBFD","#ffffff","#E7F9FE","#ff5d05"];
+                    const lightThemeColors = ["#ffffff","#24428a","#ffffff","#ff7b00","#ff0000","#ffa033"];
                     const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#1a1b29"];
                     
                     const instance = new window.Color4Bg.CurveGradientBg({
