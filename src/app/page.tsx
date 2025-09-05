@@ -132,7 +132,7 @@ export default function WelcomePage() {
                         <h2 className="text-xl sm:text-2xl md:text-5xl font-extralight tracking-[0.2em] mt-2 mb-8">FORWARD INFINITY</h2>
                         <p className="text-xs md:text-sm font-light max-w-md leading-relaxed">
                             前行无界工作室正式成立于2024年, <br/>
-                            我们致力于打造富有创意与品质优良的兽装及相关设计作品, <br/>
+                            我们致力于打造富有创意与品质优良的兽装<br/>及相关设计作品, <br/>
                             欢迎您的到访。
                         </p>
                     </motion.div>
