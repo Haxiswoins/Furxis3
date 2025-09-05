@@ -59,7 +59,7 @@ export default function WelcomePage() {
                     });
                     
                     instance.update('scale', 0.2);
-                    instance.update('noise', 0.05);
+                    instance.update('noise', 0.02);
                     
                     animationInstance.current = instance;
 
