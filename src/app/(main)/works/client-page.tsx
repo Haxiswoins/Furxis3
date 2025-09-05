@@ -95,7 +95,7 @@ function AvatarView({ works }: { works: Work[] }) {
                            <AvatarImage src={work.avatarUrl || work.imageUrls[0]} alt={work.workName} />
                            <AvatarFallback>{work.workName.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <p className="text-xs md:text-sm font-medium transition-colors duration-300 group-hover:text-primary truncate w-full">{work.workName}</p>
+                        <p className="text-xs md:text-sm font-headline transition-colors duration-300 group-hover:text-primary truncate w-full">{work.workName}</p>
                     </Link>
                 </motion.div>
             ))}
