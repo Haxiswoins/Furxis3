@@ -88,7 +88,7 @@ export function WorkDetailPageClient({ work }: WorkDetailPageClientProps) {
             className="max-w-6xl mx-auto space-y-8"
         >
         <div className="text-center space-y-2">
-            <h1 className="text-4xl md:text-5xl font-headline font-bold">{work.workName}</h1>
+            <h1 className="text-3xl md:text-5xl font-headline font-bold">{work.workName}</h1>
             <p className="text-sm md:text-base text-muted-foreground">
             委托人: {work.clientName}
             {work.makerName && ` | 装师: ${work.makerName}`}

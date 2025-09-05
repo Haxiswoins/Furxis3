@@ -46,7 +46,7 @@ export function HomeClient({ content }: HomeClientProps) {
   
   const cardImageClass = "transition-transform duration-500 ease-in-out group-hover:scale-105";
   const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/70 via-black/40 to-transparent transition-all duration-500 ease-in-out";
-  const cardTitleClass = "font-headline text-2xl md:text-4xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1";
+  const cardTitleClass = "font-headline text-xl md:text-4xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1";
   const cardDescriptionClass = "mt-2 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base";
 
   const handleNavigate = (path: string) => {
@@ -76,7 +76,7 @@ export function HomeClient({ content }: HomeClientProps) {
                         className="absolute inset-0 flex items-center justify-center text-primary opacity-80"
                         style={{ zIndex: 5 }}
                         >
-                        <span className="font-body text-2xl sm:text-4xl font-extralight tracking-[0.3em] whitespace-nowrap px-4 mt-10 sm:mt-12">
+                        <span className="font-body text-xl sm:text-4xl font-extralight tracking-[0.3em] whitespace-nowrap px-4 mt-10 sm:mt-12">
                             FORWARD INFINITY
                         </span>
                         </div>
