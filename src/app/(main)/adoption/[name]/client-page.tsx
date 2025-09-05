@@ -75,15 +75,15 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
                   </Link>
                 </CardHeader>
                 <CardContent className="p-4 flex-grow flex flex-col">
-                  <CardTitle className="text-xl font-headline mb-1">{char.name}</CardTitle>
-                  <CardDescription className="text-muted-foreground">{char.species}</CardDescription>
-                  <p className="text-foreground/80 my-3 text-sm line-clamp-3 flex-grow">{char.description}</p>
+                  <CardTitle className="text-lg font-headline mb-1">{char.name}</CardTitle>
+                  <CardDescription className="text-sm text-muted-foreground">{char.species}</CardDescription>
+                  <p className="text-foreground/80 my-3 text-xs line-clamp-3 flex-grow">{char.description}</p>
                   <div className="flex flex-wrap gap-2 mt-auto">
                     {char.tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
                   </div>
                 </CardContent>
                 <CardFooter className="p-4 bg-muted/50 flex justify-between items-center">
-                  <p className="text-lg font-bold text-primary">¥{char.price}</p>
+                  <p className="text-base font-bold text-primary">¥{char.price}</p>
                    <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
                       <Button size="sm">
                         <Heart className="mr-2 h-4 w-4" /> 详情

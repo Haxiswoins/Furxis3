@@ -75,8 +75,8 @@ export function CommissionClientPage({ commissionOptions }: CommissionClientPage
                 />
                  <div className="absolute inset-0 flex flex-col justify-center p-6 md:p-12 text-white bg-gradient-to-r from-black/70 to-50%">
                   <div className="max-w-md">
-                    <h3 className="font-headline text-2xl md:text-4xl font-bold" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.8)' }}>{item.name}</h3>
-                    <p className="text-sm md:text-base opacity-90 mt-1" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.category}</p>
+                    <h3 className="font-headline text-xl md:text-4xl font-bold" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.8)' }}>{item.name}</h3>
+                    <p className="text-sm opacity-90 mt-1" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.category}</p>
                     <p className="text-xs opacity-80 mt-4 line-clamp-2 md:line-clamp-3" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.description}</p>
                   </div>
                 </div>

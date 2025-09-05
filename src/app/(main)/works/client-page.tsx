@@ -67,8 +67,8 @@ function CardView({ works }: { works: Work[] }) {
               </CardHeader>
             </Link>
             <CardContent className="p-3 flex-grow">
-              <CardTitle className="text-base font-headline mb-1 truncate">{work.workName}</CardTitle>
-              <CardDescription className="text-xs text-muted-foreground">
+              <CardTitle className="text-sm font-headline mb-1 truncate">{work.workName}</CardTitle>
+              <CardDescription className="text-xs text-muted-foreground truncate">
                 委托人: {work.clientName}
                 {work.makerName && ` | 装师: ${work.makerName}`}
               </CardDescription>
