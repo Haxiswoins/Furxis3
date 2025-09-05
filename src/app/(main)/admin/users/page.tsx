@@ -360,9 +360,9 @@ export default function UserManagementPage() {
           <TableHeader>
             <TableRow>
               {isSelectionMode && (
-                <TableHead className="checkbox">
+                <TableHead className="w-[50px]">
                   <Checkbox
-                    checked={selectedUserIds.length > 0 && selectedUserIds.length === sortedAndFilteredUsers.length}
+                    checked={sortedAndFilteredUsers.length > 0 && selectedUserIds.length === sortedAndFilteredUsers.length}
                     onCheckedChange={(checked) => handleSelectAll(checked as boolean)}
                     aria-label="Select all"
                   />
@@ -382,7 +382,7 @@ export default function UserManagementPage() {
               sortedAndFilteredUsers.map(user => (
                 <TableRow key={user.id} data-state={selectedUserIds.includes(user.id) && "selected"}>
                     {isSelectionMode && (
-                      <TableCell className="checkbox">
+                      <TableCell>
                           <Checkbox
                             checked={selectedUserIds.includes(user.id)}
                             onCheckedChange={(checked) => handleSelectOne(user.id, checked as boolean)}
