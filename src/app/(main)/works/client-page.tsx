@@ -108,17 +108,17 @@ export function WorksPageClient({ worksByYear, sortedYears }: WorksPageClientPro
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-12">
-        <div className="text-center flex-grow">
+      <div className="flex flex-col items-center text-center mb-12">
+        <div className="mb-4">
+          <Button variant="outline" size="icon" onClick={() => setViewMode(viewMode === 'card' ? 'avatar' : 'card')}>
+              {viewMode === 'card' ? <UserSquare /> : <AppWindow />}
+          </Button>
+        </div>
+        <div>
             <h1 className="text-4xl font-headline">作品一览</h1>
             <p className="mt-2 text-lg text-muted-foreground">
             这里是我们过往的精彩作品集锦。
             </p>
-        </div>
-        <div className="flex-shrink-0">
-             <Button variant="outline" size="icon" onClick={() => setViewMode(viewMode === 'card' ? 'avatar' : 'card')}>
-                {viewMode === 'card' ? <UserSquare /> : <AppWindow />}
-            </Button>
         </div>
       </div>
 
