@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from 'next/image';
@@ -63,12 +64,12 @@ export function CommissionClientPage({ commissionOptions }: CommissionClientPage
         commissionOptions.map((item) => (
           <motion.div key={item.id} variants={itemVariants}>
             <Link href={`/commission/${encodeURIComponent(item.name)}`} className="group block relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-              <div className="aspect-[16/9] md:aspect-[16/4] relative">
+              <div className="aspect-[16/9] md:aspect-[16/5] lg:aspect-[16/4] relative">
                 <Image
                   src={item.imageUrl}
                   alt={item.name}
                   fill
-                  sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 50vw"
+                  sizes="(max-width: 768px) 90vw, 80vw"
                   style={{ objectFit: 'cover' }}
                   className="transition-transform duration-500 group-hover:scale-105"
                 />
@@ -76,7 +77,7 @@ export function CommissionClientPage({ commissionOptions }: CommissionClientPage
                   <div className="max-w-md">
                     <h3 className="font-headline text-2xl md:text-4xl font-bold" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.8)' }}>{item.name}</h3>
                     <p className="text-sm md:text-base opacity-90 mt-1" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.category}</p>
-                    <p className="text-xs opacity-80 mt-4 line-clamp-3" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.description}</p>
+                    <p className="text-xs opacity-80 mt-4 line-clamp-2 md:line-clamp-3" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.description}</p>
                   </div>
                 </div>
                  <Badge variant="outline" className={cn("absolute top-4 right-4 text-xs font-semibold backdrop-blur-sm", statusStyles[item.status])}>

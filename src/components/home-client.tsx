@@ -41,7 +41,7 @@ export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
   const [isWarping, setIsWarping] = useState(false);
 
-  const cardLinkClass = "group block";
+  const cardLinkClass = "group block cursor-pointer";
   const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]";
   
   const cardImageClass = "transition-transform duration-500 ease-in-out group-hover:scale-105";

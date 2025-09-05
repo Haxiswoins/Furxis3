@@ -37,8 +37,8 @@ export default async function AdoptionDetailPage({ params }: { params: { charact
         <div className="lg:col-span-1 lg:sticky lg:top-24">
           <Card>
             <CardHeader>
-              <CardTitle className="text-4xl font-headline">{character.name}</CardTitle>
-              <CardDescription className="text-lg text-muted-foreground pt-1">{character.species}</CardDescription>
+              <CardTitle className="text-3xl md:text-4xl font-headline">{character.name}</CardTitle>
+              <CardDescription className="text-base md:text-lg text-muted-foreground pt-1">{character.species}</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-foreground/90 mb-4 whitespace-pre-wrap">{character.description}</p>

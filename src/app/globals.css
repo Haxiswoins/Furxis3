@@ -106,7 +106,7 @@
   }
 
   .animate-warp {
-    animation: warp 1s ease-out forwards;
+    animation: warp 0.6s ease-out forwards;
   }
 }
 

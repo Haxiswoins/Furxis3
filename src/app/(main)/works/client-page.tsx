@@ -44,7 +44,7 @@ type WorksPageClientProps = {
 function CardView({ works }: { works: Work[] }) {
   return (
     <motion.div 
-      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+      className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -59,7 +59,7 @@ function CardView({ works }: { works: Work[] }) {
                       src={work.imageUrls[0]}
                       alt={work.workName}
                       fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
                       style={{objectFit: 'cover'}}
                       className="transition-transform duration-300 group-hover:scale-105"
                     />
@@ -91,11 +91,11 @@ function AvatarView({ works }: { works: Work[] }) {
             {works.map((work) => (
                 <motion.div key={work.id} variants={itemVariants}>
                     <Link href={`/works/${work.id}`} className="group flex flex-col items-center gap-2 text-center">
-                        <Avatar className="h-24 w-24 border-2 border-transparent group-hover:border-primary transition-all duration-300">
+                        <Avatar className="h-20 w-20 md:h-24 md:w-24 border-2 border-transparent group-hover:border-primary transition-all duration-300">
                            <AvatarImage src={work.avatarUrl || work.imageUrls[0]} alt={work.workName} />
                            <AvatarFallback>{work.workName.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <p className="text-sm font-medium transition-colors duration-300 group-hover:text-primary truncate w-full">{work.workName}</p>
+                        <p className="text-xs md:text-sm font-medium transition-colors duration-300 group-hover:text-primary truncate w-full">{work.workName}</p>
                     </Link>
                 </motion.div>
             ))}
