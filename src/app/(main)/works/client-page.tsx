@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -95,7 +95,7 @@ function AvatarView({ works }: { works: Work[] }) {
                            <AvatarImage src={work.avatarUrl || work.imageUrls[0]} alt={work.workName} />
                            <AvatarFallback>{work.workName.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <p className="text-xs md:text-sm font-headline transition-colors duration-300 group-hover:text-primary truncate w-full">{work.workName}</p>
+                        <p className="text-sm font-headline transition-colors duration-300 group-hover:text-primary truncate w-full">{work.workName}</p>
                     </Link>
                 </motion.div>
             ))}
@@ -105,6 +105,20 @@ function AvatarView({ works }: { works: Work[] }) {
 
 export function WorksPageClient({ worksByYear, sortedYears }: WorksPageClientProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('card');
+
+  useEffect(() => {
+    // On initial mount, read from localStorage to set the view mode
+    const savedViewMode = localStorage.getItem('worksViewMode') as ViewMode | null;
+    if (savedViewMode && (savedViewMode === 'card' || savedViewMode === 'avatar')) {
+      setViewMode(savedViewMode);
+    }
+  }, []);
+
+  const handleViewModeChange = (mode: ViewMode) => {
+    setViewMode(mode);
+    // When the user changes the view mode, save it to localStorage
+    localStorage.setItem('worksViewMode', mode);
+  };
 
   return (
     <div>
@@ -116,7 +130,7 @@ export function WorksPageClient({ worksByYear, sortedYears }: WorksPageClientPro
             </p>
         </div>
         <div className="mt-4">
-          <Button variant="outline" size="icon" onClick={() => setViewMode(viewMode === 'card' ? 'avatar' : 'card')}>
+          <Button variant="outline" size="icon" onClick={() => handleViewModeChange(viewMode === 'card' ? 'avatar' : 'card')}>
               {viewMode === 'card' ? <UserSquare /> : <AppWindow />}
           </Button>
         </div>
