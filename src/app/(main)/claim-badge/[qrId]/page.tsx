@@ -59,8 +59,8 @@ export default function ClaimBadgePage() {
     try {
       const result = await confirmAndGrantBadge(qrId as string, user.uid);
       if(result.success) {
-        // On success, redirect without a toast
-        router.push('/my-badges');
+        // On success, redirect without a toast and replace history
+        router.replace('/my-badges');
       } else {
         // If confirmation fails for some reason (e.g. race condition), show error
         setErrorMessage(result.message);
