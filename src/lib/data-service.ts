@@ -349,6 +349,19 @@ export async function createAdoptionApplication(character: Character, userId: st
     const allOrders = await getAllOrders();
     const allCharacters = await getCharacters();
 
+    // Limit check: one active application per character per user
+    const historicalStatuses = ['已完成', '已取消', '未中标'];
+    const existingApplication = allOrders.find(o => 
+        o.userId === userId && 
+        o.orderType === '领养订单' &&
+        o.productName === character.name &&
+        !historicalStatuses.includes(o.status)
+    );
+
+    if (existingApplication) {
+        throw new Error("您已申请过此角色，请勿重复提交。");
+    }
+
     const orderNumber = `S${new Date().toISOString().slice(0,10).replace(/-/g, '')}${Math.floor(100 + Math.random() * 900)}`;
     const newId = `order_${Date.now()}`;
 
@@ -410,6 +423,20 @@ type CommissionInfo = {
 }
 export async function createCommissionApplication(userId: string, commissionInfo: CommissionInfo, applicationData: ApplicationData, fanPrice: number): Promise<string> {
     const allOrders = await getAllOrders();
+    
+    // Limit check: two active applications per commission option per user
+    const historicalStatuses = ['已完成', '已取消', '未中标'];
+    const existingApplicationsCount = allOrders.filter(o => 
+        o.userId === userId &&
+        o.orderType === '委托订单' &&
+        o.commissionOptionName === commissionInfo.optionName &&
+        !historicalStatuses.includes(o.status)
+    ).length;
+
+    if (existingApplicationsCount >= 2) {
+        throw new Error("您在这一期的委托申请已达上限（2次）。");
+    }
+
     const orderNumber = `C${new Date().toISOString().slice(0,10).replace(/-/g, '')}${Math.floor(100 + Math.random() * 900)}`;
     const newId = `order_${Date.now()}`;
 
@@ -881,4 +908,3 @@ export async function grantBadgeToUsers(userIds: string[], badgeId: string): Pro
         return { success: true, message: '所有选中的用户都已经拥有该徽章，未执行任何操作。' };
     }
 }
-
