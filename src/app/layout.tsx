@@ -6,7 +6,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { Playfair_Display, Noto_Serif_SC, Noto_Sans_SC } from 'next/font/google';
 import { cn } from '@/lib/utils';
-import Script from 'next/script';
+import { getSiteContent } from '@/lib/data-service';
 
 export const metadata: Metadata = {
   title: 'Suitopia',
@@ -35,12 +35,7 @@ const fontBody = Noto_Sans_SC({
 
 // This inline script is crucial for preventing theme flash.
 // It runs before React hydrates, setting the correct theme class on the HTML element.
-const ThemeInitializer = () => {
-  // By hardcoding these values, we avoid a blocking async call to getSiteContent()
-  // which significantly improves initial page load performance.
-  const sunriseHour = 6;
-  const sunsetHour = 18;
-
+const ThemeInitializer = ({ sunriseHour, sunsetHour }: { sunriseHour: number; sunsetHour: number; }) => {
   const scriptTxt = `
     (function() {
       try {
@@ -60,15 +55,19 @@ const ThemeInitializer = () => {
 };
 
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const siteContent = await getSiteContent();
+  const sunriseHour = siteContent?.sunriseHour ?? 6;
+  const sunsetHour = siteContent?.sunsetHour ?? 18;
+  
   return (
     <html lang="en" suppressHydrationWarning>
        <body className={cn(fontHeadline.variable, fontSerifSC.variable, fontBody.variable)}>
-          <ThemeInitializer />
+          <ThemeInitializer sunriseHour={sunriseHour} sunsetHour={sunsetHour} />
           <ThemeProvider>
             <AuthProvider>
               {children}
