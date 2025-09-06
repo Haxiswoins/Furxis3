@@ -8,8 +8,8 @@ export async function GET() {
   
   /*
   // --- TEMPORARY ADMIN MODE ---
-  // This will make the application behave as if an admin is always logged in.
-  // Remember to revert this change before going to production.
+  // This mode is for development and testing only. It simulates an admin login.
+  // DO NOT deploy with this code uncommented. It is a major security risk.
   
   const adminUser = {
     user: {
@@ -24,8 +24,8 @@ export async function GET() {
   */
   
   
-  
-  // --- ORIGINAL CODE ---
+  // --- PRODUCTION CODE ---
+  // This is the secure way to handle user sessions.
   const session = await getIronSession<SessionData>(cookies(), {
     password: process.env.AUTHING_SECRET!,
     cookieName: 'suitopia-session',

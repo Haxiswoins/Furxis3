@@ -28,14 +28,17 @@ export async function POST(req: Request) {
 
     // --- SECURITY ENHANCEMENT: Path Validation ---
     if (subfolder) {
-        // 1. Check if the subfolder is in the whitelist
-        const mainFolder = subfolder.split('/')[0]; // e.g., 'characters' from 'characters/stardust_...'
-        if (!ALLOWED_SUBFOLDERS.includes(mainFolder)) {
-            return NextResponse.json({ message: "Invalid upload path specified." }, { status: 400 });
+        // 1. Sanitize the path to prevent traversal attacks.
+        // The path should not contain '..' to move up directories.
+        const pathParts = subfolder.split(/[\\/]/);
+        if (pathParts.some(part => part === '..')) {
+            return NextResponse.json({ message: "Invalid path specified (directory traversal detected)." }, { status: 400 });
         }
-        // 2. Prevent any directory traversal characters
-        if (subfolder.includes('..') || subfolder.includes('/')) {
-            return NextResponse.json({ message: "Invalid characters in path." }, { status: 400 });
+        
+        // 2. Check if the root of the subfolder is in the whitelist
+        const rootFolder = pathParts[0];
+        if (!ALLOWED_SUBFOLDERS.includes(rootFolder)) {
+            return NextResponse.json({ message: "Invalid upload path specified (not in whitelist)." }, { status: 400 });
         }
     }
     // --- END SECURITY ENHANCEMENT ---
