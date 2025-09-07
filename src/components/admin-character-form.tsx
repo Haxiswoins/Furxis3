@@ -39,6 +39,7 @@ const formSchema = z.object({
   price: z.string().regex(/^\d+(\.\d{1,2})?$/, { message: '请输入有效的价格。' }),
   description: z.string().min(10, { message: '描述至少需要10个字符。' }),
   tags: z.string(),
+  status: z.enum(['待领养', '已领养']),
   applicants: z.number().int().nonnegative(),
   imageUrl: z.string().optional(),
   imageUrl1: z.string().optional(),
@@ -88,6 +89,7 @@ export function AdminCharacterForm({ character }: AdminCharacterFormProps) {
       price: character?.price || '',
       description: character?.description || '',
       tags: character?.tags.join(', ') || '',
+      status: character?.status || '待领养',
       applicants: character?.applicants || 0,
       imageUrl: character?.imageUrl || '',
       imageUrl1: character?.imageUrl1 || '',
@@ -167,6 +169,7 @@ export function AdminCharacterForm({ character }: AdminCharacterFormProps) {
         price: values.price,
         description: values.description,
         tags: values.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+        status: values.status,
         applicants: values.applicants,
         imageUrl: finalImageUrls[0] || '',
         imageUrl1: finalImageUrls[1] || '',
@@ -228,6 +231,29 @@ export function AdminCharacterForm({ character }: AdminCharacterFormProps) {
         <FormField control={form.control} name="description" render={({ field }) => ( <FormItem> <FormLabel>描述</FormLabel> <FormControl><Textarea placeholder="角色的详细背景故事和设定..." {...field} rows={5} /></FormControl> <FormMessage /> </FormItem> )}/>
         <FormField control={form.control} name="tags" render={({ field }) => ( <FormItem> <FormLabel>标签</FormLabel> <FormControl><Input placeholder="例如：可爱, 幻想, 蓝色" {...field} /></FormControl> <FormDescription>使用逗号分隔不同的标签。</FormDescription> <FormMessage /> </FormItem> )}/>
         
+        <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>领养状态</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="选择领养状态" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="待领养">待领养</SelectItem>
+                            <SelectItem value="已领养">已领养</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormDescription>设置此角色的当前可领养状态。</FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+
          <div className="space-y-4">
             <FormLabel>作品图片 (最多5张)</FormLabel>
             <FormDescription>新增角色必须上传主图和至少一张详情图。优先使用URL。</FormDescription>

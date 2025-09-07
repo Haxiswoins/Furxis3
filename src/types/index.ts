@@ -21,6 +21,7 @@ export type Character = {
   tags: string[];
   description: string;
   applicants: number;
+  status?: '待领养' | '已领养';
 };
 
 export type CommissionOption = {

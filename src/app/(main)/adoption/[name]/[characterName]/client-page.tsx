@@ -32,38 +32,46 @@ export function CharacterDetailClient({ character }: { character: Character }) {
     router.push(`${pathname}/apply`);
   };
 
-  const renderLoginDialog = () => (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-          <Button size="lg" className="w-full">
-            <PawPrint className="mr-2" />
-            申请领养
-          </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>需要登录</AlertDialogTitle>
-          <AlertDialogDescription>
-            您需要登录后才能申请领养。
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>取消</AlertDialogCancel>
-          <AlertDialogAction onClick={() => router.push(`/api/auth/authing/login?returnTo=${pathname}`)}>
-            登录
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
+  if (character.status === '已领养') {
+    return (
+        <Button size="lg" className="w-full" disabled>
+            已领养
+        </Button>
+    )
+  }
 
-  return isLoggedIn ? (
+  if (!isLoggedIn) {
+    return (
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+            <Button size="lg" className="w-full">
+              <PawPrint className="mr-2" />
+              申请领养
+            </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>需要登录</AlertDialogTitle>
+            <AlertDialogDescription>
+              您需要登录后才能申请领养。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={() => router.push(`/api/auth/authing/login?returnTo=${pathname}`)}>
+              登录
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
+  }
+
+  return (
     <Button size="lg" className="w-full" onClick={handleApplyClick}>
         <PawPrint className="mr-2" />
         申请领养
     </Button>
-  ) : (
-    renderLoginDialog()
   );
 }
 
