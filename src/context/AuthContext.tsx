@@ -48,8 +48,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await fetch('/api/auth/logout');
       setUser(null);
-      // Redirect to welcome page after logout
-      router.push('/');
+      // Force a hard reload to clear any cached data from the /api/auth/me endpoint
+      window.location.reload();
     } catch (error) {
       console.error('Logout failed', error);
     }
