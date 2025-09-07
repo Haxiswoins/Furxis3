@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -40,6 +41,12 @@ export function CommissionStylePageClient({ styles, commissionOption, commission
   const router = useRouter();
   const canApply = commissionOption?.status === '开放中' || commissionOption?.status === '即将开放';
 
+  const handleSelectStyle = (styleName: string) => {
+    if (canApply) {
+      router.push(`/commission/${encodeURIComponent(commissionName)}/${encodeURIComponent(styleName)}`);
+    }
+  };
+
   return (
     <div>
       <div className="text-center mb-12">
@@ -73,10 +80,13 @@ export function CommissionStylePageClient({ styles, commissionOption, commission
                        <Badge variant="outline">已结束</Badge>
                     )}
                   </div>
-                  <Button asChild size="sm" disabled={!canApply} aria-disabled={!canApply}>
-                    <a href={`/commission/${encodeURIComponent(commissionName)}/${encodeURIComponent(style.name)}`}>
-                      选择此样式 <ChevronRight className="h-4 w-4" />
-                    </a>
+                  <Button
+                    size="sm"
+                    disabled={!canApply}
+                    onClick={() => handleSelectStyle(style.name)}
+                    aria-disabled={!canApply}
+                  >
+                    选择此样式 <ChevronRight className="h-4 w-4" />
                   </Button>
                 </CardFooter>
               </Card>
