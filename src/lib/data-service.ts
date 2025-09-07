@@ -399,17 +399,19 @@ export async function createAdoptionApplication(character: Character, userId: st
 
     // Admin Email Notification
     const siteContent = await getSiteContent();
-    if (process.env.RESEND_API_KEY && siteContent?.adminEmail && siteContent.senderEmail) {
-        try {
-            await sendEmail({
-                to: siteContent.adminEmail,
-                from: siteContent.senderEmail,
-                subject: `[新领养申请] ${character.name}`,
-                html: `<p>新领养申请: ${character.name} by ${applicationData.userName}.</p>`
-            });
-        } catch(e) {
-            console.error("Failed to send admin notification email:", e);
-        }
+    if (!process.env.RESEND_API_KEY || !siteContent?.adminEmail || !siteContent.senderEmail) {
+        console.warn("Cannot send new application email: Resend API key, admin email, or sender email is not configured.");
+        return newId;
+    }
+    try {
+        await sendEmail({
+            to: siteContent.adminEmail,
+            from: siteContent.senderEmail,
+            subject: `[新领养申请] ${character.name}`,
+            html: `<p>新领养申请: ${character.name} by ${applicationData.userName}.</p>`
+        });
+    } catch(e) {
+        console.error("Failed to send admin notification email:", e);
     }
     return newId;
 }
@@ -468,17 +470,20 @@ export async function createCommissionApplication(userId: string, commissionInfo
 
     // Admin Email Notification
     const siteContent = await getSiteContent();
-    if (process.env.RESEND_API_KEY && siteContent?.adminEmail && siteContent.senderEmail) {
-        try {
-            await sendEmail({
-                to: siteContent.adminEmail,
-                from: siteContent.senderEmail,
-                subject: `[新委托申请] ${commissionInfo.styleName}`,
-                html: `<p>新委托申请: ${commissionInfo.styleName} by ${applicationData.userName}.</p>`
-            });
-        } catch(e) {
-            console.error("Failed to send admin notification email:", e);
-        }
+    if (!process.env.RESEND_API_KEY || !siteContent?.adminEmail || !siteContent.senderEmail) {
+        console.warn("Cannot send new application email: Resend API key, admin email, or sender email is not configured.");
+        return newId;
+    }
+    
+    try {
+        await sendEmail({
+            to: siteContent.adminEmail,
+            from: siteContent.senderEmail,
+            subject: `[新委托申请] ${commissionInfo.styleName}`,
+            html: `<p>新委托申请: ${commissionInfo.styleName} by ${applicationData.userName}.</p>`
+        });
+    } catch(e) {
+        console.error("Failed to send admin notification email:", e);
     }
 
     return newId;
@@ -499,17 +504,20 @@ export async function cancelOrder(orderId: string, reason: string): Promise<void
   // Admin Email Notification
   const order = allOrders[orderIndex];
   const siteContent = await getSiteContent();
-  if (process.env.RESEND_API_KEY && order && siteContent?.adminEmail && siteContent.senderEmail) {
-      try {
-        await sendEmail({
-            to: siteContent.adminEmail,
-            from: siteContent.senderEmail,
-            subject: `[退养申请] 订单 #${order.orderNumber}`,
-            html: `<p>用户申请取消订单: ${order.orderNumber}. 理由: ${reason}.</p>`
-        });
-      } catch(e) {
-          console.error("Failed to send admin notification email for cancellation:", e);
-      }
+  if (!process.env.RESEND_API_KEY || !order || !siteContent?.adminEmail || !siteContent.senderEmail) {
+      console.warn("Cannot send cancellation notification email: Resend API key, order, admin email, or sender email is not configured.");
+      return;
+  }
+  
+  try {
+    await sendEmail({
+        to: siteContent.adminEmail,
+        from: siteContent.senderEmail,
+        subject: `[退养申请] 订单 #${order.orderNumber}`,
+        html: `<p>用户申请取消订单: ${order.orderNumber}. 理由: ${reason}.</p>`
+    });
+  } catch(e) {
+      console.error("Failed to send admin notification email for cancellation:", e);
   }
 }
 
