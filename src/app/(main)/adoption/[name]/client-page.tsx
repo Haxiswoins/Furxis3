@@ -53,7 +53,7 @@ function CharacterGrid({ characters }: { characters: Character[] }) {
                 <motion.div key={char.id} variants={itemVariants}>
                 <Card className="overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col h-full group hover:-translate-y-1">
                     <CardHeader className="p-0">
-                    <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref className={char.status === '已领养' ? 'pointer-events-none' : ''}>
+                    <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
                         <div className="relative aspect-[3/4] overflow-hidden">
                             <Image
                             src={char.imageUrl}
@@ -75,9 +75,9 @@ function CharacterGrid({ characters }: { characters: Character[] }) {
                     </CardContent>
                     <CardFooter className="p-4 bg-muted/50 flex justify-between items-center">
                     <p className="text-base font-bold text-primary">¥{char.price}</p>
-                    <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref className={char.status === '已领养' ? 'pointer-events-none' : ''}>
-                        <Button size="sm" disabled={char.status === '已领养'}>
-                        <Heart className="mr-2 h-4 w-4" /> 详情
+                    <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
+                        <Button size="sm" className={cn(char.status === '已领养' && "bg-gray-400 dark:bg-gray-600 hover:bg-gray-500 text-white cursor-pointer")}>
+                            {char.status === '已领养' ? '查看详情' : <><Heart className="mr-2 h-4 w-4" /> 详情</>}
                         </Button>
                     </Link>
                     </CardFooter>
