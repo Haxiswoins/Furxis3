@@ -67,7 +67,12 @@ export function CommissionStylePageClient({ styles, commissionOption, commission
                   </div>
                 </CardContent>
                 <CardFooter className="p-4 bg-muted/50 flex justify-between items-center">
-                  <p className="text-lg font-bold text-primary">¥{style.price}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-lg font-bold text-primary">¥{style.price}</p>
+                    {commissionOption.status === '已结束' && (
+                       <Badge variant="outline">已结束</Badge>
+                    )}
+                  </div>
                   <Button asChild size="sm" disabled={!canApply} aria-disabled={!canApply}>
                     <a href={`/commission/${encodeURIComponent(commissionName)}/${encodeURIComponent(style.name)}`}>
                       选择此样式 <ChevronRight className="h-4 w-4" />
