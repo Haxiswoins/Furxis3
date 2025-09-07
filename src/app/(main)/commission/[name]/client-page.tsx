@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { ChevronRight } from 'lucide-react';
 import type { CommissionOption, CommissionStyle } from '@/types';
 import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -85,6 +86,7 @@ export function CommissionStylePageClient({ styles, commissionOption, commission
                     disabled={!canApply}
                     onClick={() => handleSelectStyle(style.name)}
                     aria-disabled={!canApply}
+                    className={cn(!canApply && "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed")}
                   >
                     选择此样式 <ChevronRight className="h-4 w-4" />
                   </Button>
