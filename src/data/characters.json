@@ -11,6 +11,7 @@
       "狐狸",
       "LED"
     ],
+    "status": "已领养",
     "applicants": 12,
     "imageUrl": "https://placehold.co/600x800.png",
     "imageUrl1": "https://placehold.co/600x800.png",
@@ -36,5 +37,20 @@
     "imageUrl2": "https://placehold.co/600x800.png",
     "imageUrl3": "https://placehold.co/600x800.png",
     "imageUrl4": "https://placehold.co/600x800.png"
+  },
+  {
+    "id": "char_1757225350702",
+    "seriesId": "series_1723282303884",
+    "name": "11",
+    "species": "11",
+    "price": "1111",
+    "description": "11111111111111",
+    "tags": [
+      "11"
+    ],
+    "status": "待领养",
+    "applicants": 0,
+    "imageUrl": "/uploads/characters/11_0_1757225347749/560d32d6-766c-4f44-8251-57471c5adc92-6516c2c25e96e47716853e714df40da5.jpg",
+    "imageUrl1": "/uploads/characters/11_1_1757225347750/ab33aff1-5cf3-4c40-b560-d32f2086a89e-6516c2c25e96e47716853e714df40da5.jpg"
   }
 ]
