@@ -52,7 +52,7 @@ export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeries
 
       {seriesData.length > 0 ? (
         <motion.div 
-            className="flex flex-col gap-12 md:gap-16"
+            className="space-y-12"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
