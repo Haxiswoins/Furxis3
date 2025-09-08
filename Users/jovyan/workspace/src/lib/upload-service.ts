@@ -9,6 +9,7 @@ export async function uploadImage(file: File, path: string): Promise<string> {
     
     const formData = new FormData();
     formData.append('file', file);
+    // The 'path' argument is kept for potential future use but is not sent to the image host.
 
     try {
         const uploadUrl = 'https://cdn.markjoker.top/api/v1/upload';
@@ -17,10 +18,11 @@ export async function uploadImage(file: File, path: string): Promise<string> {
         const headers = new Headers();
         headers.append('Accept', 'application/json');
 
-        // Retrieve the token from an environment variable
+        // Retrieve the token from an environment variable.
         // This NEXT_PUBLIC_ variable will be exposed to the client-side.
         const apiToken = process.env.NEXT_PUBLIC_IMAGE_HOSTING_TOKEN;
 
+        // Only add the Authorization header if the token is available.
         if (apiToken) {
             headers.append('Authorization', `Bearer ${apiToken}`);
         } else {
