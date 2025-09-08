@@ -39,7 +39,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback((returnTo?: string) => {
     const target = returnTo || pathname;
-    const loginUrl = new URL('/api/auth/authing/login', window.location.origin);
+    // Corrected to point to our backend route which then redirects to Authing
+    const loginUrl = new URL('/api/auth/login', window.location.origin);
     loginUrl.searchParams.set('returnTo', target);
     router.push(loginUrl.toString());
   }, [router, pathname]);
@@ -48,8 +49,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await fetch('/api/auth/logout');
       setUser(null);
-      // Redirect to welcome page after logout
-      router.push('/');
       // Force a hard reload to clear any cached data from the /api/auth/me endpoint
       window.location.reload();
     } catch (error) {
