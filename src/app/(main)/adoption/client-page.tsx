@@ -5,8 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import type { CharacterSeries, SiteContent } from '@/types';
-import { cn } from '@/lib/utils';
-import { ArrowRight } from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -52,7 +50,7 @@ export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeries
 
       {seriesData.length > 0 ? (
         <motion.div 
-            className="flex flex-col gap-8 md:gap-12"
+            className="space-y-12"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -62,6 +60,7 @@ export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeries
                     key={s.id} 
                     variants={itemVariants}
                 >
+                    <h2 className="text-2xl md:text-3xl font-headline mb-4 pl-4 border-l-4 border-primary">{s.name}</h2>
                     <Link href={`/adoption/${encodeURIComponent(s.name)}`} className="group block relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 aspect-[16/9] md:aspect-[16/7]">
                         <Image
                             src={s.imageUrl}
@@ -71,10 +70,7 @@ export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeries
                             style={{objectFit: 'cover'}}
                             className="transition-transform duration-500 group-hover:scale-105"
                         />
-                        <div className="absolute inset-0 flex items-end p-6 md:p-8 text-white bg-gradient-to-t from-black/60 via-black/30 to-transparent transition-colors duration-300">
-                           <div className="w-full flex justify-start items-end">
-                                <h3 className="font-headline text-2xl md:text-4xl" style={{textShadow: '2px 2px 6px rgba(0,0,0,0.8)'}}>{s.name}</h3>
-                           </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent transition-colors duration-300">
                         </div>
                     </Link>
                 </motion.div>
