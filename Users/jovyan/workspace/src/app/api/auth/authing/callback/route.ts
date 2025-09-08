@@ -15,8 +15,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Exchange authorization code for tokens using the OAuth2.0 token endpoint
-    const tokenUrl = new URL(issuer + '/oauth/token');
+    // Exchange authorization code for tokens using the OIDC token endpoint
+    const tokenUrl = new URL(`${issuer}/token`);
     const tokenResponse = await fetch(tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Fetch user info with the access token using the OIDC userinfo endpoint
-    const userInfoUrl = new URL(issuer + '/oidc/me');
+    const userInfoUrl = new URL(`${issuer}/me`);
     const userInfoResponse = await fetch(userInfoUrl, {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });

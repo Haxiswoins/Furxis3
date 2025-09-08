@@ -1,9 +1,5 @@
 
 import { NextRequest, NextResponse } from "next/server";
-import { getIronSession } from 'iron-session';
-import { cookies } from 'next/headers';
-import type { SessionData } from '@/lib/session';
-
 
 export function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
@@ -17,8 +13,10 @@ export function GET(req: NextRequest) {
     }
 
     if (action === 'login') {
-        // Corrected to use the standard OAuth2.0 authorization endpoint
-        const loginUrl = new URL(`${issuer}/oauth/auth`);
+        // Correctly construct the URL based on the provided issuer.
+        // Issuer already contains the base path (e.g., https://.../oidc)
+        // We just need to append the specific endpoint.
+        const loginUrl = new URL(`${issuer}/auth`);
         
         const clientId = process.env.AUTHING_APP_ID;
         const redirectUri = process.env.AUTHING_REDIRECT_URI;
