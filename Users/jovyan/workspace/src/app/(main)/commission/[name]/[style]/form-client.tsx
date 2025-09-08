@@ -339,7 +339,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
 
           <div className="space-y-2 pt-2">
               <div className="flex items-start space-x-2">
-                  <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} className="mt-1" />
+                  <Checkbox id="terms" name="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} className="mt-1" />
                   <div className="grid gap-1.5 leading-none">
                        <Dialog>
                           <DialogTrigger asChild>
