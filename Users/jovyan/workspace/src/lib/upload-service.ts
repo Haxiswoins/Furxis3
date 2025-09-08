@@ -41,8 +41,9 @@ export async function uploadImage(file: File, path: string): Promise<string> {
             throw new Error(result.message || "File upload failed due to a server error.");
         }
         
-        if (result.data && result.data.url) {
-            return result.data.url;
+        // Corrected according to the provided API documentation.
+        if (result.data && result.data.links && result.data.links.url) {
+            return result.data.links.url;
         } else {
             throw new Error("Image URL not found in the API response.");
         }
