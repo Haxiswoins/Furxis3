@@ -1,19 +1,23 @@
 
-'use server';
-
 import { NextRequest, NextResponse } from "next/server";
+import { getIronSession } from 'iron-session';
+import { cookies } from 'next/headers';
+import type { SessionData } from '@/lib/session';
+
 
 export function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const action = req.nextUrl.pathname.split('/').pop();
     const returnTo = searchParams.get('returnTo');
 
-    // This is the EXACT authentication endpoint provided by Authing.
-    // We are no longer constructing it from an ISSUER variable to avoid any path duplication errors.
-    const authingLoginUrl = 'https://icwh5jsh38rx-demo.authing.cn/oidc/auth';
+    const issuer = process.env.AUTHING_ISSUER;
+    if (!issuer) {
+        console.error("AUTHING_ISSUER environment variable is not set.");
+        return NextResponse.json({ error: "Authentication provider is not configured." }, { status: 500 });
+    }
 
     if (action === 'login') {
-        const loginUrl = new URL(authingLoginUrl);
+        const loginUrl = new URL(`${issuer}/oidc/auth`);
         
         const clientId = process.env.AUTHING_APP_ID;
         const redirectUri = process.env.AUTHING_REDIRECT_URI;
@@ -29,9 +33,8 @@ export function GET(req: NextRequest) {
                 loginUrl.searchParams.set('state', Buffer.from(JSON.stringify({ returnTo })).toString('base64'));
             }
         } else {
-            console.error("Authing client ID or redirect URI is missing in environment variables.");
-            // Redirect to an internal error page or the homepage if config is missing
-            return NextResponse.redirect(new URL('/login?error=config_missing', req.url));
+            console.error("Authing client ID or redirect URI is missing.");
+            return NextResponse.redirect(new URL('/login', req.url));
         }
         
         return NextResponse.redirect(loginUrl);

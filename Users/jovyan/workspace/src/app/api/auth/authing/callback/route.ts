@@ -1,26 +1,22 @@
 
-'use server';
-
 import { NextRequest, NextResponse } from 'next/server';
 import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
 import type { SessionData } from '@/lib/session';
-
-// These are the EXACT endpoints provided by Authing.
-// We are no longer constructing them from an ISSUER variable to avoid any path duplication errors.
-const tokenUrl = 'https://icwh5jsh38rx-demo.authing.cn/oidc/token';
-const userInfoUrl = 'https://icwh5jsh38rx-demo.authing.cn/oidc/me';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const code = searchParams.get('code');
   const state = searchParams.get('state');
   
-  if (!code) {
-    return NextResponse.json({ error: 'Authorization code is missing' }, { status: 400 });
+  const issuer = process.env.AUTHING_ISSUER;
+  if (!code || !issuer) {
+    return NextResponse.json({ error: 'Authorization code or issuer is missing' }, { status: 400 });
   }
 
   try {
+    // Exchange authorization code for tokens
+    const tokenUrl = new URL(issuer + '/oidc/token');
     const tokenResponse = await fetch(tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -38,6 +34,8 @@ export async function GET(req: NextRequest) {
       throw new Error(tokens.error_description || 'Failed to fetch tokens');
     }
 
+    // Fetch user info with the access token
+    const userInfoUrl = new URL(issuer + '/oidc/me');
     const userInfoResponse = await fetch(userInfoUrl, {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
