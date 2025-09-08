@@ -227,7 +227,7 @@ export default function SiteContentPage() {
 
             toast({
                 title: '保存成功！',
-                description: '网站内容已更新。页面即将刷新...',
+                description: '网站内容已更新。',
             });
             
             router.refresh();
@@ -505,5 +505,3 @@ export default function SiteContentPage() {
         </div>
     );
 }
-
-    

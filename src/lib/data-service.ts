@@ -44,9 +44,7 @@ export async function getSiteContent(): Promise<SiteContent> {
 
 export async function saveSiteContent(content: SiteContent): Promise<void> {
     await writeData('siteContent.json', content);
-    revalidatePath('/home', 'layout');
-    revalidatePath('/commission', 'layout');
-    revalidatePath('/adoption', 'layout');
+    revalidatePath('/', 'layout');
 }
 
 
@@ -545,7 +543,7 @@ export async function getWorkById(id: string): Promise<Work | null> {
 }
 
 export async function saveWork(workData: Omit<Work, 'id'>, id?: string): Promise<string> {
-    const allWorks = await getWorks();
+    const allWorks = await readData<Work[]>('works.json');
     if (id) {
         const index = allWorks.findIndex(w => w.id === id);
         if (index > -1) {
@@ -584,6 +582,7 @@ export async function saveBadge(badgeData: Omit<Badge, 'id' | 'createdAt'>): Pro
     };
     allBadges.push(newBadge);
     await writeData('badges.json', allBadges);
+    revalidatePath('/admin/badges', 'page');
     return newBadge;
 }
 
@@ -603,6 +602,7 @@ export async function deleteBadge(id: string): Promise<void> {
         writeData('badgeQRCodes.json', remainingQRCodes),
         writeData('userBadges.json', remainingUserBadges)
     ]);
+    revalidatePath('/admin/badges', 'page');
 }
 
 
@@ -706,6 +706,8 @@ export async function confirmAndGrantBadge(qrId: string, userId: string): Promis
         writeData('userBadges.json', allUserBadges),
         writeData('badgeQRCodes.json', allQRCodes)
     ]);
+    
+    revalidatePath('/my-badges', 'page');
 
     return { success: true, message: '徽章领取成功。' };
 }
@@ -768,6 +770,7 @@ export async function grantBadgeConditionally(
     await writeData('userBadges.json', allUserBadges);
     const allBadges = await getBadges();
     const resultBadge = allBadges.find(b => b.id === resultBadgeId);
+    revalidatePath('/admin/users', 'page');
     return {
       success: true,
       message: `操作完成！已成功为 ${grantedCount} 位满足条件的用户发放了徽章“${resultBadge?.name || resultBadgeId}”。`
@@ -856,12 +859,12 @@ export async function getAggregatedUserById(userId: string): Promise<AggregatedU
 }
 
 
-export async function grantBadgeToUser(userId: string, badgeId: string): Promise<UserBadge> {
+export async function grantBadgeToUser(userId: string, badgeId: string): Promise<{success: boolean; message: string}> {
     const allUserBadges = await readData<UserBadge[]>('userBadges.json');
 
     const alreadyHasBadge = allUserBadges.some(ub => ub.userId === userId && ub.badgeId === badgeId);
     if (alreadyHasBadge) {
-        throw new Error('用户已拥有此徽章。');
+        return { success: false, message: '用户已拥有此徽章。' };
     }
 
     const newUserBadge: UserBadge = {
@@ -876,12 +879,12 @@ export async function grantBadgeToUser(userId: string, badgeId: string): Promise
     revalidatePath(`/admin/users`);
     revalidatePath(`/admin/users/${userId}`);
 
-    return newUserBadge;
+    return { success: true, message: '徽章发放成功。' };
 }
 
 export async function grantBadgeToUsers(userIds: string[], badgeId: string): Promise<{ success: boolean; message: string }> {
     if (!userIds || userIds.length === 0 || !badgeId) {
-        throw new Error("必须提供用户和徽章。");
+        return { success: false, message: "必须提供用户和徽章。" };
     }
 
     const allUserBadges = await readData<UserBadge[]>('userBadges.json');
@@ -889,7 +892,7 @@ export async function grantBadgeToUsers(userIds: string[], badgeId: string): Pro
 
     const badgeToGrant = badges.find(b => b.id === badgeId);
     if (!badgeToGrant) {
-        throw new Error(`未找到ID为 ${badgeId} 的徽章。`);
+        return { success: false, message: `未找到ID为 ${badgeId} 的徽章。` };
     }
 
     const existingUserBadges = new Set(allUserBadges.map(ub => `${ub.userId}-${ub.badgeId}`));
