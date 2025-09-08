@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -70,8 +69,6 @@ export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeries
                             style={{objectFit: 'cover'}}
                             className="transition-transform duration-500 group-hover:scale-105"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent transition-colors duration-300">
-                        </div>
                     </Link>
                 </motion.div>
             ))}
