@@ -17,9 +17,7 @@ export function GET(req: NextRequest) {
     }
 
     if (action === 'login') {
-        // Use the exact endpoint provided by Authing, ignoring the issuer for path construction.
-        const authEndpoint = "https://icwh5jsh38rx-demo.authing.cn/oidc/auth";
-        const loginUrl = new URL(authEndpoint);
+        const loginUrl = new URL(`${issuer}/auth`);
         
         const clientId = process.env.AUTHING_APP_ID;
         const redirectUri = process.env.AUTHING_REDIRECT_URI;

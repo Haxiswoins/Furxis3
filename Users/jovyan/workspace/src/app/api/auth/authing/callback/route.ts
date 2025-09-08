@@ -15,9 +15,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Use the exact endpoint provided by Authing, ignoring the issuer for path construction.
-    const tokenEndpoint = "https://icwh5jsh38rx-demo.authing.cn/oidc/token";
-    const tokenUrl = new URL(tokenEndpoint);
+    const tokenUrl = new URL(`${issuer}/token`);
     const tokenResponse = await fetch(tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -35,9 +33,7 @@ export async function GET(req: NextRequest) {
       throw new Error(tokens.error_description || 'Failed to fetch tokens');
     }
 
-    // Use the exact endpoint provided by Authing.
-    const userInfoEndpoint = "https://icwh5jsh38rx-demo.authing.cn/oidc/me";
-    const userInfoUrl = new URL(userInfoEndpoint);
+    const userInfoUrl = new URL(`${issuer}/me`);
     const userInfoResponse = await fetch(userInfoUrl, {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
