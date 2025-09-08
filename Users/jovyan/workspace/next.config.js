@@ -33,6 +33,8 @@ const nextConfig = {
     AUTHING_ISSUER: process.env.AUTHING_ISSUER || '',
     AUTHING_SECRET: process.env.AUTHING_SECRET || '',
     AUTHING_REDIRECT_URI: process.env.AUTHING_REDIRECT_URI || '',
+    // Image Hosting Token
+    NEXT_PUBLIC_IMAGE_HOSTING_TOKEN: process.env.NEXT_PUBLIC_IMAGE_HOSTING_TOKEN || '',
   },
   experimental: {
     serverActions: {
