@@ -17,7 +17,8 @@ export function GET(req: NextRequest) {
     }
 
     if (action === 'login') {
-        const loginUrl = new URL(`${issuer}/auth`);
+        // Corrected to use the standard OAuth2.0 authorization endpoint
+        const loginUrl = new URL(`${issuer}/oauth/auth`);
         
         const clientId = process.env.AUTHING_APP_ID;
         const redirectUri = process.env.AUTHING_REDIRECT_URI;
