@@ -17,7 +17,7 @@ export function GET(req: NextRequest) {
     }
 
     if (action === 'login') {
-        const loginUrl = new URL(`${issuer}/oidc/auth`);
+        const loginUrl = new URL(`${issuer}/auth`);
         
         const clientId = process.env.AUTHING_APP_ID;
         const redirectUri = process.env.AUTHING_REDIRECT_URI;
@@ -40,14 +40,9 @@ export function GET(req: NextRequest) {
         return NextResponse.redirect(loginUrl);
     }
     
-    if (action === 'logout') {
-        // This part is handled by /api/auth/logout now.
-        // Kept for potential future use if OIDC-based logout is needed.
-        return NextResponse.redirect(new URL('/', req.url));
-    }
-
-    // Default handler for any other action
-    return NextResponse.json({ error: "Not Found" }, { status: 404 });
+    // The logout logic is now handled exclusively by /api/auth/logout.
+    // Any other action passed to this dynamic route is considered a bad request.
+    return NextResponse.json({ error: "Invalid action" }, { status: 400 });
 }
 
 
