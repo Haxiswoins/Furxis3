@@ -1,5 +1,9 @@
 
 import { NextRequest, NextResponse } from "next/server";
+import { getIronSession } from 'iron-session';
+import { cookies } from 'next/headers';
+import type { SessionData } from '@/lib/session';
+
 
 export function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
@@ -13,10 +17,9 @@ export function GET(req: NextRequest) {
     }
 
     if (action === 'login') {
-        // Correctly construct the URL based on the provided issuer.
-        // Issuer already contains the base path (e.g., https://.../oidc)
-        // We just need to append the specific endpoint.
-        const loginUrl = new URL(`${issuer}/auth`);
+        // Use the exact endpoint provided by Authing, ignoring the issuer for path construction.
+        const authEndpoint = "https://icwh5jsh38rx-demo.authing.cn/oidc/auth";
+        const loginUrl = new URL(authEndpoint);
         
         const clientId = process.env.AUTHING_APP_ID;
         const redirectUri = process.env.AUTHING_REDIRECT_URI;

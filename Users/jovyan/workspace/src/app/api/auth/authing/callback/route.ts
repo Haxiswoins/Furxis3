@@ -15,8 +15,9 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Exchange authorization code for tokens using the OIDC token endpoint
-    const tokenUrl = new URL(`${issuer}/token`);
+    // Use the exact endpoint provided by Authing, ignoring the issuer for path construction.
+    const tokenEndpoint = "https://icwh5jsh38rx-demo.authing.cn/oidc/token";
+    const tokenUrl = new URL(tokenEndpoint);
     const tokenResponse = await fetch(tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -34,8 +35,9 @@ export async function GET(req: NextRequest) {
       throw new Error(tokens.error_description || 'Failed to fetch tokens');
     }
 
-    // Fetch user info with the access token using the OIDC userinfo endpoint
-    const userInfoUrl = new URL(`${issuer}/me`);
+    // Use the exact endpoint provided by Authing.
+    const userInfoEndpoint = "https://icwh5jsh38rx-demo.authing.cn/oidc/me";
+    const userInfoUrl = new URL(userInfoEndpoint);
     const userInfoResponse = await fetch(userInfoUrl, {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
