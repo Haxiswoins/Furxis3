@@ -1,7 +1,6 @@
 
 import { getCharacterSeries } from '@/lib/data-service';
 import { AdoptionSeriesClientPage } from './client-page';
-import type { CharacterSeries } from '@/types';
 
 // This is now a Server Component for better performance.
 // The page will be statically generated at build time.
@@ -14,3 +13,4 @@ export default async function AdoptionSeriesPage() {
     </div>
   );
 }
+

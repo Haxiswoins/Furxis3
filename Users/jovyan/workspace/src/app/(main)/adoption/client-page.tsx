@@ -4,9 +4,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import type { CharacterSeries, SiteContent } from '@/types';
-import { cn } from '@/lib/utils';
-import { ArrowRight } from 'lucide-react';
+import type { CharacterSeries } from '@/types';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -32,10 +30,9 @@ const itemVariants = {
 
 type AdoptionSeriesClientPageProps = {
   seriesData: CharacterSeries[];
-  content: SiteContent | null;
 }
 
-export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeriesClientPageProps) {
+export function AdoptionSeriesClientPage({ seriesData }: AdoptionSeriesClientPageProps) {
 
   return (
     <motion.div
@@ -46,7 +43,7 @@ export function AdoptionSeriesClientPage({ seriesData, content }: AdoptionSeries
       <div className="text-center mb-12">
         <h1 className="text-3xl md:text-4xl font-headline">设定领养</h1>
         <p className="mt-2 text-base md:text-lg text-muted-foreground">
-        {content?.adoptionPageDescription || '给这些预先设计的角色一个家。'}
+          给这些预先设计的角色一个家。
         </p>
       </div>
 
