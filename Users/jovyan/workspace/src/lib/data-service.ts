@@ -44,11 +44,9 @@ export async function getSiteContent(): Promise<SiteContent> {
 
 export async function saveSiteContent(content: SiteContent): Promise<void> {
     await writeData('siteContent.json', content);
-    // Revalidate all key pages that use site content
-    revalidatePath('/home');
-    revalidatePath('/commission');
-    revalidatePath('/adoption');
-    revalidatePath('/', 'layout');
+    revalidatePath('/home', 'layout');
+    revalidatePath('/commission', 'layout');
+    revalidatePath('/adoption', 'layout');
 }
 
 
@@ -858,12 +856,12 @@ export async function getAggregatedUserById(userId: string): Promise<AggregatedU
 }
 
 
-export async function grantBadgeToUser(userId: string, badgeId: string): Promise<UserBadge> {
+export async function grantBadgeToUser(userId: string, badgeId: string): Promise<{success: boolean; message: string}> {
     const allUserBadges = await readData<UserBadge[]>('userBadges.json');
 
     const alreadyHasBadge = allUserBadges.some(ub => ub.userId === userId && ub.badgeId === badgeId);
     if (alreadyHasBadge) {
-        throw new Error('用户已拥有此徽章。');
+        return { success: false, message: '用户已拥有此徽章。' };
     }
 
     const newUserBadge: UserBadge = {
@@ -878,12 +876,12 @@ export async function grantBadgeToUser(userId: string, badgeId: string): Promise
     revalidatePath(`/admin/users`);
     revalidatePath(`/admin/users/${userId}`);
 
-    return newUserBadge;
+    return { success: true, message: '徽章发放成功。' };
 }
 
 export async function grantBadgeToUsers(userIds: string[], badgeId: string): Promise<{ success: boolean; message: string }> {
     if (!userIds || userIds.length === 0 || !badgeId) {
-        throw new Error("必须提供用户和徽章。");
+        return { success: false, message: "必须提供用户和徽章。" };
     }
 
     const allUserBadges = await readData<UserBadge[]>('userBadges.json');
@@ -891,7 +889,7 @@ export async function grantBadgeToUsers(userIds: string[], badgeId: string): Pro
 
     const badgeToGrant = badges.find(b => b.id === badgeId);
     if (!badgeToGrant) {
-        throw new Error(`未找到ID为 ${badgeId} 的徽章。`);
+        return { success: false, message: `未找到ID为 ${badgeId} 的徽章。` };
     }
 
     const existingUserBadges = new Set(allUserBadges.map(ub => `${ub.userId}-${ub.badgeId}`));
@@ -918,3 +916,5 @@ export async function grantBadgeToUsers(userIds: string[], badgeId: string): Pro
         return { success: true, message: '所有选中的用户都已经拥有该徽章，未执行任何操作。' };
     }
 }
+
+    
