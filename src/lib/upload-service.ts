@@ -12,43 +12,32 @@ export async function uploadImage(file: File, path: string): Promise<string> {
     // The 'path' argument is kept for potential future use but is not sent to the image host.
 
     try {
+        // The API endpoint for the image hosting service.
         const uploadUrl = 'https://cdn.markjoker.top/api/v1/upload';
-        
-        // Prepare headers
-        const headers = new Headers();
-        headers.append('Accept', 'application/json');
-
-        // Retrieve the token from an environment variable.
-        // This NEXT_PUBLIC_ variable will be exposed to the client-side.
-        const apiToken = process.env.NEXT_PUBLIC_IMAGE_HOSTING_TOKEN;
-
-        // Only add the Authorization header if the token is available.
-        if (apiToken) {
-            headers.append('Authorization', `Bearer ${apiToken}`);
-        } else {
-            console.warn('IMAGE_HOSTING_TOKEN is not set. Uploading as a guest.');
-        }
 
         const response = await fetch(uploadUrl, {
             method: 'POST',
-            headers: headers,
             body: formData,
+            // Note: Do not manually set the 'Content-Type' header when using FormData.
+            // The browser will automatically set it to 'multipart/form-data' with the correct boundary.
         });
 
         const result = await response.json();
 
         if (!response.ok || !result.status) {
+            // Use the error message from the backend if available
             throw new Error(result.message || "File upload failed due to a server error.");
         }
         
-        // Corrected according to the provided API documentation.
-        if (result.data && result.data.links && result.data.links.url) {
-            return result.data.links.url;
+        // Assuming the API returns a JSON object with a structure like { status: true, data: { url: '...' } }
+        if (result.data && result.data.url) {
+            return result.data.url;
         } else {
             throw new Error("Image URL not found in the API response.");
         }
 
     } catch (error) {
+        // Log the actual error for debugging and re-throw a user-friendly message
         console.error("Upload service error:", error);
         if (error instanceof Error) {
             throw new Error(`Upload failed: ${error.message}`);

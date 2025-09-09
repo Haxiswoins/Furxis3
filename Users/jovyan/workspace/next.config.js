@@ -33,21 +33,13 @@ const nextConfig = {
     AUTHING_ISSUER: process.env.AUTHING_ISSUER || '',
     AUTHING_SECRET: process.env.AUTHING_SECRET || '',
     AUTHING_REDIRECT_URI: process.env.AUTHING_REDIRECT_URI || '',
-    // Image Hosting Token
-    NEXT_PUBLIC_IMAGE_HOSTING_TOKEN: process.env.NEXT_PUBLIC_IMAGE_HOSTING_TOKEN || '',
+    // Image Hosting Token - Kept on the server-side
+    IMAGE_HOSTING_TOKEN: process.env.IMAGE_HOSTING_TOKEN || '',
   },
   experimental: {
     serverActions: {
       bodySizeLimit: '4mb',
     },
-  },
-  // To allow deleting the /api/upload folder, we must remove the route handler.
-  // We can do this by adding a no-op rewrites configuration.
-  async rewrites() {
-    return [
-      // This is a no-op rewrite but it allows us to control the routes.
-      // By not having a rewrite for /api/upload, we effectively disable it.
-    ];
   },
 };
 

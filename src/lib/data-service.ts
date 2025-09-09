@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import fs from 'fs/promises';
@@ -43,9 +44,7 @@ export async function getSiteContent(): Promise<SiteContent> {
 
 export async function saveSiteContent(content: SiteContent): Promise<void> {
     await writeData('siteContent.json', content);
-    revalidatePath('/home', 'layout');
-    revalidatePath('/commission', 'layout');
-    revalidatePath('/adoption', 'layout');
+    revalidatePath('/', 'layout');
 }
 
 
@@ -287,7 +286,6 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
 
     await writeData('orders.json', allOrders);
     revalidatePath('/orders', 'layout');
-    revalidatePath('/admin/users', 'layout');
     
     // --- Side Effects: Send Emails ---
     const siteContent = await getSiteContent();
@@ -341,7 +339,6 @@ export async function deleteOrder(id: string): Promise<void> {
     allOrders = allOrders.filter(o => o.id !== id);
     await writeData('orders.json', allOrders);
     revalidatePath('/orders', 'layout');
-    revalidatePath('/admin/users', 'layout');
 }
 
 
@@ -397,7 +394,6 @@ export async function createAdoptionApplication(character: Character, userId: st
     await writeData('characters.json', allCharacters);
     revalidatePath('/orders', 'layout');
     revalidatePath('/adoption', 'layout');
-    revalidatePath('/admin/users', 'layout');
 
     // Admin Email Notification
     const siteContent = await getSiteContent();
@@ -444,14 +440,9 @@ export async function createCommissionApplication(userId: string, commissionInfo
     const orderNumber = `C${new Date().toISOString().slice(0,10).replace(/-/g, '')}${Math.floor(100 + Math.random() * 900)}`;
     const newId = `order_${Date.now()}`;
 
-    let finalPriceDesc = `${commissionInfo.price}`;
+    let finalPriceDesc = `${commissionInfo.price} (估价)`;
     if (applicationData.hasFan) {
-        const currentPrice = parseFloat(commissionInfo.price.replace(/[^0-9.]/g, ''));
-        if (!isNaN(currentPrice)) {
-            finalPriceDesc = `￥${currentPrice + fanPrice}`;
-        } else {
-            finalPriceDesc += ` + ￥${fanPrice} 风扇`;
-        }
+        finalPriceDesc += ` + ￥${fanPrice} 风扇`;
     }
 
     const newOrderData: Order = {
@@ -474,7 +465,6 @@ export async function createCommissionApplication(userId: string, commissionInfo
     allOrders.push(newOrderData);
     await writeData('orders.json', allOrders);
     revalidatePath('/orders', 'layout');
-    revalidatePath('/admin/users', 'layout');
 
     // Admin Email Notification
     const siteContent = await getSiteContent();
@@ -553,7 +543,7 @@ export async function getWorkById(id: string): Promise<Work | null> {
 }
 
 export async function saveWork(workData: Omit<Work, 'id'>, id?: string): Promise<string> {
-    const allWorks = await getWorks();
+    const allWorks = await readData<Work[]>('works.json');
     if (id) {
         const index = allWorks.findIndex(w => w.id === id);
         if (index > -1) {
@@ -718,7 +708,6 @@ export async function confirmAndGrantBadge(qrId: string, userId: string): Promis
     ]);
     
     revalidatePath('/my-badges', 'page');
-    revalidatePath('/admin/users', 'layout');
 
     return { success: true, message: '徽章领取成功。' };
 }
@@ -781,7 +770,7 @@ export async function grantBadgeConditionally(
     await writeData('userBadges.json', allUserBadges);
     const allBadges = await getBadges();
     const resultBadge = allBadges.find(b => b.id === resultBadgeId);
-    revalidatePath('/admin/users', 'layout');
+    revalidatePath('/admin/users', 'page');
     return {
       success: true,
       message: `操作完成！已成功为 ${grantedCount} 位满足条件的用户发放了徽章“${resultBadge?.name || resultBadgeId}”。`

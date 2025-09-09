@@ -3,7 +3,7 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, Work, CharacterSeries, Badge, BadgeQRCode, UserBadge, AggregatedUser, User } from '@/types';
+import type { Character, CommissionOption, Order, ApplicationData, SiteContent, CommissionStyle, Work, CharacterSeries, Badge, BadgeQRCode, UserBadge, AggregatedUser } from '@/types';
 import { sendEmail } from '@/ai/flows/send-email-flow';
 import { randomUUID } from 'crypto';
 import { revalidatePath } from 'next/cache';
@@ -21,16 +21,6 @@ async function readData<T>(fileName: string): Promise<T> {
     // If the file doesn't exist, return an empty array or a default object
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
       console.warn(`Data file ${fileName} not found, returning empty array/object.`);
-      // For arrays return [], for objects return {}
-      try {
-        // Attempt to parse an empty string to determine if it's an array or object context
-        JSON.parse('');
-      } catch (e) {
-        if (e instanceof SyntaxError) {
-          // It's likely expecting an object if it's not a valid JSON array start.
-          if(fileName === 'siteContent.json') return {} as T;
-        }
-      }
       return [] as T;
     }
     console.error(`Error reading data from ${fileName}:`, error);
@@ -53,9 +43,7 @@ export async function getSiteContent(): Promise<SiteContent> {
 
 export async function saveSiteContent(content: SiteContent): Promise<void> {
     await writeData('siteContent.json', content);
-    revalidatePath('/home', 'layout');
-    revalidatePath('/commission', 'layout');
-    revalidatePath('/adoption', 'layout');
+    revalidatePath('/', 'layout');
 }
 
 
@@ -83,14 +71,16 @@ export async function saveCharacterSeries(seriesData: Omit<CharacterSeries, 'id'
             allSeries[index] = { ...allSeries[index], ...seriesData };
         }
         await writeData('characterSeries.json', allSeries);
-        revalidatePath('/adoption', 'layout');
+        revalidatePath('/admin/character-series', 'page');
+        revalidatePath('/adoption', 'page');
         return id;
     } else {
         const newId = `series_${Date.now()}`;
         const newSeries = { id: newId, ...seriesData };
         allSeries.push(newSeries);
         await writeData('characterSeries.json', allSeries);
-        revalidatePath('/adoption', 'layout');
+        revalidatePath('/admin/character-series', 'page');
+        revalidatePath('/adoption', 'page');
         return newId;
     }
 }
@@ -108,7 +98,8 @@ export async function deleteCharacterSeries(id: string): Promise<void> {
     // Write both updated lists back to their files
     await writeData('characterSeries.json', allSeries);
     await writeData('characters.json', allCharacters);
-    revalidatePath('/adoption', 'layout');
+    revalidatePath('/admin/character-series', 'page');
+    revalidatePath('/adoption', 'page');
 }
 
 // Characters (Adoption)
@@ -144,7 +135,8 @@ export async function saveCharacter(character: Omit<Character, 'id'>, id?: strin
     id = newId;
   }
   await writeData('characters.json', allCharacters);
-  revalidatePath('/adoption', 'layout');
+  revalidatePath('/admin/characters', 'page');
+  revalidatePath('/adoption', 'page');
   return id;
 }
 
@@ -152,7 +144,8 @@ export async function deleteCharacter(id: string): Promise<void> {
     let allCharacters = await getCharacters();
     allCharacters = allCharacters.filter(c => c.id !== id);
     await writeData('characters.json', allCharacters);
-    revalidatePath('/adoption', 'layout');
+    revalidatePath('/admin/characters', 'page');
+    revalidatePath('/adoption', 'page');
 }
 
 
@@ -206,7 +199,8 @@ export async function saveCommissionOption(optionData: Omit<CommissionOption, 'i
         id = newId;
     }
     await writeData('commissionOptions.json', allOptions);
-    revalidatePath('/commission', 'layout');
+    revalidatePath('/admin/commissions', 'page');
+    revalidatePath('/commission', 'page');
     return id;
 }
 
@@ -214,7 +208,8 @@ export async function deleteCommissionOption(id: string): Promise<void> {
     let allOptions = await getCommissionOptions();
     allOptions = allOptions.filter(o => o.id !== id);
     await writeData('commissionOptions.json', allOptions);
-    revalidatePath('/commission', 'layout');
+    revalidatePath('/admin/commissions', 'page');
+    revalidatePath('/commission', 'page');
 }
 
 
@@ -246,7 +241,8 @@ export async function saveCommissionStyle(style: Omit<CommissionStyle, 'id'>, id
         id = newId;
     }
     await writeData('commissionStyles.json', allStyles);
-    revalidatePath('/commission', 'layout');
+    revalidatePath('/admin/commission-styles', 'page');
+    revalidatePath('/commission', 'page');
     return id;
 }
 
@@ -254,7 +250,8 @@ export async function deleteCommissionStyle(id: string): Promise<void> {
     let allStyles = await getAllCommissionStyles();
     allStyles = allStyles.filter(s => s.id !== id);
     await writeData('commissionStyles.json', allStyles);
-    revalidatePath('/commission', 'layout');
+    revalidatePath('/admin/commission-styles', 'page');
+    revalidatePath('/commission', 'page');
 }
 
 
@@ -350,8 +347,9 @@ export async function deleteOrder(id: string): Promise<void> {
     let allOrders = await getAllOrders();
     allOrders = allOrders.filter(o => o.id !== id);
     await writeData('orders.json', allOrders);
-    revalidatePath('/orders', 'layout');
-    revalidatePath('/admin/users', 'layout');
+    revalidatePath('/admin/orders', 'page');
+    revalidatePath('/orders', 'page');
+    revalidatePath('/admin/users', 'page');
 }
 
 
@@ -575,7 +573,8 @@ export async function saveWork(workData: Omit<Work, 'id'>, id?: string): Promise
         id = newId;
     }
     await writeData('works.json', allWorks);
-    revalidatePath('/works', 'layout');
+    revalidatePath('/admin/works', 'page');
+    revalidatePath('/works', 'page');
     return id;
 }
 
@@ -583,7 +582,8 @@ export async function deleteWork(id: string): Promise<void> {
     let allWorks = await getWorks();
     allWorks = allWorks.filter(w => w.id !== id);
     await writeData('works.json', allWorks);
-    revalidatePath('/works', 'layout');
+    revalidatePath('/admin/works', 'page');
+    revalidatePath('/works', 'page');
 }
 
 
@@ -623,6 +623,7 @@ export async function deleteBadge(id: string): Promise<void> {
         writeData('userBadges.json', remainingUserBadges)
     ]);
     revalidatePath('/admin/badges', 'page');
+    revalidatePath('/admin/users', 'page');
 }
 
 
@@ -728,7 +729,7 @@ export async function confirmAndGrantBadge(qrId: string, userId: string): Promis
     ]);
     
     revalidatePath('/my-badges', 'page');
-    revalidatePath('/admin/users', 'layout');
+    revalidatePath('/admin/users', 'page');
 
     return { success: true, message: '徽章领取成功。' };
 }
@@ -791,7 +792,7 @@ export async function grantBadgeConditionally(
     await writeData('userBadges.json', allUserBadges);
     const allBadges = await getBadges();
     const resultBadge = allBadges.find(b => b.id === resultBadgeId);
-    revalidatePath('/admin/users', 'layout');
+    revalidatePath('/admin/users', 'page');
     return {
       success: true,
       message: `操作完成！已成功为 ${grantedCount} 位满足条件的用户发放了徽章“${resultBadge?.name || resultBadgeId}”。`
@@ -805,77 +806,46 @@ export async function grantBadgeConditionally(
 }
 
 // User Management
-export async function getUsers(): Promise<User[]> {
-    return await readData<User[]>('users.json');
-}
-
-export async function saveUser(userData: User): Promise<void> {
-    const allUsers = await getUsers();
-    const userIndex = allUsers.findIndex(u => u.id === userData.id);
-    if (userIndex > -1) {
-        // Update existing user, but keep original registration date
-        allUsers[userIndex] = { 
-            ...allUsers[userIndex],
-            name: userData.name,
-            email: userData.email,
-            picture: userData.picture
-        };
-    } else {
-        // Add new user
-        allUsers.push(userData);
-    }
-    await writeData('users.json', allUsers);
-    revalidatePath('/admin/users', 'layout');
-}
-
-
 export async function getAggregatedUsers(): Promise<AggregatedUser[]> {
-    const [allUsers, allOrders, allUserBadges] = await Promise.all([
-      getUsers(),
+    const [allOrders, allUserBadges] = await Promise.all([
       getAllOrders(),
       readData<UserBadge[]>('userBadges.json')
     ]);
     
-    // Initialize map with all registered users
-    const usersMap: Map<string, AggregatedUser> = new Map(
-      allUsers.map(user => [
-        user.id,
-        {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          registrationDate: user.registrationDate,
-          completedOrders: 0,
-          notSelectedOrders: 0,
-          cancelledOrders: 0,
-          inProgressOrders: 0,
-          badgeCount: 0,
-        }
-      ])
-    );
+    const usersMap: Map<string, AggregatedUser> = new Map();
 
-    // Aggregate badge counts
-    allUserBadges.forEach(ub => {
-        const user = usersMap.get(ub.userId);
-        if (user) {
-            user.badgeCount = (user.badgeCount || 0) + 1;
-        }
-    });
+    const badgesByUser = allUserBadges.reduce<Record<string, number>>((acc, ub) => {
+        acc[ub.userId] = (acc[ub.userId] || 0) + 1;
+        return acc;
+    }, {});
 
-    // Aggregate order stats
-    allOrders.forEach(order => {
-        const user = usersMap.get(order.userId);
-        if (user) {
+    const ordersByUser = allOrders.reduce<Record<string, Order[]>>((acc, order) => {
+        if (!acc[order.userId]) {
+            acc[order.userId] = [];
+        }
+        acc[order.userId].push(order);
+        return acc;
+    }, {});
+
+
+    for (const userId in ordersByUser) {
+        const userOrders = ordersByUser[userId].sort((a,b) => new Date(a.orderDate).getTime() - new Date(b.orderDate).getTime());
+        if(userOrders.length === 0) continue;
+        
+        const firstOrder = userOrders[0];
+        const latestOrder = userOrders[userOrders.length - 1];
+
+        const stats = userOrders.reduce((acc, order) => {
              switch (order.status) {
                 case '已完成':
-                    user.completedOrders++;
+                    acc.completed++;
                     break;
                 case '未中标':
-                    user.notSelectedOrders++;
+                    acc.notSelected++;
                     break;
                 case '已取消':
                 case '退养中':
-                    user.cancelledOrders++;
+                    acc.cancelled++;
                     break;
                 case '处理中':
                 case '待确认':
@@ -883,15 +853,24 @@ export async function getAggregatedUsers(): Promise<AggregatedUser[]> {
                 case '排队中':
                 case '制作中':
                 case '已发货':
-                    user.inProgressOrders++;
+                    acc.inProgress++;
                     break;
             }
-            // Update user's name from latest order if it's different
-            if(order.applicationData.userName && user.name !== order.applicationData.userName){
-                user.name = order.applicationData.userName;
-            }
-        }
-    });
+            return acc;
+        }, { completed: 0, notSelected: 0, cancelled: 0, inProgress: 0 });
+
+        usersMap.set(userId, {
+            id: userId,
+            name: latestOrder.applicationData?.userName,
+            email: latestOrder.applicationData?.email,
+            registrationDate: firstOrder.orderDate,
+            completedOrders: stats.completed,
+            notSelectedOrders: stats.notSelected,
+            cancelledOrders: stats.cancelled,
+            inProgressOrders: stats.inProgress,
+            badgeCount: badgesByUser[userId] || 0,
+        });
+    }
 
     return Array.from(usersMap.values()).sort((a,b) => new Date(b.registrationDate).getTime() - new Date(a.registrationDate).getTime());
 }

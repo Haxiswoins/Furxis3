@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -187,7 +188,7 @@ export default function BadgesPage() {
                         <DialogTrigger asChild>
                             <div className="cursor-pointer text-center">
                                 <Image src={badge.imageUrl} alt={badge.name} width={96} height={96} className="h-24 w-24 object-contain" />
-                                <p className="text-xs font-body mt-2">{badge.name}</p>
+                                <p className="text-sm font-headline mt-2">{badge.name}</p>
                             </div>
                         </DialogTrigger>
                         <DialogContent>
