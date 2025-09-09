@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -148,11 +149,11 @@ export function HomeClient({ content }: HomeClientProps) {
       </div>
       {/* Transition Mask */}
       <motion.div 
-      className="fixed inset-0 z-[100] bg-background"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: isWarping ? 1 : 0 }}
-      transition={{ duration: 0.6, ease: 'easeInOut'}}
-      style={{ pointerEvents: 'none' }}
+        className="fixed inset-0 z-[100] bg-background"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isWarping ? 1 : 0 }}
+        transition={{ duration: 0.6, ease: 'easeInOut'}}
+        style={{ pointerEvents: 'none' }}
       >
       </motion.div>
     </>
