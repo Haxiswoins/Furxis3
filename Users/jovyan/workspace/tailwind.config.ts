@@ -113,7 +113,6 @@ const config: Config = {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-cover-bottom': 'linear-gradient(to top, hsla(var(--card)) 8%, hsla(var(--card), 0.7) 30%, transparent 40%)',
       },
       textShadow: {
         sm: '0 1px 2px var(--tw-shadow-color)',
