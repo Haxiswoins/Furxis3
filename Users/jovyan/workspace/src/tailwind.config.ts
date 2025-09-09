@@ -112,7 +112,7 @@ const config: Config = {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-cover-bottom': 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 30%, transparent 40%)',
+        'gradient-cover-bottom': 'linear-gradient(to top, hsla(var(--card-foreground) / 0.7) 8%, hsla(var(--card-foreground) / 0.1) 30%, transparent 40%)',
       }
     },
   },
