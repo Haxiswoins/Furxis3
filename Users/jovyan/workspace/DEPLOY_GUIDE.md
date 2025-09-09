@@ -23,7 +23,7 @@
 | :--- | :--- | :--- | :--- |
 | **Authing** | 用户认证 (登录/注册) | `AUTHING_APP_ID`<br>`AUTHING_APP_SECRET`<br>`AUTHING_ISSUER`<br>`AUTHING_REDIRECT_URI`<br>`AUTHING_SECRET`<br>`ADMIN_EMAIL` | 请参照 `Authing` 控制台的应用配置。 |
 | **Resend** | 邮件服务 (各类通知) | `RESEND_API_KEY` | 详细设置请务必参考项目中的 **`RESEND_GUIDE.md`** 文件。 |
-| **图片托管服务** | 图片上传 | `IMAGE_UPLOAD_TOKEN` | 请从您的图床服务商 (如 lsky-pro) 的后台获取API授权Token。 |
+| **图片托管服务 (图床)** | 图片上传 | `IMAGE_UPLOAD_TOKEN` | 请从您的图床服务商 (如 lsky-pro) 的后台获取API授权Token。 |
 | **Google AI** | (未来功能) AI相关 | `GOOGLE_API_KEY` 或 `GEMINI_API_KEY` | 当前未激活。如需使用，请前往 Google AI Studio 获取。 |
 
 您需要在服务器上创建一个 `.env.local` 文件，并将从上述服务获取到的所有密钥填入其中。详细步骤见下文。
