@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -48,9 +49,9 @@ export function HomeClient({ content }: HomeClientProps) {
   };
   
   const gradientStyle: React.CSSProperties = {
-    background: 'linear-gradient(to top, hsla(var(--card)) 8%, hsla(var(--card), 0.7) 30%, transparent 50%)'
+    background: 'linear-gradient(to top, hsla(var(--card-foreground), 0.7) 0%, hsla(var(--card-foreground), 0.1) 30%, transparent 40%)'
   };
-
+  
 
   return (
     <>
