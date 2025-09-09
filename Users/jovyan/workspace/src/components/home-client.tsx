@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -47,6 +46,11 @@ export function HomeClient({ content }: HomeClientProps) {
         router.push(path);
     }, 600);
   };
+  
+  const gradientStyle: React.CSSProperties = {
+    background: 'linear-gradient(to top, hsla(var(--card)) 8%, hsla(var(--card), 0.7) 30%, transparent 50%)'
+  };
+
 
   return (
     <>
@@ -93,9 +97,9 @@ export function HomeClient({ content }: HomeClientProps) {
                                 className="transition-transform duration-500 ease-in-out group-hover:scale-105"
                                 data-ai-hint="commission custom"
                             />
-                            <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-cover-bottom transition-all duration-500 ease-in-out">
-                                <h2 className="font-headline text-2xl md:text-3xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1 text-shadow-lg">{content?.commissionTitle || '委托申请'}</h2>
-                                <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base text-shadow-lg">{content?.commissionDescription || '为您量身定制。'}</p>
+                            <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white transition-all duration-500 ease-in-out" style={gradientStyle}>
+                                <h2 className="font-headline text-2xl md:text-3xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1">{content?.commissionTitle || '委托申请'}</h2>
+                                <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base">{content?.commissionDescription || '为您量身定制。'}</p>
                             </div>
                         </div>
                     </a>
@@ -113,9 +117,9 @@ export function HomeClient({ content }: HomeClientProps) {
                                 className="transition-transform duration-500 ease-in-out group-hover:scale-105"
                                 data-ai-hint="character design"
                             />
-                             <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-cover-bottom transition-all duration-500 ease-in-out">
-                                <h2 className="font-headline text-2xl md:text-3xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1 text-shadow-lg">{content?.adoptionTitle || '设定领养'}</h2>
-                                <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base text-shadow-lg">{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
+                             <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white transition-all duration-500 ease-in-out" style={gradientStyle}>
+                                <h2 className="font-headline text-2xl md:text-3xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1">{content?.adoptionTitle || '设定领养'}</h2>
+                                <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base">{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
                             </div>
                         </div>
                     </a>
@@ -133,9 +137,9 @@ export function HomeClient({ content }: HomeClientProps) {
                                 className="transition-transform duration-500 ease-in-out group-hover:scale-105"
                                 data-ai-hint="portfolio gallery"
                             />
-                             <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-cover-bottom transition-all duration-500 ease-in-out">
-                                <h2 className="font-headline text-2xl md:text-3xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1 text-shadow-lg">{content?.workTitle || '作品一览'}</h2>
-                                <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base text-shadow-lg">{content?.workDescription || '查看我们过往的精彩作品。'}</p>
+                             <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white transition-all duration-500 ease-in-out" style={gradientStyle}>
+                                <h2 className="font-headline text-2xl md:text-3xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1">{content?.workTitle || '作品一览'}</h2>
+                                <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base">{content?.workDescription || '查看我们过往的精彩作品。'}</p>
                             </div>
                         </div>
                     </a>
