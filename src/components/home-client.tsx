@@ -82,7 +82,7 @@ export function HomeClient({ content }: HomeClientProps) {
             >
                 <motion.div variants={itemVariants}>
                     <a onClick={() => handleNavigate('/commission')} className="group block cursor-pointer">
-                        <div className="relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]">
+                        <div className="relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/30 aspect-[4/5]">
                             <Image
                                 src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
                                 alt="委托申请"
@@ -103,7 +103,7 @@ export function HomeClient({ content }: HomeClientProps) {
 
                 <motion.div variants={itemVariants}>
                      <a onClick={() => handleNavigate('/adoption')} className="group block cursor-pointer">
-                        <div className="relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]">
+                        <div className="relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/30 aspect-[4/5]">
                             <Image
                                 src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
                                 alt="设定领养"
@@ -123,7 +123,7 @@ export function HomeClient({ content }: HomeClientProps) {
                 
                 <motion.div variants={itemVariants}>
                      <a onClick={() => handleNavigate('/works')} className="group block cursor-pointer">
-                        <div className="relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]">
+                        <div className="relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/30 aspect-[4/5]">
                             <Image
                                 src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
                                 alt="作品一览"
