@@ -1,4 +1,5 @@
 
+
 'use client';
 
 // This function talks to the external image hosting service to handle file uploads.
