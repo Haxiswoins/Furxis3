@@ -71,16 +71,16 @@ export async function saveCharacterSeries(seriesData: Omit<CharacterSeries, 'id'
             allSeries[index] = { ...allSeries[index], ...seriesData };
         }
         await writeData('characterSeries.json', allSeries);
-        revalidatePath('/admin/character-series', 'page');
-        revalidatePath('/adoption', 'page');
+        revalidatePath('/admin/character-series');
+        revalidatePath('/adoption');
         return id;
     } else {
         const newId = `series_${Date.now()}`;
         const newSeries = { id: newId, ...seriesData };
         allSeries.push(newSeries);
         await writeData('characterSeries.json', allSeries);
-        revalidatePath('/admin/character-series', 'page');
-        revalidatePath('/adoption', 'page');
+        revalidatePath('/admin/character-series');
+        revalidatePath('/adoption');
         return newId;
     }
 }
@@ -98,8 +98,8 @@ export async function deleteCharacterSeries(id: string): Promise<void> {
     // Write both updated lists back to their files
     await writeData('characterSeries.json', allSeries);
     await writeData('characters.json', allCharacters);
-    revalidatePath('/admin/character-series', 'page');
-    revalidatePath('/adoption', 'page');
+    revalidatePath('/admin/character-series');
+    revalidatePath('/adoption');
 }
 
 // Characters (Adoption)
@@ -135,8 +135,8 @@ export async function saveCharacter(character: Omit<Character, 'id'>, id?: strin
     id = newId;
   }
   await writeData('characters.json', allCharacters);
-  revalidatePath('/admin/characters', 'page');
-  revalidatePath('/adoption', 'page');
+  revalidatePath('/admin/characters');
+  revalidatePath('/adoption', 'layout');
   return id;
 }
 
@@ -144,8 +144,8 @@ export async function deleteCharacter(id: string): Promise<void> {
     let allCharacters = await getCharacters();
     allCharacters = allCharacters.filter(c => c.id !== id);
     await writeData('characters.json', allCharacters);
-    revalidatePath('/admin/characters', 'page');
-    revalidatePath('/adoption', 'page');
+    revalidatePath('/admin/characters');
+    revalidatePath('/adoption', 'layout');
 }
 
 
@@ -199,8 +199,8 @@ export async function saveCommissionOption(optionData: Omit<CommissionOption, 'i
         id = newId;
     }
     await writeData('commissionOptions.json', allOptions);
-    revalidatePath('/admin/commissions', 'page');
-    revalidatePath('/commission', 'page');
+    revalidatePath('/admin/commissions');
+    revalidatePath('/commission');
     return id;
 }
 
@@ -208,8 +208,8 @@ export async function deleteCommissionOption(id: string): Promise<void> {
     let allOptions = await getCommissionOptions();
     allOptions = allOptions.filter(o => o.id !== id);
     await writeData('commissionOptions.json', allOptions);
-    revalidatePath('/admin/commissions', 'page');
-    revalidatePath('/commission', 'page');
+    revalidatePath('/admin/commissions');
+    revalidatePath('/commission');
 }
 
 
@@ -241,8 +241,8 @@ export async function saveCommissionStyle(style: Omit<CommissionStyle, 'id'>, id
         id = newId;
     }
     await writeData('commissionStyles.json', allStyles);
-    revalidatePath('/admin/commission-styles', 'page');
-    revalidatePath('/commission', 'page');
+    revalidatePath('/admin/commission-styles');
+    revalidatePath('/commission');
     return id;
 }
 
@@ -250,8 +250,8 @@ export async function deleteCommissionStyle(id: string): Promise<void> {
     let allStyles = await getAllCommissionStyles();
     allStyles = allStyles.filter(s => s.id !== id);
     await writeData('commissionStyles.json', allStyles);
-    revalidatePath('/admin/commission-styles', 'page');
-    revalidatePath('/commission', 'page');
+    revalidatePath('/admin/commission-styles');
+    revalidatePath('/commission');
 }
 
 
@@ -347,9 +347,9 @@ export async function deleteOrder(id: string): Promise<void> {
     let allOrders = await getAllOrders();
     allOrders = allOrders.filter(o => o.id !== id);
     await writeData('orders.json', allOrders);
-    revalidatePath('/admin/orders', 'page');
-    revalidatePath('/orders', 'page');
-    revalidatePath('/admin/users', 'page');
+    revalidatePath('/admin/orders');
+    revalidatePath('/orders');
+    revalidatePath('/admin/users');
 }
 
 
@@ -405,7 +405,7 @@ export async function createAdoptionApplication(character: Character, userId: st
     await writeData('characters.json', allCharacters);
     revalidatePath('/orders', 'layout');
     revalidatePath('/adoption', 'layout');
-    revalidatePath('/admin/users', 'layout');
+    revalidatePath('/admin/users');
 
     // Admin Email Notification
     const siteContent = await getSiteContent();
@@ -482,7 +482,7 @@ export async function createCommissionApplication(userId: string, commissionInfo
     allOrders.push(newOrderData);
     await writeData('orders.json', allOrders);
     revalidatePath('/orders', 'layout');
-    revalidatePath('/admin/users', 'layout');
+    revalidatePath('/admin/users');
 
     // Admin Email Notification
     const siteContent = await getSiteContent();
@@ -573,8 +573,8 @@ export async function saveWork(workData: Omit<Work, 'id'>, id?: string): Promise
         id = newId;
     }
     await writeData('works.json', allWorks);
-    revalidatePath('/admin/works', 'page');
-    revalidatePath('/works', 'page');
+    revalidatePath('/admin/works');
+    revalidatePath('/works');
     return id;
 }
 
@@ -582,8 +582,8 @@ export async function deleteWork(id: string): Promise<void> {
     let allWorks = await getWorks();
     allWorks = allWorks.filter(w => w.id !== id);
     await writeData('works.json', allWorks);
-    revalidatePath('/admin/works', 'page');
-    revalidatePath('/works', 'page');
+    revalidatePath('/admin/works');
+    revalidatePath('/works');
 }
 
 
@@ -602,7 +602,7 @@ export async function saveBadge(badgeData: Omit<Badge, 'id' | 'createdAt'>): Pro
     };
     allBadges.push(newBadge);
     await writeData('badges.json', allBadges);
-    revalidatePath('/admin/badges', 'page');
+    revalidatePath('/admin/badges');
     return newBadge;
 }
 
@@ -622,8 +622,8 @@ export async function deleteBadge(id: string): Promise<void> {
         writeData('badgeQRCodes.json', remainingQRCodes),
         writeData('userBadges.json', remainingUserBadges)
     ]);
-    revalidatePath('/admin/badges', 'page');
-    revalidatePath('/admin/users', 'page');
+    revalidatePath('/admin/badges');
+    revalidatePath('/admin/users');
 }
 
 
@@ -728,8 +728,8 @@ export async function confirmAndGrantBadge(qrId: string, userId: string): Promis
         writeData('badgeQRCodes.json', allQRCodes)
     ]);
     
-    revalidatePath('/my-badges', 'page');
-    revalidatePath('/admin/users', 'page');
+    revalidatePath('/my-badges');
+    revalidatePath('/admin/users');
 
     return { success: true, message: '徽章领取成功。' };
 }
@@ -792,7 +792,7 @@ export async function grantBadgeConditionally(
     await writeData('userBadges.json', allUserBadges);
     const allBadges = await getBadges();
     const resultBadge = allBadges.find(b => b.id === resultBadgeId);
-    revalidatePath('/admin/users', 'page');
+    revalidatePath('/admin/users');
     return {
       success: true,
       message: `操作完成！已成功为 ${grantedCount} 位满足条件的用户发放了徽章“${resultBadge?.name || resultBadgeId}”。`

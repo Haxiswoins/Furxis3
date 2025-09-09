@@ -24,17 +24,15 @@ const nextConfig = {
     ].filter(Boolean),
   },
   env: {
-    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL || '',
-    RESEND_API_KEY: process.env.RESEND_API_KEY || '',
-    ADMIN_EMAIL: process.env.ADMIN_EMAIL || '',
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     // Authing variables
-    AUTHING_APP_ID: process.env.AUTHING_APP_ID || '',
-    AUTHING_APP_SECRET: process.env.AUTHING_APP_SECRET || '',
-    AUTHING_ISSUER: process.env.AUTHING_ISSUER || '',
-    AUTHING_SECRET: process.env.AUTHING_SECRET || '',
-    AUTHING_REDIRECT_URI: process.env.AUTHING_REDIRECT_URI || '',
-    // Image Hosting Token - Kept on the server-side
-    IMAGE_HOSTING_TOKEN: process.env.IMAGE_HOSTING_TOKEN || '',
+    AUTHING_APP_ID: process.env.AUTHING_APP_ID,
+    AUTHING_APP_SECRET: process.env.AUTHING_APP_SECRET,
+    AUTHING_ISSUER: process.env.AUTHING_ISSUER,
+    AUTHING_SECRET: process.env.AUTHING_SECRET,
+    AUTHING_REDIRECT_URI: process.env.AUTHING_REDIRECT_URI,
   },
   experimental: {
     serverActions: {
