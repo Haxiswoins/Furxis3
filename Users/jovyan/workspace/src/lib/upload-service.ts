@@ -2,6 +2,7 @@
 'use client';
 
 // This function talks to the external image hosting service to handle file uploads.
+// It runs entirely on the client-side, sending the file directly to the hosting service.
 export async function uploadImage(file: File, path: string): Promise<string> {
     if (!file) {
         throw new Error("No file provided for upload.");
@@ -9,7 +10,8 @@ export async function uploadImage(file: File, path: string): Promise<string> {
     
     const formData = new FormData();
     formData.append('file', file);
-    // The 'path' argument is kept for potential future use but is not sent to the image host.
+    // The 'path' argument from the original function call is kept for potential future use 
+    // but is not sent to the image host in this implementation.
 
     try {
         // The API endpoint for the image hosting service.
@@ -30,6 +32,7 @@ export async function uploadImage(file: File, path: string): Promise<string> {
         }
         
         // The external API returns a structure like { status: true, data: { links: { url: '...' } } }
+        // This is the corrected path to the URL.
         if (result.data && result.data.links && result.data.links.url) {
             return result.data.links.url;
         } else {

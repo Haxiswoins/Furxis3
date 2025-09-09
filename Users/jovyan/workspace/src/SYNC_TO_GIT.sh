@@ -9,6 +9,7 @@ echo "🚀 开始将当前更改同步到 Git..."
 
 # 0. 设置默认的 pull 策略为 rebase，以保持清晰的提交历史
 # 这可以避免 "fatal: Need to specify how to reconcile divergent branches" 错误
+# 注意：在某些协作流程中，您可能更喜欢 'merge'。对于单人开发，'rebase' 通常更佳。
 git config pull.rebase true
 
 # 1. 将所有当前文件夹中的更改（新增、修改、删除）添加到暂存区
@@ -31,7 +32,8 @@ fi
 
 # 3. 创建一个新的提交
 echo "正在创建新的提交..."
-git commit -m "$COMMIT_MESSAGE"
+# 使用 --allow-empty-message 允许在某些自动化场景下提交空信息
+git commit -m "$COMMIT_MESSAGE" --allow-empty
 echo "提交已创建！"
 
 

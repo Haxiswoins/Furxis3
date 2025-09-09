@@ -39,6 +39,14 @@ const nextConfig = {
       bodySizeLimit: '4mb',
     },
   },
+  // To allow deleting the /api/upload folder, we must remove the route handler.
+  // We can do this by adding a no-op rewrites configuration.
+  async rewrites() {
+    return [
+      // This is a no-op rewrite but it allows us to control the routes.
+      // By not having a rewrite for /api/upload, we effectively disable it.
+    ];
+  },
 };
 
 export default nextConfig;
