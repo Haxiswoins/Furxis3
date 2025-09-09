@@ -41,12 +41,11 @@ export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
   const [isWarping, setIsWarping] = useState(false);
 
-  const cardLinkClass = "group block cursor-pointer";
-  const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]";
+  const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out group-hover:shadow-primary/20 aspect-[4/5]";
   
   const cardImageClass = "transition-transform duration-500 ease-in-out group-hover:scale-105";
-  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/[.5] via-20% via-black/25 to-40% to-transparent transition-all duration-500 ease-in-out";
-  const subTitleClass = "font-body font-bold text-xl md:text-2xl text-center mt-4 transition-colors duration-300 group-hover:text-primary";
+  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/50 via-20% via-black/25 to-40% to-transparent transition-all duration-500 ease-in-out";
+  const subTitleClass = "font-body font-bold text-lg md:text-xl text-center mt-4 transition-colors duration-300 group-hover:text-primary";
   const cardDescriptionClass = "mt-2 text-center text-muted-foreground opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 text-sm md:text-base";
 
 
@@ -89,67 +88,73 @@ export function HomeClient({ content }: HomeClientProps) {
                 className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4"
                 variants={containerVariants}
             >
-                <motion.div variants={itemVariants}>
-                    <a onClick={() => handleNavigate('/commission')} className={cardLinkClass}>
-                        <div className={cardDivClass}>
-                            <Image
-                            src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
-                            alt="委托申请"
-                            fill
-                            priority
-                            sizes="(max-width: 768px) 80vw, 33vw"
-                            style={{objectFit: "cover"}}
-                            className={cardImageClass}
-                            data-ai-hint="commission custom"
-                            />
-                            <div className={cardTextDivClass}>
-                            </div>
+                <motion.div 
+                    variants={itemVariants} 
+                    className="group cursor-pointer"
+                    onClick={() => handleNavigate('/commission')}
+                >
+                    <div className={cardDivClass}>
+                        <Image
+                        src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
+                        alt="委托申请"
+                        fill
+                        priority
+                        sizes="(max-width: 768px) 80vw, 33vw"
+                        style={{objectFit: "cover"}}
+                        className={cardImageClass}
+                        data-ai-hint="commission custom"
+                        />
+                        <div className={cardTextDivClass}>
                         </div>
-                    </a>
+                    </div>
                     <div className="text-center">
                         <h2 className={subTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
                         <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
                     </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants}>
-                    <a onClick={() => handleNavigate('/adoption')} className={cardLinkClass}>
-                        <div className={cardDivClass}>
-                            <Image
-                            src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
-                            alt="设定领养"
-                            fill
-                            sizes="(max-width: 768px) 80vw, 33vw"
-                            style={{objectFit: "cover"}}
-                            className={cardImageClass}
-                            data-ai-hint="character design"
-                            />
-                             <div className={cardTextDivClass}>
-                            </div>
+                <motion.div 
+                    variants={itemVariants}
+                    className="group cursor-pointer"
+                    onClick={() => handleNavigate('/adoption')}
+                >
+                    <div className={cardDivClass}>
+                        <Image
+                        src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
+                        alt="设定领养"
+                        fill
+                        sizes="(max-width: 768px) 80vw, 33vw"
+                        style={{objectFit: "cover"}}
+                        className={cardImageClass}
+                        data-ai-hint="character design"
+                        />
+                         <div className={cardTextDivClass}>
                         </div>
-                    </a>
+                    </div>
                      <div className="text-center">
                         <h2 className={subTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
                         <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
                     </div>
                 </motion.div>
                 
-                <motion.div variants={itemVariants}>
-                    <a onClick={() => handleNavigate('/works')} className={cardLinkClass}>
-                        <div className={cardDivClass}>
-                            <Image
-                            src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
-                            alt="作品一览"
-                            fill
-                            sizes="(max-width: 768px) 80vw, 33vw"
-                            style={{objectFit: "cover"}}
-                            className={cardImageClass}
-                            data-ai-hint="portfolio gallery"
-                            />
-                             <div className={cardTextDivClass}>
-                            </div>
+                <motion.div 
+                    variants={itemVariants}
+                    className="group cursor-pointer"
+                    onClick={() => handleNavigate('/works')}
+                >
+                    <div className={cardDivClass}>
+                        <Image
+                        src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
+                        alt="作品一览"
+                        fill
+                        sizes="(max-width: 768px) 80vw, 33vw"
+                        style={{objectFit: "cover"}}
+                        className={cardImageClass}
+                        data-ai-hint="portfolio gallery"
+                        />
+                         <div className={cardTextDivClass}>
                         </div>
-                    </a>
+                    </div>
                      <div className="text-center">
                         <h2 className={subTitleClass}>{content?.workTitle || '作品一览'}</h2>
                         <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
