@@ -40,9 +40,12 @@ type HomeClientProps = {
 export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
   const [isWarping, setIsWarping] = useState(false);
+
+  const cardLinkClass = "group block cursor-pointer";
+  const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]";
   
   const cardImageClass = "transition-transform duration-500 ease-in-out group-hover:scale-105";
-  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/80 to-black/0 to-40% transition-all duration-500 ease-in-out";
+  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/80 to-40% transition-all duration-500 ease-in-out";
   const cardTitleClass = "font-headline text-xl md:text-2xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1";
   const cardDescriptionClass = "mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base";
 
@@ -64,7 +67,7 @@ export function HomeClient({ content }: HomeClientProps) {
         >
             <div className="w-full py-8 md:py-12 pt-24">
             <motion.div className="text-center mb-10 md:mb-16 px-4" variants={itemVariants}>
-                <a onClick={() => router.push('/')} className="cursor-pointer">
+                <a onClick={() => handleNavigate('/')} className="cursor-pointer">
                     <div className="relative inline-block group px-4">
                         <h1 className="text-4xl sm:text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary">
                         前行无界
@@ -86,64 +89,64 @@ export function HomeClient({ content }: HomeClientProps) {
                 variants={containerVariants}
             >
                 <motion.div variants={itemVariants}>
-                    <Link href="/commission" className="group block cursor-pointer" >
-                        <div className="relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]">
-                            <Image
-                            src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
-                            alt="委托申请"
-                            fill
-                            priority
-                            sizes="(max-width: 768px) 80vw, 33vw"
-                            style={{objectFit: "cover"}}
-                            className={cardImageClass}
-                            data-ai-hint="commission custom"
-                            />
-                            <div className={cardTextDivClass}>
-                                <h2 className={cardTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
-                                <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
-                            </div>
+                <a onClick={() => handleNavigate('/commission')} className={cardLinkClass}>
+                    <div className={cardDivClass}>
+                        <Image
+                        src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
+                        alt="委托申请"
+                        fill
+                        priority
+                        sizes="(max-width: 768px) 80vw, 33vw"
+                        style={{objectFit: "cover"}}
+                        className={cardImageClass}
+                        data-ai-hint="commission custom"
+                        />
+                        <div className={cardTextDivClass}>
+                        <h2 className={cardTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
+                        <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
                         </div>
-                    </Link>
+                    </div>
+                </a>
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
-                    <Link href="/adoption" className="group block cursor-pointer">
-                         <div className="relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]">
-                            <Image
-                            src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
-                            alt="设定领养"
-                            fill
-                            sizes="(max-width: 768px) 80vw, 33vw"
-                            style={{objectFit: "cover"}}
-                            className={cardImageClass}
-                            data-ai-hint="character design"
-                            />
-                            <div className={cardTextDivClass}>
-                                <h2 className={cardTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
-                                <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
-                            </div>
+                <a onClick={() => handleNavigate('/adoption')} className={cardLinkClass}>
+                    <div className={cardDivClass}>
+                        <Image
+                        src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
+                        alt="设定领养"
+                        fill
+                        sizes="(max-width: 768px) 80vw, 33vw"
+                        style={{objectFit: "cover"}}
+                        className={cardImageClass}
+                        data-ai-hint="character design"
+                        />
+                        <div className={cardTextDivClass}>
+                        <h2 className={cardTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
+                        <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
                         </div>
-                    </Link>
+                    </div>
+                </a>
                 </motion.div>
                 
                 <motion.div variants={itemVariants}>
-                    <Link href="/works" className="group block cursor-pointer">
-                        <div className="relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]">
-                            <Image
-                            src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
-                            alt="作品一览"
-                            fill
-                            sizes="(max-width: 768px) 80vw, 33vw"
-                            style={{objectFit: "cover"}}
-                            className={cardImageClass}
-                            data-ai-hint="portfolio gallery"
-                            />
-                             <div className={cardTextDivClass}>
-                                <h2 className={cardTitleClass}>{content?.workTitle || '作品一览'}</h2>
-                                <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
-                            </div>
+                <a onClick={() => handleNavigate('/works')} className={cardLinkClass}>
+                    <div className={cardDivClass}>
+                        <Image
+                        src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
+                        alt="作品一览"
+                        fill
+                        sizes="(max-width: 768px) 80vw, 33vw"
+                        style={{objectFit: "cover"}}
+                        className={cardImageClass}
+                        data-ai-hint="portfolio gallery"
+                        />
+                        <div className={cardTextDivClass}>
+                        <h2 className={cardTitleClass}>{content?.workTitle || '作品一览'}</h2>
+                        <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
                         </div>
-                    </Link>
+                    </div>
+                </a>
                 </motion.div>
             </motion.div>
             </div>
@@ -151,7 +154,16 @@ export function HomeClient({ content }: HomeClientProps) {
                 <ContactInfo content={content} />
             </motion.div>
         </motion.div>
-    </div>
+
+        {/* Transition Mask */}
+       <motion.div 
+        className="fixed inset-0 z-[100] bg-background"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isWarping ? 1 : 0 }}
+        transition={{ duration: 0.6, ease: 'easeInOut'}}
+        style={{ pointerEvents: 'none' }}
+       >
+       </motion.div>
     </>
   );
 }
