@@ -76,11 +76,11 @@
 /* Hide number input arrows and custom scrollbar styles */
 @layer utilities {
   .bg-gradient-cover-bottom {
-    background-image: linear-gradient(to top, hsla(0, 0%, 0%, 0.7) 0%, hsla(0, 0%, 0%, 0.3) 15%, hsla(0, 0%, 0%, 0.1) 25%, transparent 40%);
+    background-image: linear-gradient(to top, hsla(0, 0%, 0%, 0.7), transparent 40%);
   }
 
   .dark .bg-gradient-cover-bottom {
-      background-image: linear-gradient(to top, hsla(0, 0%, 0%, 0.7) 0%, hsla(0, 0%, 0%, 0.3) 15%, hsla(0, 0%, 0%, 0.1) 25%, transparent 40%);
+      background-image: linear-gradient(to top, hsla(0, 0%, 0%, 0.7), transparent 40%);
   }
 
 
