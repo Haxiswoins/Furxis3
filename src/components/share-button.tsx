@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Share2, Copy } from 'lucide-react';
@@ -10,13 +9,13 @@ import { useToast } from '@/hooks/use-toast';
 import QRCode from 'qrcode.react';
 
 export function ShareButton() {
-  const pathname = usePathname();
   const { toast } = useToast();
   const [url, setUrl] = useState('');
 
   useEffect(() => {
-    setUrl(window.location.origin + pathname);
-  }, [pathname]);
+    // Set the URL to always be the root of the website.
+    setUrl(window.location.origin + '/');
+  }, []);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(url).then(() => {
@@ -41,7 +40,7 @@ export function ShareButton() {
       </PopoverTrigger>
       <PopoverContent className="w-auto p-4">
         <div className="flex flex-col items-center gap-4">
-          <h4 className="font-medium text-center">分享此页面</h4>
+          <h4 className="font-medium text-center">分享此网站</h4>
           <div className="p-2 border rounded-md bg-white">
             <QRCode value={url} size={128} />
           </div>
