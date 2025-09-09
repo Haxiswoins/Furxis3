@@ -45,9 +45,9 @@ export function HomeClient({ content }: HomeClientProps) {
   const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]";
   
   const cardImageClass = "transition-transform duration-500 ease-in-out group-hover:scale-105";
-  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/50 via-black/25 via-[20%] to-transparent to-[40%] transition-all duration-500 ease-in-out";
-  const cardTitleClass = "font-headline text-xl md:text-4xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1";
+  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/50 via-black/25 via-20% to-transparent to-40% transition-all duration-500 ease-in-out";
   const cardDescriptionClass = "mt-2 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base";
+  const subTitleClass = "font-headline text-lg md:text-xl text-center mt-4 transition-colors duration-300 group-hover:text-primary";
 
   const handleNavigate = (path: string) => {
     setIsWarping(true);
@@ -102,10 +102,10 @@ export function HomeClient({ content }: HomeClientProps) {
                         data-ai-hint="commission custom"
                         />
                         <div className={cardTextDivClass}>
-                        <h2 className={cardTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
-                        <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
+                          <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
                         </div>
                     </div>
+                    <h2 className={subTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
                 </a>
                 </motion.div>
 
@@ -122,10 +122,10 @@ export function HomeClient({ content }: HomeClientProps) {
                         data-ai-hint="character design"
                         />
                         <div className={cardTextDivClass}>
-                        <h2 className={cardTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
-                        <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
+                          <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
                         </div>
                     </div>
+                     <h2 className={subTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
                 </a>
                 </motion.div>
                 
@@ -142,10 +142,10 @@ export function HomeClient({ content }: HomeClientProps) {
                         data-ai-hint="portfolio gallery"
                         />
                         <div className={cardTextDivClass}>
-                        <h2 className={cardTitleClass}>{content?.workTitle || '作品一览'}</h2>
-                        <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
+                          <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
                         </div>
                     </div>
+                    <h2 className={subTitleClass}>{content?.workTitle || '作品一览'}</h2>
                 </a>
                 </motion.div>
             </motion.div>
