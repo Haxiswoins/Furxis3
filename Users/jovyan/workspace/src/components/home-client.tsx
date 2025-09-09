@@ -95,7 +95,7 @@ export function HomeClient({ content }: HomeClientProps) {
                             />
                             <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-cover-bottom transition-all duration-500 ease-in-out">
                                 <h2 className="font-headline text-2xl md:text-3xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1 drop-shadow-lg">{content?.commissionTitle || '委托申请'}</h2>
-                                <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base drop-shadow-md">{content?.commissionDescription || '为您量身定制。'}</p>
+                                <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base drop-shadow-lg">{content?.commissionDescription || '为您量身定制。'}</p>
                             </div>
                         </div>
                     </a>
@@ -115,7 +115,7 @@ export function HomeClient({ content }: HomeClientProps) {
                             />
                              <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-cover-bottom transition-all duration-500 ease-in-out">
                                 <h2 className="font-headline text-2xl md:text-3xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1 drop-shadow-lg">{content?.adoptionTitle || '设定领养'}</h2>
-                                <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base drop-shadow-md">{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
+                                <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base drop-shadow-lg">{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
                             </div>
                         </div>
                     </a>
@@ -135,7 +135,7 @@ export function HomeClient({ content }: HomeClientProps) {
                             />
                              <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-cover-bottom transition-all duration-500 ease-in-out">
                                 <h2 className="font-headline text-2xl md:text-3xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1 drop-shadow-lg">{content?.workTitle || '作品一览'}</h2>
-                                <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base drop-shadow-md">{content?.workDescription || '查看我们过往的精彩作品。'}</p>
+                                <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base drop-shadow-lg">{content?.workDescription || '查看我们过往的精彩作品。'}</p>
                             </div>
                         </div>
                     </a>
