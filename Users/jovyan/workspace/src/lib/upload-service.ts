@@ -22,7 +22,8 @@ export async function uploadImage(file: File, path: string): Promise<string> {
         const response = await fetch(uploadUrl, {
             method: 'POST',
             headers: {
-                // Correctly add the Authorization and Accept headers as per the API documentation.
+                // As per API documentation, include Authorization and Accept headers.
+                // Do not set Content-Type; the browser will set it automatically for FormData.
                 'Authorization': `Bearer ${uploadToken}`,
                 'Accept': 'application/json',
             },
