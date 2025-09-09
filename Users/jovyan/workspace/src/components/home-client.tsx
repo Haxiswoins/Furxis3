@@ -40,14 +40,8 @@ type HomeClientProps = {
 export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
   const [isWarping, setIsWarping] = useState(false);
-
-  const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out group-hover:shadow-primary/20 aspect-[4/5]";
   
-  const cardImageClass = "transition-transform duration-500 ease-in-out group-hover:scale-105";
   const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 bg-gradient-to-t from-black/50 via-20% via-black/25 to-40% to-transparent transition-all duration-500 ease-in-out";
-  const subTitleClass = "font-body font-bold text-lg md:text-xl text-center mt-4 text-muted-foreground transition-colors duration-300 group-hover:text-primary";
-  const cardDescriptionClass = "mt-2 text-center text-muted-foreground opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 text-sm md:text-base";
-
 
   const handleNavigate = (path: string) => {
     setIsWarping(true);
@@ -90,67 +84,73 @@ export function HomeClient({ content }: HomeClientProps) {
             >
                 <motion.div variants={itemVariants}>
                     <a onClick={() => handleNavigate('/commission')} className="group block cursor-pointer">
-                        <div className={cardDivClass}>
-                            <Image
-                            src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
-                            alt="委托申请"
-                            fill
-                            priority
-                            sizes="(max-width: 768px) 80vw, 33vw"
-                            style={{objectFit: "cover"}}
-                            className={cardImageClass}
-                            data-ai-hint="commission custom"
-                            />
-                            <div className={cardTextDivClass}>
+                        <div className="relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out group-hover:shadow-primary/20">
+                            <div className="relative aspect-[4/5]">
+                                <Image
+                                src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
+                                alt="委托申请"
+                                fill
+                                priority
+                                sizes="(max-width: 768px) 80vw, 33vw"
+                                style={{objectFit: "cover"}}
+                                className="transition-transform duration-500 ease-in-out group-hover:scale-105"
+                                data-ai-hint="commission custom"
+                                />
+                                <div className={cardTextDivClass}>
+                                </div>
                             </div>
                         </div>
                         <div className="text-center">
-                            <h2 className={subTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
-                            <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
+                            <h2 className="font-body font-bold text-lg md:text-xl text-center mt-4 text-muted-foreground transition-colors duration-300 group-hover:text-primary">{content?.commissionTitle || '委托申请'}</h2>
+                            <p className="mt-2 text-center text-muted-foreground opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 text-sm md:text-base">{content?.commissionDescription || '为您量身定制。'}</p>
                         </div>
                     </a>
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
                     <a onClick={() => handleNavigate('/adoption')} className="group block cursor-pointer">
-                        <div className={cardDivClass}>
-                            <Image
-                            src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
-                            alt="设定领养"
-                            fill
-                            sizes="(max-width: 768px) 80vw, 33vw"
-                            style={{objectFit: "cover"}}
-                            className={cardImageClass}
-                            data-ai-hint="character design"
-                            />
-                             <div className={cardTextDivClass}>
+                        <div className="relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out group-hover:shadow-primary/20">
+                             <div className="relative aspect-[4/5]">
+                                <Image
+                                src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
+                                alt="设定领养"
+                                fill
+                                sizes="(max-width: 768px) 80vw, 33vw"
+                                style={{objectFit: "cover"}}
+                                className="transition-transform duration-500 ease-in-out group-hover:scale-105"
+                                data-ai-hint="character design"
+                                />
+                                 <div className={cardTextDivClass}>
+                                </div>
                             </div>
                         </div>
-                        <div className="text-center">
-                            <h2 className={subTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
-                            <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
+                         <div className="text-center">
+                            <h2 className="font-body font-bold text-lg md:text-xl text-center mt-4 text-muted-foreground transition-colors duration-300 group-hover:text-primary">{content?.adoptionTitle || '设定领养'}</h2>
+                            <p className="mt-2 text-center text-muted-foreground opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 text-sm md:text-base">{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
                         </div>
                     </a>
                 </motion.div>
                 
                 <motion.div variants={itemVariants}>
-                    <a onClick={() => handleNavigate('/works')} className="group block cursor-pointer">
-                        <div className={cardDivClass}>
-                            <Image
-                            src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
-                            alt="作品一览"
-                            fill
-                            sizes="(max-width: 768px) 80vw, 33vw"
-                            style={{objectFit: "cover"}}
-                            className={cardImageClass}
-                            data-ai-hint="portfolio gallery"
-                            />
-                             <div className={cardTextDivClass}>
+                     <a onClick={() => handleNavigate('/works')} className="group block cursor-pointer">
+                        <div className="relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out group-hover:shadow-primary/20">
+                            <div className="relative aspect-[4/5]">
+                                <Image
+                                src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
+                                alt="作品一览"
+                                fill
+                                sizes="(max-width: 768px) 80vw, 33vw"
+                                style={{objectFit: "cover"}}
+                                className="transition-transform duration-500 ease-in-out group-hover:scale-105"
+                                data-ai-hint="portfolio gallery"
+                                />
+                                 <div className={cardTextDivClass}>
+                                </div>
                             </div>
                         </div>
-                        <div className="text-center">
-                            <h2 className={subTitleClass}>{content?.workTitle || '作品一览'}</h2>
-                            <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
+                         <div className="text-center">
+                            <h2 className="font-body font-bold text-lg md:text-xl text-center mt-4 text-muted-foreground transition-colors duration-300 group-hover:text-primary">{content?.workTitle || '作品一览'}</h2>
+                            <p className="mt-2 text-center text-muted-foreground opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 text-sm md:text-base">{content?.workDescription || '查看我们过往的精彩作品。'}</p>
                         </div>
                     </a>
                 </motion.div>
