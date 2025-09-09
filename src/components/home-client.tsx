@@ -45,7 +45,7 @@ export function HomeClient({ content }: HomeClientProps) {
   const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]";
   
   const cardImageClass = "transition-transform duration-500 ease-in-out group-hover:scale-105";
-  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/50 via-black/25 via-20% to-transparent to-40% transition-all duration-500 ease-in-out";
+  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/50 via-black/25 via-[20%] to-transparent to-[40%] transition-all duration-500 ease-in-out";
   const cardTitleClass = "font-headline text-xl md:text-4xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1";
   const cardDescriptionClass = "mt-2 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base";
 
