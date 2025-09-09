@@ -2,10 +2,9 @@
 import { notFound } from 'next/navigation';
 import { getCharactersBySeriesId, getCharacterSeriesByName } from '@/lib/data-service';
 import { CharacterListPageClient } from './client-page';
-import { Character, CharacterSeries } from '@/types';
+import type { Character, CharacterSeries } from '@/types';
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 export default async function AdoptionCharacterListPage({ params }: { params: { name: string }}) {
   const seriesName = decodeURIComponent(params.name as string);
@@ -27,3 +26,4 @@ export default async function AdoptionCharacterListPage({ params }: { params: { 
     </div>
   );
 }
+
