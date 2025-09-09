@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -146,6 +145,7 @@ export function HomeClient({ content }: HomeClientProps) {
                 <ContactInfo content={content} />
             </motion.div>
         </motion.div>
+      </div>
 
         {/* Transition Mask */}
        <motion.div 
