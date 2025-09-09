@@ -45,8 +45,8 @@ export function HomeClient({ content }: HomeClientProps) {
   const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]";
   
   const cardImageClass = "transition-transform duration-500 ease-in-out group-hover:scale-105";
-  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/[.5] via-black/25 to-40% to-transparent transition-all duration-500 ease-in-out";
-  const subTitleClass = "font-body font-bold text-2xl md:text-2xl text-center mt-4 transition-colors duration-300 group-hover:text-primary";
+  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/[.5] via-20% via-black/25 to-40% to-transparent transition-all duration-500 ease-in-out";
+  const subTitleClass = "font-body font-bold text-xl md:text-2xl text-center mt-4 transition-colors duration-300 group-hover:text-primary";
   const cardDescriptionClass = "mt-2 text-center text-muted-foreground opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 text-sm md:text-base";
 
 
@@ -105,11 +105,11 @@ export function HomeClient({ content }: HomeClientProps) {
                             <div className={cardTextDivClass}>
                             </div>
                         </div>
-                        <div className="text-center">
-                            <h2 className={subTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
-                            <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
-                        </div>
                     </a>
+                    <div className="text-center">
+                        <h2 className={subTitleClass}>{content?.commissionTitle || '委托申请'}</h2>
+                        <p className={cardDescriptionClass}>{content?.commissionDescription || '为您量身定制。'}</p>
+                    </div>
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
@@ -127,11 +127,11 @@ export function HomeClient({ content }: HomeClientProps) {
                              <div className={cardTextDivClass}>
                             </div>
                         </div>
-                         <div className="text-center">
-                            <h2 className={subTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
-                            <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
-                        </div>
                     </a>
+                     <div className="text-center">
+                        <h2 className={subTitleClass}>{content?.adoptionTitle || '设定领养'}</h2>
+                        <p className={cardDescriptionClass}>{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
+                    </div>
                 </motion.div>
                 
                 <motion.div variants={itemVariants}>
@@ -149,11 +149,11 @@ export function HomeClient({ content }: HomeClientProps) {
                              <div className={cardTextDivClass}>
                             </div>
                         </div>
-                         <div className="text-center">
-                            <h2 className={subTitleClass}>{content?.workTitle || '作品一览'}</h2>
-                            <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
-                        </div>
                     </a>
+                     <div className="text-center">
+                        <h2 className={subTitleClass}>{content?.workTitle || '作品一览'}</h2>
+                        <p className={cardDescriptionClass}>{content?.workDescription || '查看我们过往的精彩作品。'}</p>
+                    </div>
                 </motion.div>
             </motion.div>
             </div>
