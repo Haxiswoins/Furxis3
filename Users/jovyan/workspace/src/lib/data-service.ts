@@ -72,7 +72,7 @@ export async function saveCharacterSeries(seriesData: Omit<CharacterSeries, 'id'
         }
         await writeData('characterSeries.json', allSeries);
         revalidatePath('/admin/character-series');
-        revalidatePath('/adoption');
+        revalidatePath('/adoption', 'layout');
         return id;
     } else {
         const newId = `series_${Date.now()}`;
@@ -80,7 +80,7 @@ export async function saveCharacterSeries(seriesData: Omit<CharacterSeries, 'id'
         allSeries.push(newSeries);
         await writeData('characterSeries.json', allSeries);
         revalidatePath('/admin/character-series');
-        revalidatePath('/adoption');
+        revalidatePath('/adoption', 'layout');
         return newId;
     }
 }
@@ -99,7 +99,7 @@ export async function deleteCharacterSeries(id: string): Promise<void> {
     await writeData('characterSeries.json', allSeries);
     await writeData('characters.json', allCharacters);
     revalidatePath('/admin/character-series');
-    revalidatePath('/adoption');
+    revalidatePath('/adoption', 'layout');
 }
 
 // Characters (Adoption)
@@ -200,7 +200,7 @@ export async function saveCommissionOption(optionData: Omit<CommissionOption, 'i
     }
     await writeData('commissionOptions.json', allOptions);
     revalidatePath('/admin/commissions');
-    revalidatePath('/commission');
+    revalidatePath('/commission', 'layout');
     return id;
 }
 
@@ -209,7 +209,7 @@ export async function deleteCommissionOption(id: string): Promise<void> {
     allOptions = allOptions.filter(o => o.id !== id);
     await writeData('commissionOptions.json', allOptions);
     revalidatePath('/admin/commissions');
-    revalidatePath('/commission');
+    revalidatePath('/commission', 'layout');
 }
 
 
@@ -349,7 +349,7 @@ export async function deleteOrder(id: string): Promise<void> {
     allOrders = allOrders.filter(o => o.id !== id);
     await writeData('orders.json', allOrders);
     revalidatePath('/admin/orders');
-    revalidatePath('/orders');
+    revalidatePath('/orders', 'layout');
     revalidatePath('/admin/users');
 }
 
@@ -625,7 +625,8 @@ export async function deleteBadge(id: string): Promise<void> {
         writeData('userBadges.json', remainingUserBadges)
     ]);
     revalidatePath('/admin/badges');
-    revalidatePath('/admin/users');
+    revalidatePath('/admin/users', 'layout');
+    revalidatePath('/my-badges');
 }
 
 
@@ -731,7 +732,7 @@ export async function confirmAndGrantBadge(qrId: string, userId: string): Promis
     ]);
     
     revalidatePath('/my-badges');
-    revalidatePath('/admin/users');
+    revalidatePath('/admin/users', 'layout');
 
     return { success: true, message: '徽章领取成功。' };
 }
@@ -794,7 +795,8 @@ export async function grantBadgeConditionally(
     await writeData('userBadges.json', allUserBadges);
     const allBadges = await getBadges();
     const resultBadge = allBadges.find(b => b.id === resultBadgeId);
-    revalidatePath('/admin/users');
+    revalidatePath('/admin/users', 'layout');
+    revalidatePath('/my-badges');
     return {
       success: true,
       message: `操作完成！已成功为 ${grantedCount} 位满足条件的用户发放了徽章“${resultBadge?.name || resultBadgeId}”。`
@@ -900,8 +902,8 @@ export async function grantBadgeToUser(userId: string, badgeId: string): Promise
 
     allUserBadges.push(newUserBadge);
     await writeData('userBadges.json', allUserBadges);
-    revalidatePath(`/admin/users`);
-    revalidatePath(`/admin/users/${userId}`);
+    revalidatePath(`/admin/users`, 'layout');
+    revalidatePath(`/my-badges`);
 
     return { success: true, message: '徽章发放成功。' };
 }
@@ -937,7 +939,8 @@ export async function grantBadgeToUsers(userIds: string[], badgeId: string): Pro
 
     if (grantedCount > 0) {
         await writeData('userBadges.json', allUserBadges);
-        revalidatePath(`/admin/users`);
+        revalidatePath(`/admin/users`, 'layout');
+        revalidatePath(`/my-badges`);
         return { success: true, message: `操作完成！已成功为 ${grantedCount} 位用户发放了徽章“${badgeToGrant.name}”。` };
     } else {
         return { success: true, message: '所有选中的用户都已经拥有该徽章，未执行任何操作。' };
