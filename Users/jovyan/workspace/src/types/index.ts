@@ -1,4 +1,5 @@
 
+
 export type CharacterSeries = {
   id: string;
   name: string;
