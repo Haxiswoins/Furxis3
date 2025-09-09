@@ -39,9 +39,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback((returnTo?: string) => {
     const target = returnTo || pathname;
-    const loginUrl = new URL('/api/auth/authing/login', window.location.origin);
-    loginUrl.searchParams.set('returnTo', target);
-    router.push(loginUrl.toString());
+    // Point to our backend route which then redirects to Authing
+    const loginUrl = `/api/auth/login?returnTo=${encodeURIComponent(target)}`;
+    router.push(loginUrl);
   }, [router, pathname]);
 
   const logout = async () => {

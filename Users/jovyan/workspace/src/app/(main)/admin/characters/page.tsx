@@ -22,7 +22,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Plus, Edit, Trash2, Tag, CheckCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, Tag, CheckCircle, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { deleteCharacter, getCharacters } from '@/lib/data-service';
 import type { Character } from '@/types';

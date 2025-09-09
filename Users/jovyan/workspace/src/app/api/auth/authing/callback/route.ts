@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
 import type { SessionData } from '@/lib/session';
+import { saveUser } from '@/lib/data-service';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -44,6 +45,18 @@ export async function GET(req: NextRequest) {
      if (!userInfoResponse.ok) {
       throw new Error(userInfo.error_description || 'Failed to fetch user info');
     }
+
+    // --- Persist user data ---
+    // This ensures that every registered user is saved in our system,
+    // regardless of whether they have placed an order.
+    await saveUser({
+        id: userInfo.sub,
+        email: userInfo.email,
+        name: userInfo.name || userInfo.preferred_username,
+        picture: userInfo.picture,
+        registrationDate: new Date().toISOString()
+    });
+    // -------------------------
 
     const session = await getIronSession<SessionData>(cookies(), {
       password: process.env.AUTHING_SECRET!,

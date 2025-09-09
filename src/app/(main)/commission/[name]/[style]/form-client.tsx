@@ -46,6 +46,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
   const [referenceImageFile, setReferenceImageFile] = useState<File | null>(null);
   const [referenceImagePreview, setReferenceImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   
   const fanPrice = siteContent?.fanPrice ?? 150;
   
@@ -127,7 +128,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
   
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!user || !commissionStyle || !commissionOption) return;
+    if (!user || !commissionStyle || !commissionOption || !formRef.current) return;
 
     if (!isCommissionOpen) {
       toast({
@@ -145,7 +146,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
         referenceImageUrl = await uploadImage(referenceImageFile, `references/${user.uid}_${Date.now()}`);
       }
 
-      const formData = new FormData(e.currentTarget);
+      const formData = new FormData(formRef.current);
       const applicationData = {
         userName: formData.get('name') as string,
         age: formData.get('age') as string,
@@ -234,7 +235,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
           <CardDescription className="mt-2 text-base">{commissionStyle.description}</CardDescription>
       </CardHeader>
 
-      <form onSubmit={handleFormSubmit}>
+      <form ref={formRef} onSubmit={handleFormSubmit}>
          <CardContent className="space-y-4">
           <div className="space-y-1">
             <Label>设定图 (可选)</Label>
@@ -338,7 +339,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
 
           <div className="space-y-2 pt-2">
               <div className="flex items-start space-x-2">
-                  <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} className="mt-1" />
+                  <Checkbox id="terms" name="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} className="mt-1" />
                   <div className="grid gap-1.5 leading-none">
                        <Dialog>
                           <DialogTrigger asChild>

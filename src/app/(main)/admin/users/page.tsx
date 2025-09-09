@@ -97,10 +97,14 @@ function GrantBadgeDialog({ user, badges, onBadgeGranted }: { user: AggregatedUs
         }
         setIsSubmitting(true);
         try {
-            await grantBadgeToUser(user.id, selectedBadgeId);
-            toast({ title: '发放成功', description: `已将徽章发放给用户 ${user.name}。` });
-            onBadgeGranted();
-            setOpen(false);
+            const result = await grantBadgeToUser(user.id, selectedBadgeId);
+            if (result.success) {
+                toast({ title: '发放成功', description: `已将徽章发放给用户 ${user.name}。` });
+                onBadgeGranted();
+                setOpen(false);
+            } else {
+                 toast({ title: '操作提醒', description: result.message, variant: 'default' });
+            }
         } catch (error) {
             toast({ title: '发放失败', description: error instanceof Error ? error.message : '发生未知错误。', variant: 'destructive' });
         } finally {
@@ -153,7 +157,7 @@ function BulkGrantFloatPanel({
 }: {
   selectedCount: number;
   badges: Badge[];
-  onGrant: (badgeId: string) => Promise<void>;
+  onGrant: (badgeId: string) => void;
   onCancel: () => void;
 }) {
   const [selectedBadgeId, setSelectedBadgeId] = useState('');
@@ -161,7 +165,7 @@ function BulkGrantFloatPanel({
 
   const handleGrant = async () => {
     setIsSubmitting(true);
-    await onGrant(selectedBadgeId);
+    onGrant(selectedBadgeId);
     setIsSubmitting(false);
   };
 
@@ -311,11 +315,13 @@ export default function UserManagementPage() {
     }
     try {
       const result = await grantBadgeToUsers(selectedUserIds, badgeId);
-      toast({ title: result.message });
       if (result.success) {
+        toast({ title: result.message });
         setIsSelectionMode(false);
         setSelectedUserIds([]);
         await fetchData();
+      } else {
+         toast({ title: '操作提醒', description: result.message, variant: 'default' });
       }
     } catch (error) {
       toast({ title: '批量发放失败', description: error instanceof Error ? error.message : '发生未知错误。', variant: 'destructive' });
@@ -413,7 +419,7 @@ export default function UserManagementPage() {
             ) : (
               <TableRow>
                 <TableCell colSpan={isSelectionMode ? 8 : 7} className="text-center h-24">
-                  沒有找到任何用戶。
+                  没有找到任何用户。
                 </TableCell>
               </TableRow>
             )}
@@ -434,3 +440,7 @@ export default function UserManagementPage() {
     </div>
   );
 }
+
+    
+
+    
