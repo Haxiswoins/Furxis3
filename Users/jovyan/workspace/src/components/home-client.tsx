@@ -41,11 +41,9 @@ export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
   const [isWarping, setIsWarping] = useState(false);
 
-  const cardLinkClass = "group block cursor-pointer";
   const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/20 aspect-[4/5]";
-  
   const cardImageClass = "transition-transform duration-500 ease-in-out group-hover:scale-105";
-  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/80 to-40% transition-all duration-500 ease-in-out";
+  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-white bg-gradient-to-t from-black/70 via-black/40 to-transparent transition-all duration-500 ease-in-out";
   const cardTitleClass = "font-headline text-xl md:text-2xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1";
   const cardDescriptionClass = "mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base";
 
@@ -89,7 +87,7 @@ export function HomeClient({ content }: HomeClientProps) {
                 variants={containerVariants}
             >
                 <motion.div variants={itemVariants}>
-                <a onClick={() => handleNavigate('/commission')} className={cardLinkClass}>
+                <a onClick={() => handleNavigate('/commission')} className="group block cursor-pointer">
                     <div className={cardDivClass}>
                         <Image
                         src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
@@ -110,7 +108,7 @@ export function HomeClient({ content }: HomeClientProps) {
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
-                <a onClick={() => handleNavigate('/adoption')} className={cardLinkClass}>
+                <a onClick={() => handleNavigate('/adoption')} className="group block cursor-pointer">
                     <div className={cardDivClass}>
                         <Image
                         src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
@@ -130,7 +128,7 @@ export function HomeClient({ content }: HomeClientProps) {
                 </motion.div>
                 
                 <motion.div variants={itemVariants}>
-                <a onClick={() => handleNavigate('/works')} className={cardLinkClass}>
+                <a onClick={() => handleNavigate('/works')} className="group block cursor-pointer">
                     <div className={cardDivClass}>
                         <Image
                         src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
