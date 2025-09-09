@@ -44,7 +44,7 @@ export function HomeClient({ content }: HomeClientProps) {
   const cardDivClass = "relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out group-hover:shadow-primary/20 aspect-[4/5]";
   
   const cardImageClass = "transition-transform duration-500 ease-in-out group-hover:scale-105";
-  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 bg-gradient-to-t from-black/50 via-black/25 to-40% to-transparent transition-all duration-500 ease-in-out";
+  const cardTextDivClass = "absolute inset-0 flex flex-col justify-end p-6 md:p-8 bg-gradient-to-t from-black/50 via-20% via-black/25 to-40% to-transparent transition-all duration-500 ease-in-out";
   const subTitleClass = "font-body font-bold text-lg md:text-xl text-center mt-4 text-muted-foreground transition-colors duration-300 group-hover:text-primary";
   const cardDescriptionClass = "mt-2 text-center text-muted-foreground opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 text-sm md:text-base";
 
@@ -112,7 +112,7 @@ export function HomeClient({ content }: HomeClientProps) {
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
-                     <a onClick={() => handleNavigate('/adoption')} className="group block cursor-pointer">
+                    <a onClick={() => handleNavigate('/adoption')} className="group block cursor-pointer">
                         <div className={cardDivClass}>
                             <Image
                             src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
