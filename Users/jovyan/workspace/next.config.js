@@ -27,6 +27,8 @@ const nextConfig = {
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+    // Image Hosting Service Token
+    IMAGE_UPLOAD_TOKEN: process.env.IMAGE_UPLOAD_TOKEN,
     // Authing variables
     AUTHING_APP_ID: process.env.AUTHING_APP_ID,
     AUTHING_APP_SECRET: process.env.AUTHING_APP_SECRET,
