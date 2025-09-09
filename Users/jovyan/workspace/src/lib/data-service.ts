@@ -64,7 +64,7 @@ export async function getCharacterSeriesByName(name: string): Promise<CharacterS
 }
 
 export async function saveCharacterSeries(seriesData: Omit<CharacterSeries, 'id'>, id?: string): Promise<string> {
-    const allSeries = await getCharacterSeries();
+    const allSeries = await readData<CharacterSeries[]>('characterSeries.json');
     if (id) {
         const index = allSeries.findIndex(s => s.id === id);
         if (index > -1) {
@@ -86,8 +86,8 @@ export async function saveCharacterSeries(seriesData: Omit<CharacterSeries, 'id'
 }
 
 export async function deleteCharacterSeries(id: string): Promise<void> {
-    let allSeries = await getCharacterSeries();
-    let allCharacters = await getCharacters();
+    let allSeries = await readData<CharacterSeries[]>('characterSeries.json');
+    let allCharacters = await readData<Character[]>('characters.json');
 
     // Filter out the series to be deleted
     allSeries = allSeries.filter(s => s.id !== id);
@@ -123,7 +123,7 @@ export async function getCharacterByName(name: string): Promise<Character | null
 }
 
 export async function saveCharacter(character: Omit<Character, 'id'>, id?: string): Promise<string> {
-  const allCharacters = await getCharacters();
+  const allCharacters = await readData<Character[]>('characters.json');
   if (id) {
     const index = allCharacters.findIndex(c => c.id === id);
     if(index > -1) {
@@ -141,7 +141,7 @@ export async function saveCharacter(character: Omit<Character, 'id'>, id?: strin
 }
 
 export async function deleteCharacter(id: string): Promise<void> {
-    let allCharacters = await getCharacters();
+    let allCharacters = await readData<Character[]>('characters.json');
     allCharacters = allCharacters.filter(c => c.id !== id);
     await writeData('characters.json', allCharacters);
     revalidatePath('/admin/characters');
@@ -205,7 +205,7 @@ export async function saveCommissionOption(optionData: Omit<CommissionOption, 'i
 }
 
 export async function deleteCommissionOption(id: string): Promise<void> {
-    let allOptions = await getCommissionOptions();
+    let allOptions = await readData<CommissionOption[]>('commissionOptions.json');
     allOptions = allOptions.filter(o => o.id !== id);
     await writeData('commissionOptions.json', allOptions);
     revalidatePath('/admin/commissions');
@@ -229,7 +229,7 @@ export async function getCommissionStyleById(id: string): Promise<CommissionStyl
 }
 
 export async function saveCommissionStyle(style: Omit<CommissionStyle, 'id'>, id?: string): Promise<string> {
-    const allStyles = await getAllCommissionStyles();
+    const allStyles = await readData<CommissionStyle[]>('commissionStyles.json');
     if (id) {
         const index = allStyles.findIndex(s => s.id === id);
         if (index > -1) {
@@ -242,16 +242,16 @@ export async function saveCommissionStyle(style: Omit<CommissionStyle, 'id'>, id
     }
     await writeData('commissionStyles.json', allStyles);
     revalidatePath('/admin/commission-styles');
-    revalidatePath('/commission');
+    revalidatePath('/commission', 'layout');
     return id;
 }
 
 export async function deleteCommissionStyle(id: string): Promise<void> {
-    let allStyles = await getAllCommissionStyles();
+    let allStyles = await readData<CommissionStyle[]>('commissionStyles.json');
     allStyles = allStyles.filter(s => s.id !== id);
     await writeData('commissionStyles.json', allStyles);
     revalidatePath('/admin/commission-styles');
-    revalidatePath('/commission');
+    revalidatePath('/commission', 'layout');
 }
 
 
@@ -272,7 +272,7 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
 }
 
 export async function updateOrder(orderId: string, data: Partial<Order>): Promise<void> {
-    const allOrders = await getAllOrders();
+    const allOrders = await readData<Order[]>('orders.json');
     const orderIndex = allOrders.findIndex(o => o.id === orderId);
     
     if (orderIndex === -1) {
@@ -294,7 +294,8 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
 
     await writeData('orders.json', allOrders);
     revalidatePath('/orders', 'layout');
-    revalidatePath('/admin/users', 'layout');
+    revalidatePath('/admin/orders');
+    revalidatePath(`/admin/users/${originalOrder.userId}`);
     
     // --- Side Effects: Send Emails ---
     const siteContent = await getSiteContent();
@@ -344,7 +345,7 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
 
 
 export async function deleteOrder(id: string): Promise<void> {
-    let allOrders = await getAllOrders();
+    let allOrders = await readData<Order[]>('orders.json');
     allOrders = allOrders.filter(o => o.id !== id);
     await writeData('orders.json', allOrders);
     revalidatePath('/admin/orders');
@@ -355,8 +356,8 @@ export async function deleteOrder(id: string): Promise<void> {
 
 // Order Actions (Application Creation)
 export async function createAdoptionApplication(character: Character, userId: string, applicationData: ApplicationData, fanPrice: number): Promise<string> {
-    const allOrders = await getAllOrders();
-    const allCharacters = await getCharacters();
+    const allOrders = await readData<Order[]>('orders.json');
+    const allCharacters = await readData<Character[]>('characters.json');
 
     // Limit check: one active application per character per user
     const historicalStatuses = ['已完成', '已取消', '未中标'];
@@ -434,7 +435,7 @@ type CommissionInfo = {
     price: string;
 }
 export async function createCommissionApplication(userId: string, commissionInfo: CommissionInfo, applicationData: ApplicationData, fanPrice: number): Promise<string> {
-    const allOrders = await getAllOrders();
+    const allOrders = await readData<Order[]>('orders.json');
     
     // Limit check: two active applications per commission option per user
     const historicalStatuses = ['已完成', '已取消', '未中标'];
@@ -475,6 +476,7 @@ export async function createCommissionApplication(userId: string, commissionInfo
         shippingAddress: `${applicationData.province} ${applicationData.city} ${applicationData.district} ${applicationData.addressDetail}`,
         applicationData,
         referenceImageUrl: applicationData.referenceImageUrl || null,
+        referenceImageUrl2: applicationData.referenceImageUrl2 || null,
         commissionOptionName: commissionInfo.optionName,
         hasFan: applicationData.hasFan,
     };
@@ -507,7 +509,7 @@ export async function createCommissionApplication(userId: string, commissionInfo
 
 
 export async function cancelOrder(orderId: string, reason: string): Promise<void> {
-  const allOrders = await getAllOrders();
+  const allOrders = await readData<Order[]>('orders.json');
   const orderIndex = allOrders.findIndex(o => o.id === orderId);
   if (orderIndex > -1) {
     allOrders[orderIndex].status = '退养中';
@@ -538,7 +540,7 @@ export async function cancelOrder(orderId: string, reason: string): Promise<void
 }
 
 export async function reinstateOrder(orderId: string): Promise<void> {
-    const allOrders = await getAllOrders();
+    const allOrders = await readData<Order[]>('orders.json');
     const orderIndex = allOrders.findIndex(o => o.id === orderId);
     if (orderIndex > -1) {
         allOrders[orderIndex].status = '处理中';
@@ -561,7 +563,7 @@ export async function getWorkById(id: string): Promise<Work | null> {
 }
 
 export async function saveWork(workData: Omit<Work, 'id'>, id?: string): Promise<string> {
-    const allWorks = await getWorks();
+    const allWorks = await readData<Work[]>('works.json');
     if (id) {
         const index = allWorks.findIndex(w => w.id === id);
         if (index > -1) {
@@ -574,16 +576,16 @@ export async function saveWork(workData: Omit<Work, 'id'>, id?: string): Promise
     }
     await writeData('works.json', allWorks);
     revalidatePath('/admin/works');
-    revalidatePath('/works');
+    revalidatePath('/works', 'layout');
     return id;
 }
 
 export async function deleteWork(id: string): Promise<void> {
-    let allWorks = await getWorks();
+    let allWorks = await readData<Work[]>('works.json');
     allWorks = allWorks.filter(w => w.id !== id);
     await writeData('works.json', allWorks);
     revalidatePath('/admin/works');
-    revalidatePath('/works');
+    revalidatePath('/works', 'layout');
 }
 
 
@@ -594,7 +596,7 @@ export async function getBadges(): Promise<Badge[]> {
 }
 
 export async function saveBadge(badgeData: Omit<Badge, 'id' | 'createdAt'>): Promise<Badge> {
-    const allBadges = await getBadges();
+    const allBadges = await readData<Badge[]>('badges.json');
     const newBadge: Badge = {
         id: `badge_${Date.now()}`,
         ...badgeData,
