@@ -22,6 +22,7 @@ export async function uploadImage(file: File, path: string): Promise<string> {
         const response = await fetch(uploadUrl, {
             method: 'POST',
             headers: {
+                // Correctly add the Authorization and Accept headers as per the API documentation.
                 'Authorization': `Bearer ${uploadToken}`,
                 'Accept': 'application/json',
             },
@@ -34,6 +35,7 @@ export async function uploadImage(file: File, path: string): Promise<string> {
             throw new Error(result.message || "File upload failed due to a server error.");
         }
         
+        // Correctly parse the nested URL from the response as per the API documentation.
         if (result.data && result.data.links && result.data.links.url) {
             return result.data.links.url;
         } else {
