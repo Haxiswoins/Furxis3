@@ -134,7 +134,7 @@ export function HomeClient({ content }: HomeClientProps) {
                                 className="z-10 transition-transform duration-500 ease-in-out group-hover:scale-105"
                                 data-ai-hint="portfolio gallery"
                             />
-                             <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 md:p-8 text-white transition-all duration-500 ease-in-out">
+                             <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 md:p-8 text-white transition-all duration-500 ease-in-out bg-gradient-cover-bottom">
                                 <h2 className="font-headline text-2xl md:text-3xl transition-transform duration-500 ease-in-out group-hover:-translate-y-1">{content?.workTitle || '作品一览'}</h2>
                                 <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base">{content?.workDescription || '查看我们过往的精彩作品。'}</p>
                             </div>
