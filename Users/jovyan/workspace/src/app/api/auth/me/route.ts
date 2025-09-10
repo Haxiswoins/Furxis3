@@ -21,7 +21,6 @@ export async function GET() {
   };
   return NextResponse.json(adminUser);
   
-  
   /*
   // --- PRODUCTION CODE ---
   // This is the secure way to handle user sessions.

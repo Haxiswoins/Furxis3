@@ -26,7 +26,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Edit, Trash2, Archive, History } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { deleteOrder, getAllOrders } from '@/lib/data-service';
+import { deleteOrder } from '@/lib/data-service';
 import type { Order } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -59,38 +59,6 @@ const darkStatusStyles: { [key: string]: string } = {
   '已取消': 'bg-gray-500/20 text-gray-300 border-gray-500/30',
   '未中标': 'bg-gray-500/20 text-gray-300 border-gray-500/30',
 };
-
-function AdminOrdersPageSkeleton() {
-    return (
-         <div>
-            <div className="flex justify-between items-center mb-6">
-                <Skeleton className="h-9 w-48" />
-            </div>
-            <div className="border rounded-lg">
-                 <Table>
-                    <TableHeader>
-                        <TableRow>
-                            {[...Array(7)].map((_, i) => <TableHead key={i}><Skeleton className="h-5 w-full" /></TableHead>)}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {[...Array(5)].map((_, i) => (
-                             <TableRow key={i}>
-                                {[...Array(6)].map((_, j) => <TableCell key={j}><Skeleton className="h-5 w-full" /></TableCell>)}
-                                <TableCell className="text-right">
-                                    <div className="flex justify-end gap-2">
-                                        <Skeleton className="h-8 w-8" />
-                                        <Skeleton className="h-8 w-8" />
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                 </Table>
-            </div>
-        </div>
-    )
-}
 
 function OrdersTable({ title, icon: Icon, orders, statusStyles, isDeleting, handleDelete, router }: {
     title: string;
@@ -178,33 +146,18 @@ export default function AdminOrdersPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { theme } = useTheme();
-  const [allOrders, setAllOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  
+  // This state is now managed by the client page wrapper, passed as props
+  const { allOrders, isDeleting, setIsDeleting } = (router as any).props?.children?.props || { allOrders: [], isDeleting: null, setIsDeleting: () => {} };
 
   const statusStyles = theme === 'dark' ? darkStatusStyles : lightStatusStyles;
   const historicalStatuses = ['未中标', '已完成', '已取消'];
 
-  useEffect(() => {
-    async function fetchOrders() {
-        setLoading(true);
-        try {
-            const data = await getAllOrders();
-            setAllOrders(data);
-        } catch (error) {
-            toast({ title: '加载订单失败', description: '无法从服务器获取数据。', variant: 'destructive' });
-        } finally {
-            setLoading(false);
-        }
-    }
-    fetchOrders();
-  }, [toast]);
-  
   const handleDelete = async (id: string) => {
     setIsDeleting(id);
     try {
         await deleteOrder(id);
-        setAllOrders(prevOrders => prevOrders.filter(o => o.id !== id));
+        router.refresh(); // Use router.refresh() to re-fetch server data
         toast({ title: '删除成功', description: '订单已从数据库中移除。' });
     } catch (error) {
         toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
@@ -213,13 +166,9 @@ export default function AdminOrdersPage() {
     }
   };
 
-  const currentOrders = allOrders.filter(order => !historicalStatuses.includes(order.status));
-  const historicalOrders = allOrders.filter(order => historicalStatuses.includes(order.status));
-
-  if (loading) {
-      return <AdminOrdersPageSkeleton />;
-  }
-
+  const currentOrders = allOrders.filter((order: Order) => !historicalStatuses.includes(order.status));
+  const historicalOrders = allOrders.filter((order: Order) => historicalStatuses.includes(order.status));
+  
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-headline">订单管理</h1>

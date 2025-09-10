@@ -356,7 +356,7 @@ export async function deleteOrder(id: string): Promise<void> {
 
 
 // Order Actions (Application Creation)
-export async function createAdoptionApplication(character: Character, userId: string, applicationData: ApplicationData, fanPrice: number): Promise<string> {
+export async function createAdoptionApplication(character: Character, userId: string, applicationData: ApplicationData, fanPrice: number, magneticEyePrice: number): Promise<string> {
     const allOrders = await readData<Order[]>('orders.json');
     const allCharacters = await readData<Character[]>('characters.json');
 
@@ -380,6 +380,9 @@ export async function createAdoptionApplication(character: Character, userId: st
     if (applicationData.hasFan) {
         finalPrice += fanPrice;
     }
+    if (applicationData.magneticEyes && applicationData.magneticEyesCount) {
+        finalPrice += applicationData.magneticEyesCount * magneticEyePrice;
+    }
 
     const newOrder: Order = {
       id: newId,
@@ -394,6 +397,8 @@ export async function createAdoptionApplication(character: Character, userId: st
       shippingAddress: `${applicationData.province} ${applicationData.city} ${applicationData.district} ${applicationData.addressDetail}`,
       applicationData,
       hasFan: applicationData.hasFan,
+      magneticEyes: applicationData.magneticEyes,
+      magneticEyesCount: applicationData.magneticEyesCount,
     };
     
     allOrders.push(newOrder);
@@ -435,7 +440,7 @@ type CommissionInfo = {
     imageUrl: string;
     price: string;
 }
-export async function createCommissionApplication(userId: string, commissionInfo: CommissionInfo, applicationData: ApplicationData, fanPrice: number): Promise<string> {
+export async function createCommissionApplication(userId: string, commissionInfo: CommissionInfo, applicationData: ApplicationData, fanPrice: number, magneticEyePrice: number): Promise<string> {
     const allOrders = await readData<Order[]>('orders.json');
     
     // Limit check: two active applications per commission option per user
@@ -455,12 +460,20 @@ export async function createCommissionApplication(userId: string, commissionInfo
     const newId = `order_${Date.now()}`;
 
     let finalPriceDesc = `${commissionInfo.price}`;
+    let additionalPrice = 0;
     if (applicationData.hasFan) {
-        const currentPrice = parseFloat(commissionInfo.price.replace(/[^0-9.]/g, ''));
-        if (!isNaN(currentPrice)) {
-            finalPriceDesc = `￥${currentPrice + fanPrice}`;
-        } else {
-            finalPriceDesc += ` + ￥${fanPrice} 风扇`;
+        additionalPrice += fanPrice;
+    }
+    if (applicationData.magneticEyes && applicationData.magneticEyesCount) {
+        additionalPrice += applicationData.magneticEyesCount * magneticEyePrice;
+    }
+    
+    const currentPrice = parseFloat(commissionInfo.price.replace(/[^0-9.]/g, ''));
+    if (!isNaN(currentPrice)) {
+        finalPriceDesc = `￥${currentPrice + additionalPrice}`;
+    } else {
+        if (additionalPrice > 0) {
+            finalPriceDesc += ` + ￥${additionalPrice} 附加项`;
         }
     }
 
@@ -478,6 +491,8 @@ export async function createCommissionApplication(userId: string, commissionInfo
         applicationData,
         commissionOptionName: commissionInfo.optionName,
         hasFan: applicationData.hasFan,
+        magneticEyes: applicationData.magneticEyes,
+        magneticEyesCount: applicationData.magneticEyesCount,
     };
     
     allOrders.push(newOrderData);
