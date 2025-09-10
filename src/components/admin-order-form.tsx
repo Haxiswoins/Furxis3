@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -159,7 +158,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
         title: '保存成功！',
         description: `订单 "${order.orderNumber}" 已被成功更新。`,
       });
-      // Do not redirect, stay on the page
+      // Force a re-fetch of the page data by fully refreshing
       router.refresh();
     } catch (error) {
        console.error("保存失败:", error);
@@ -284,34 +283,59 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
 
                     {/* Additional Info */}
                     <div className="space-y-4">
-                        <div className="space-y-1">
-                          <p className="font-semibold">是否安装头内风扇模块</p>
-                          <p className="text-muted-foreground">{order.hasFan ? "是" : "否"}</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                            <p className="font-semibold">是否安装头内风扇模块</p>
+                            <p className="text-muted-foreground">{order.applicationData?.hasFan ? "是" : "否"}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="font-semibold">是否需要磁吸可替换眼</p>
+                                <p className="text-muted-foreground">{order.applicationData?.magneticEyes ? `是 (${order.applicationData?.magneticEyesCount || 0} 双)` : "否"}</p>
+                            </div>
                         </div>
+
                         {order.cancellationReason && (
                             <div className="p-4 rounded-md bg-destructive/10 border border-destructive/30">
                                 <p className="font-semibold text-destructive">退养/取消理由</p>
                                 <p className="text-destructive/90 mt-1">{order.cancellationReason}</p>
                             </div>
                         )}
-                        {order.applicationData?.referenceImageUrl && (
-                            <div className="space-y-2">
-                                <p className="font-semibold">用户设定图</p>
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <div className="relative w-48 h-48 rounded-md overflow-hidden cursor-pointer border">
-                                            <Image src={order.applicationData.referenceImageUrl} alt="用户设定图" fill style={{ objectFit: 'cover'}} />
-                                        </div>
-                                    </DialogTrigger>
-                                    <DialogContent className="max-w-[90vw] md:max-w-4xl h-auto p-2 bg-transparent border-none shadow-none">
-                                        <div className="relative aspect-video w-full h-full">
-                                            <Image src={order.applicationData.referenceImageUrl} alt="用户设定图" fill style={{ objectFit: 'contain' }} />
-                                        </div>
-                                    </DialogContent>
-                                </Dialog>
-                                <p className="text-xs text-muted-foreground">点击图片可查看大图并下载。</p>
-                            </div>
-                        )}
+                         <div className="flex flex-wrap gap-4">
+                            {order.applicationData?.referenceImageUrl && (
+                                <div className="space-y-2">
+                                    <p className="font-semibold">用户设定图 1</p>
+                                    <Dialog>
+                                        <DialogTrigger asChild>
+                                            <div className="relative w-48 h-48 rounded-md overflow-hidden cursor-pointer border">
+                                                <Image src={order.applicationData.referenceImageUrl} alt="用户设定图 1" fill style={{ objectFit: 'cover'}} />
+                                            </div>
+                                        </DialogTrigger>
+                                        <DialogContent className="max-w-[90vw] md:max-w-4xl h-auto p-2 bg-transparent border-none shadow-none">
+                                            <div className="relative aspect-video w-full h-full">
+                                                <Image src={order.applicationData.referenceImageUrl} alt="用户设定图 1" fill style={{ objectFit: 'contain' }} />
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+                                </div>
+                            )}
+                            {order.applicationData?.referenceImageUrl2 && (
+                                <div className="space-y-2">
+                                    <p className="font-semibold">用户设定图 2</p>
+                                    <Dialog>
+                                        <DialogTrigger asChild>
+                                            <div className="relative w-48 h-48 rounded-md overflow-hidden cursor-pointer border">
+                                                <Image src={order.applicationData.referenceImageUrl2} alt="用户设定图 2" fill style={{ objectFit: 'cover'}} />
+                                            </div>
+                                        </DialogTrigger>
+                                        <DialogContent className="max-w-[90vw] md:max-w-4xl h-auto p-2 bg-transparent border-none shadow-none">
+                                            <div className="relative aspect-video w-full h-full">
+                                                <Image src={order.applicationData.referenceImageUrl2} alt="用户设定图 2" fill style={{ objectFit: 'contain' }} />
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+                                </div>
+                            )}
+                         </div>
                         <div>
                             <p className="font-semibold">用户ID</p>
                             <p className="text-muted-foreground break-all text-xs">{order.userId}</p>
