@@ -48,7 +48,10 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
   const [referenceImagePreviews, setReferenceImagePreviews] = useState<(string | null)[]>([null, null]);
   const fileInputRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
   
+  const [needsMagneticEyes, setNeedsMagneticEyes] = useState(false);
+  
   const fanPrice = siteContent?.fanPrice ?? 150;
+  const magneticEyePrice = siteContent?.magneticEyePrice ?? 200;
   
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
   const [isCommissionOpen, setIsCommissionOpen] = useState(commissionOption.status !== '即将开放');
@@ -175,7 +178,9 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
         addressDetail: formData.get('addressDetail') as string,
         referenceImageUrl: uploadedUrls[0],
         referenceImageUrl2: uploadedUrls[1],
-        hasFan: (formData.get('hasFan') as string) === 'on',
+        hasFan: formData.get('hasFan') === 'on',
+        magneticEyes: formData.get('magneticEyes') === 'on',
+        magneticEyesCount: Number(formData.get('magneticEyesCount')) || 0,
       };
       
       const commissionInfo = {
@@ -185,7 +190,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
         price: commissionStyle.price,
       };
 
-      await createCommissionApplication(user.uid, commissionInfo, applicationData, fanPrice);
+      await createCommissionApplication(user.uid, commissionInfo, applicationData, fanPrice, magneticEyePrice);
       toast({
         title: "申请已提交！",
         description: "我们的团队将审核您的信息并与您联系。",
@@ -348,38 +353,60 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
               <Textarea id="addressDetail" name="addressDetail" placeholder="请输入街道、门牌号等详细信息" required />
           </div>
 
-          <div className="flex items-center space-x-2 pt-2">
-            <Checkbox id="hasFan" name="hasFan" />
-            <label htmlFor="hasFan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              是否安装头内风扇模块 (+￥{fanPrice})
-            </label>
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="hasFan" name="hasFan" />
+              <label htmlFor="hasFan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                是否安装头内风扇模块 (+￥{fanPrice})
+              </label>
+            </div>
+             <div className="flex items-center space-x-2">
+                <Checkbox id="magneticEyes" name="magneticEyes" checked={needsMagneticEyes} onCheckedChange={(checked) => setNeedsMagneticEyes(checked as boolean)} />
+                <label htmlFor="magneticEyes" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    是否需要磁吸可替换眼 (+￥{magneticEyePrice}/双)
+                </label>
+            </div>
+
+            {needsMagneticEyes && (
+                <div className="pl-6">
+                    <Label htmlFor="magneticEyesCount">选择数量</Label>
+                    <Select name="magneticEyesCount" defaultValue="1">
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="选择数量" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="1">1 双</SelectItem>
+                            <SelectItem value="2">2 双</SelectItem>
+                            <SelectItem value="3">3 双</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            )}
           </div>
 
           <div className="space-y-2 pt-2">
-              <div className="flex items-start space-x-2">
-                  <Checkbox id="terms" name="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} className="mt-1" />
-                  <div className="grid gap-1.5 leading-none">
-                       <Dialog>
-                          <DialogTrigger asChild>
-                             <label
-                                htmlFor="terms"
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                              >
-                               我已阅读并同意 <span className="text-primary hover:underline cursor-pointer">服务条款</span>
-                            </label>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-3xl">
-                              <DialogHeader>
-                                  <DialogTitle className="text-xl">服务条款</DialogTitle>
-                              </DialogHeader>
-                              <ScrollArea className="h-[60vh] pr-6">
-                                  <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
-                                      {contractText || "合同条款正在加载中..."}
-                                  </div>
-                              </ScrollArea>
-                          </DialogContent>
-                      </Dialog>
-                  </div>
+              <div className="flex items-center space-x-2">
+                  <Checkbox id="terms" name="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} />
+                   <Dialog>
+                      <DialogTrigger asChild>
+                         <label
+                            htmlFor="terms"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                          >
+                           我已阅读并同意 <span className="text-primary hover:underline">服务条款</span>
+                        </label>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-3xl">
+                          <DialogHeader>
+                              <DialogTitle className="text-xl">服务条款</DialogTitle>
+                          </DialogHeader>
+                          <ScrollArea className="h-[60vh] pr-6">
+                              <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
+                                  {contractText || "合同条款正在加载中..."}
+                              </div>
+                          </ScrollArea>
+                      </DialogContent>
+                  </Dialog>
               </div>
           </div>
          </CardContent>
