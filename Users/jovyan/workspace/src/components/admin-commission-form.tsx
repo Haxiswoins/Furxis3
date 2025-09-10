@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -108,6 +109,7 @@ export function AdminCommissionForm({ commissionOption }: AdminCommissionFormPro
         description: `委托选项 "${values.name}" 已被成功保存。`,
       });
       router.push('/admin/commissions');
+      router.refresh(); 
     } catch (error) {
        console.error("保存委托失败:", error);
       toast({

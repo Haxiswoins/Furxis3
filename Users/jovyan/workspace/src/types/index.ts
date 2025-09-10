@@ -59,7 +59,6 @@ export type Order = {
   applicationData?: ApplicationData;
   cancellationReason?: string;
   shippingTrackingId?: string | null;
-  referenceImageUrl?: string | null;
   commissionOptionName?: string; // Storing parent option name for commission orders
   hasFan?: boolean; 
 };
@@ -77,6 +76,7 @@ export type ApplicationData = {
     district?: string;
     addressDetail?: string;
     referenceImageUrl?: string | null;
+    referenceImageUrl2?: string | null;
     hasFan?: boolean; 
 }
 

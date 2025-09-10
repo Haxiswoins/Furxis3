@@ -2,46 +2,40 @@
 
 'use client';
 
-// This function talks to the external image hosting service to handle file uploads.
+// This function now sends the file to our own backend API route,
+// which then securely forwards it to the image hosting service.
+// This prevents exposing the image hosting API token to the client.
 export async function uploadImage(file: File, path: string): Promise<string> {
     if (!file) {
         throw new Error("No file provided for upload.");
     }
-
-    const uploadToken = process.env.IMAGE_UPLOAD_TOKEN;
-    if (!uploadToken) {
-        console.error("Image upload token is not configured.");
-        throw new Error("Image upload service is not configured. Please contact the administrator.");
-    }
     
     const formData = new FormData();
     formData.append('file', file);
+    // The 'path' argument from the original call is kept for potential future use,
+    // but the backend will generate its own path for security.
+    formData.append('path', path); 
     
     try {
-        const uploadUrl = 'https://cdn.markjoker.top/api/v1/upload';
-
-        const response = await fetch(uploadUrl, {
+        // We now point to our own internal API endpoint.
+        const response = await fetch('/api/upload', {
             method: 'POST',
-            headers: {
-                // As per API documentation, include Authorization and Accept headers.
-                // Do not set Content-Type; the browser will set it automatically for FormData.
-                'Authorization': `Bearer ${uploadToken}`,
-                'Accept': 'application/json',
-            },
             body: formData,
+            // Do not set Content-Type, the browser does it automatically for FormData
         });
 
         const result = await response.json();
 
-        if (!response.ok || !result.status) {
-            throw new Error(result.message || "File upload failed due to a server error.");
+        if (!response.ok) {
+            // Use the error message from our backend if available
+            throw new Error(result.error || "File upload failed due to a server error.");
         }
         
-        // Correctly parse the nested URL from the response as per the API documentation.
-        if (result.data && result.data.links && result.data.links.url) {
-            return result.data.links.url;
+        // Our backend now directly provides the final URL.
+        if (result.url) {
+            return result.url;
         } else {
-            throw new Error("Image URL not found in the API response.");
+            throw new Error("Image URL not found in the API response from our server.");
         }
 
     } catch (error) {

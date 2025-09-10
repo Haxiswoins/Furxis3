@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useRef } from 'react';
@@ -349,7 +350,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
         
         <div className="flex items-center gap-4">
           <Button type="submit" disabled={loading}>
-            {loading ? (isUploading ? '图片上传中...' : '保存中...') : '保存作品'}
+            {loading ? (isUploading ? '图片上传中...' : '保存作品'}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.back()}>
             返回
