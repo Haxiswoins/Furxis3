@@ -98,8 +98,9 @@ NEXT_PUBLIC_BASE_URL="..."
 # 详细配置请务必参考项目中的 RESEND_GUIDE.md
 RESEND_API_KEY="..."
 
-# --- 图片上传服务授权 Token ---
+# --- 图片上传服务授权 Token (服务器端安全变量) ---
 # 这是用于将图片上传到您的图床的API密钥。
+# 这个密钥只在服务器端使用，不会泄露到浏览器。
 # 格式通常是 "1|abcdefg..."，请完整粘贴。
 IMAGE_UPLOAD_TOKEN="..."
 
