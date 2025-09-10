@@ -65,13 +65,14 @@ export async function getCharacterSeriesByName(name: string): Promise<CharacterS
 }
 
 export async function saveCharacterSeries(seriesData: Omit<CharacterSeries, 'id'>, id?: string): Promise<string> {
-    const allSeries = await getCharacterSeries();
+    const allSeries = await readData<CharacterSeries[]>('characterSeries.json');
     if (id) {
         const index = allSeries.findIndex(s => s.id === id);
         if (index > -1) {
             allSeries[index] = { ...allSeries[index], ...seriesData };
         }
         await writeData('characterSeries.json', allSeries);
+        revalidatePath('/admin/character-series');
         revalidatePath('/adoption', 'layout');
         return id;
     } else {
@@ -79,14 +80,15 @@ export async function saveCharacterSeries(seriesData: Omit<CharacterSeries, 'id'
         const newSeries = { id: newId, ...seriesData };
         allSeries.push(newSeries);
         await writeData('characterSeries.json', allSeries);
+        revalidatePath('/admin/character-series');
         revalidatePath('/adoption', 'layout');
         return newId;
     }
 }
 
 export async function deleteCharacterSeries(id: string): Promise<void> {
-    let allSeries = await getCharacterSeries();
-    let allCharacters = await getCharacters();
+    let allSeries = await readData<CharacterSeries[]>('characterSeries.json');
+    let allCharacters = await readData<Character[]>('characters.json');
 
     // Filter out the series to be deleted
     allSeries = allSeries.filter(s => s.id !== id);
@@ -97,6 +99,7 @@ export async function deleteCharacterSeries(id: string): Promise<void> {
     // Write both updated lists back to their files
     await writeData('characterSeries.json', allSeries);
     await writeData('characters.json', allCharacters);
+    revalidatePath('/admin/character-series');
     revalidatePath('/adoption', 'layout');
 }
 
@@ -121,7 +124,7 @@ export async function getCharacterByName(name: string): Promise<Character | null
 }
 
 export async function saveCharacter(character: Omit<Character, 'id'>, id?: string): Promise<string> {
-  const allCharacters = await getCharacters();
+  const allCharacters = await readData<Character[]>('characters.json');
   if (id) {
     const index = allCharacters.findIndex(c => c.id === id);
     if(index > -1) {
@@ -133,14 +136,16 @@ export async function saveCharacter(character: Omit<Character, 'id'>, id?: strin
     id = newId;
   }
   await writeData('characters.json', allCharacters);
+  revalidatePath('/admin/characters');
   revalidatePath('/adoption', 'layout');
   return id;
 }
 
 export async function deleteCharacter(id: string): Promise<void> {
-    let allCharacters = await getCharacters();
+    let allCharacters = await readData<Character[]>('characters.json');
     allCharacters = allCharacters.filter(c => c.id !== id);
     await writeData('characters.json', allCharacters);
+    revalidatePath('/admin/characters');
     revalidatePath('/adoption', 'layout');
 }
 
@@ -195,14 +200,16 @@ export async function saveCommissionOption(optionData: Omit<CommissionOption, 'i
         id = newId;
     }
     await writeData('commissionOptions.json', allOptions);
+    revalidatePath('/admin/commissions');
     revalidatePath('/commission', 'layout');
     return id;
 }
 
 export async function deleteCommissionOption(id: string): Promise<void> {
-    let allOptions = await getCommissionOptions();
+    let allOptions = await readData<CommissionOption[]>('commissionOptions.json');
     allOptions = allOptions.filter(o => o.id !== id);
     await writeData('commissionOptions.json', allOptions);
+    revalidatePath('/admin/commissions');
     revalidatePath('/commission', 'layout');
 }
 
@@ -223,7 +230,7 @@ export async function getCommissionStyleById(id: string): Promise<CommissionStyl
 }
 
 export async function saveCommissionStyle(style: Omit<CommissionStyle, 'id'>, id?: string): Promise<string> {
-    const allStyles = await getAllCommissionStyles();
+    const allStyles = await readData<CommissionStyle[]>('commissionStyles.json');
     if (id) {
         const index = allStyles.findIndex(s => s.id === id);
         if (index > -1) {
@@ -235,14 +242,16 @@ export async function saveCommissionStyle(style: Omit<CommissionStyle, 'id'>, id
         id = newId;
     }
     await writeData('commissionStyles.json', allStyles);
+    revalidatePath('/admin/commission-styles');
     revalidatePath('/commission', 'layout');
     return id;
 }
 
 export async function deleteCommissionStyle(id: string): Promise<void> {
-    let allStyles = await getAllCommissionStyles();
+    let allStyles = await readData<CommissionStyle[]>('commissionStyles.json');
     allStyles = allStyles.filter(s => s.id !== id);
     await writeData('commissionStyles.json', allStyles);
+    revalidatePath('/admin/commission-styles');
     revalidatePath('/commission', 'layout');
 }
 
@@ -264,7 +273,7 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
 }
 
 export async function updateOrder(orderId: string, data: Partial<Order>): Promise<void> {
-    const allOrders = await getAllOrders();
+    const allOrders = await readData<Order[]>('orders.json');
     const orderIndex = allOrders.findIndex(o => o.id === orderId);
     
     if (orderIndex === -1) {
@@ -286,6 +295,8 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
 
     await writeData('orders.json', allOrders);
     revalidatePath('/orders', 'layout');
+    revalidatePath('/admin/orders');
+    revalidatePath(`/admin/users/${originalOrder.userId}`);
     
     // --- Side Effects: Send Emails ---
     const siteContent = await getSiteContent();
@@ -305,21 +316,26 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
     let emailBody: string | undefined;
 
     if (wasJustSetToConfirm) {
-        emailSubject = siteContent.confirmationEmailSubject || '您的委托申请已中标！';
-        emailBody = siteContent.confirmationEmailBody || '';
+        if (updatedOrder.orderType === '委托订单') {
+            emailSubject = siteContent.confirmationEmailSubject || '您的委托申请已中标！';
+            emailBody = (siteContent.confirmationEmailBody || '')
+              .replace(/\{productName\}/g, updatedOrder.productName)
+              .replace(/\{commissionOptionName\}/g, updatedOrder.commissionOptionName || '')
+              .replace(/\{total\}/g, updatedOrder.total);
+        } else if (updatedOrder.orderType === '领养订单') {
+            emailSubject = siteContent.adoptionConfirmationEmailSubject || '您的领养申请已通过！';
+            emailBody = (siteContent.adoptionConfirmationEmailBody || '')
+              .replace(/\{productName\}/g, updatedOrder.productName)
+              .replace(/\{total\}/g, updatedOrder.total);
+        }
     } else if (wasJustSetToNotSelected && updatedOrder.orderType === '委托订单') {
         emailSubject = siteContent.notSelectedEmailSubject || '关于您的委托申请结果';
-        emailBody = siteContent.notSelectedEmailBody || '';
+        emailBody = (siteContent.notSelectedEmailBody || '')
+            .replace(/\{productName\}/g, updatedOrder.productName)
+            .replace(/\{commissionOptionName\}/g, updatedOrder.commissionOptionName || '');
     }
 
     if (emailSubject && emailBody) {
-        emailBody = emailBody.replace(/\{productName\}/g, updatedOrder.productName);
-        if (updatedOrder.commissionOptionName) {
-            emailBody = emailBody.replace(/\{commissionOptionName\}/g, updatedOrder.commissionOptionName);
-        } else {
-             emailBody = emailBody.replace(/\{commissionOptionName\}/g, '');
-        }
-
         try {
             await sendEmail({
                 to: updatedOrder.applicationData.email,
@@ -335,17 +351,19 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
 
 
 export async function deleteOrder(id: string): Promise<void> {
-    let allOrders = await getAllOrders();
+    let allOrders = await readData<Order[]>('orders.json');
     allOrders = allOrders.filter(o => o.id !== id);
     await writeData('orders.json', allOrders);
+    revalidatePath('/admin/orders');
     revalidatePath('/orders', 'layout');
+    revalidatePath('/admin/users');
 }
 
 
 // Order Actions (Application Creation)
-export async function createAdoptionApplication(character: Character, userId: string, applicationData: ApplicationData, fanPrice: number): Promise<string> {
-    const allOrders = await getAllOrders();
-    const allCharacters = await getCharacters();
+export async function createAdoptionApplication(character: Character, userId: string, applicationData: ApplicationData, fanPrice: number, magneticEyePrice: number): Promise<string> {
+    const allOrders = await readData<Order[]>('orders.json');
+    const allCharacters = await readData<Character[]>('characters.json');
 
     // Limit check: one active application per character per user
     const historicalStatuses = ['已完成', '已取消', '未中标'];
@@ -367,6 +385,9 @@ export async function createAdoptionApplication(character: Character, userId: st
     if (applicationData.hasFan) {
         finalPrice += fanPrice;
     }
+    if (applicationData.magneticEyes && applicationData.magneticEyesCount) {
+        finalPrice += applicationData.magneticEyesCount * magneticEyePrice;
+    }
 
     const newOrder: Order = {
       id: newId,
@@ -381,6 +402,8 @@ export async function createAdoptionApplication(character: Character, userId: st
       shippingAddress: `${applicationData.province} ${applicationData.city} ${applicationData.district} ${applicationData.addressDetail}`,
       applicationData,
       hasFan: applicationData.hasFan,
+      magneticEyes: applicationData.magneticEyes,
+      magneticEyesCount: applicationData.magneticEyesCount,
     };
     
     allOrders.push(newOrder);
@@ -394,6 +417,7 @@ export async function createAdoptionApplication(character: Character, userId: st
     await writeData('characters.json', allCharacters);
     revalidatePath('/orders', 'layout');
     revalidatePath('/adoption', 'layout');
+    revalidatePath('/admin/users');
 
     // Admin Email Notification
     const siteContent = await getSiteContent();
@@ -421,8 +445,8 @@ type CommissionInfo = {
     imageUrl: string;
     price: string;
 }
-export async function createCommissionApplication(userId: string, commissionInfo: CommissionInfo, applicationData: ApplicationData, fanPrice: number): Promise<string> {
-    const allOrders = await getAllOrders();
+export async function createCommissionApplication(userId: string, commissionInfo: CommissionInfo, applicationData: ApplicationData, fanPrice: number, magneticEyePrice: number): Promise<string> {
+    const allOrders = await readData<Order[]>('orders.json');
     
     // Limit check: two active applications per commission option per user
     const historicalStatuses = ['已完成', '已取消', '未中标'];
@@ -440,9 +464,22 @@ export async function createCommissionApplication(userId: string, commissionInfo
     const orderNumber = `C${new Date().toISOString().slice(0,10).replace(/-/g, '')}${Math.floor(100 + Math.random() * 900)}`;
     const newId = `order_${Date.now()}`;
 
-    let finalPriceDesc = `${commissionInfo.price} (估价)`;
+    let finalPriceDesc = `${commissionInfo.price}`;
+    let additionalPrice = 0;
     if (applicationData.hasFan) {
-        finalPriceDesc += ` + ￥${fanPrice} 风扇`;
+        additionalPrice += fanPrice;
+    }
+    if (applicationData.magneticEyes && applicationData.magneticEyesCount) {
+        additionalPrice += applicationData.magneticEyesCount * magneticEyePrice;
+    }
+    
+    const currentPrice = parseFloat(commissionInfo.price.replace(/[^0-9.]/g, ''));
+    if (!isNaN(currentPrice)) {
+        finalPriceDesc = `￥${currentPrice + additionalPrice}`;
+    } else {
+        if (additionalPrice > 0) {
+            finalPriceDesc += ` + ￥${additionalPrice} 附加项`;
+        }
     }
 
     const newOrderData: Order = {
@@ -457,14 +494,16 @@ export async function createCommissionApplication(userId: string, commissionInfo
         total: finalPriceDesc,
         shippingAddress: `${applicationData.province} ${applicationData.city} ${applicationData.district} ${applicationData.addressDetail}`,
         applicationData,
-        referenceImageUrl: applicationData.referenceImageUrl || null,
         commissionOptionName: commissionInfo.optionName,
         hasFan: applicationData.hasFan,
+        magneticEyes: applicationData.magneticEyes,
+        magneticEyesCount: applicationData.magneticEyesCount,
     };
     
     allOrders.push(newOrderData);
     await writeData('orders.json', allOrders);
     revalidatePath('/orders', 'layout');
+    revalidatePath('/admin/users');
 
     // Admin Email Notification
     const siteContent = await getSiteContent();
@@ -489,7 +528,7 @@ export async function createCommissionApplication(userId: string, commissionInfo
 
 
 export async function cancelOrder(orderId: string, reason: string): Promise<void> {
-  const allOrders = await getAllOrders();
+  const allOrders = await readData<Order[]>('orders.json');
   const orderIndex = allOrders.findIndex(o => o.id === orderId);
   if (orderIndex > -1) {
     allOrders[orderIndex].status = '退养中';
@@ -520,7 +559,7 @@ export async function cancelOrder(orderId: string, reason: string): Promise<void
 }
 
 export async function reinstateOrder(orderId: string): Promise<void> {
-    const allOrders = await getAllOrders();
+    const allOrders = await readData<Order[]>('orders.json');
     const orderIndex = allOrders.findIndex(o => o.id === orderId);
     if (orderIndex > -1) {
         allOrders[orderIndex].status = '处理中';
@@ -555,14 +594,16 @@ export async function saveWork(workData: Omit<Work, 'id'>, id?: string): Promise
         id = newId;
     }
     await writeData('works.json', allWorks);
+    revalidatePath('/admin/works');
     revalidatePath('/works', 'layout');
     return id;
 }
 
 export async function deleteWork(id: string): Promise<void> {
-    let allWorks = await getWorks();
+    let allWorks = await readData<Work[]>('works.json');
     allWorks = allWorks.filter(w => w.id !== id);
     await writeData('works.json', allWorks);
+    revalidatePath('/admin/works');
     revalidatePath('/works', 'layout');
 }
 
@@ -574,7 +615,7 @@ export async function getBadges(): Promise<Badge[]> {
 }
 
 export async function saveBadge(badgeData: Omit<Badge, 'id' | 'createdAt'>): Promise<Badge> {
-    const allBadges = await getBadges();
+    const allBadges = await readData<Badge[]>('badges.json');
     const newBadge: Badge = {
         id: `badge_${Date.now()}`,
         ...badgeData,
@@ -582,7 +623,7 @@ export async function saveBadge(badgeData: Omit<Badge, 'id' | 'createdAt'>): Pro
     };
     allBadges.push(newBadge);
     await writeData('badges.json', allBadges);
-    revalidatePath('/admin/badges', 'page');
+    revalidatePath('/admin/badges');
     return newBadge;
 }
 
@@ -602,7 +643,9 @@ export async function deleteBadge(id: string): Promise<void> {
         writeData('badgeQRCodes.json', remainingQRCodes),
         writeData('userBadges.json', remainingUserBadges)
     ]);
-    revalidatePath('/admin/badges', 'page');
+    revalidatePath('/admin/badges');
+    revalidatePath('/admin/users', 'layout');
+    revalidatePath('/my-badges');
 }
 
 
@@ -707,7 +750,8 @@ export async function confirmAndGrantBadge(qrId: string, userId: string): Promis
         writeData('badgeQRCodes.json', allQRCodes)
     ]);
     
-    revalidatePath('/my-badges', 'page');
+    revalidatePath('/my-badges');
+    revalidatePath('/admin/users', 'layout');
 
     return { success: true, message: '徽章领取成功。' };
 }
@@ -770,7 +814,8 @@ export async function grantBadgeConditionally(
     await writeData('userBadges.json', allUserBadges);
     const allBadges = await getBadges();
     const resultBadge = allBadges.find(b => b.id === resultBadgeId);
-    revalidatePath('/admin/users', 'page');
+    revalidatePath('/admin/users', 'layout');
+    revalidatePath('/my-badges');
     return {
       success: true,
       message: `操作完成！已成功为 ${grantedCount} 位满足条件的用户发放了徽章“${resultBadge?.name || resultBadgeId}”。`
@@ -876,8 +921,9 @@ export async function grantBadgeToUser(userId: string, badgeId: string): Promise
 
     allUserBadges.push(newUserBadge);
     await writeData('userBadges.json', allUserBadges);
-    revalidatePath(`/admin/users`);
+    revalidatePath('/admin/users', 'layout');
     revalidatePath(`/admin/users/${userId}`);
+    revalidatePath('/my-badges');
 
     return { success: true, message: '徽章发放成功。' };
 }
@@ -913,7 +959,8 @@ export async function grantBadgeToUsers(userIds: string[], badgeId: string): Pro
 
     if (grantedCount > 0) {
         await writeData('userBadges.json', allUserBadges);
-        revalidatePath(`/admin/users`);
+        revalidatePath('/admin/users', 'layout');
+        revalidatePath('/my-badges');
         return { success: true, message: `操作完成！已成功为 ${grantedCount} 位用户发放了徽章“${badgeToGrant.name}”。` };
     } else {
         return { success: true, message: '所有选中的用户都已经拥有该徽章，未执行任何操作。' };

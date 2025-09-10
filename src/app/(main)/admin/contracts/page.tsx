@@ -28,10 +28,14 @@ import { Separator } from '@/components/ui/separator';
 const formSchema = z.object({
   adoptionContractText: z.string().min(1, '领养合同内容不能为空'),
   commissionContractText: z.string().min(1, '委托合同内容不能为空'),
+  // Commission emails
   confirmationEmailSubject: z.string().min(1, '邮件主题不能为空'),
   confirmationEmailBody: z.string().min(1, '邮件正文不能为空'),
   notSelectedEmailSubject: z.string().min(1, '邮件主题不能为空'),
   notSelectedEmailBody: z.string().min(1, '邮件正文不能为空'),
+  // Adoption emails
+  adoptionConfirmationEmailSubject: z.string().min(1, '邮件主题不能为空'),
+  adoptionConfirmationEmailBody: z.string().min(1, '邮件正文不能为空'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -88,6 +92,8 @@ export default function ContractsPage() {
       confirmationEmailBody: '',
       notSelectedEmailSubject: '',
       notSelectedEmailBody: '',
+      adoptionConfirmationEmailSubject: '',
+      adoptionConfirmationEmailBody: '',
     },
   });
 
@@ -103,6 +109,8 @@ export default function ContractsPage() {
           confirmationEmailBody: content.confirmationEmailBody || '',
           notSelectedEmailSubject: content.notSelectedEmailSubject || '',
           notSelectedEmailBody: content.notSelectedEmailBody || '',
+          adoptionConfirmationEmailSubject: content.adoptionConfirmationEmailSubject || '',
+          adoptionConfirmationEmailBody: content.adoptionConfirmationEmailBody || '',
         });
       }
       setInitialLoading(false);
@@ -191,7 +199,7 @@ export default function ContractsPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold mb-4">中标通知邮件</h3>
+                <h3 className="text-lg font-semibold mb-4">委托中标通知</h3>
                 <div className="pl-4 border-l-2 border-primary space-y-4">
                   <FormField
                     control={form.control}
@@ -216,7 +224,7 @@ export default function ContractsPage() {
                           <Textarea {...field} rows={8} />
                         </FormControl>
                         <FormDescription>
-                          可用变量: {"{productName}"}, {"{commissionOptionName}"}.
+                          可用变量: {"{productName}"}, {"{commissionOptionName}"}, {"{total}"}.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -226,8 +234,8 @@ export default function ContractsPage() {
               </div>
               <Separator />
                <div>
-                <h3 className="text-lg font-semibold mb-4">未中标通知邮件</h3>
-                <div className="pl-4 border-l-2 border-primary space-y-4">
+                <h3 className="text-lg font-semibold mb-4">委托未中标通知</h3>
+                <div className="pl-4 border-l-2 border-muted-foreground space-y-4">
                   <FormField
                     control={form.control}
                     name="notSelectedEmailSubject"
@@ -252,6 +260,41 @@ export default function ContractsPage() {
                         </FormControl>
                         <FormDescription>
                           可用变量: {"{productName}"}, {"{commissionOptionName}"}.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              <Separator />
+              <div>
+                <h3 className="text-lg font-semibold mb-4">领养申请通过通知</h3>
+                <div className="pl-4 border-l-2 border-primary space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="adoptionConfirmationEmailSubject"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>邮件主题</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="恭喜！您的领养申请已通过！" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="adoptionConfirmationEmailBody"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>邮件正文</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} rows={8} />
+                        </FormControl>
+                        <FormDescription>
+                          可用变量: {"{productName}"}, {"{total}"}.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>

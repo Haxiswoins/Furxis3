@@ -14,13 +14,16 @@
   "homeBackgroundImageUrl": null,
   "sunriseHour": 6,
   "sunsetHour": 18,
-  "contactInfo": "您好，如有需要可通过邮箱haxiswoins@qq.com与我们取得联系，我们将在收到邮件的第一时间回复您。您也可以直接联系您的委托经办人。",
+  "contactInfo": "您好，如有需要可通过邮箱haxiswoins@qq.com与我们取得联系，我们将在收到邮件的第一时间回复您。下方为前行无界官方交流群，欢迎您扫码加入！",
   "adoptionContractText": "请在后台管理页面编辑合同条款。",
   "commissionContractText": "请在后台管理页面编辑合同条款。",
   "confirmationEmailSubject": "恭喜！您的委托申请已中标！",
-  "confirmationEmailBody": "恭喜！您的前行无界 {commissionOptionName} - {productName} 委托申请已中标！请您及时前往工作室官网 -> 右上角个人信息图标 -> 我的订单 -> 订单详情页面阅读服务条款并确认委托申请。",
+  "confirmationEmailBody": "恭喜！您的前行无界 {commissionOptionName} - {productName} 委托申请已中标！\n\n您申请的估价总额为: {total} 元。\n\n请您及时与装师沟通付款及后续制作事宜。您也可以前往工作室官网 -> 右上角个人信息图标 -> 我的订单 -> 订单详情页面阅读服务条款并确认委托申请。",
   "fanPrice": 150,
   "senderEmail": "forwardift@markjoker.top",
   "notSelectedEmailSubject": "关于您的委托申请结果",
-  "notSelectedEmailBody": "非常遗憾地通知您，您申请的 {commissionOptionName} - {productName} 委托，本次未能入选。感谢您的参与，期待未来能与您合作！"
+  "notSelectedEmailBody": "非常遗憾地通知您，您申请的 {commissionOptionName} - {productName} 委托，本次未能入选。感谢您的参与，期待未来能与您合作！",
+  "magneticEyePrice": 200,
+  "adoptionConfirmationEmailSubject": "恭喜！您的领养申请已通过！",
+  "adoptionConfirmationEmailBody": "恭喜！您对 {productName} 的领养申请已通过！\n\n您的订单总额为: {total} 元。\n\n请您及时与装师沟通付款及后续制作事宜，并尽快前往工作室官网 -> 右上角个人信息图标 -> 我的订单 -> 订单详情页面确认合同条款。"
 }

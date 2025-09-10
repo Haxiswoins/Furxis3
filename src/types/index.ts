@@ -107,6 +107,8 @@ export type SiteContent = {
   confirmationEmailBody?: string;
   notSelectedEmailSubject?: string;
   notSelectedEmailBody?: string;
+  adoptionConfirmationEmailSubject?: string;
+  adoptionConfirmationEmailBody?: string;
   fanPrice?: number;
   magneticEyePrice?: number;
 };
