@@ -43,6 +43,7 @@ const formSchema = z.object({
   sunsetHour: z.coerce.number().min(0, "小时不能小于0").max(23, "小时不能大于23"),
   contactInfo: z.string().optional(),
   fanPrice: z.coerce.number().min(0, "价格不能为负数"),
+  magneticEyePrice: z.coerce.number().min(0, "价格不能为负数"),
   // Image URLs
   commissionImageUrl: z.string().optional(),
   adoptionImageUrl: z.string().optional(),
@@ -145,6 +146,7 @@ export default function SiteContentPage() {
                 sunsetHour: loadedContent?.sunsetHour ?? 18,
                 contactInfo: loadedContent?.contactInfo || '',
                 fanPrice: loadedContent?.fanPrice ?? 150,
+                magneticEyePrice: loadedContent?.magneticEyePrice ?? 200,
                 commissionImageUrl: loadedContent?.commissionImageUrl || '',
                 adoptionImageUrl: loadedContent?.adoptionImageUrl || '',
                 workImageUrl: loadedContent?.workImageUrl || '',
@@ -172,6 +174,7 @@ export default function SiteContentPage() {
                   sunsetHour: loadedContent.sunsetHour ?? 18,
                   contactInfo: loadedContent.contactInfo || '',
                   fanPrice: loadedContent.fanPrice ?? 150,
+                  magneticEyePrice: loadedContent.magneticEyePrice ?? 200,
                   commissionImageUrl: loadedContent.commissionImageUrl,
                   adoptionImageUrl: loadedContent.adoptionImageUrl,
                   workImageUrl: loadedContent.workImageUrl,
@@ -320,18 +323,32 @@ export default function SiteContentPage() {
                                     )}
                                 />
                             </div>
-                            <FormField
-                                control={form.control}
-                                name="fanPrice"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>风扇模块价格 (元)</FormLabel>
-                                        <FormControl><Input type="number" {...field} /></FormControl>
-                                        <FormDescription>设置头内风扇模块的附加价格。</FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <FormField
+                                    control={form.control}
+                                    name="fanPrice"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>风扇模块价格 (元)</FormLabel>
+                                            <FormControl><Input type="number" {...field} /></FormControl>
+                                            <FormDescription>设置头内风扇模块的附加价格。</FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="magneticEyePrice"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>磁吸可替换眼价格 (每双)</FormLabel>
+                                            <FormControl><Input type="number" {...field} /></FormControl>
+                                            <FormDescription>设置磁吸可替换眼每一双的附加价格。</FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                             <FormField
                                 control={form.control}
                                 name="contactInfo"
@@ -361,7 +378,7 @@ export default function SiteContentPage() {
                                     <FormLabel>首页卡片背景图</FormLabel>
                                      <div className="flex items-start gap-4">
                                         <div className="w-32 h-48 relative rounded-md border bg-muted flex-shrink-0">
-                                            <Image src={commissionUrlValue || commissionImagePreview || "https://placehold.co/600x800.png"} alt="委托卡片预览" fill style={{objectFit:'cover'}} className="rounded-md"/>
+                                            <Image src={commissionUrlValue || commissionImagePreview || "https://placehold.co/800x1000.png"} alt="委托卡片预览" fill style={{objectFit:'cover'}} className="rounded-md"/>
                                         </div>
                                         <div className="space-y-2">
                                             <Button type="button" variant="outline" onClick={() => commissionFileInputRef.current?.click()}>
@@ -410,7 +427,7 @@ export default function SiteContentPage() {
                                     <FormLabel>首页卡片背景图</FormLabel>
                                     <div className="flex items-start gap-4">
                                         <div className="w-32 h-48 relative rounded-md border bg-muted flex-shrink-0">
-                                            <Image src={adoptionUrlValue || adoptionImagePreview || "https://placehold.co/600x800.png"} alt="领养卡片预览" fill style={{objectFit:'cover'}} className="rounded-md" />
+                                            <Image src={adoptionUrlValue || adoptionImagePreview || "https://placehold.co/800x1000.png"} alt="领养卡片预览" fill style={{objectFit:'cover'}} className="rounded-md" />
                                         </div>
                                         <div className="space-y-2">
                                             <Button type="button" variant="outline" onClick={() => adoptionFileInputRef.current?.click()}>
@@ -458,7 +475,7 @@ export default function SiteContentPage() {
                                     <FormLabel>首页卡片背景图</FormLabel>
                                     <div className="flex items-start gap-4">
                                         <div className="w-32 h-48 relative rounded-md border bg-muted flex-shrink-0">
-                                            <Image src={workUrlValue || workImagePreview || "https://placehold.co/600x800.png"} alt="作品卡片预览" fill style={{objectFit:'cover'}} className="rounded-md" />
+                                            <Image src={workUrlValue || workImagePreview || "https://placehold.co/800x1000.png"} alt="作品卡片预览" fill style={{objectFit:'cover'}} className="rounded-md" />
                                         </div>
                                         <div className="space-y-2">
                                             <Button type="button" variant="outline" onClick={() => workFileInputRef.current?.click()}>

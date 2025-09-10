@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -13,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { chinaDivisions } from '@/lib/china-divisions';
 import { useAuth } from '@/context/AuthContext';
-import type { Character, SiteContent } from '@/types';
+import type { Character, SiteContent, ApplicationData } from '@/types';
 import {
   Dialog,
   DialogContent,
@@ -40,7 +41,10 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
   const [cities, setCities] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
 
+  const [needsMagneticEyes, setNeedsMagneticEyes] = useState(false);
+
   const fanPrice = siteContent?.fanPrice ?? 150;
+  const magneticEyePrice = siteContent?.magneticEyePrice ?? 200;
 
   const handleProvinceChange = (province: string) => {
     setSelectedProvince(province);
@@ -55,7 +59,7 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
     setSelectedCity(city);
     const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
     const cityData = provinceData?.cities.find(c => c.name === city);
-    const newDistricts = cityData?.districts || [];
+    const newDistricts = cityData ? cityData.districts : [];
     setDistricts(newDistricts);
   };
 
@@ -63,13 +67,13 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
     e.preventDefault();
     if (!user || !character) {
         if(!user) {
-            router.push(`/api/auth/authing/login?returnTo=${window.location.pathname}`);
+            router.push(`/api/auth/login?returnTo=${window.location.pathname}`);
         }
         return;
     };
 
     const formData = new FormData(e.currentTarget);
-    const applicationData = {
+    const applicationData: ApplicationData = {
       userName: formData.get('name') as string,
       age: formData.get('age') as string,
       phone: formData.get('phone') as string,
@@ -81,12 +85,14 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
       city: selectedCity,
       district: formData.get('district') as string,
       addressDetail: formData.get('addressDetail') as string,
-      hasFan: (formData.get('hasFan') as string) === 'on',
+      hasFan: formData.get('hasFan') === 'on',
+      magneticEyes: formData.get('magneticEyes') === 'on',
+      magneticEyesCount: Number(formData.get('magneticEyesCount')) || 0,
     };
 
     try {
       setSubmitting(true);
-      await createAdoptionApplication(character, user.uid, applicationData, fanPrice);
+      await createAdoptionApplication(character, user.uid, applicationData, fanPrice, magneticEyePrice);
       toast({
         title: "恭喜您！申请已提交",
         description: `管理员将在三个工作日内联系您。`,
@@ -173,11 +179,36 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
                 <Textarea id="addressDetail" name="addressDetail" placeholder="请输入街道、门牌号等详细信息" required />
             </div>
 
-            <div className="flex items-center space-x-2 pt-2">
-              <Checkbox id="hasFan" name="hasFan" />
-              <label htmlFor="hasFan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                是否安装头内风扇模块 (+￥{fanPrice})
-              </label>
+            <div className="space-y-4 pt-2">
+                <div className="flex items-center space-x-2">
+                    <Checkbox id="hasFan" name="hasFan" />
+                    <label htmlFor="hasFan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        是否安装头内风扇模块 (+￥{fanPrice})
+                    </label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                    <Checkbox id="magneticEyes" name="magneticEyes" checked={needsMagneticEyes} onCheckedChange={(checked) => setNeedsMagneticEyes(checked as boolean)} />
+                    <label htmlFor="magneticEyes" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        是否需要磁吸可替换眼 (+￥{magneticEyePrice}/双)
+                    </label>
+                </div>
+
+                {needsMagneticEyes && (
+                    <div className="pl-6">
+                        <Label htmlFor="magneticEyesCount">选择数量</Label>
+                        <Select name="magneticEyesCount" defaultValue="1">
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="选择数量" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="1">1 双</SelectItem>
+                                <SelectItem value="2">2 双</SelectItem>
+                                <SelectItem value="3">3 双</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                )}
             </div>
 
             <div className="space-y-2 pt-2">

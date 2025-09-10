@@ -1,8 +1,9 @@
 
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useRouter, usePathname, notFound } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +15,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { chinaDivisions } from '@/lib/china-divisions';
 import { useAuth } from '@/context/AuthContext';
 import { createCommissionApplication } from '@/lib/data-service';
-import type { CommissionStyle, CommissionOption, SiteContent } from '@/types';
+import type { CommissionStyle, CommissionOption, SiteContent, ApplicationData } from '@/types';
 import { uploadImage } from '@/lib/upload-service';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
@@ -43,11 +44,14 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
   const [cities, setCities] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
   
-  const [referenceImageFile, setReferenceImageFile] = useState<File | null>(null);
-  const [referenceImagePreview, setReferenceImagePreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [referenceImageFiles, setReferenceImageFiles] = useState<(File | null)[]>([null, null]);
+  const [referenceImagePreviews, setReferenceImagePreviews] = useState<(string | null)[]>([null, null]);
+  const fileInputRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
+  
+  const [needsMagneticEyes, setNeedsMagneticEyes] = useState(false);
   
   const fanPrice = siteContent?.fanPrice ?? 150;
+  const magneticEyePrice = siteContent?.magneticEyePrice ?? 200;
   
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
   const [isCommissionOpen, setIsCommissionOpen] = useState(commissionOption.status !== '即将开放');
@@ -98,7 +102,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     setDistricts(newDistricts);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
@@ -107,21 +111,32 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
           description: "请上传小于5MB的图片。",
           variant: "destructive",
         });
-        if(fileInputRef.current) {
-            fileInputRef.current.value = "";
+        if(fileInputRefs[index].current) {
+            fileInputRefs[index].current!.value = "";
         }
         return;
       }
-      setReferenceImageFile(file);
-      setReferenceImagePreview(URL.createObjectURL(file));
+      const newFiles = [...referenceImageFiles];
+      newFiles[index] = file;
+      setReferenceImageFiles(newFiles);
+
+      const newPreviews = [...referenceImagePreviews];
+      newPreviews[index] = URL.createObjectURL(file);
+      setReferenceImagePreviews(newPreviews);
     }
   };
 
-  const clearImage = () => {
-    setReferenceImageFile(null);
-    setReferenceImagePreview(null);
-    if(fileInputRef.current) {
-        fileInputRef.current.value = "";
+  const clearImage = (index: number) => {
+    const newFiles = [...referenceImageFiles];
+    newFiles[index] = null;
+    setReferenceImageFiles(newFiles);
+    
+    const newPreviews = [...referenceImagePreviews];
+    newPreviews[index] = null;
+    setReferenceImagePreviews(newPreviews);
+
+    if(fileInputRefs[index].current) {
+        fileInputRefs[index].current!.value = "";
     }
   }
   
@@ -139,14 +154,17 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     }
 
     setFormSubmitting(true);
-    let referenceImageUrl: string | null = null;
+    let uploadedUrls: (string | null)[] = [null, null];
+    
     try {
-      if (referenceImageFile) {
-        referenceImageUrl = await uploadImage(referenceImageFile, `references/${user.uid}_${Date.now()}`);
-      }
+        await Promise.all(referenceImageFiles.map(async (file, index) => {
+            if (file) {
+                uploadedUrls[index] = await uploadImage(file, `references/${user.uid}_${Date.now()}_${index}`);
+            }
+        }));
 
       const formData = new FormData(e.currentTarget);
-      const applicationData = {
+      const applicationData: ApplicationData = {
         userName: formData.get('name') as string,
         age: formData.get('age') as string,
         phone: formData.get('phone') as string,
@@ -158,8 +176,11 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
         city: selectedCity,
         district: formData.get('district') as string,
         addressDetail: formData.get('addressDetail') as string,
-        referenceImageUrl: referenceImageUrl,
-        hasFan: (formData.get('hasFan') as string) === 'on',
+        referenceImageUrl: uploadedUrls[0],
+        referenceImageUrl2: uploadedUrls[1],
+        hasFan: formData.get('hasFan') === 'on',
+        magneticEyes: formData.get('magneticEyes') === 'on',
+        magneticEyesCount: Number(formData.get('magneticEyesCount')) || 0,
       };
       
       const commissionInfo = {
@@ -169,7 +190,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
         price: commissionStyle.price,
       };
 
-      await createCommissionApplication(user.uid, commissionInfo, applicationData, fanPrice);
+      await createCommissionApplication(user.uid, commissionInfo, applicationData, fanPrice, magneticEyePrice);
       toast({
         title: "申请已提交！",
         description: "我们的团队将审核您的信息并与您联系。",
@@ -236,39 +257,42 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
 
       <form onSubmit={handleFormSubmit}>
          <CardContent className="space-y-4">
-          <div className="space-y-1">
-            <Label>设定图 (可选)</Label>
-            <div className="flex items-center gap-4">
-              <div className="w-32 h-32 relative rounded-md border bg-muted flex-shrink-0">
-                {referenceImagePreview ? (
-                  <>
-                    <Image src={referenceImagePreview} alt="设定图预览" fill style={{objectFit:'cover'}} className="rounded-md" />
-                    <Button type="button" variant="ghost" size="icon" className="absolute top-0 right-0 bg-black/50 hover:bg-black/70 text-white rounded-full h-6 w-6" onClick={clearImage}>
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </>
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                    <Upload className="h-8 w-8"/>
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[0, 1].map(index => (
+                <div key={index} className="space-y-1">
+                  <Label>设定参考图 {index + 1} (可选)</Label>
+                  <div className="flex items-center gap-4">
+                      <div className="w-32 h-32 relative rounded-md border bg-muted flex-shrink-0">
+                          {referenceImagePreviews[index] ? (
+                          <>
+                              <Image src={referenceImagePreviews[index]!} alt={`设定图预览 ${index + 1}`} fill style={{objectFit:'cover'}} className="rounded-md" />
+                              <Button type="button" variant="ghost" size="icon" className="absolute top-0 right-0 bg-black/50 hover:bg-black/70 text-white rounded-full h-6 w-6" onClick={() => clearImage(index)}>
+                              <X className="h-4 w-4" />
+                              </Button>
+                          </>
+                          ) : (
+                          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                              <Upload className="h-8 w-8"/>
+                          </div>
+                          )}
+                      </div>
+                      <Button type="button" variant="outline" onClick={() => fileInputRefs[index].current?.click()}>
+                          {referenceImagePreviews[index] ? '更换图片' : '选择图片'}
+                      </Button>
+                      <Input 
+                          id={`referenceImage-${index}`}
+                          name={`referenceImage-${index}`}
+                          type="file" 
+                          accept="image/*"
+                          className="hidden"
+                          ref={fileInputRefs[index]}
+                          onChange={(e) => handleFileChange(e, index)}
+                      />
                   </div>
-                )}
-              </div>
-              <Input 
-                  id="referenceImage"
-                  name="referenceImage"
-                  type="file" 
-                  accept="image/*"
-                  className="hidden"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-              />
-               <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                  <Upload className="mr-2 h-4 w-4" />
-                  {referenceImagePreview ? '更换图片' : '选择图片'}
-               </Button>
+                  <p className="text-xs text-muted-foreground pt-1">大小不超过5MB。</p>
+                </div>
+              ))}
             </div>
-            <p className="text-xs text-muted-foreground pt-1">上传一张角色的设定图，大小不超过5MB。如果没有也可以不上传。</p>
-          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
@@ -329,16 +353,40 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
               <Textarea id="addressDetail" name="addressDetail" placeholder="请输入街道、门牌号等详细信息" required />
           </div>
 
-          <div className="flex items-center space-x-2 pt-2">
-            <Checkbox id="hasFan" name="hasFan" />
-            <label htmlFor="hasFan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              是否安装头内风扇模块 (+￥{fanPrice})
-            </label>
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="hasFan" name="hasFan" />
+              <label htmlFor="hasFan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                是否安装头内风扇模块 (+￥{fanPrice})
+              </label>
+            </div>
+             <div className="flex items-center space-x-2">
+                <Checkbox id="magneticEyes" name="magneticEyes" checked={needsMagneticEyes} onCheckedChange={(checked) => setNeedsMagneticEyes(checked as boolean)} />
+                <label htmlFor="magneticEyes" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    是否需要磁吸可替换眼 (+￥{magneticEyePrice}/双)
+                </label>
+            </div>
+
+            {needsMagneticEyes && (
+                <div className="pl-6">
+                    <Label htmlFor="magneticEyesCount">选择数量</Label>
+                    <Select name="magneticEyesCount" defaultValue="1">
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="选择数量" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="1">1 双</SelectItem>
+                            <SelectItem value="2">2 双</SelectItem>
+                            <SelectItem value="3">3 双</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            )}
           </div>
 
           <div className="space-y-2 pt-2">
               <div className="flex items-start space-x-2">
-                  <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} className="mt-1" />
+                  <Checkbox id="terms" name="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} className="mt-1" />
                   <div className="grid gap-1.5 leading-none">
                        <Dialog>
                           <DialogTrigger asChild>

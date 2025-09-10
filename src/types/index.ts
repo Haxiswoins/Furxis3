@@ -59,9 +59,10 @@ export type Order = {
   applicationData?: ApplicationData;
   cancellationReason?: string;
   shippingTrackingId?: string | null;
-  referenceImageUrl?: string | null;
   commissionOptionName?: string; // Storing parent option name for commission orders
   hasFan?: boolean; 
+  magneticEyes?: boolean;
+  magneticEyesCount?: number;
 };
 
 export type ApplicationData = {
@@ -77,7 +78,10 @@ export type ApplicationData = {
     district?: string;
     addressDetail?: string;
     referenceImageUrl?: string | null;
-    hasFan?: boolean; 
+    referenceImageUrl2?: string | null;
+    hasFan?: boolean;
+    magneticEyes?: boolean;
+    magneticEyesCount?: number;
 }
 
 export type SiteContent = {
@@ -104,6 +108,7 @@ export type SiteContent = {
   notSelectedEmailSubject?: string;
   notSelectedEmailBody?: string;
   fanPrice?: number;
+  magneticEyePrice?: number;
 };
 
 export type CroppedAreaPixels = {
