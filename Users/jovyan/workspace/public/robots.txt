@@ -1,0 +1,6 @@
+# See https://www.robotstxt.org/robotstxt.html for syntax and more information
+
+User-agent: *
+Allow: /
+
+Sitemap: https://www.suitopia.club/sitemap.xml
