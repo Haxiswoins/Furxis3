@@ -1,3 +1,4 @@
+
 # 网站服务器部署指南
 
 本文档将指导您如何将此 Next.js 应用程序部署到您自己的服务器。
@@ -6,8 +7,7 @@
 > 为了让邮件通知和用户认证等核心功能正常工作，您的服务器**必须**具备稳定访问以下国际互联网服务的能力：
 > *   **Authing (认证服务)**: 用于所有用户登录、注册流程。其服务域名为 `*.authing.cn`。
 > *   **Resend (邮件服务)**: 用于发送所有系统通知邮件。其服务域名为 `api.resend.com`。
->
-> 图片上传功能将在您自己的服务器上进行存储，不依赖外部服务。
+> *   **图片上传服务**: 图片上传功能依赖的域名为 `cdn.markjoker.top`。
 >
 > **关于Google服务**：
 > *   **Google Fonts**：已在项目构建时自动下载并自托管，**运行时不依赖Google**。
@@ -23,6 +23,7 @@
 | :--- | :--- | :--- | :--- |
 | **Authing** | 用户认证 (登录/注册) | `AUTHING_APP_ID`<br>`AUTHING_APP_SECRET`<br>`AUTHING_ISSUER`<br>`AUTHING_REDIRECT_URI`<br>`AUTHING_SECRET`<br>`ADMIN_EMAIL` | 请参照 `Authing` 控制台的应用配置。 |
 | **Resend** | 邮件服务 (各类通知) | `RESEND_API_KEY` | 详细设置请务必参考项目中的 **`RESEND_GUIDE.md`** 文件。 |
+| **图片托管服务 (图床)** | 图片上传 | `IMAGE_UPLOAD_TOKEN` | 请从您的图床服务商 (如 lsky-pro) 的后台获取API授权Token。 |
 | **Google AI** | (未来功能) AI相关 | `GOOGLE_API_KEY` 或 `GEMINI_API_KEY` | 当前未激活。如需使用，请前往 Google AI Studio 获取。 |
 
 您需要在服务器上创建一个 `.env.local` 文件，并将从上述服务获取到的所有密钥填入其中。详细步骤见下文。
@@ -96,6 +97,11 @@ NEXT_PUBLIC_BASE_URL="..."
 # --- Resend API Key (用于邮件通知) ---
 # 详细配置请务必参考项目中的 RESEND_GUIDE.md
 RESEND_API_KEY="..."
+
+# --- 图片上传服务授权 Token ---
+# 这是用于将图片上传到您的图床的API密钥。
+# 格式通常是 "1|abcdefg..."，请完整粘贴。
+IMAGE_UPLOAD_TOKEN="..."
 
 # --- Authing 应用配置 (用于用户认证) ---
 # 您可以从 Authing 控制台 > 选择您的自建应用 > 应用配置 中找到以下大部分值。
