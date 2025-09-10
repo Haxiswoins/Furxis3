@@ -75,9 +75,10 @@ export async function GET(req: NextRequest) {
         }
     }
     
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || req.nextUrl.origin;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || new URL(req.url).origin;
+    const redirectUrl = new URL(returnTo, baseUrl);
 
-    return NextResponse.redirect(new URL(returnTo, baseUrl));
+    return NextResponse.redirect(redirectUrl);
 
   } catch (error) {
     console.error('Authentication callback error:', error);
