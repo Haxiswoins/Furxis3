@@ -903,8 +903,9 @@ export async function grantBadgeToUser(userId: string, badgeId: string): Promise
 
     allUserBadges.push(newUserBadge);
     await writeData('userBadges.json', allUserBadges);
-    revalidatePath(`/admin/users`, 'layout');
-    revalidatePath(`/my-badges`);
+    revalidatePath('/admin/users', 'layout');
+    revalidatePath(`/admin/users/${userId}`);
+    revalidatePath('/my-badges');
 
     return { success: true, message: '徽章发放成功。' };
 }
@@ -940,8 +941,8 @@ export async function grantBadgeToUsers(userIds: string[], badgeId: string): Pro
 
     if (grantedCount > 0) {
         await writeData('userBadges.json', allUserBadges);
-        revalidatePath(`/admin/users`, 'layout');
-        revalidatePath(`/my-badges`);
+        revalidatePath('/admin/users', 'layout');
+        revalidatePath('/my-badges');
         return { success: true, message: `操作完成！已成功为 ${grantedCount} 位用户发放了徽章“${badgeToGrant.name}”。` };
     } else {
         return { success: true, message: '所有选中的用户都已经拥有该徽章，未执行任何操作。' };

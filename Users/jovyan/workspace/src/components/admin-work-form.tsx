@@ -184,6 +184,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
             description: `作品 "${values.workName}" 已成功保存。`,
         });
         router.push('/admin/works');
+        router.refresh();
     } catch (error) {
        console.error("保存失败:", error);
       toast({
