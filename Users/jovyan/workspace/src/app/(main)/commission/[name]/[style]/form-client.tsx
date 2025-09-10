@@ -43,9 +43,9 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
   const [cities, setCities] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
   
-  const [referenceImageFiles, setReferenceImageFiles] = useState<(File | null)[]>([null, null]);
-  const [referenceImagePreviews, setReferenceImagePreviews] = useState<(string | null)[]>([null, null]);
-  const fileInputRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
+  const [referenceImageFile, setReferenceImageFile] = useState<File | null>(null);
+  const [referenceImagePreview, setReferenceImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const fanPrice = siteContent?.fanPrice ?? 150;
   
@@ -98,7 +98,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     setDistricts(newDistricts);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
@@ -107,32 +107,22 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
           description: "请上传小于5MB的图片。",
           variant: "destructive",
         });
-        if(fileInputRefs[index].current) {
-            fileInputRefs[index].current!.value = "";
+        if(fileInputRef.current) {
+            fileInputRef.current!.value = "";
         }
         return;
       }
-      const newFiles = [...referenceImageFiles];
-      newFiles[index] = file;
-      setReferenceImageFiles(newFiles);
-
-      const newPreviews = [...referenceImagePreviews];
-      newPreviews[index] = URL.createObjectURL(file);
-      setReferenceImagePreviews(newPreviews);
+      setReferenceImageFile(file);
+      setReferenceImagePreview(URL.createObjectURL(file));
     }
   };
 
-  const clearImage = (index: number) => {
-    const newFiles = [...referenceImageFiles];
-    newFiles[index] = null;
-    setReferenceImageFiles(newFiles);
-    
-    const newPreviews = [...referenceImagePreviews];
-    newPreviews[index] = null;
-    setReferenceImagePreviews(newPreviews);
+  const clearImage = () => {
+    setReferenceImageFile(null);
+    setReferenceImagePreview(null);
 
-    if(fileInputRefs[index].current) {
-        fileInputRefs[index].current!.value = "";
+    if(fileInputRef.current) {
+        fileInputRef.current!.value = "";
     }
   }
   
@@ -150,16 +140,12 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     }
 
     setFormSubmitting(true);
+    let uploadedUrl: string | null = null;
     
     try {
-        const uploadedUrls = await Promise.all(
-            referenceImageFiles.map(file => {
-                if (file) {
-                    return uploadImage(file, `references/${user.uid}_${Date.now()}`);
-                }
-                return Promise.resolve(null);
-            })
-        );
+        if (referenceImageFile) {
+            uploadedUrl = await uploadImage(referenceImageFile, `references/${user.uid}_${Date.now()}`);
+        }
 
       const formData = new FormData(e.currentTarget);
       const applicationData = {
@@ -174,8 +160,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
         city: selectedCity,
         district: formData.get('district') as string,
         addressDetail: formData.get('addressDetail') as string,
-        referenceImageUrl: uploadedUrls[0], // First image
-        referenceImageUrl2: uploadedUrls[1], // Second image
+        referenceImageUrl: uploadedUrl,
         hasFan: (formData.get('hasFan') as string) === 'on',
       };
       
@@ -254,40 +239,36 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
       <form onSubmit={handleFormSubmit}>
          <CardContent className="space-y-4">
           <div className="space-y-1">
-            <Label>设定参考图 (可选, 最多2张)</Label>
-            <div className="flex flex-wrap items-start gap-4">
-                {[0, 1].map(index => (
-                    <div key={index} className="flex flex-col items-center gap-2">
-                        <div className="w-32 h-32 relative rounded-md border bg-muted flex-shrink-0">
-                            {referenceImagePreviews[index] ? (
-                            <>
-                                <Image src={referenceImagePreviews[index]!} alt={`设定图预览 ${index + 1}`} fill style={{objectFit:'cover'}} className="rounded-md" />
-                                <Button type="button" variant="ghost" size="icon" className="absolute top-0 right-0 bg-black/50 hover:bg-black/70 text-white rounded-full h-6 w-6" onClick={() => clearImage(index)}>
-                                <X className="h-4 w-4" />
-                                </Button>
-                            </>
-                            ) : (
-                            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                                <Upload className="h-8 w-8"/>
-                            </div>
-                            )}
-                        </div>
-                        <Input 
-                            id={`referenceImage-${index}`}
-                            name={`referenceImage-${index}`}
-                            type="file" 
-                            accept="image/*"
-                            className="hidden"
-                            ref={fileInputRefs[index]}
-                            onChange={(e) => handleFileChange(e, index)}
-                        />
-                        <Button type="button" variant="outline" size="sm" onClick={() => fileInputRefs[index].current?.click()}>
-                            {referenceImagePreviews[index] ? '更换图片' : `选择图片 ${index + 1}`}
+            <Label>设定参考图 (可选, 推荐双视图)</Label>
+            <div className="flex items-center gap-4">
+                <div className="w-32 h-32 relative rounded-md border bg-muted flex-shrink-0">
+                    {referenceImagePreview ? (
+                    <>
+                        <Image src={referenceImagePreview} alt="设定图预览" fill style={{objectFit:'cover'}} className="rounded-md" />
+                        <Button type="button" variant="ghost" size="icon" className="absolute top-0 right-0 bg-black/50 hover:bg-black/70 text-white rounded-full h-6 w-6" onClick={clearImage}>
+                        <X className="h-4 w-4" />
                         </Button>
+                    </>
+                    ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                        <Upload className="h-8 w-8"/>
                     </div>
-                ))}
+                    )}
+                </div>
+                <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                    {referenceImagePreview ? '更换图片' : '选择图片'}
+                </Button>
+                <Input 
+                    id="referenceImage-0"
+                    name="referenceImage-0"
+                    type="file" 
+                    accept="image/*"
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                />
             </div>
-            <p className="text-xs text-muted-foreground pt-1">上传角色的设定图（如正面、背面），每张大小不超过5MB。</p>
+            <p className="text-xs text-muted-foreground pt-1">上传一张角色的设定图，大小不超过5MB。</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

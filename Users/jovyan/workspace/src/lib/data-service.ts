@@ -477,7 +477,6 @@ export async function createCommissionApplication(userId: string, commissionInfo
         shippingAddress: `${applicationData.province} ${applicationData.city} ${applicationData.district} ${applicationData.addressDetail}`,
         applicationData,
         referenceImageUrl: applicationData.referenceImageUrl || null,
-        referenceImageUrl2: applicationData.referenceImageUrl2 || null,
         commissionOptionName: commissionInfo.optionName,
         hasFan: applicationData.hasFan,
     };
