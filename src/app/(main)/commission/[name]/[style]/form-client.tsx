@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -37,7 +36,8 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
   const isLoggedIn = !!user;
 
   const [formSubmitting, setFormSubmitting] = useState(false);
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
+  const [agreedToContract, setAgreedToContract] = useState(false);
 
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
@@ -240,7 +240,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     }
 
     return (
-      <Button size="lg" className="w-full" type="submit" disabled={formSubmitting || !agreedToTerms}>
+      <Button size="lg" className="w-full" type="submit" disabled={formSubmitting || !agreedToPrivacy || !agreedToContract}>
         {formSubmitting ? '提交中...' : '申请估价'}
       </Button>
     )
@@ -385,10 +385,33 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
           </div>
 
           <div className="space-y-2 pt-2">
-              <div className="flex items-center space-x-2">
-                  <Checkbox id="terms" name="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} />
+              <div className="flex items-start space-x-2">
+                  <Checkbox id="terms" checked={agreedToContract} onCheckedChange={(checked) => setAgreedToContract(checked as boolean)} />
+                   <Dialog>
+                      <DialogTrigger asChild>
+                         <label
+                            htmlFor="terms"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                          >
+                           我已阅读并同意 <span className="text-primary hover:underline">《委托服务条款》</span>
+                        </label>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-3xl">
+                          <DialogHeader>
+                              <DialogTitle className="text-xl">委托服务条款</DialogTitle>
+                          </DialogHeader>
+                          <ScrollArea className="h-[60vh] pr-6">
+                              <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
+                                  {contractText || "合同条款正在加载中..."}
+                              </div>
+                          </ScrollArea>
+                      </DialogContent>
+                  </Dialog>
+              </div>
+               <div className="flex items-start space-x-2 mt-2">
+                  <Checkbox id="privacy" checked={agreedToPrivacy} onCheckedChange={(checked) => setAgreedToPrivacy(checked as boolean)} />
                     <label
-                      htmlFor="terms"
+                      htmlFor="privacy"
                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                     我已阅读并同意{' '}

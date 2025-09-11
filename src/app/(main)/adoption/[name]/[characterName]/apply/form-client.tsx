@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -35,7 +34,8 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
   const { toast } = useToast();
   const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
+  const [agreedToContract, setAgreedToContract] = useState(false);
   
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
@@ -110,6 +110,8 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
       setSubmitting(false);
     }
   };
+  
+  const contractText = siteContent?.adoptionContractText;
 
   return (
     <div>
@@ -214,21 +216,42 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
 
             <div className="space-y-2 pt-2">
                 <div className="flex items-start space-x-2">
-                    <Checkbox id="terms" name="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} />
-                    <div className="grid gap-1.5 leading-none">
-                        <label
-                            htmlFor="terms"
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                            我已阅读并同意{' '}
-                            <Link href="/privacy" className="text-primary hover:underline" target="_blank">《隐私政策》</Link>，并授权网站为履行订单处理我的个人信息。
-                        </label>
-                    </div>
+                    <Checkbox id="terms" checked={agreedToContract} onCheckedChange={(checked) => setAgreedToContract(checked as boolean)} />
+                     <Dialog>
+                        <DialogTrigger asChild>
+                           <label
+                              htmlFor="terms"
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                             我已阅读并同意 <span className="text-primary hover:underline cursor-pointer">《领养服务条款》</span>
+                          </label>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-3xl">
+                            <DialogHeader>
+                                <DialogTitle className="text-xl">领养服务条款</DialogTitle>
+                            </DialogHeader>
+                            <ScrollArea className="h-[60vh] pr-6">
+                                <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
+                                    {contractText || "合同条款正在加载中..."}
+                                </div>
+                            </ScrollArea>
+                        </DialogContent>
+                    </Dialog>
+                </div>
+                 <div className="flex items-start space-x-2 mt-2">
+                    <Checkbox id="privacy" checked={agreedToPrivacy} onCheckedChange={(checked) => setAgreedToPrivacy(checked as boolean)} />
+                    <label
+                        htmlFor="privacy"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        我已阅读并同意{' '}
+                        <Link href="/privacy" className="text-primary hover:underline" target="_blank">《隐私政策》</Link>，并授权网站为履行订单处理我的个人信息。
+                    </label>
                 </div>
             </div>
 
             <div className="text-center pt-4">
-                <Button type="submit" size="lg" disabled={submitting || !agreedToTerms}>
+                <Button type="submit" size="lg" disabled={submitting || !agreedToPrivacy || !agreedToContract}>
                     {submitting ? '提交中...' : '确认申请领养'}
                 </Button>
             </div>
