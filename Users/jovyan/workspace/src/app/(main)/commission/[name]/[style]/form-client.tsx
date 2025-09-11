@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -22,6 +21,7 @@ import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import Link from 'next/link';
 
 type CommissionApplicationFormClientProps = {
   commissionOption: CommissionOption;
@@ -37,7 +37,8 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
   const isLoggedIn = !!user;
 
   const [formSubmitting, setFormSubmitting] = useState(false);
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
+  const [agreedToContract, setAgreedToContract] = useState(false);
 
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
@@ -240,7 +241,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     }
 
     return (
-      <Button size="lg" className="w-full" type="submit" disabled={formSubmitting || !agreedToTerms}>
+      <Button size="lg" className="w-full" type="submit" disabled={formSubmitting || !agreedToPrivacy || !agreedToContract}>
         {formSubmitting ? '提交中...' : '申请估价'}
       </Button>
     )
@@ -385,20 +386,20 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
           </div>
 
           <div className="space-y-2 pt-2">
-              <div className="flex items-center space-x-2">
-                  <Checkbox id="terms" name="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} />
+              <div className="flex items-start space-x-2">
+                  <Checkbox id="terms" checked={agreedToContract} onCheckedChange={(checked) => setAgreedToContract(checked as boolean)} />
                    <Dialog>
                       <DialogTrigger asChild>
                          <label
                             htmlFor="terms"
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                           >
-                           我已阅读并同意 <span className="text-primary hover:underline">服务条款</span>
+                           我已阅读并同意 <span className="text-primary hover:underline">《委托服务条款》</span>
                         </label>
                       </DialogTrigger>
                       <DialogContent className="max-w-3xl">
                           <DialogHeader>
-                              <DialogTitle className="text-xl">服务条款</DialogTitle>
+                              <DialogTitle className="text-xl">委托服务条款</DialogTitle>
                           </DialogHeader>
                           <ScrollArea className="h-[60vh] pr-6">
                               <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
@@ -407,6 +408,16 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                           </ScrollArea>
                       </DialogContent>
                   </Dialog>
+              </div>
+               <div className="flex items-start space-x-2 mt-2">
+                  <Checkbox id="privacy" checked={agreedToPrivacy} onCheckedChange={(checked) => setAgreedToPrivacy(checked as boolean)} />
+                    <label
+                      htmlFor="privacy"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                    我已阅读并同意{' '}
+                    <Link href="/privacy" className="text-primary hover:underline" target="_blank">《隐私政策》</Link>，并授权网站为履行订单处理我的个人信息。
+                  </label>
               </div>
           </div>
          </CardContent>
