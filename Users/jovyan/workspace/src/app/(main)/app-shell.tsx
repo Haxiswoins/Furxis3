@@ -29,7 +29,6 @@ export function AppShell({
   
   const isAdminRoute = pathname.startsWith('/admin');
   const isAuthRoute = ['/login', '/register', '/forgot-password'].includes(pathname) || pathname.startsWith('/api/auth');
-  const isHomePage = pathname === '/home';
   
   if (loading) {
     return (
