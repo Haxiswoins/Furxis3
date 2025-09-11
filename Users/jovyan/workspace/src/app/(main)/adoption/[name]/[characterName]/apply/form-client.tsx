@@ -113,6 +113,7 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
   };
   
   const contractText = siteContent?.adoptionContractText;
+  const privacyPolicyText = siteContent?.privacyPolicyText;
 
   return (
     <div>
@@ -241,13 +242,26 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
                 </div>
                  <div className="flex items-start space-x-2 mt-2">
                     <Checkbox id="privacy" checked={agreedToPrivacy} onCheckedChange={(checked) => setAgreedToPrivacy(checked as boolean)} />
-                    <label
-                        htmlFor="privacy"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                        我已阅读并同意{' '}
-                        <Link href="/privacy" className="text-primary hover:underline" target="_blank">《隐私政策》</Link>，并授权网站为履行订单处理我的个人信息。
-                    </label>
+                     <Dialog>
+                        <DialogTrigger asChild>
+                           <label
+                              htmlFor="privacy"
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                             我已阅读并同意 <span className="text-primary hover:underline cursor-pointer">《隐私政策》</span>，并授权网站为履行订单处理我的个人信息。
+                          </label>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-3xl">
+                            <DialogHeader>
+                                <DialogTitle className="text-xl">隐私政策</DialogTitle>
+                            </DialogHeader>
+                            <ScrollArea className="h-[60vh] pr-6">
+                                <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
+                                    {privacyPolicyText || "隐私政策正在加载中..."}
+                                </div>
+                            </ScrollArea>
+                        </DialogContent>
+                    </Dialog>
                 </div>
             </div>
 
