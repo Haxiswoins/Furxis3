@@ -60,7 +60,7 @@ export default function Header() {
           <AlertDialogHeader>
             <AlertDialogTitle>服务条款确认</AlertDialogTitle>
             <AlertDialogDescription>
-              继续操作即表示您已阅读并同意我们的{' '}
+              进行登录或注册操作即表示您已阅读并同意我们的{' '}
               <Link href="/privacy" className="underline hover:text-primary" target="_blank">
                 《隐私政策》
               </Link>
