@@ -50,7 +50,7 @@ export function HomeClient({ content }: HomeClientProps) {
   
 
   return (
-    <>
+    <div className="relative bg-background">
       <div className="breathing-aura"></div>
       <div className="container mx-auto">
         <motion.div 
@@ -158,6 +158,6 @@ export function HomeClient({ content }: HomeClientProps) {
         style={{ pointerEvents: 'none' }}
       >
       </motion.div>
-    </>
+    </div>
   );
 }
