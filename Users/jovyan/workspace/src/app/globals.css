@@ -39,8 +39,8 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 5% 10%;
     --popover-foreground: 0 0% 98%;
-    --primary: 232 61% 68%; /* A brighter, more visible purple */
-    --primary-foreground: 0 0% 98%;
+    --primary: 38 92% 50%; /* Amber */
+    --primary-foreground: 38 92% 10%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 14.9%;
@@ -51,7 +51,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 20%;
     --input: 0 0% 20%;
-    --ring: 232 61% 68%;
+    --ring: 38 92% 50%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
