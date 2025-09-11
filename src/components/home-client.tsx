@@ -58,7 +58,7 @@ export function HomeClient({ content }: HomeClientProps) {
             animate="visible"
             variants={containerVariants}
         >
-            <div className="w-full py-8 md:py-12 pt-24">
+            <div className="w-full py-8 md:py-12 pt-24 flex-grow">
             <motion.div className="text-center mb-10 md:mb-16 px-4" variants={itemVariants}>
                 <a onClick={() => handleNavigate('/')} className="cursor-pointer">
                     <div className="relative inline-block group px-4">
@@ -143,9 +143,6 @@ export function HomeClient({ content }: HomeClientProps) {
                 </motion.div>
             </motion.div>
             </div>
-            <motion.div className="w-full py-8 text-center mt-auto" variants={itemVariants}>
-                <ContactInfo content={content} />
-            </motion.div>
         </motion.div>
       </div>
       {/* Transition Mask */}
