@@ -292,9 +292,11 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
     allOrders[orderIndex] = updatedOrder;
 
     await writeData('orders.json', allOrders);
-    revalidatePath('/orders', 'layout');
+
+    // Revalidate paths for admin and the specific user who owns the order
     revalidatePath('/admin/orders');
     revalidatePath(`/admin/users/${originalOrder.userId}`);
+    revalidatePath('/orders', 'layout'); // Deep revalidation of user-facing order pages
     
     // --- Side Effects: Send Emails ---
     const siteContent = await getSiteContent();
@@ -532,8 +534,7 @@ export async function cancelOrder(orderId: string, reason: string): Promise<void
     allOrders[orderIndex].status = '退养中';
     allOrders[orderIndex].cancellationReason = reason;
     await writeData('orders.json', allOrders);
-    revalidatePath(`/orders/${orderId}`);
-    revalidatePath('/orders');
+    revalidatePath('/orders', 'layout');
   }
 
   // Admin Email Notification
@@ -563,8 +564,7 @@ export async function reinstateOrder(orderId: string): Promise<void> {
         allOrders[orderIndex].status = '处理中';
         allOrders[orderIndex].cancellationReason = '';
         await writeData('orders.json', allOrders);
-        revalidatePath(`/orders/${orderId}`);
-        revalidatePath('/orders');
+        revalidatePath('/orders', 'layout');
     }
 }
 
