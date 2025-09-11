@@ -187,14 +187,14 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
             <div className="space-y-4 pt-2">
                 <div className="flex items-center space-x-2">
                     <Checkbox id="hasFan" name="hasFan" />
-                    <label htmlFor="hasFan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                         是否安装头内风扇模块 (+￥{fanPrice})
                     </label>
                 </div>
 
                 <div className="flex items-center space-x-2">
                     <Checkbox id="magneticEyes" name="magneticEyes" checked={needsMagneticEyes} onCheckedChange={(checked) => setNeedsMagneticEyes(checked as boolean)} />
-                    <label htmlFor="magneticEyes" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                         是否需要磁吸可替换眼 (+￥{magneticEyePrice}/双)
                     </label>
                 </div>
@@ -219,49 +219,50 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
             <div className="space-y-2 pt-2">
                 <div className="flex items-start space-x-2">
                     <Checkbox id="terms" checked={agreedToContract} onCheckedChange={(checked) => setAgreedToContract(checked as boolean)} />
-                     <Dialog>
-                        <DialogTrigger asChild>
-                           <label
-                              htmlFor="terms"
-                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                             我已阅读并同意 <span className="text-primary hover:underline cursor-pointer">《领养服务条款》</span>
-                          </label>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-3xl">
-                            <DialogHeader>
-                                <DialogTitle className="text-xl">领养服务条款</DialogTitle>
-                            </DialogHeader>
-                            <ScrollArea className="h-[60vh] pr-6">
-                                <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
-                                    {contractText || "合同条款正在加载中..."}
-                                </div>
-                            </ScrollArea>
-                        </DialogContent>
-                    </Dialog>
+                    <div className="grid gap-1.5 leading-none">
+                        <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                           我已阅读并同意{' '}
+                          <Dialog>
+                            <DialogTrigger asChild>
+                               <span className="text-primary hover:underline cursor-pointer">《领养服务条款》</span>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-3xl">
+                                <DialogHeader>
+                                    <DialogTitle className="text-xl">领养服务条款</DialogTitle>
+                                </DialogHeader>
+                                <ScrollArea className="h-[60vh] pr-6">
+                                    <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
+                                        {contractText || "合同条款正在加载中..."}
+                                    </div>
+                                </ScrollArea>
+                            </DialogContent>
+                          </Dialog>
+                      </span>
+                    </div>
                 </div>
                  <div className="flex items-start space-x-2 mt-2">
                     <Checkbox id="privacy" checked={agreedToPrivacy} onCheckedChange={(checked) => setAgreedToPrivacy(checked as boolean)} />
-                     <Dialog>
-                        <DialogTrigger asChild>
-                           <label
-                              htmlFor="privacy"
-                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                             我已阅读并同意 <span className="text-primary hover:underline cursor-pointer">《隐私政策》</span>，并授权网站为履行订单处理我的个人信息。
-                          </label>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-3xl">
-                            <DialogHeader>
-                                <DialogTitle className="text-xl">隐私政策</DialogTitle>
-                            </DialogHeader>
-                            <ScrollArea className="h-[60vh] pr-6">
-                                <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
-                                    {privacyPolicyText || "隐私政策正在加载中..."}
-                                </div>
-                            </ScrollArea>
-                        </DialogContent>
-                    </Dialog>
+                    <div className="grid gap-1.5 leading-none">
+                        <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                         我已阅读并同意{' '}
+                          <Dialog>
+                            <DialogTrigger asChild>
+                               <span className="text-primary hover:underline cursor-pointer">《隐私政策》</span>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-3xl">
+                                <DialogHeader>
+                                    <DialogTitle className="text-xl">隐私政策</DialogTitle>
+                                </DialogHeader>
+                                <ScrollArea className="h-[60vh] pr-6">
+                                    <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
+                                        {privacyPolicyText || "隐私政策正在加载中..."}
+                                    </div>
+                                </ScrollArea>
+                            </DialogContent>
+                          </Dialog>
+                          ，并授权网站为履行订单处理我的个人信息。
+                      </span>
+                    </div>
                 </div>
             </div>
 
