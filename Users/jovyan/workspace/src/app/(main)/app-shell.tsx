@@ -84,17 +84,17 @@ export function AppShell({
       return <>{children}</>;
   }
 
+  // Special handling for the home page to allow the breathing aura to be visible
   if (isHomePage) {
-      // Home page gets a special wrapper to allow for the background effect
       return (
-        <div className="relative flex flex-col min-h-screen">
-          <Header />
-          <main className="relative z-10 flex flex-col flex-grow pt-24">
-              <PageAnimationWrapper>
-                {children}
-              </PageAnimationWrapper>
-          </main>
-        </div>
+          <div className="relative flex flex-col min-h-screen">
+              <Header />
+              <main className="relative z-10 flex flex-col flex-grow pt-24">
+                  <PageAnimationWrapper>
+                    {children}
+                  </PageAnimationWrapper>
+              </main>
+          </div>
       );
   }
 

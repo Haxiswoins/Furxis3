@@ -82,6 +82,14 @@
   .dark .bg-gradient-cover-bottom {
       background-image: linear-gradient(to top, hsla(0, 0%, 0%, 0.7), transparent 40%);
   }
+  
+  .bg-gradient-main-top {
+      background-image: linear-gradient(to top, hsla(0, 0%, 0%, 0.5), transparent 40%);
+  }
+
+  .dark .bg-gradient-main-top {
+      background-image: linear-gradient(to top, hsla(0, 0%, 0%, 0.5), transparent 40%);
+  }
 
   .breathing-aura {
     @apply fixed top-1/2 left-1/2 -z-10;
