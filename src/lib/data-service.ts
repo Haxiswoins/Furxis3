@@ -72,18 +72,16 @@ export async function saveCharacterSeries(seriesData: Omit<CharacterSeries, 'id'
             allSeries[index] = { ...allSeries[index], ...seriesData };
         }
         await writeData('characterSeries.json', allSeries);
-        revalidatePath('/admin/character-series');
-        revalidatePath('/adoption', 'layout');
-        return id;
     } else {
         const newId = `series_${Date.now()}`;
         const newSeries = { id: newId, ...seriesData };
         allSeries.push(newSeries);
         await writeData('characterSeries.json', allSeries);
-        revalidatePath('/admin/character-series');
-        revalidatePath('/adoption', 'layout');
-        return newId;
+        id = newId;
     }
+    revalidatePath('/admin/character-series');
+    revalidatePath('/adoption', 'layout'); // Deep revalidation for all sub-pages
+    return id;
 }
 
 export async function deleteCharacterSeries(id: string): Promise<void> {
@@ -100,7 +98,7 @@ export async function deleteCharacterSeries(id: string): Promise<void> {
     await writeData('characterSeries.json', allSeries);
     await writeData('characters.json', allCharacters);
     revalidatePath('/admin/character-series');
-    revalidatePath('/adoption', 'layout');
+    revalidatePath('/adoption', 'layout'); // Deep revalidation for all sub-pages
 }
 
 // Characters (Adoption)
@@ -137,7 +135,7 @@ export async function saveCharacter(character: Omit<Character, 'id'>, id?: strin
   }
   await writeData('characters.json', allCharacters);
   revalidatePath('/admin/characters');
-  revalidatePath('/adoption', 'layout');
+  revalidatePath('/adoption', 'layout'); // Deep revalidation for all sub-pages
   return id;
 }
 
@@ -146,7 +144,7 @@ export async function deleteCharacter(id: string): Promise<void> {
     allCharacters = allCharacters.filter(c => c.id !== id);
     await writeData('characters.json', allCharacters);
     revalidatePath('/admin/characters');
-    revalidatePath('/adoption', 'layout');
+    revalidatePath('/adoption', 'layout'); // Deep revalidation for all sub-pages
 }
 
 
