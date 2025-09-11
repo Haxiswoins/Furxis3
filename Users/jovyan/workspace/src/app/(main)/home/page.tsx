@@ -13,7 +13,7 @@ export default async function HomePage() {
           id="home-background" 
           className="fixed inset-0 z-[-1] opacity-50 blur-sm"
         ></div>
-       <div className="fixed inset-0 z-[-1] bg-gradient-cover-bottom"></div>
+       <div className="fixed inset-0 z-[-1] bg-gradient-cover-top"></div>
 
        <HomeClient content={content} />
     </div>
