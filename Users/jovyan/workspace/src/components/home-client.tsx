@@ -52,7 +52,7 @@ export function HomeClient({ content }: HomeClientProps) {
   return (
     <div className="relative">
       <div className="breathing-aura"></div>
-      <div className="relative bg-background">
+      <div className="bg-background">
         <div className="container mx-auto">
           <motion.div 
               className="relative z-10 flex flex-col min-h-screen"
