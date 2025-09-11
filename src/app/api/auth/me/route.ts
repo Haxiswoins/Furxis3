@@ -6,8 +6,7 @@ import type { SessionData } from '@/lib/session';
 
 export async function GET() {
   
-  /*
-  // --- TEMPORARY ADMIN MODE (DISABLED) ---
+  // --- TEMPORARY ADMIN MODE (ENABLED) ---
   // This mode is for development and testing only. It simulates an admin login.
   // DO NOT deploy with this code uncommented. It is a major security risk.
   
@@ -21,10 +20,10 @@ export async function GET() {
     },
   };
   return NextResponse.json(adminUser);
-  */
   
   
-  // --- PRODUCTION CODE ---
+  /*
+  // --- PRODUCTION CODE (DISABLED) ---
   // This is the secure way to handle user sessions.
   const session = await getIronSession<SessionData>(cookies(), {
     password: process.env.AUTHING_SECRET!,
@@ -44,5 +43,5 @@ export async function GET() {
       isAdmin: session.isAdmin,
     },
   });
-  
+  */
 }
