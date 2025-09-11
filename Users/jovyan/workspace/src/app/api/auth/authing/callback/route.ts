@@ -75,7 +75,7 @@ export async function GET(req: NextRequest) {
         }
     }
     
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || new URL(req.url).origin;
+    const baseUrl = req.nextUrl.origin;
     const redirectUrl = new URL(returnTo, baseUrl);
 
     return NextResponse.redirect(redirectUrl);
