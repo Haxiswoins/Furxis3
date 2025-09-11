@@ -88,8 +88,9 @@ export function AppShell({
   if (isHomePage) {
       return (
           <div className="relative flex flex-col min-h-screen">
+              <div className="breathing-aura"></div>
               <Header />
-              <main className="relative z-10 flex flex-col flex-grow pt-24">
+              <main className="relative z-10 flex flex-col flex-grow pt-24 bg-background">
                   <PageAnimationWrapper>
                     {children}
                   </PageAnimationWrapper>

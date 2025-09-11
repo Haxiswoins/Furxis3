@@ -51,9 +51,7 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <div className="relative">
-      <div className="breathing-aura"></div>
-      <div className="bg-background">
-        <div className="container mx-auto">
+      <div className="container mx-auto">
           <motion.div 
               className="relative z-10 flex flex-col min-h-screen"
               initial="hidden"
@@ -149,7 +147,6 @@ export function HomeClient({ content }: HomeClientProps) {
                   <ContactInfo content={content} />
               </motion.div>
           </motion.div>
-        </div>
       </div>
       {/* Transition Mask */}
       <motion.div 

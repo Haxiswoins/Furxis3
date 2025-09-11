@@ -7,8 +7,6 @@ export default async function HomePage() {
   const content = await getSiteContent();
 
   return (
-    <div className="text-foreground">
-       <HomeClient content={content} />
-    </div>
+    <HomeClient content={content} />
   );
 }
