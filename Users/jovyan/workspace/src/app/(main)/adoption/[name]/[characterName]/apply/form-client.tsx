@@ -187,16 +187,16 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
             <div className="space-y-4 pt-2">
                 <div className="flex items-center space-x-2">
                     <Checkbox id="hasFan" name="hasFan" />
-                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                         是否安装头内风扇模块 (+￥{fanPrice})
-                    </label>
+                    </span>
                 </div>
 
                 <div className="flex items-center space-x-2">
                     <Checkbox id="magneticEyes" name="magneticEyes" checked={needsMagneticEyes} onCheckedChange={(checked) => setNeedsMagneticEyes(checked as boolean)} />
-                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                         是否需要磁吸可替换眼 (+￥{magneticEyePrice}/双)
-                    </label>
+                    </span>
                 </div>
 
                 {needsMagneticEyes && (
@@ -224,7 +224,7 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
                            我已阅读并同意{' '}
                           <Dialog>
                             <DialogTrigger asChild>
-                               <span className="text-primary hover:underline cursor-pointer">《领养服务条款》</span>
+                               <span className="text-primary hover:underline cursor-pointer" onClick={(e) => e.preventDefault()}>《领养服务条款》</span>
                             </DialogTrigger>
                             <DialogContent className="max-w-3xl">
                                 <DialogHeader>
@@ -247,7 +247,7 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
                          我已阅读并同意{' '}
                           <Dialog>
                             <DialogTrigger asChild>
-                               <span className="text-primary hover:underline cursor-pointer">《隐私政策》</span>
+                               <span className="text-primary hover:underline cursor-pointer" onClick={(e) => e.preventDefault()}>《隐私政策》</span>
                             </DialogTrigger>
                             <DialogContent className="max-w-3xl">
                                 <DialogHeader>
