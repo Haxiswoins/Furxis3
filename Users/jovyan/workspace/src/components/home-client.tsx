@@ -53,12 +53,12 @@ export function HomeClient({ content }: HomeClientProps) {
     <div className="relative">
       <div className="container mx-auto">
           <motion.div 
-              className="relative z-10 flex flex-col min-h-screen"
+              className="relative z-10 flex flex-col min-h-screen pt-24"
               initial="hidden"
               animate="visible"
               variants={containerVariants}
           >
-              <div className="w-full py-8 md:py-12 pt-24">
+              <div className="w-full py-8 md:py-12">
               <motion.div className="text-center mb-10 md:mb-16 px-4" variants={itemVariants}>
                   <a onClick={() => handleNavigate('/')} className="cursor-pointer">
                       <div className="relative inline-block group px-4">

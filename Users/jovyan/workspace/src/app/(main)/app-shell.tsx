@@ -90,7 +90,7 @@ export function AppShell({
           <div className="relative flex flex-col min-h-screen">
               <div className="breathing-aura"></div>
               <Header />
-              <main className="relative z-10 flex flex-col flex-grow pt-24 bg-background">
+              <main className="relative z-10 flex flex-col flex-grow bg-transparent">
                   <PageAnimationWrapper>
                     {children}
                   </PageAnimationWrapper>
