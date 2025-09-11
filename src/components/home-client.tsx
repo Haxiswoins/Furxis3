@@ -7,8 +7,8 @@ import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useRef } from 'react';
-import { useTheme } from '@/context/ThemeContext';
+import { useState } from 'react';
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -37,72 +37,9 @@ type HomeClientProps = {
   content: SiteContent | null;
 }
 
-// Define the custom type on the Window interface
-declare global {
-    interface Window {
-        Color4Bg?: {
-            CurveGradientBg: new (options: {
-                dom: string,
-                colors: string[],
-                loop: boolean
-            }) => any; 
-        }
-    }
-}
-
 export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
   const [isWarping, setIsWarping] = useState(false);
-  const { theme } = useTheme();
-  const animationInstance = useRef<any>(null);
-  const scriptElement = useRef<HTMLScriptElement | null>(null);
-
-  useEffect(() => {
-    if (!theme) return;
-
-    const script = document.createElement('script');
-    script.src = "/CurveGradientBg.min.js";
-    script.async = true;
-    script.onload = () => {
-        if (animationInstance.current || !document.getElementById('home-background')) return;
-    
-        if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
-            try {
-                const lightThemeColors = ["#ffffff","#24428a","#ffffff","#ff7b00","#ff0000","#ffa033"];
-                const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#1a1b29"];
-                
-                const instance = new window.Color4Bg.CurveGradientBg({
-                    dom: "home-background",
-                    colors: theme === 'light' ? lightThemeColors : darkThemeColors,
-                    loop: true
-                });
-                
-                instance.update('scale', 0.2);
-                instance.update('noise', 0.02);
-                
-                animationInstance.current = instance;
-
-            } catch (error) {
-                console.error('Failed to initialize CurveGradientBg:', error);
-            }
-        }
-    };
-    script.onerror = (e) => console.error('Failed to load CurveGradientBg.min.js script:', e);
-
-    document.body.appendChild(script);
-    scriptElement.current = script;
-
-    return () => {
-        if (scriptElement.current && scriptElement.current.parentNode) {
-            scriptElement.current.parentNode.removeChild(scriptElement.current);
-        }
-        if (animationInstance.current && typeof animationInstance.current.destroy === 'function') {
-            animationInstance.current.destroy();
-        }
-        animationInstance.current = null;
-    };
-}, [theme]);
-
 
   const handleNavigate = (path: string) => {
     setIsWarping(true);
@@ -114,6 +51,7 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
+      <div className="breathing-aura"></div>
       <div className="container mx-auto">
         <motion.div 
             className="relative z-10 flex flex-col min-h-screen"

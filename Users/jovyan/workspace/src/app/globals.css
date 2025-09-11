@@ -75,13 +75,14 @@
 
 /* Hide number input arrows and custom scrollbar styles */
 @layer utilities {
-  .bg-gradient-cover-top {
-    background-image: linear-gradient(to top, hsla(var(--background)) 20%, transparent 60%);
+  .bg-gradient-cover-bottom {
+    background-image: linear-gradient(to top, hsla(0, 0%, 0%, 0.7), transparent 40%);
   }
 
-  .bg-gradient-cover-bottom {
-    background-image: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, transparent 40%);
+  .dark .bg-gradient-cover-bottom {
+      background-image: linear-gradient(to top, hsla(0, 0%, 0%, 0.7), transparent 40%);
   }
+
 
   input[type=number]::-webkit-inner-spin-button,
   input[type=number]::-webkit-outer-spin-button {
@@ -129,3 +130,4 @@
     opacity: 0;
   }
 }
+

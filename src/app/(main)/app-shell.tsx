@@ -85,8 +85,7 @@ export function AppShell({
 
   // All other pages get the main wrapper with header and background
   return (
-      // The `bg-background` class was removed from here to allow page-specific backgrounds to show.
-      <div className="relative flex flex-col min-h-screen">
+      <div className="relative flex flex-col min-h-screen bg-background">
           <Header />
           <main className="relative z-10 flex flex-col flex-grow pt-24">
               <PageAnimationWrapper>

@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -39,7 +40,7 @@ type HomeClientProps = {
 export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
   const [isWarping, setIsWarping] = useState(false);
-  
+
   const handleNavigate = (path: string) => {
     setIsWarping(true);
     setTimeout(() => {
@@ -47,6 +48,7 @@ export function HomeClient({ content }: HomeClientProps) {
     }, 600);
   };
   
+
   return (
     <>
       <div className="container mx-auto">
