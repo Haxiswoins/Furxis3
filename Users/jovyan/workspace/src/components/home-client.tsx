@@ -114,13 +114,6 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
-      <div 
-        id="home-background" 
-        className="fixed inset-0 z-[-1] opacity-50 blur-sm"
-      ></div>
-       <div className="fixed inset-0 z-[-1] bg-gradient-to-t from-background via-background/80 to-background/50"></div>
-
-
       <div className="container mx-auto">
         <motion.div 
             className="relative z-10 flex flex-col min-h-screen"

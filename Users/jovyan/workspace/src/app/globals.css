@@ -76,13 +76,8 @@
 /* Hide number input arrows and custom scrollbar styles */
 @layer utilities {
   .bg-gradient-cover-bottom {
-    background-image: linear-gradient(to top, hsla(0, 0%, 0%, 0.7), transparent 40%);
+    background-image: linear-gradient(to top, hsla(var(--background)) 20%, transparent 60%);
   }
-
-  .dark .bg-gradient-cover-bottom {
-      background-image: linear-gradient(to top, hsla(0, 0%, 0%, 0.7), transparent 40%);
-  }
-
 
   input[type=number]::-webkit-inner-spin-button,
   input[type=number]::-webkit-outer-spin-button {
@@ -130,4 +125,3 @@
     opacity: 0;
   }
 }
-
