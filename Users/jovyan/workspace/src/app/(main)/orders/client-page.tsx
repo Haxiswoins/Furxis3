@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,7 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
-import { getOrdersByUserId } from '@/lib/data-service';
 import type { Order } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
@@ -60,38 +60,30 @@ function OrderRowSkeleton() {
   );
 }
 
-export function OrdersClientPage() {
+type OrdersClientPageProps = {
+  initialOrders: Order[];
+}
+
+export function OrdersClientPage({ initialOrders }: OrdersClientPageProps) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState<Order[]>(initialOrders);
   const { theme } = useTheme();
 
   const statusStyles = theme === 'dark' ? darkStatusStyles : lightStatusStyles;
 
   useEffect(() => {
-    const fetchOrders = async (uid: string) => {
-      setLoading(true);
-      try {
-        const fetchedOrders = await getOrdersByUserId(uid);
-        setOrders(fetchedOrders);
-      } catch (error) {
-        console.error("Failed to fetch orders:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (!authLoading) {
-      if (user?.uid) {
-        fetchOrders(user.uid);
-      } else {
-        router.push('/login');
-      }
+    if (!authLoading && !user) {
+      router.push('/login');
     }
   }, [user, authLoading, router]);
+  
+  useEffect(() => {
+    setOrders(initialOrders);
+  }, [initialOrders]);
 
-  if (loading || authLoading) {
+
+  if (authLoading) {
     return (
       <div className="max-w-5xl mx-auto">
         <Card>

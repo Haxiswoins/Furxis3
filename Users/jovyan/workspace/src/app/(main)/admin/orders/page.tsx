@@ -11,3 +11,4 @@ export default async function AdminOrdersPage() {
     const allOrders = await getAllOrders();
     return <AdminOrdersClient allOrders={allOrders} />;
 }
+
