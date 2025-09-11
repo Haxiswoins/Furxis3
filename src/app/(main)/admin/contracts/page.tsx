@@ -26,6 +26,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
+  privacyPolicyText: z.string().min(1, '隐私政策内容不能为空'),
   adoptionContractText: z.string().min(1, '领养合同内容不能为空'),
   commissionContractText: z.string().min(1, '委托合同内容不能为空'),
   // Commission emails
@@ -86,6 +87,7 @@ export default function ContractsPage() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      privacyPolicyText: '',
       adoptionContractText: '',
       commissionContractText: '',
       confirmationEmailSubject: '',
@@ -103,6 +105,7 @@ export default function ContractsPage() {
       const content = await getSiteContent();
       if (content) {
         form.reset({
+          privacyPolicyText: content.privacyPolicyText || '',
           adoptionContractText: content.adoptionContractText || '',
           commissionContractText: content.commissionContractText || '',
           confirmationEmailSubject: content.confirmationEmailSubject || '',
@@ -147,7 +150,7 @@ export default function ContractsPage() {
   if (initialLoading) {
     return (
       <div>
-        <h1 className="text-3xl font-headline mb-6">合同与邮件管理</h1>
+        <h1 className="text-3xl font-headline mb-6">法律文本与邮件管理</h1>
         <ContractFormSkeleton />
       </div>
     );
@@ -155,15 +158,32 @@ export default function ContractsPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-headline mb-6">合同与邮件管理</h1>
-      <p className="text-muted-foreground mb-8">在这里统一管理各类合同条款和系统自动发送的邮件模板。</p>
+      <h1 className="text-3xl font-headline mb-6">法律文本与邮件管理</h1>
+      <p className="text-muted-foreground mb-8">在这里统一管理各类法律文本和系统自动发送的邮件模板。</p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSave)} className="space-y-8">
           <Card>
             <CardHeader>
-              <CardTitle>合同条款</CardTitle>
+              <CardTitle>法律文本</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
+              <FormField
+                control={form.control}
+                name="privacyPolicyText"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>隐私政策</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} rows={15} placeholder="在此输入网站的隐私政策条款..." />
+                    </FormControl>
+                     <FormDescription>
+                       支持 Markdown 格式。这段内容将显示在 /privacy 页面。
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <Separator />
               <FormField
                 control={form.control}
                 name="commissionContractText"
@@ -177,6 +197,7 @@ export default function ContractsPage() {
                   </FormItem>
                 )}
               />
+               <Separator />
               <FormField
                 control={form.control}
                 name="adoptionContractText"
