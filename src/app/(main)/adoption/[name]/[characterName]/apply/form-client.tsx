@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState } from 'react';
@@ -24,6 +23,7 @@ import {
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { createAdoptionApplication } from '@/lib/data-service';
+import Link from 'next/link';
 
 type AdoptionApplicationFormProps = {
     character: Character;
@@ -35,6 +35,7 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
   const { toast } = useToast();
   const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
@@ -49,7 +50,7 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
   const handleProvinceChange = (province: string) => {
     setSelectedProvince(province);
     const provinceData = chinaDivisions.find(p => p.name === province);
-    const newCities = provinceData?.cities.map(c => c.name) || [];
+    const newCities = provinceData ? provinceData.cities.map(c => c.name) : [];
     setCities(newCities);
     setSelectedCity('');
     setDistricts([]);
@@ -213,34 +214,21 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
 
             <div className="space-y-2 pt-2">
                 <div className="flex items-start space-x-2">
-                    <Checkbox id="terms" required className="mt-1" />
+                    <Checkbox id="terms" name="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} />
                     <div className="grid gap-1.5 leading-none">
-                        <Dialog>
-                        <DialogTrigger asChild>
-                            <label
-                                htmlFor="terms"
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                            我已阅读并同意 <span className="text-primary hover:underline cursor-pointer">领养条款和条件</span>
-                            </label>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-3xl">
-                            <DialogHeader>
-                            <DialogTitle className="text-xl">前行无界工作室兽装领养条款与条件</DialogTitle>
-                            </DialogHeader>
-                            <ScrollArea className="h-[60vh] pr-6">
-                                <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
-                                    {siteContent?.adoptionContractText || '条款加载中...'}
-                                </div>
-                            </ScrollArea>
-                        </DialogContent>
-                        </Dialog>
+                        <label
+                            htmlFor="terms"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                            我已阅读并同意{' '}
+                            <Link href="/privacy" className="text-primary hover:underline" target="_blank">《隐私政策》</Link>，并授权网站为履行订单处理我的个人信息。
+                        </label>
                     </div>
                 </div>
             </div>
 
             <div className="text-center pt-4">
-                <Button type="submit" size="lg" disabled={submitting}>
+                <Button type="submit" size="lg" disabled={submitting || !agreedToTerms}>
                     {submitting ? '提交中...' : '确认申请领养'}
                 </Button>
             </div>

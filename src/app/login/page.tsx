@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ChevronLeft, LogIn } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import Link from 'next/link';
 
 function LoginPageContent() {
   const router = useRouter();
@@ -46,6 +47,13 @@ function LoginPageContent() {
             <Button onClick={handleLogin} className="w-full" size="lg" disabled={loading}>
                 {loading ? '加载中...' : <><LogIn className="mr-2" /> 前往登录</>}
             </Button>
+            <p className="text-xs text-muted-foreground px-4">
+              继续操作即表示您已阅读并同意我们的{' '}
+              <Link href="/privacy" className="underline hover:text-primary" target="_blank">
+                《隐私政策》
+              </Link>
+              。
+            </p>
           </CardFooter>
       </Card>
     </div>

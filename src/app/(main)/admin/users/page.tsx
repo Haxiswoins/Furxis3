@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -35,7 +34,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getAggregatedUsers, grantBadgeToUser, grantBadgeToUsers } from '@/lib/data-service';
 import type { Badge, AggregatedUser } from '@/types';
 import { getBadges } from '@/lib/data-service';
-import { Badge as BadgeIcon, Search, ChevronRight, ArrowUpDown, X } from 'lucide-react';
+import { Badge as BadgeIcon, Search, ChevronRight, ArrowUpDown, X, Mail } from 'lucide-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -57,7 +56,7 @@ function UserManagementPageSkeleton() {
         <Table>
           <TableHeader>
             <TableRow>
-              {[...Array(6)].map((_, i) => (
+              {[...Array(7)].map((_, i) => (
                 <TableHead key={i}>
                   <Skeleton className="h-5 w-full" />
                 </TableHead>
@@ -67,13 +66,16 @@ function UserManagementPageSkeleton() {
           <TableBody>
             {[...Array(5)].map((_, i) => (
               <TableRow key={i}>
-                {[...Array(5)].map((_, j) => (
+                {[...Array(6)].map((_, j) => (
                   <TableCell key={j}>
                     <Skeleton className="h-5 w-full" />
                   </TableCell>
                 ))}
                 <TableCell>
-                  <Skeleton className="h-8 w-20" />
+                  <div className="flex justify-end gap-2">
+                    <Skeleton className="h-9 w-24" />
+                    <Skeleton className="h-9 w-9" />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -97,10 +99,14 @@ function GrantBadgeDialog({ user, badges, onBadgeGranted }: { user: AggregatedUs
         }
         setIsSubmitting(true);
         try {
-            await grantBadgeToUser(user.id, selectedBadgeId);
-            toast({ title: '发放成功', description: `已将徽章发放给用户 ${user.name}。` });
-            onBadgeGranted();
-            setOpen(false);
+            const result = await grantBadgeToUser(user.id, selectedBadgeId);
+            if (result.success) {
+                toast({ title: '发放成功', description: `已将徽章发放给用户 ${user.name}。` });
+                onBadgeGranted();
+                setOpen(false);
+            } else {
+                toast({ title: '发放失败', description: result.message, variant: 'destructive' });
+            }
         } catch (error) {
             toast({ title: '发放失败', description: error instanceof Error ? error.message : '发生未知错误。', variant: 'destructive' });
         } finally {
@@ -111,7 +117,7 @@ function GrantBadgeDialog({ user, badges, onBadgeGranted }: { user: AggregatedUs
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" size="sm"><BadgeIcon className="mr-2 h-4 w-4" />发放徽章</Button>
+                <Button variant="outline" size="sm"><BadgeIcon className="mr-2 h-4 w-4" />发徽章</Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
@@ -369,7 +375,7 @@ export default function UserManagementPage() {
                 </TableHead>
               )}
               <SortableHeader sortKey="name">用户名</SortableHeader>
-              <TableHead>邮箱</TableHead>
+              <TableHead>联系方式</TableHead>
               <SortableHeader sortKey="registrationDate">注册日期</SortableHeader>
               <SortableHeader sortKey="completedOrders">已完成</SortableHeader>
               <SortableHeader sortKey="notSelectedOrders">未中标</SortableHeader>
@@ -393,7 +399,12 @@ export default function UserManagementPage() {
                     <TableCell className="font-medium">
                         <Link href={`/admin/users/${user.id}`} className="hover:underline">{user.name || '(未设置)'}</Link>
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-xs">{user.email || 'N/A'}</TableCell>
+                    <TableCell className="text-muted-foreground text-xs">
+                        <a href={`mailto:${user.email}`} className="flex items-center gap-1.5 hover:text-primary">
+                            <Mail className="h-3 w-3" />
+                            {user.email || 'N/A'}
+                        </a>
+                    </TableCell>
                     <TableCell>{format(new Date(user.registrationDate), 'yyyy-MM-dd')}</TableCell>
                     <TableCell>{user.completedOrders}</TableCell>
                     <TableCell>{user.notSelectedOrders}</TableCell>
@@ -413,7 +424,7 @@ export default function UserManagementPage() {
             ) : (
               <TableRow>
                 <TableCell colSpan={isSelectionMode ? 8 : 7} className="text-center h-24">
-                  沒有找到任何用戶。
+                  没有找到任何用户。
                 </TableCell>
               </TableRow>
             )}

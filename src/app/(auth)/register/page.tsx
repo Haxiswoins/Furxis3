@@ -47,11 +47,12 @@ function RegisterPageContent() {
             <Button onClick={handleRegister} className="w-full" size="lg" disabled={loading}>
               {loading ? '加载中...' : '前往注册或登录'}
             </Button>
-            <p className="text-xs text-muted-foreground">
-              已有账户？{' '}
-              <a onClick={handleRegister} className="text-primary hover:underline cursor-pointer">
-                登录
-              </a>
+            <p className="text-xs text-muted-foreground px-4">
+              继续操作即表示您已阅读并同意我们的{' '}
+              <Link href="/privacy" className="underline hover:text-primary" target="_blank">
+                《隐私政策》
+              </Link>
+              。
             </p>
           </CardFooter>
       </Card>

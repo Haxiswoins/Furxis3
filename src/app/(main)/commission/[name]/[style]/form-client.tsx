@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -22,6 +21,7 @@ import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import Link from 'next/link';
 
 type CommissionApplicationFormClientProps = {
   commissionOption: CommissionOption;
@@ -387,26 +387,13 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
           <div className="space-y-2 pt-2">
               <div className="flex items-center space-x-2">
                   <Checkbox id="terms" name="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} />
-                  <Dialog>
-                    <DialogTrigger asChild>
-                        <label
-                          htmlFor="terms"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                        我已阅读并同意 <span className="text-primary hover:underline cursor-pointer">服务条款</span>
-                      </label>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-3xl">
-                        <DialogHeader>
-                            <DialogTitle className="text-xl">服务条款</DialogTitle>
-                        </DialogHeader>
-                        <ScrollArea className="h-[60vh] pr-6">
-                            <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
-                                {contractText || "合同条款正在加载中..."}
-                            </div>
-                        </ScrollArea>
-                    </DialogContent>
-                </Dialog>
+                    <label
+                      htmlFor="terms"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                    我已阅读并同意{' '}
+                    <Link href="/privacy" className="text-primary hover:underline" target="_blank">《隐私政策》</Link>，并授权网站为履行订单处理我的个人信息。
+                  </label>
               </div>
           </div>
          </CardContent>

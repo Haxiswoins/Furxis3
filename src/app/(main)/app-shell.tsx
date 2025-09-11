@@ -16,6 +16,8 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import type { SiteContent } from '@/types';
 import { PageAnimationWrapper } from '@/components/page-animation-wrapper';
+import { ContactInfo } from '@/components/contact-info';
+import Link from 'next/link';
 
 export function AppShell({
   children,
@@ -87,11 +89,18 @@ export function AppShell({
   return (
       <div className="relative flex flex-col min-h-screen bg-background">
           <Header />
-          <main className="relative z-10 flex flex-col flex-grow pt-24">
+          <main className="relative z-10 flex flex-col flex-grow pt-24 pb-16">
               <PageAnimationWrapper>
                 {children}
               </PageAnimationWrapper>
           </main>
+          <footer className="w-full py-8 text-center text-xs text-muted-foreground mt-auto relative z-10">
+              <div className="space-x-4">
+                <ContactInfo content={siteContent} />
+                <Link href="/privacy" className="hover:text-primary transition-colors">隐私政策</Link>
+              </div>
+              <p className="mt-4">Developed by Haxis & Mark</p>
+          </footer>
       </div>
   );
 }
