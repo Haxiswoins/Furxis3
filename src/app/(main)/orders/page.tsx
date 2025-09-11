@@ -23,8 +23,8 @@ const lightStatusStyles: { [key: string]: string } = {
   '制作中': 'bg-indigo-100 text-indigo-800 border-indigo-200',
   '退养中': 'bg-orange-100 text-orange-800 border-orange-200',
   '已发货': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  '已完成': 'bg-gray-100 text-gray-800 border-gray-200',
-  '已取消': 'bg-gray-100 text-gray-800 border-gray-200',
+  '已完成': 'bg-green-100 text-green-800 border-green-200',
+  '已取消': 'bg-red-100 text-red-800 border-red-200',
   '未中标': 'bg-gray-100 text-gray-800 border-gray-200',
 };
 
@@ -36,8 +36,8 @@ const darkStatusStyles: { [key: string]: string } = {
   '制作中': 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
   '退养中': 'bg-orange-500/20 text-orange-300 border-orange-500/30',
   '已发货': 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
-  '已完成': 'bg-gray-500/20 text-gray-300 border-gray-500/30',
-  '已取消': 'bg-gray-500/20 text-gray-300 border-gray-500/30',
+  '已完成': 'bg-green-500/20 text-green-300 border-green-500/30',
+  '已取消': 'bg-red-500/20 text-red-300 border-red-500/30',
   '未中标': 'bg-gray-500/20 text-gray-300 border-gray-500/30',
 };
 
@@ -63,7 +63,7 @@ function OrderRowSkeleton() {
 }
 
 export default function OrdersPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, login } = useAuth();
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -84,14 +84,18 @@ export default function OrdersPage() {
       }
     };
 
-    if (!authLoading) {
-      if (user?.uid) {
-        fetchOrders(user.uid);
-      } else {
-        router.push('/login');
-      }
+    if (authLoading) {
+      // Still waiting for auth status
+      return;
     }
-  }, [user, authLoading, router]);
+
+    if (user?.uid) {
+      fetchOrders(user.uid);
+    } else {
+      // No user, redirect to login
+      login('/orders');
+    }
+  }, [user, authLoading, login]);
 
   if (loading || authLoading) {
     return (

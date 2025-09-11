@@ -17,10 +17,10 @@ const nextConfig = {
             hostname: 'files.authing.co',
         },
         // For self-hosted images on the production server
-        {
+        process.env.NEXT_PUBLIC_IMAGE_HOST ? {
             protocol: 'https',
-            hostname: 'cdn.markjoker.top',
-        },
+            hostname: process.env.NEXT_PUBLIC_IMAGE_HOST,
+        } : null,
     ].filter(Boolean),
   },
   experimental: {
