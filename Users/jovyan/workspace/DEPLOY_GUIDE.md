@@ -1,4 +1,3 @@
-
 # 网站服务器部署指南
 
 本文档将指导您如何将此 Next.js 应用程序部署到您自己的服务器。
@@ -23,7 +22,7 @@
 | **Authing** | 用户认证 (登录/注册) | `AUTHING_APP_ID`<br>`AUTHING_APP_SECRET`<br>`AUTHING_ISSUER`<br>`AUTHING_REDIRECT_URI`<br>`AUTHING_SECRET`<br>`ADMIN_EMAIL` | 请参照 `Authing` 控制台的应用配置。 |
 | **Resend** | 邮件服务 (各类通知) | `RESEND_API_KEY` | 详细设置请务必参考项目中的 **`RESEND_GUIDE.md`** 文件。 |
 | **图片托管服务 (图床)** | 图片上传 | `IMAGE_UPLOAD_TOKEN`<br>`NEXT_PUBLIC_IMAGE_HOST` | Token请从图床后台获取。域名需单独配置。 |
-| **Google AI** | (未来功能) AI相关 | `GOOGLE_API_KEY` 或 `GEMINI_API_KEY` | 当前未激活。如需使用，请前往 Google AI Studio 获取。 |
+| **Google AI** | (未来功能) AI相关 | `GEMINI_API_KEY` | 当前未激活。如需使用，请前往 Google AI Studio 获取。 |
 
 您需要在服务器上创建一个 `.env.local` 文件，并将从上述服务获取到的所有密钥填入其中。详细步骤见下文。
 
@@ -70,67 +69,21 @@ npm install
 
 ### **第 4 步：配置环境变量 (最关键的一步)**
 
-这是**至关重要**的一步。您需要创建一个本地环境变量文件来存放所有的密钥和配置。
+这是**至关重要**的一步。您需要创建一个本地环境变量文件来存放所有的密钥和配置。项目代码中已为您提供了一个名为 `.env.local` 的模板文件。
 
-1.  在项目根目录中，复制示例文件来创建您的本地配置文件：
-
-    ```bash
-    cp .env .env.local
-    ```
-    > **注意**: `.env.local` 文件已被`.gitignore`忽略，因此不会被上传到您的Git仓库，确保了密钥安全。
-
-2.  使用文本编辑器（如 `nano` 或 `vim`）打开 `.env.local` 文件：
+1.  在项目根目录中，使用文本编辑器（如 `nano` 或 `vim`）打开 `.env.local` 文件：
 
     ```bash
     nano .env.local
     ```
 
-3.  **将您的真实密钥和配置信息填入文件中**。文件内容应如下所示，**请务必将所有 `...` 替换为您的实际值**：
+2.  **将您的真实密钥和配置信息填入文件中**。请**务必将所有 `...` 替换为您的实际值**。`#` 号开头的内容是注释，无需修改。
+    
+    > **重要提示**: `AUTHING_SECRET` 用于保护用户登录会话的安全，请务必使用一个足够强大的随机字符串。您可以在服务器终端通过 `openssl rand -base64 32` 命令生成一个。
 
-    ```env
-# 网站基础URL (⚠️ 极其重要！)
-# 这个URL是让您上传的图片在生产环境中正确显示所必需的。
-# 请确保填写您网站的完整公网访问地址，并包含协议 (http/https)，例如：https://www.yourdomain.com 或 http://YOUR_SERVER_IP:3000
-NEXT_PUBLIC_BASE_URL="..."
+3.  保存并关闭文件 (在 `nano` 中，按 `Ctrl+X`，然后按 `Y`，最后按 `Enter`)。
 
-# --- Resend API Key (用于邮件通知) ---
-# 详细配置请务必参考项目中的 RESEND_GUIDE.md
-RESEND_API_KEY="..."
-
-# --- 图片上传服务配置 ---
-# 这是用于将图片上传到您的图床的API密钥 (Token)。
-# 格式通常是 "1|abcdefg..."，请完整粘贴。
-IMAGE_UPLOAD_TOKEN="..."
-
-# 这是您的图床域名，不包含 "https://"。例如：cdn.example.com
-# 配置此项后，后台上传的图片才能正确显示。
-NEXT_PUBLIC_IMAGE_HOST="..."
-
-# --- Authing 应用配置 (用于用户认证) ---
-# 您可以从 Authing 控制台 > 选择您的自建应用 > 应用配置 中找到以下大部分值。
-AUTHING_APP_ID="..."
-AUTHING_APP_SECRET="..."
-# Issuer URL, 通常格式为 https://<YOUR-SUBDOMAIN>.authing.cn
-AUTHING_ISSUER="..."
-
-# 登录回调URL, 必须与您在 Authing 应用配置中的 "登录回调 URL" 完全一致
-#
-# ⚠️ 注意：本地开发时，您需要将 "http://localhost:3000/api/auth/authing/callback" 添加到 Authing 白名单。
-#         线上部署后，您需要将 "https://您的域名/api/auth/authing/callback" 添加到 Authing 白名单。
-#         请根据您的部署情况修改此值！
-AUTHING_REDIRECT_URI="http://localhost:3000/api/auth/authing/callback"
-
-# 用于加密会话的密钥, 请生成一个足够复杂的随机字符串 (至少32位)
-# 您可以在您的服务器或本地终端使用 `openssl rand -base64 32` 命令生成一个
-AUTHING_SECRET="..."
-
-# 管理员邮箱地址
-# 拥有此邮箱的用户登录后将自动获得网站的管理员权限
-ADMIN_EMAIL="..."
-    ```
-    > **重要提示**: `AUTHING_SECRET` 用于保护用户登录会话的安全，请务必使用一个足够强大的随机字符串。
-
-4.  保存并关闭文件 (在 `nano` 中，按 `Ctrl+X`，然后按 `Y`，最后按 `Enter`)。
+    > **注意**: `.env.local` 文件已被项目中的 `.gitignore` 文件忽略，因此它的内容不会被上传到您的Git仓库，确保了密钥安全。
 
 ---
 
@@ -143,10 +96,10 @@ ADMIN_EMAIL="..."
 3.  将您部署后的网站回调地址完整地粘贴进去。地址的格式为：**`您网站的公网域名/api/auth/authing/callback`**。
 
     例如：
-    *   如果您的域名是 `https://www.forwardinfinity.com`，您需要填写：`https://www.forwardinfinity.com/api/auth/authing/callback`
+    *   如果您的域名是 `https://www.yourdomain.com`，您需要填写：`https://www.yourdomain.com/api/auth/authing/callback`
     *   如果您的访问地址是 `http://123.45.67.89:3000`，您需要填写：`http://123.45.67.89:3000/api/auth/authing/callback`
     
-    > **提示**：此列表支持填写多个地址，每个地址占一行。您可以同时保留本地开发和线上生产的地址。
+    > **提示**：此列表支持填写多个地址，每个地址占一行。您可以同时保留本地开发和线上生产的地址，以方便调试。
 
 ---
 
@@ -177,15 +130,15 @@ ADMIN_EMAIL="..."
 
 2.  使用 PM2 来启动您的应用：
     ```bash
-    # 您可以将 "fw-infinity-app" 替换为您想为应用起的名字
-    pm2 start npm --name "fw-infinity-app" -- start
+    # 您可以将 "forward-infinity-app" 替换为您想为应用起的名字
+    pm2 start npm --name "forward-infinity-app" -- start
     ```
 
 3.  **常用 PM2 命令**:
     *   `pm2 list`: 查看所有正在运行的应用。
-    *   `pm2 restart fw-infinity-app`: 重启您的应用。
-    *   `pm2 stop fw-infinity-app`: 停止您的应用。
-    *   `pm2 logs fw-infinity-app`: 查看应用的实时日志。
+    *   `pm2 restart forward-infinity-app`: 重启您的应用。
+    *   `pm2 stop forward-infinity-app`: 停止您的应用。
+    *   `pm2 logs forward-infinity-app`: 查看应用的实时日志。
     *   `pm2 startup` 和 `pm2 save`: 设置开机自启动，非常重要！
 
 ---
