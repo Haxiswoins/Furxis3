@@ -1,4 +1,5 @@
 
+
 import { notFound } from 'next/navigation';
 import { getCharactersBySeriesId, getCharacterSeriesByName } from '@/lib/data-service';
 import { CharacterListPageClient } from './client-page';

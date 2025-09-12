@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState } from 'react';
@@ -284,5 +283,3 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
     </div>
   )
 }
-
-    
