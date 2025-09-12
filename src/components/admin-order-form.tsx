@@ -27,27 +27,14 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from './ui/textarea';
 import { Separator } from './ui/separator';
 import { Label } from '@/components/ui/label';
-import { chinaDivisions } from '@/lib/china-divisions';
 
 
+// The form schema now ONLY includes fields that the admin can/should directly modify.
+// Sensitive user application data is handled separately.
 const formSchema = z.object({
-  // Order status fields
   total: z.string().min(1, { message: '总价不能为空。' }),
   status: z.enum(['处理中', '待确认', '已确认', '排队中', '制作中', '退养中', '已发货', '已完成', '已取消', '未中标']),
   shippingTrackingId: z.string().optional(),
-  
-  // Application data fields
-  userName: z.string().min(1, '用户名称不能为空。'),
-  age: z.string(),
-  phone: z.string().min(1, '电话不能为空。'),
-  qq: z.string().optional(),
-  email: z.string().email('请输入有效的邮箱地址。'),
-  height: z.string(),
-  weight: z.string(),
-  province: z.string().min(1, '必须选择省份。'),
-  city: z.string().min(1, '必须选择城市。'),
-  district: z.string().min(1, '必须选择区/县。'),
-  addressDetail: z.string().min(1, '详细地址不能为空。'),
 });
 
 type AdminOrderFormProps = {
@@ -59,104 +46,32 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
-  const [cities, setCities] = useState<string[]>([]);
-  const [districts, setDistricts] = useState<string[]>([]);
-
+  // The form now only manages a subset of the order data.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       total: order?.total || '',
       status: order?.status || '处理中',
       shippingTrackingId: order?.shippingTrackingId || '',
-      userName: order?.applicationData?.userName || '',
-      age: order?.applicationData?.age || '',
-      phone: order?.applicationData?.phone || '',
-      qq: order?.applicationData?.qq || '',
-      email: order?.applicationData?.email || '',
-      height: order?.applicationData?.height || '',
-      weight: order?.applicationData?.weight || '',
-      province: order?.applicationData?.province || '',
-      city: order?.applicationData?.city || '',
-      district: order?.applicationData?.district || '',
-      addressDetail: order?.applicationData?.addressDetail || '',
     },
   });
-
-  const selectedProvince = form.watch('province');
-  const selectedCity = form.watch('city');
-
-  // Effect to run once on initial load to populate cities and districts
-  useEffect(() => {
-    const initialProvince = order.applicationData?.province;
-    if (initialProvince) {
-        const provinceData = chinaDivisions.find(p => p.name === initialProvince);
-        setCities(provinceData?.cities.map(c => c.name) || []);
-    }
-    const initialCity = order.applicationData?.city;
-    if (initialProvince && initialCity) {
-        const provinceData = chinaDivisions.find(p => p.name === initialProvince);
-        const cityData = provinceData?.cities.find(c => c.name === initialCity);
-        setDistricts(cityData?.districts || []);
-    }
-  }, [order.applicationData]);
-
-  // Effect for when province changes
-  useEffect(() => {
-    const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
-    const newCities = provinceData?.cities.map(c => c.name) || [];
-    setCities(newCities);
-    
-    // Only reset city if the new city list doesn't include the current city
-    if (!newCities.includes(selectedCity)) {
-        form.setValue('city', '');
-        form.setValue('district', '');
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedProvince, form]);
-
-  // Effect for when city changes
-  useEffect(() => {
-    if (selectedProvince && selectedCity) {
-      const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
-      const cityData = provinceData?.cities.find(c => c.name === selectedCity);
-      const newDistricts = cityData?.districts || [];
-      setDistricts(newDistricts);
-
-       if (!newDistricts.includes(form.getValues('district'))) {
-         form.setValue('district', '');
-       }
-    } else {
-        setDistricts([]);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCity, selectedProvince, form]);
-
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     try {
-        const { total, status, shippingTrackingId, ...appData } = values;
-
-        const updatedApplicationData = {
-            ...order.applicationData!,
-            ...appData,
-        };
-        
-        const updatedShippingAddress = `${values.province} ${values.city} ${values.district} ${values.addressDetail}`;
-        
-        const updatedData: Partial<Order> = {
-            total,
-            status,
-            shippingTrackingId: shippingTrackingId || null,
-            applicationData: updatedApplicationData,
-            shippingAddress: updatedShippingAddress,
-        };
+      // The updated data only contains the fields from the form.
+      // The sensitive `applicationData` is NOT part of the submission from the client.
+      const updatedData: Partial<Order> = {
+          total: values.total,
+          status: values.status,
+          shippingTrackingId: values.shippingTrackingId || null,
+      };
       
       await updateOrder(order.id, updatedData);
       
       toast({
         title: '保存成功！',
-        description: `订单 "${order.orderNumber}" 已被成功更新。`,
+        description: `订单 "${order.orderNumber}" 的状态和价格信息已被成功更新。`,
       });
       // Force a re-fetch of the page data by fully refreshing
       router.refresh();
@@ -172,16 +87,8 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
     }
   }
 
-  const handleProvinceChange = (value: string) => {
-    form.setValue('province', value, { shouldValidate: true });
-    form.setValue('city', '', { shouldValidate: true });
-    form.setValue('district', '', { shouldValidate: true });
-  }
-
-  const handleCityChange = (value: string) => {
-    form.setValue('city', value, { shouldValidate: true });
-    form.setValue('district', '', { shouldValidate: true });
-  }
+  // Displaying user data directly from the `order` prop, not from the form state.
+  const appData = order.applicationData;
 
   return (
     <Form {...form}>
@@ -189,24 +96,24 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
             <Card>
                 <CardHeader>
                     <CardTitle>申请详情</CardTitle>
-                    <CardDescription>管理员可在此处修改用户的申请信息。</CardDescription>
+                    <CardDescription>此处显示用户提交的原始申请信息，此部分信息不可通过此表单修改。</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     {/* User Info */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <FormField control={form.control} name="userName" render={({ field }) => ( <FormItem> <FormLabel>用户名称</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-                        <FormField control={form.control} name="email" render={({ field }) => ( <FormItem> <FormLabel>邮箱</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-                        <FormField control={form.control} name="phone" render={({ field }) => ( <FormItem> <FormLabel>电话</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-                        <FormField control={form.control} name="qq" render={({ field }) => ( <FormItem> <FormLabel>QQ号</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                        <div><Label>用户名称</Label><p className="text-sm text-foreground pt-2">{appData?.userName || '未提供'}</p></div>
+                        <div><Label>邮箱</Label><p className="text-sm text-foreground pt-2">{appData?.email || '未提供'}</p></div>
+                        <div><Label>电话</Label><p className="text-sm text-foreground pt-2">{appData?.phone || '未提供'}</p></div>
+                        <div><Label>QQ号</Label><p className="text-sm text-foreground pt-2">{appData?.qq || '未提供'}</p></div>
                     </div>
 
                     <Separator />
                     
                     {/* Physical Info */}
                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <FormField control={form.control} name="age" render={({ field }) => ( <FormItem> <FormLabel>年龄</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-                        <FormField control={form.control} name="height" render={({ field }) => ( <FormItem> <FormLabel>身高 (cm)</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
-                        <FormField control={form.control} name="weight" render={({ field }) => ( <FormItem> <FormLabel>体重 (kg)</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )}/>
+                        <div><Label>年龄</Label><p className="text-sm text-foreground pt-2">{appData?.age || '未提供'}</p></div>
+                        <div><Label>身高 (cm)</Label><p className="text-sm text-foreground pt-2">{appData?.height || '未提供'}</p></div>
+                        <div><Label>体重 (kg)</Label><p className="text-sm text-foreground pt-2">{appData?.weight || '未提供'}</p></div>
                     </div>
                     
                     <Separator />
@@ -214,70 +121,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
                     {/* Address Info */}
                     <div className="space-y-4">
                       <Label>地址</Label>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                          <FormField
-                              control={form.control}
-                              name="province"
-                              render={({ field }) => (
-                                  <FormItem>
-                                      <Select onValueChange={(value) => handleProvinceChange(value)} value={field.value}>
-                                          <FormControl>
-                                              <SelectTrigger><SelectValue placeholder="选择省份" /></SelectTrigger>
-                                          </FormControl>
-                                          <SelectContent>
-                                              {chinaDivisions.map(p => <SelectItem key={p.name} value={p.name}>{p.name}</SelectItem>)}
-                                          </SelectContent>
-                                      </Select>
-                                      <FormMessage />
-                                  </FormItem>
-                              )}
-                          />
-                          <FormField
-                              control={form.control}
-                              name="city"
-                              render={({ field }) => (
-                                  <FormItem>
-                                      <Select onValueChange={(value) => handleCityChange(value)} value={field.value} disabled={!cities.length}>
-                                          <FormControl>
-                                              <SelectTrigger><SelectValue placeholder="选择城市" /></SelectTrigger>
-                                          </FormControl>
-                                          <SelectContent>
-                                              {cities.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                                          </SelectContent>
-                                      </Select>
-                                      <FormMessage />
-                                  </FormItem>
-                              )}
-                          />
-                           <FormField
-                              control={form.control}
-                              name="district"
-                              render={({ field }) => (
-                                  <FormItem>
-                                      <Select onValueChange={field.onChange} value={field.value} disabled={!districts.length}>
-                                          <FormControl>
-                                              <SelectTrigger><SelectValue placeholder="选择区/县" /></SelectTrigger>
-                                          </FormControl>
-                                          <SelectContent>
-                                              {districts.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-                                          </SelectContent>
-                                      </Select>
-                                      <FormMessage />
-                                  </FormItem>
-                              )}
-                          />
-                      </div>
-                         <FormField
-                            control={form.control}
-                            name="addressDetail"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>详细地址</FormLabel>
-                                <FormControl><Textarea {...field} /></FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                            />
+                      <p className="text-sm text-foreground">{order.shippingAddress || '未提供'}</p>
                     </div>
                      <Separator />
 
@@ -285,13 +129,15 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
                     <div className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-1">
-                            <p className="font-semibold">是否安装头内风扇模块</p>
-                            <p className="text-muted-foreground">{order.applicationData?.hasFan ? "是" : "否"}</p>
+                                <p className="font-semibold">是否安装头内风扇模块</p>
+                                <p className="text-muted-foreground">{order.hasFan ? "是" : "否"}</p>
                             </div>
-                            <div className="space-y-1">
+                            {order.magneticEyes && (
+                               <div className="space-y-1">
                                 <p className="font-semibold">是否需要磁吸可替换眼</p>
-                                <p className="text-muted-foreground">{order.applicationData?.magneticEyes ? `是 (${order.applicationData?.magneticEyesCount || 0} 双)` : "否"}</p>
-                            </div>
+                                <p className="text-muted-foreground">{`是 (${order.magneticEyesCount || 0} 双)`}</p>
+                               </div>
+                            )}
                         </div>
 
                         {order.cancellationReason && (
@@ -301,35 +147,35 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
                             </div>
                         )}
                          <div className="flex flex-wrap gap-4">
-                            {order.applicationData?.referenceImageUrl && (
+                            {appData?.referenceImageUrl && (
                                 <div className="space-y-2">
                                     <p className="font-semibold">用户设定图 1</p>
                                     <Dialog>
                                         <DialogTrigger asChild>
                                             <div className="relative w-48 h-48 rounded-md overflow-hidden cursor-pointer border">
-                                                <Image src={order.applicationData.referenceImageUrl} alt="用户设定图 1" fill style={{ objectFit: 'cover'}} />
+                                                <Image src={appData.referenceImageUrl} alt="用户设定图 1" fill style={{ objectFit: 'cover'}} />
                                             </div>
                                         </DialogTrigger>
                                         <DialogContent className="max-w-[90vw] md:max-w-4xl h-auto p-2 bg-transparent border-none shadow-none">
                                             <div className="relative aspect-video w-full h-full">
-                                                <Image src={order.applicationData.referenceImageUrl} alt="用户设定图 1" fill style={{ objectFit: 'contain' }} />
+                                                <Image src={appData.referenceImageUrl} alt="用户设定图 1" fill style={{ objectFit: 'contain' }} />
                                             </div>
                                         </DialogContent>
                                     </Dialog>
                                 </div>
                             )}
-                            {order.applicationData?.referenceImageUrl2 && (
+                            {appData?.referenceImageUrl2 && (
                                 <div className="space-y-2">
                                     <p className="font-semibold">用户设定图 2</p>
                                     <Dialog>
                                         <DialogTrigger asChild>
                                             <div className="relative w-48 h-48 rounded-md overflow-hidden cursor-pointer border">
-                                                <Image src={order.applicationData.referenceImageUrl2} alt="用户设定图 2" fill style={{ objectFit: 'cover'}} />
+                                                <Image src={appData.referenceImageUrl2} alt="用户设定图 2" fill style={{ objectFit: 'cover'}} />
                                             </div>
                                         </DialogTrigger>
                                         <DialogContent className="max-w-[90vw] md:max-w-4xl h-auto p-2 bg-transparent border-none shadow-none">
                                             <div className="relative aspect-video w-full h-full">
-                                                <Image src={order.applicationData.referenceImageUrl2} alt="用户设定图 2" fill style={{ objectFit: 'contain' }} />
+                                                <Image src={appData.referenceImageUrl2} alt="用户设定图 2" fill style={{ objectFit: 'contain' }} />
                                             </div>
                                         </DialogContent>
                                     </Dialog>
@@ -387,7 +233,7 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
             
             <div className="flex items-center gap-2">
                  <Button type="submit" disabled={loading} size="lg">
-                    {loading ? '保存中...' : '保存所有更改'}
+                    {loading ? '保存中...' : '保存更改'}
                 </Button>
                  <Button type="button" variant="outline" onClick={() => router.back()}>
                     返回
