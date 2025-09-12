@@ -49,6 +49,7 @@ export type Order = {
   id: string;
   userId: string;
   productName: string; // This holds the style name for commission, character name for adoption
+  orderNumber: string;
   orderType: '领养订单' | '委托订单';
   status: '处理中' | '待确认' | '已确认' | '排队中' | '制作中' | '退养中' | '已发货' | '已完成' | '已取消' | '未中标';
   imageUrl: string;
