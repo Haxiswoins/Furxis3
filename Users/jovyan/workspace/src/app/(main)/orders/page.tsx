@@ -1,7 +1,6 @@
 
-'use client';
 
-import { OrdersClientPage } from './client-page';
+import { OrdersClientPage } from '@/app/(main)/orders/client-page';
 
 export default function OrdersPage() {
   return <OrdersClientPage />;

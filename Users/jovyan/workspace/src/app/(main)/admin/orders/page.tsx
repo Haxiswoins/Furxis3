@@ -1,7 +1,7 @@
 
 
 import { getAllOrders } from '@/lib/data-service';
-import { AdminOrdersClient } from './client-page';
+import { AdminOrdersClient } from '@/app/(main)/admin/orders/client-page';
 
 export const dynamic = 'force-dynamic';
 

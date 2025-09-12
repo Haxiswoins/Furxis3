@@ -1,7 +1,7 @@
 
 
 import { getCharacters, getCommissionOptions, getAllOrders, getWorks } from '@/lib/data-service';
-import { AdminDashboardClient } from './client-page';
+import { AdminDashboardClient } from '@/app/(main)/admin/dashboard/client-page';
 
 export const dynamic = 'force-dynamic';
 

@@ -1,7 +1,7 @@
 
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { getCharacterByName } from '@/lib/data-service';
+import { getCharacterByName, getCharacterSeries } from '@/lib/data-service';
 import { CharacterDetailClient, Images } from './client-page';
 import type { Character } from '@/types';
 

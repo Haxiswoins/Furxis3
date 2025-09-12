@@ -1,6 +1,6 @@
 
 import { getAggregatedUsers, getBadges } from '@/lib/data-service';
-import { UserManagementPageClient } from './client-page';
+import { UserManagementPageClient } from '@/app/(main)/admin/users/client-page';
 
 export const dynamic = 'force-dynamic';
 

@@ -110,25 +110,33 @@ const config: Config = {
         'overlay-show': 'overlay-show 0.2s ease-out',
         'overlay-hide': 'overlay-hide 0.2s ease-in',
       },
-      textShadow: {
-        sm: '0 1px 2px var(--tw-shadow-color)',
-        DEFAULT: '0 2px 4px var(--tw-shadow-color)',
-        lg: '0 8px 16px var(--tw-shadow-color)',
-      },
+      typography: (theme: any) => ({
+        DEFAULT: {
+          css: {
+            '--tw-prose-body': theme('colors.foreground / 0.8'),
+            '--tw-prose-headings': theme('colors.foreground'),
+            '--tw-prose-lead': theme('colors.foreground / 0.9'),
+            '--tw-prose-links': theme('colors.primary'),
+            '--tw-prose-bold': theme('colors.foreground'),
+            '--tw-prose-counters': theme('colors.muted-foreground'),
+            '--tw-prose-bullets': theme('colors.border'),
+            '--tw-prose-hr': theme('colors.border'),
+            '--tw-prose-quotes': theme('colors.foreground'),
+            '--tw-prose-quote-borders': theme('colors.border'),
+            '--tw-prose-captions': theme('colors.muted-foreground'),
+            '--tw-prose-code': theme('colors.primary'),
+            '--tw-prose-pre-code': theme('colors.secondary-foreground'),
+            '--tw-prose-pre-bg': theme('colors.secondary'),
+            '--tw-prose-th-borders': theme('colors.border'),
+            '--tw-prose-td-borders': theme('colors.border'),
+          },
+        },
+      }),
     },
   },
   plugins: [
     require('tailwindcss-animate'),
-    plugin(function ({ matchUtilities, theme }) {
-      matchUtilities(
-        {
-          'text-shadow': (value) => ({
-            textShadow: value,
-          }),
-        },
-        { values: theme('textShadow') }
-      )
-    }),
+    require('@tailwindcss/typography'),
   ],
 };
 

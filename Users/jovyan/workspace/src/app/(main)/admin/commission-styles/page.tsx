@@ -1,7 +1,7 @@
 
 
 import { getAllCommissionStyles, getCommissionOptions } from '@/lib/data-service';
-import { AdminCommissionStylesClient } from './client-page';
+import { AdminCommissionStylesClient } from '@/app/(main)/admin/commission-styles/client-page';
 
 export const dynamic = 'force-dynamic';
 

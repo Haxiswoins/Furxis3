@@ -102,7 +102,7 @@ type CommissionPageClientProps = {
   content: SiteContent | null;
 }
 
-export function CommissionClientPage({ commissionOptionsByYear, sortedYears, content }: CommissionPageClientProps) {
+export function CommissionPageClient({ commissionOptionsByYear, sortedYears, content }: CommissionPageClientProps) {
   return (
     <div>
       <div className="text-center mb-12">
