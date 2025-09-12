@@ -1,7 +1,6 @@
 
-
 import { getCommissionOptions, getSiteContent } from '@/lib/data-service';
-import { CommissionPageClient } from './page-client';
+import { CommissionClientPage } from './client-page';
 import type { CommissionOption } from '@/types';
 
 export const dynamic = 'force-dynamic';
@@ -38,7 +37,7 @@ export default async function CommissionPage() {
 
   return (
     <div className="container mx-auto">
-        <CommissionPageClient
+        <CommissionClientPage
             commissionOptionsByYear={commissionOptionsByYear}
             sortedYears={sortedYears}
             content={content}

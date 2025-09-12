@@ -1,0 +1,124 @@
+
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+import { useTheme } from '@/context/ThemeContext';
+import type { CommissionOption, SiteContent } from '@/types';
+import { motion } from 'framer-motion';
+
+const lightStatusStyles: { [key: string]: string } = {
+  '开放中': 'bg-primary/10 text-primary border-primary/20',
+  '已结束': 'bg-muted text-muted-foreground border-border',
+  '即将开放': 'bg-accent text-accent-foreground border-accent-foreground/20',
+};
+
+const darkStatusStyles: { [key: string]: string } = {
+  '开放中': 'bg-primary/20 text-primary border-primary/30',
+  '已结束': 'bg-muted/80 text-muted-foreground border-border',
+  '即将开放': 'bg-accent/80 text-accent-foreground border-accent-foreground/30',
+};
+
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: 'easeOut',
+    },
+  },
+};
+
+type CommissionOptionsListProps = {
+  commissionOptions: CommissionOption[];
+};
+
+function CommissionOptionsList({ commissionOptions }: CommissionOptionsListProps) {
+  const { theme } = useTheme();
+  const statusStyles = theme === 'dark' ? darkStatusStyles : lightStatusStyles;
+
+  return (
+    <motion.div 
+      className="flex flex-col gap-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      {commissionOptions.length > 0 ? (
+        commissionOptions.map((item) => (
+          <motion.div key={item.id} variants={itemVariants}>
+            <Link href={`/commission/${encodeURIComponent(item.name)}`} className="group block relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+              <div className="aspect-[16/9] md:aspect-[16/5] lg:aspect-[16/4] relative">
+                <Image
+                  src={item.imageUrl}
+                  alt={item.name}
+                  fill
+                  sizes="(max-width: 768px) 90vw, 80vw"
+                  style={{ objectFit: 'cover' }}
+                  className="transition-transform duration-500 group-hover:scale-105"
+                />
+                 <div className="absolute inset-0 flex flex-col justify-center p-6 md:p-12 text-white bg-gradient-to-r from-black/70 to-50%">
+                  <div className="max-w-md">
+                    <h3 className="font-headline text-xl md:text-3xl font-bold" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.8)' }}>{item.name}</h3>
+                    <p className="text-xs md:text-sm opacity-90 mt-1" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.category}</p>
+                    <p className="text-xs opacity-80 mt-4 line-clamp-2 md:line-clamp-3" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.description}</p>
+                  </div>
+                </div>
+                 <Badge variant="outline" className={cn("absolute top-4 right-4 text-xs font-semibold backdrop-blur-sm", statusStyles[item.status])}>
+                  {item.status}
+                </Badge>
+              </div>
+            </Link>
+          </motion.div>
+        ))
+      ) : (
+        <div className="col-span-full text-center py-10">
+          <p className="text-muted-foreground">该年份下暂无委托选项。</p>
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
+
+type CommissionPageClientProps = {
+  commissionOptionsByYear: Record<string, CommissionOption[]>;
+  sortedYears: string[];
+  content: SiteContent | null;
+}
+
+export function CommissionClientPage({ commissionOptionsByYear, sortedYears, content }: CommissionPageClientProps) {
+  return (
+    <div>
+      <div className="text-center mb-12">
+        <h1 className="text-3xl md:text-4xl font-headline">委托申请</h1>
+        <p className="mt-2 text-base md:text-lg text-muted-foreground">
+          {content?.commissionPageDescription || '选择一个基础套餐开始您的定制兽装之旅。'}
+        </p>
+      </div>
+      <div className="space-y-12">
+        {sortedYears.map(year => (
+          <div key={year}>
+            <h2 className="text-2xl md:text-3xl font-headline mb-6 pl-4 border-l-4 border-primary">{year}</h2>
+            <CommissionOptionsList commissionOptions={commissionOptionsByYear[year]} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
