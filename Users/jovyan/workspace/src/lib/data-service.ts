@@ -1,5 +1,4 @@
 
-
 'use server';
 
 import fs from 'fs/promises';
@@ -69,21 +68,17 @@ export async function saveCharacterSeries(seriesData: Omit<CharacterSeries, 'id'
     if (id) {
         const index = allSeries.findIndex(s => s.id === id);
         if (index > -1) {
-            allSeries[index] = { ...allSeries[index], ...seriesData };
+            allSeries[index] = { id, ...allSeries[index], ...seriesData };
         }
-        await writeData('characterSeries.json', allSeries);
-        revalidatePath('/admin/character-series');
-        revalidatePath('/adoption', 'layout');
-        return id;
     } else {
         const newId = `series_${Date.now()}`;
-        const newSeries = { id: newId, ...seriesData };
-        allSeries.push(newSeries);
-        await writeData('characterSeries.json', allSeries);
-        revalidatePath('/admin/character-series');
-        revalidatePath('/adoption', 'layout');
-        return newId;
+        allSeries.push({ id: newId, ...seriesData });
+        id = newId;
     }
+    await writeData('characterSeries.json', allSeries);
+    revalidatePath('/admin/character-series');
+    revalidatePath('/adoption', 'layout');
+    return id;
 }
 
 export async function deleteCharacterSeries(id: string): Promise<void> {
@@ -316,21 +311,26 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
     let emailBody: string | undefined;
 
     if (wasJustSetToConfirm) {
-        emailSubject = siteContent.confirmationEmailSubject || '您的委托申请已中标！';
-        emailBody = siteContent.confirmationEmailBody || '';
+        if (updatedOrder.orderType === '委托订单') {
+            emailSubject = siteContent.confirmationEmailSubject || '您的委托申请已中标！';
+            emailBody = (siteContent.confirmationEmailBody || '')
+              .replace(/\{productName\}/g, updatedOrder.productName)
+              .replace(/\{commissionOptionName\}/g, updatedOrder.commissionOptionName || '')
+              .replace(/\{total\}/g, updatedOrder.total);
+        } else if (updatedOrder.orderType === '领养订单') {
+            emailSubject = siteContent.adoptionConfirmationEmailSubject || '您的领养申请已通过！';
+            emailBody = (siteContent.adoptionConfirmationEmailBody || '')
+              .replace(/\{productName\}/g, updatedOrder.productName)
+              .replace(/\{total\}/g, updatedOrder.total);
+        }
     } else if (wasJustSetToNotSelected && updatedOrder.orderType === '委托订单') {
         emailSubject = siteContent.notSelectedEmailSubject || '关于您的委托申请结果';
-        emailBody = siteContent.notSelectedEmailBody || '';
+        emailBody = (siteContent.notSelectedEmailBody || '')
+            .replace(/\{productName\}/g, updatedOrder.productName)
+            .replace(/\{commissionOptionName\}/g, updatedOrder.commissionOptionName || '');
     }
 
     if (emailSubject && emailBody) {
-        emailBody = emailBody.replace(/\{productName\}/g, updatedOrder.productName);
-        if (updatedOrder.commissionOptionName) {
-            emailBody = emailBody.replace(/\{commissionOptionName\}/g, updatedOrder.commissionOptionName);
-        } else {
-             emailBody = emailBody.replace(/\{commissionOptionName\}/g, '');
-        }
-
         try {
             await sendEmail({
                 to: updatedOrder.applicationData.email,
@@ -529,8 +529,7 @@ export async function cancelOrder(orderId: string, reason: string): Promise<void
     allOrders[orderIndex].status = '退养中';
     allOrders[orderIndex].cancellationReason = reason;
     await writeData('orders.json', allOrders);
-    revalidatePath(`/orders/${orderId}`);
-    revalidatePath('/orders');
+    revalidatePath('/orders', 'layout');
   }
 
   // Admin Email Notification
@@ -560,8 +559,7 @@ export async function reinstateOrder(orderId: string): Promise<void> {
         allOrders[orderIndex].status = '处理中';
         allOrders[orderIndex].cancellationReason = '';
         await writeData('orders.json', allOrders);
-        revalidatePath(`/orders/${orderId}`);
-        revalidatePath('/orders');
+        revalidatePath('/orders', 'layout');
     }
 }
 

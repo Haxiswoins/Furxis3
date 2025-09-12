@@ -1,3 +1,4 @@
+
 import { getAggregatedUsers, getBadges } from '@/lib/data-service';
 import { UserManagementPageClient } from './client-page';
 
