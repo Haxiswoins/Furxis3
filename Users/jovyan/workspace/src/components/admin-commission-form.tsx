@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/select';
 import Image from 'next/image';
 import { Upload } from 'lucide-react';
-import { CustomDatePicker } from '../ui/date-picker';
+import { CustomDatePicker } from './ui/date-picker';
 
 
 const formSchema = z.object({
