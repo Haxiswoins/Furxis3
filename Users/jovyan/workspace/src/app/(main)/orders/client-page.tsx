@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
+import { getOrdersByUserId } from '@/lib/data-service';
 import type { Order } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter } from 'next/navigation';
@@ -60,30 +61,41 @@ function OrderRowSkeleton() {
   );
 }
 
-type OrdersClientPageProps = {
-  initialOrders: Order[];
-}
-
-export function OrdersClientPage({ initialOrders }: OrdersClientPageProps) {
-  const { user, loading: authLoading } = useAuth();
-  const router = useRouter();
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
+export function OrdersClientPage() {
+  const { user, loading: authLoading, login } = useAuth();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
   const { theme } = useTheme();
 
   const statusStyles = theme === 'dark' ? darkStatusStyles : lightStatusStyles;
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login');
+    const fetchOrders = async (uid: string) => {
+      setLoading(true);
+      try {
+        const fetchedOrders = await getOrdersByUserId(uid);
+        setOrders(fetchedOrders);
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (authLoading) {
+      // Still waiting for auth status
+      return;
     }
-  }, [user, authLoading, router]);
-  
-  useEffect(() => {
-    setOrders(initialOrders);
-  }, [initialOrders]);
 
+    if (user?.uid) {
+      fetchOrders(user.uid);
+    } else {
+      // No user, redirect to login
+      login('/orders');
+    }
+  }, [user, authLoading, login]);
 
-  if (authLoading) {
+  if (loading || authLoading) {
     return (
       <div className="max-w-5xl mx-auto">
         <Card>
