@@ -94,6 +94,13 @@ export function AppShell({
                 {children}
               </PageAnimationWrapper>
           </main>
+          <footer className="w-full py-8 text-center text-xs text-muted-foreground mt-auto relative z-10">
+              <div className="space-x-4">
+                <ContactInfo content={siteContent} />
+                <Link href="/privacy" className="hover:text-primary transition-colors">隐私政策</Link>
+              </div>
+              <p className="mt-4">Developed by Haxis & Mark</p>
+          </footer>
       </div>
   );
 }
