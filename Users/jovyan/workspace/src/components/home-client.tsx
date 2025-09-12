@@ -60,7 +60,7 @@ export function HomeClient({ content }: HomeClientProps) {
         >
             <div className="w-full py-8 md:py-12 pt-24 flex-grow">
             <motion.div className="text-center mb-10 md:mb-16 px-4" variants={itemVariants}>
-                <a onClick={() => handleNavigate('/')} className="cursor-pointer">
+                <div onClick={() => handleNavigate('/')} className="cursor-pointer">
                     <div className="relative inline-block group px-4">
                         <h1 className="text-4xl sm:text-5xl font-headline transition-colors duration-300 relative z-10 group-hover:text-primary">
                         前行无界
@@ -74,7 +74,7 @@ export function HomeClient({ content }: HomeClientProps) {
                         </span>
                         </div>
                     </div>
-                </a>
+                </div>
             </motion.div>
             
             <motion.div
@@ -82,7 +82,7 @@ export function HomeClient({ content }: HomeClientProps) {
                 variants={containerVariants}
             >
                 <motion.div variants={itemVariants}>
-                    <a onClick={() => handleNavigate('/commission')} className="group block cursor-pointer">
+                    <div onClick={() => handleNavigate('/commission')} className="group block cursor-pointer">
                         <div className="relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/30 aspect-[4/5]">
                             <Image
                                 src={content?.commissionImageUrl || "https://placehold.co/800x1000.png"}
@@ -99,11 +99,11 @@ export function HomeClient({ content }: HomeClientProps) {
                                 <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base">{content?.commissionDescription || '为您量身定制。'}</p>
                             </div>
                         </div>
-                    </a>
+                    </div>
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
-                     <a onClick={() => handleNavigate('/adoption')} className="group block cursor-pointer">
+                     <div onClick={() => handleNavigate('/adoption')} className="group block cursor-pointer">
                         <div className="relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/30 aspect-[4/5]">
                             <Image
                                 src={content?.adoptionImageUrl || "https://placehold.co/800x1000.png"}
@@ -119,11 +119,11 @@ export function HomeClient({ content }: HomeClientProps) {
                                 <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base">{content?.adoptionDescription || '领养一个预先设计的角色。'}</p>
                             </div>
                         </div>
-                    </a>
+                    </div>
                 </motion.div>
                 
                 <motion.div variants={itemVariants}>
-                     <a onClick={() => handleNavigate('/works')} className="group block cursor-pointer">
+                     <div onClick={() => handleNavigate('/works')} className="group block cursor-pointer">
                         <div className="relative rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ease-in-out hover:shadow-primary/30 aspect-[4/5]">
                             <Image
                                 src={content?.workImageUrl || "https://placehold.co/800x1000.png"}
@@ -139,7 +139,7 @@ export function HomeClient({ content }: HomeClientProps) {
                                 <p className="mt-1 opacity-0 transition-all duration-500 ease-in-out group-hover:opacity-90 group-hover:-translate-y-1 text-sm md:text-base">{content?.workDescription || '查看我们过往的精彩作品。'}</p>
                             </div>
                         </div>
-                    </a>
+                    </div>
                 </motion.div>
             </motion.div>
             </div>

@@ -111,9 +111,6 @@ const config: Config = {
         'overlay-show': 'overlay-show 0.2s ease-out',
         'overlay-hide': 'overlay-hide 0.2s ease-in',
       },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-      },
       typography: (theme: any) => ({
         DEFAULT: {
           css: {

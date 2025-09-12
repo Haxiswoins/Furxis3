@@ -21,12 +21,18 @@ async function readData<T>(fileName: string): Promise<T> {
     // If the file doesn't exist, return an empty array or a default object
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
       console.warn(`Data file ${fileName} not found, returning empty array/object.`);
+      // Ensure we return an object if the type is not an array
+      // This is a basic check, might need refinement for complex types
+      if (fileName.includes('siteContent')) {
+        return {} as T;
+      }
       return [] as T;
     }
     console.error(`Error reading data from ${fileName}:`, error);
     throw error;
   }
 }
+
 
 // Generic function to write data to a JSON file
 async function writeData(fileName:string, data: any): Promise<void> {
@@ -68,16 +74,18 @@ export async function saveCharacterSeries(seriesData: Omit<CharacterSeries, 'id'
     if (id) {
         const index = allSeries.findIndex(s => s.id === id);
         if (index > -1) {
-            allSeries[index] = { id, ...allSeries[index], ...seriesData };
+            allSeries[index] = { ...allSeries[index], ...seriesData };
         }
+        await writeData('characterSeries.json', allSeries);
     } else {
         const newId = `series_${Date.now()}`;
-        allSeries.push({ id: newId, ...seriesData });
+        const newSeries = { id: newId, ...seriesData };
+        allSeries.push(newSeries);
+        await writeData('characterSeries.json', allSeries);
         id = newId;
     }
-    await writeData('characterSeries.json', allSeries);
     revalidatePath('/admin/character-series');
-    revalidatePath('/adoption', 'layout');
+    revalidatePath('/adoption', 'layout'); // Deep revalidation for all sub-pages
     return id;
 }
 
@@ -95,7 +103,7 @@ export async function deleteCharacterSeries(id: string): Promise<void> {
     await writeData('characterSeries.json', allSeries);
     await writeData('characters.json', allCharacters);
     revalidatePath('/admin/character-series');
-    revalidatePath('/adoption', 'layout');
+    revalidatePath('/adoption', 'layout'); // Deep revalidation for all sub-pages
 }
 
 // Characters (Adoption)
@@ -132,7 +140,7 @@ export async function saveCharacter(character: Omit<Character, 'id'>, id?: strin
   }
   await writeData('characters.json', allCharacters);
   revalidatePath('/admin/characters');
-  revalidatePath('/adoption', 'layout');
+  revalidatePath('/adoption', 'layout'); // Deep revalidation for all sub-pages
   return id;
 }
 
@@ -141,7 +149,7 @@ export async function deleteCharacter(id: string): Promise<void> {
     allCharacters = allCharacters.filter(c => c.id !== id);
     await writeData('characters.json', allCharacters);
     revalidatePath('/admin/characters');
-    revalidatePath('/adoption', 'layout');
+    revalidatePath('/adoption', 'layout'); // Deep revalidation for all sub-pages
 }
 
 
@@ -289,9 +297,11 @@ export async function updateOrder(orderId: string, data: Partial<Order>): Promis
     allOrders[orderIndex] = updatedOrder;
 
     await writeData('orders.json', allOrders);
-    revalidatePath('/orders', 'layout');
+
+    // Revalidate paths for admin and the specific user who owns the order
     revalidatePath('/admin/orders');
     revalidatePath(`/admin/users/${originalOrder.userId}`);
+    revalidatePath('/orders', 'layout'); // Deep revalidation of user-facing order pages
     
     // --- Side Effects: Send Emails ---
     const siteContent = await getSiteContent();

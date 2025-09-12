@@ -1,5 +1,4 @@
 
-
 import { getCharacters } from '@/lib/data-service';
 import { AdminCharactersClient } from './client-page';
 

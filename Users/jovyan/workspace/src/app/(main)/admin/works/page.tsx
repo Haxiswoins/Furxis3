@@ -1,7 +1,6 @@
 
-
 import { getWorks } from '@/lib/data-service';
-import { AdminWorksClient } from '@/app/(main)/admin/works/client-page';
+import { AdminWorksClient } from './client-page';
 
 export const dynamic = 'force-dynamic';
 

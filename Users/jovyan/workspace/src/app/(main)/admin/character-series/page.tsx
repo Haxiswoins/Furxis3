@@ -1,7 +1,6 @@
 
-
 import { getCharacterSeries } from '@/lib/data-service';
-import { AdminCharacterSeriesClient } from '@/app/(main)/admin/character-series/client-page';
+import { AdminCharacterSeriesClient } from './client-page';
 
 export const dynamic = 'force-dynamic';
 
