@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -187,16 +188,16 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
             <div className="space-y-4 pt-2">
                 <div className="flex items-center space-x-2">
                     <Checkbox id="hasFan" name="hasFan" />
-                    <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    <Label htmlFor="hasFan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                         是否安装头内风扇模块 (+￥{fanPrice})
-                    </span>
+                    </Label>
                 </div>
 
                 <div className="flex items-center space-x-2">
                     <Checkbox id="magneticEyes" name="magneticEyes" checked={needsMagneticEyes} onCheckedChange={(checked) => setNeedsMagneticEyes(checked as boolean)} />
-                    <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    <Label htmlFor="magneticEyes" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                         是否需要磁吸可替换眼 (+￥{magneticEyePrice}/双)
-                    </span>
+                    </Label>
                 </div>
 
                 {needsMagneticEyes && (
@@ -220,8 +221,11 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
                 <div className="flex items-start space-x-2">
                     <Checkbox id="terms" checked={agreedToContract} onCheckedChange={(checked) => setAgreedToContract(checked as boolean)} />
                     <div className="grid gap-1.5 leading-none">
-                        <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                           我已阅读并同意{' '}
+                        <Label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          我已阅读并同意{' '}
                           <Dialog>
                             <DialogTrigger asChild>
                                <span className="text-primary hover:underline cursor-pointer" onClick={(e) => e.preventDefault()}>《领养服务条款》</span>
@@ -237,13 +241,16 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
                                 </ScrollArea>
                             </DialogContent>
                           </Dialog>
-                      </span>
+                      </Label>
                     </div>
                 </div>
                  <div className="flex items-start space-x-2 mt-2">
                     <Checkbox id="privacy" checked={agreedToPrivacy} onCheckedChange={(checked) => setAgreedToPrivacy(checked as boolean)} />
                     <div className="grid gap-1.5 leading-none">
-                        <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        <Label
+                          htmlFor="privacy"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
                          我已阅读并同意{' '}
                           <Dialog>
                             <DialogTrigger asChild>
@@ -261,7 +268,7 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
                             </DialogContent>
                           </Dialog>
                           ，并授权网站为履行订单处理我的个人信息。
-                      </span>
+                      </Label>
                     </div>
                 </div>
             </div>
@@ -277,3 +284,5 @@ export function AdoptionApplicationFormClient({ character, siteContent }: Adopti
     </div>
   )
 }
+
+    

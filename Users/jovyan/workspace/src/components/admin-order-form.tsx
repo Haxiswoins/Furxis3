@@ -25,8 +25,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { Textarea } from './ui/textarea';
-import { Separator } from './ui/separator';
+import { Textarea } from '@/components/ui/textarea';
+import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 
 
@@ -244,3 +244,5 @@ export function AdminOrderForm({ order }: AdminOrderFormProps) {
     </Form>
   );
 }
+
+    

@@ -24,7 +24,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
-import { Textarea } from './ui/textarea';
+import { Textarea } from '@/components/ui/textarea';
 import { CustomDatePicker } from '@/components/ui/date-picker';
 import { ImageCropper } from './image-cropper';
 
@@ -360,3 +360,5 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
     </>
   );
 }
+
+    
