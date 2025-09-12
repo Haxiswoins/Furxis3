@@ -18,16 +18,24 @@ export default function EditOrderPage() {
     useEffect(() => {
         if(id) {
             getOrderById(id).then(ord => {
-                setOrder(ord);
+                if (ord) {
+                    setOrder(ord);
+                } else {
+                    // Handle case where order is not found
+                    router.push('/admin/orders'); 
+                }
                 setLoading(false);
+            }).catch(() => {
+                 setLoading(false);
+                 router.push('/admin/orders');
             });
         }
-    }, [id]);
+    }, [id, router]);
 
     if (loading) {
         return (
              <div>
-                <Skeleton className="h-9 w-1/4 mb-6" />
+                <h1 className="text-3xl font-headline mb-6"><Skeleton className="h-9 w-1/2" /></h1>
                 <div className="space-y-4">
                     {[...Array(6)].map((_, i) => (
                         <div key={i} className="space-y-2">
@@ -42,7 +50,8 @@ export default function EditOrderPage() {
     }
 
     if (!order) {
-        return <div>未找到订单。</div>;
+        // This should ideally not be shown as the effect hook redirects
+        return <div>未找到订单，或加载失败。</div>;
     }
 
     return (

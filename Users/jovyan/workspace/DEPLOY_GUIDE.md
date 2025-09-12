@@ -143,7 +143,7 @@ ADMIN_EMAIL="..."
 3.  将您部署后的网站回调地址完整地粘贴进去。地址的格式为：**`您网站的公网域名/api/auth/authing/callback`**。
 
     例如：
-    *   如果您的域名是 `https://www.yourdomain.com`，您需要填写：`https://www.yourdomain.com/api/auth/authing/callback`
+    *   如果您的域名是 `https://www.forwardinfinity.com`，您需要填写：`https://www.forwardinfinity.com/api/auth/authing/callback`
     *   如果您的访问地址是 `http://123.45.67.89:3000`，您需要填写：`http://123.45.67.89:3000/api/auth/authing/callback`
     
     > **提示**：此列表支持填写多个地址，每个地址占一行。您可以同时保留本地开发和线上生产的地址。
@@ -177,15 +177,15 @@ ADMIN_EMAIL="..."
 
 2.  使用 PM2 来启动您的应用：
     ```bash
-    # 您可以将 "my-app" 替换为您想为应用起的名字
-    pm2 start npm --name "my-app" -- start
+    # 您可以将 "fw-infinity-app" 替换为您想为应用起的名字
+    pm2 start npm --name "fw-infinity-app" -- start
     ```
 
 3.  **常用 PM2 命令**:
     *   `pm2 list`: 查看所有正在运行的应用。
-    *   `pm2 restart my-app`: 重启您的应用。
-    *   `pm2 stop my-app`: 停止您的应用。
-    *   `pm2 logs my-app`: 查看应用的实时日志。
+    *   `pm2 restart fw-infinity-app`: 重启您的应用。
+    *   `pm2 stop fw-infinity-app`: 停止您的应用。
+    *   `pm2 logs fw-infinity-app`: 查看应用的实时日志。
     *   `pm2 startup` 和 `pm2 save`: 设置开机自启动，非常重要！
 
 ---

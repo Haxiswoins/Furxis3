@@ -61,6 +61,8 @@ export type Order = {
   shippingTrackingId?: string | null;
   commissionOptionName?: string; // Storing parent option name for commission orders
   hasFan?: boolean; 
+  magneticEyes?: boolean;
+  magneticEyesCount?: number;
 };
 
 export type ApplicationData = {
@@ -77,7 +79,9 @@ export type ApplicationData = {
     addressDetail?: string;
     referenceImageUrl?: string | null;
     referenceImageUrl2?: string | null;
-    hasFan?: boolean; 
+    hasFan?: boolean;
+    magneticEyes?: boolean;
+    magneticEyesCount?: number;
 }
 
 export type SiteContent = {
@@ -99,11 +103,15 @@ export type SiteContent = {
   contactInfo?: string;
   adoptionContractText?: string;
   commissionContractText?: string;
+  privacyPolicyText?: string;
   confirmationEmailSubject?: string;
   confirmationEmailBody?: string;
   notSelectedEmailSubject?: string;
   notSelectedEmailBody?: string;
+  adoptionConfirmationEmailSubject?: string;
+  adoptionConfirmationEmailBody?: string;
   fanPrice?: number;
+  magneticEyePrice?: number;
 };
 
 export type CroppedAreaPixels = {

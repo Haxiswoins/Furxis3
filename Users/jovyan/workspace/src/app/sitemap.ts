@@ -1,3 +1,4 @@
+
 import { MetadataRoute } from 'next';
 import { getWorks } from './lib/data-service';
 import { getCharacterSeries } from './lib/data-service';
