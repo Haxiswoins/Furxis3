@@ -1,9 +1,6 @@
 
 import { MetadataRoute } from 'next';
-import { getWorks } from './lib/data-service';
-import { getCharacterSeries } from './lib/data-service';
-import { getCharacters } from './lib/data-service';
-import { getCommissionOptions } from './lib/data-service';
+import { getWorks, getCharacterSeries, getCharacters, getCommissionOptions } from '@/lib/data-service';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.example.com';
 
