@@ -26,7 +26,7 @@ import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { Textarea } from '@/components/ui/textarea';
 import { CustomDatePicker } from '@/components/ui/date-picker';
-import { ImageCropper } from './image-cropper';
+import { ImageCropper } from '@/components/image-cropper';
 
 const formSchema = z.object({
   workName: z.string().min(1, '作品名称不能为空'),
@@ -361,4 +361,3 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
   );
 }
 
-    
