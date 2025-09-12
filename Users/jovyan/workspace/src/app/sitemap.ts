@@ -4,7 +4,7 @@ import { getCharacterSeries } from './lib/data-service';
 import { getCharacters } from './lib/data-service';
 import { getCommissionOptions } from './lib/data-service';
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.suitopia.club';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.example.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     

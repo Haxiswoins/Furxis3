@@ -16,7 +16,7 @@
 
 1.  登录您的 GitHub 账户。
 2.  点击右上角的 "+" 号，选择 "New repository"。
-3.  为您的仓库取一个名字（例如 `my-suitopia-project`）。
+3.  为您的仓库取一个名字（例如 `my-nextjs-project`）。
 4.  **非常重要**：请**不要**勾选 "Add a README file", "Add .gitignore", 或 "Choose a license"。我们要从一个完全空的仓库开始。
 5.  点击 "Create repository"。
 6.  创建成功后，您会看到一个页面，上面显示了您的仓库地址，格式通常是 `https://github.com/YourUsername/YourRepositoryName.git`。**请复制这个地址**，下一步会用到。
@@ -110,12 +110,12 @@
 
 ### **高级操作：处理分支 (Advanced: Working with Branches)**
 
-#### **从指定分支拉取代码 (例如: `3.1` 分支)**
+#### **从指定分支拉取代码 (例如: `feature-x` 分支)**
 
-如果您想将 GitHub 上某个特定分支（比如名为 `3.1` 的分支）的更改合并到您当前的工作区，可以使用以下命令：
+如果您想将 GitHub 上某个特定分支（比如名为 `feature-x` 的分支）的更改合并到您当前的工作区，可以使用以下命令：
 
 ```bash
-git pull origin 3.1
+git pull origin feature-x
 ```
 
 > **同样地**，在运行此命令前，请务必先用 `sh ./SYNC_TO_GIT.sh "..."` 保存您在 Studio 中的本地修改。
