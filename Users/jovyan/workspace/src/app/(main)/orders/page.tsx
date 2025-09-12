@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { OrdersClientPage } from './client-page';

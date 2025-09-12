@@ -356,45 +356,48 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
           </div>
 
           <div className="space-y-4 pt-2">
-              <div className="flex items-center space-x-2">
-                  <Checkbox id="hasFan" name="hasFan" />
-                  <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                      是否安装头内风扇模块 (+￥{fanPrice})
-                  </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                  <Checkbox id="magneticEyes" name="magneticEyes" checked={needsMagneticEyes} onCheckedChange={(checked) => setNeedsMagneticEyes(checked as boolean)} />
-                  <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                      是否需要磁吸可替换眼 (+￥{magneticEyePrice}/双)
-                  </span>
-              </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox id="hasFan" name="hasFan" />
+              <label htmlFor="hasFan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                是否安装头内风扇模块 (+￥{fanPrice})
+              </label>
+            </div>
+             <div className="flex items-center space-x-2">
+                <Checkbox id="magneticEyes" name="magneticEyes" checked={needsMagneticEyes} onCheckedChange={(checked) => setNeedsMagneticEyes(checked as boolean)} />
+                <label htmlFor="magneticEyes" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    是否需要磁吸可替换眼 (+￥{magneticEyePrice}/双)
+                </label>
+            </div>
 
-              {needsMagneticEyes && (
-                  <div className="pl-6">
-                      <Label htmlFor="magneticEyesCount">选择数量</Label>
-                      <Select name="magneticEyesCount" defaultValue="1">
-                          <SelectTrigger className="w-[180px]">
-                              <SelectValue placeholder="选择数量" />
-                          </SelectTrigger>
-                          <SelectContent>
-                              <SelectItem value="1">1 双</SelectItem>
-                              <SelectItem value="2">2 双</SelectItem>
-                              <SelectItem value="3">3 双</SelectItem>
-                          </SelectContent>
-                      </Select>
-                  </div>
-              )}
+            {needsMagneticEyes && (
+                <div className="pl-6">
+                    <Label htmlFor="magneticEyesCount">选择数量</Label>
+                    <Select name="magneticEyesCount" defaultValue="1">
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="选择数量" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="1">1 双</SelectItem>
+                            <SelectItem value="2">2 双</SelectItem>
+                            <SelectItem value="3">3 双</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            )}
           </div>
 
           <div className="space-y-2 pt-2">
               <div className="flex items-start space-x-2">
                   <Checkbox id="terms" checked={agreedToContract} onCheckedChange={(checked) => setAgreedToContract(checked as boolean)} />
                   <div className="grid gap-1.5 leading-none">
-                      <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      <label
+                        htmlFor="terms"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
                        我已阅读并同意{' '}
                        <Dialog>
                           <DialogTrigger asChild>
-                             <span className="text-primary hover:underline cursor-pointer" onClick={(e) => e.preventDefault()}>《委托服务条款》</span>
+                             <span onClick={(e) => e.preventDefault()} className="text-primary hover:underline cursor-pointer">《委托服务条款》</span>
                           </DialogTrigger>
                           <DialogContent className="max-w-3xl">
                               <DialogHeader>
@@ -407,17 +410,20 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                               </ScrollArea>
                           </DialogContent>
                       </Dialog>
-                    </span>
+                    </label>
                   </div>
               </div>
                <div className="flex items-start space-x-2 mt-2">
                   <Checkbox id="privacy" checked={agreedToPrivacy} onCheckedChange={(checked) => setAgreedToPrivacy(checked as boolean)} />
                     <div className="grid gap-1.5 leading-none">
-                       <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                       <label
+                          htmlFor="privacy"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
                          我已阅读并同意{' '}
                          <Dialog>
                             <DialogTrigger asChild>
-                               <span className="text-primary hover:underline cursor-pointer" onClick={(e) => e.preventDefault()}>《隐私政策》</span>
+                               <span onClick={(e) => e.preventDefault()} className="text-primary hover:underline cursor-pointer">《隐私政策》</span>
                             </DialogTrigger>
                             <DialogContent className="max-w-3xl">
                                 <DialogHeader>
@@ -431,7 +437,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                             </DialogContent>
                           </Dialog>
                           ，并授权网站为履行订单处理我的个人信息。
-                      </span>
+                      </label>
                     </div>
               </div>
           </div>
