@@ -1,5 +1,4 @@
 
-
 import { getWorks } from '@/lib/data-service';
 import type { Work } from '@/types';
 import { WorksPageClient } from './client-page';

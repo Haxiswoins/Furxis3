@@ -1,5 +1,4 @@
 
-
 import { getCharacterSeries, getSiteContent } from '@/lib/data-service';
 import { AdoptionSeriesClientPage } from './client-page';
 
