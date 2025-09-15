@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { ChevronLeft, User, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
-import { ShareButton } from './share-button';
+import { ShareButton } from '@/components/share-button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -60,7 +60,7 @@ export default function Header() {
           <AlertDialogHeader>
             <AlertDialogTitle>服务条款确认</AlertDialogTitle>
             <AlertDialogDescription>
-              执行登录或注册操作表示您已阅读并同意我们的{' '}
+              进行登录或注册操作即表示您已阅读并同意我们的{' '}
               <Link href="/privacy" className="underline hover:text-primary" target="_blank">
                 《隐私政策》
               </Link>
