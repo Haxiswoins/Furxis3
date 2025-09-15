@@ -121,10 +121,10 @@ export function AdminCharactersClient({ characters: initialCharacters }: { chara
   };
 
   const { availableCharacters, adoptedCharacters } = useMemo(() => {
-    const available = characters.filter(c => c.status === '待领养' || !c.status);
-    const adopted = characters.filter(c => c.status === '已领养');
+    const available = initialCharacters.filter(c => c.status === '待领养' || !c.status);
+    const adopted = initialCharacters.filter(c => c.status === '已领养');
     return { availableCharacters: available, adoptedCharacters: adopted };
-  }, [characters]);
+  }, [initialCharacters]);
 
   return (
     <div className="space-y-8">
