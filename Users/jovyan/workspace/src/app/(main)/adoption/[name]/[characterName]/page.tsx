@@ -1,4 +1,5 @@
 
+
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { getCharacterByName, getCharacterSeries } from '@/lib/data-service';
@@ -18,7 +19,7 @@ export async function generateMetadata({ params }: { params: { characterName: st
   }
 
   return {
-    title: `${character.name} - 设定领养`,
+    title: `${character.name} - 前行无界`,
     description: character.description,
   };
 }
@@ -75,3 +76,4 @@ export default async function AdoptionDetailPage({ params }: { params: { charact
     </div>
   );
 }
+
