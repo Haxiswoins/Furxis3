@@ -6,7 +6,6 @@ import type { SessionData } from '@/lib/session';
 
 export async function GET() {
   
-  // --- PRODUCTION CODE (ENABLED) ---
   // This is the secure way to handle user sessions.
   const session = await getIronSession<SessionData>(cookies(), {
     password: process.env.AUTHING_SECRET!,
