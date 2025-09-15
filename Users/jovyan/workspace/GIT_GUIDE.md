@@ -1,7 +1,6 @@
-
 # Git 与 GitHub 工作流程指南 for Firebase Studio
 
-本文档将指导您如何将这个 Firebase Studio 项目与您自己的 Git 和 GitHub 仓库连接起来，实现代码的版本控制、备份和恢复。
+本文档将指导您如何将这个“前行无界”项目与您自己的 Git 和 GitHub 仓库连接起来，实现代码的版本控制、备份和恢复。
 
 ---
 
@@ -75,13 +74,46 @@
     ```bash
     git push
     ```
-    > **提示**: 在某些情况下，如果脚本重塑了提交历史（例如为了清理大文件），它可能会提示您使用 `git push --force`。根据脚本的提示操作即可。
-
     运行此命令后，您的最新修改就安全地同步到 GitHub 上了。
 
 ---
 
-### **第 4 步：从 GitHub 合并更改**
+### **第 4 步：如何在服务器上更新网站代码 (重要!)**
+
+当您在 GitHub 上有了新的代码版本后，需要按照以下步骤来更新您服务器上正在运行的网站。
+
+1.  **登录服务器**: 通过 SSH 登录到您的服务器。
+2.  **进入项目目录**:
+    ```bash
+    cd /path/to/your/forward-infinity
+    ```
+    > 请将 `/path/to/your/forward-infinity` 替换为您项目在服务器上的真实路径。
+
+3.  **拉取最新代码**:
+    ```bash
+    git pull origin main
+    ```
+
+4.  **(可选但推荐) 安装/更新依赖**: 如果 `package.json` 有变动，运行此命令。
+    ```bash
+    npm install
+    ```
+
+5.  **重新构建应用**: 这是最关键的一步，它会用新代码生成生产文件。
+    ```bash
+    npm run build
+    ```
+
+6.  **重启 PM2 服务**: 让 PM2 加载刚刚构建好的新代码。
+    ```bash
+    # 将 "forward-infinity-app" 替换为您在部署时为 PM2 应用设置的真实名称
+    pm2 restart forward-infinity-app
+    ```
+    完成以上步骤后，您的网站就成功更新了！
+
+---
+
+### **第 5 步：从 GitHub 合并其他来源的更改 (本地开发)**
 
 当您在其他地方（如您自己的电脑或 GitHub 网站上）对代码进行了修改，并希望将这些更改同步到 Firebase Studio 时，就需要从 GitHub `pull` (拉取) 代码。
 
@@ -106,34 +138,6 @@
 
 4.  **推送最终版本**
     当所有代码都已成功合并，运行 `git push` 将最终版本同步回 GitHub。
-
----
-
-### **高级操作：处理分支 (Advanced: Working with Branches)**
-
-#### **从指定分支拉取代码 (例如: `feature-x` 分支)**
-
-如果您想将 GitHub 上某个特定分支（比如名为 `feature-x` 的分支）的更改合并到您当前的工作区，可以使用以下命令：
-
-```bash
-git pull origin feature-x
-```
-
-> **同样地**，在运行此命令前，请务必先用 `sh ./SYNC_TO_GIT.sh "..."` 保存您在 Studio 中的本地修改。
-
-#### **切换到不同分支**
-
-如果您想在 Studio 中切换到另一个已存在的分支（例如 `development` 分支）进行工作：
-
-1.  **抓取所有远程分支信息**:
-    ```bash
-    git fetch origin
-    ```
-2.  **切换到目标分支**:
-    ```bash
-    git checkout development
-    ```
-    > **警告**: 在切换分支前，请确保您当前的所有修改都已经通过 `SYNC_TO_GIT.sh` 脚本提交了，否则可能会丢失未保存的更改。
 
 ---
 
