@@ -271,5 +271,3 @@ sudo systemctl restart nginx
 > **关于 HTTPS**: 以上配置只适用于 HTTP。启用 HTTPS (SSL加密) 是一个更复杂的步骤，通常需要您使用 Certbot 等工具为您的域名申请免费的 SSL 证书。这超出了本指南的范围，但 Nginx 是实现它的基础。
 
 部署完成！您的网站现在已经在您自己的服务器上，并通过域名成功运行了。
-
-    
