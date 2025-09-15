@@ -1,5 +1,4 @@
 
-
 'use server';
 
 import { NextRequest, NextResponse } from "next/server";
@@ -9,16 +8,15 @@ export function GET(req: NextRequest) {
     const action = req.nextUrl.pathname.split('/').pop();
     const returnTo = searchParams.get('returnTo');
 
-    const issuer = process.env.AUTHING_ISSUER;
-    if (!issuer) {
-        console.error("AUTHING_ISSUER environment variable is not set.");
+    const authEndpoint = process.env.AUTHING_AUTH_ENDPOINT;
+    if (!authEndpoint) {
+        console.error("AUTHING_AUTH_ENDPOINT environment variable is not set.");
         return NextResponse.json({ error: "Authentication provider is not configured." }, { status: 500 });
     }
 
     if (action === 'login') {
-        // Use the URL constructor to safely join the issuer and the path.
-        // This is the correct way to handle this and prevents double slashes.
-        const loginUrl = new URL('/oidc/auth', issuer);
+        // Directly use the full authentication endpoint from environment variables.
+        const loginUrl = new URL(authEndpoint);
         
         const clientId = process.env.AUTHING_APP_ID;
         const redirectUri = process.env.AUTHING_REDIRECT_URI;
@@ -31,19 +29,20 @@ export function GET(req: NextRequest) {
             loginUrl.searchParams.set('prompt', 'login');
             
             if (returnTo) {
+                // State is used to pass the returnTo URL through the OIDC flow.
                 loginUrl.searchParams.set('state', Buffer.from(JSON.stringify({ returnTo })).toString('base64'));
             }
         } else {
             console.error("Authing client ID or redirect URI is missing.");
-            // Redirect to a local login prompt page if config is missing
+            // Fallback to a local login prompt page if critical config is missing.
             return NextResponse.redirect(new URL('/login', req.url));
         }
         
         return NextResponse.redirect(loginUrl);
     }
     
-    // The logout logic is now handled exclusively by /api/auth/logout.
-    // Any other action passed to this dynamic route is considered a bad request.
+    // The logout logic is handled by the client-side context now, redirecting directly to Authing.
+    // This server-side route is primarily for initiating login.
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
 }
 

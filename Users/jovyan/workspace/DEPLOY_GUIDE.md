@@ -20,7 +20,7 @@
 
 | 服务商 | 功能 | 所需环境变量 | 获取指南 |
 | :--- | :--- | :--- | :--- |
-| **Authing** | 用户认证 (登录/注册) | `AUTHING_APP_ID`<br>`AUTHING_APP_SECRET`<br>`AUTHING_ISSUER`<br>`AUTHING_REDIRECT_URI`<br>`AUTHING_SECRET`<br>`ADMIN_EMAIL` | 请参照 `Authing` 控制台的应用配置。 |
+| **Authing** | 用户认证 (登录/注册) | 所有 `AUTHING_` 和 `ADMIN_EMAIL` 变量 | 请参照 `Authing` 控制台的应用配置。 |
 | **Resend** | 邮件服务 (各类通知) | `RESEND_API_KEY` | 详细设置请务必参考项目中的 **`RESEND_GUIDE.md`** 文件。 |
 | **图片托管服务 (图床)** | 图片上传 | `IMAGE_UPLOAD_TOKEN`<br>`NEXT_PUBLIC_IMAGE_HOST` | Token请从图床后台获取。域名需单独配置。 |
 | **Google AI** | (未来功能) AI相关 | `GEMINI_API_KEY` | 当前未激活。如需使用，请前往 Google AI Studio 获取。 |
@@ -85,10 +85,10 @@ npm install
     nano .env.local
     ```
 
-3.  **将您的真实密钥和配置信息填入文件中**。**请务必将 `...` 替换为您的实际值**。
+3.  **将您的真实密钥和配置信息填入文件中**。**请务必将所有 `...` 替换为您的实际值**。
 
     > **⚠️ 临时配置警告 (备案期间)**
-    > 由于您的域名 `haxis.cn` 正在备案，我们需要暂时使用服务器的公网 IP 地址进行访问和测试。请按照以下临时配置填写。**域名备案成功后，请务必将这里的 IP 地址改回您的域名 `http://haxis.cn`**。
+    > 由于您的域名 `haxis.cn` 正在备案，我们需要暂时使用服务器的公网 IP 地址进行访问和测试。**域名备案成功后，请务必将这里的 IP 地址改回您的域名 `http://haxis.cn`**。
 
     ```env
 # 网站基础URL (⚠️ 临时配置)
@@ -107,11 +107,21 @@ IMAGE_UPLOAD_TOKEN="..."
 NEXT_PUBLIC_IMAGE_HOST="..."
 
 # --- Authing 应用配置 (用于用户认证) ---
-# 您可以从 Authing 控制台 > 选择您的自建应用 > 应用配置 中找到以下大部分值。
-AUTHING_APP_ID="..."
-AUTHING_APP_SECRET="..."
-# Issuer URL, 通常格式为 https://<YOUR-SUBDOMAIN>.authing.cn
-AUTHING_ISSUER="..."
+# 您可以从 Authing 控制台 > 选择您的自建应用 > 应用配置 中找到以下值。
+AUTHING_APP_ID="68a539bd60ad89fcaeb3585f"
+AUTHING_APP_SECRET="750fdd113a91158818471993b3f46a6a"
+
+# 认证端点 (Authentication Endpoint)
+AUTHING_AUTH_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/auth"
+
+# 令牌端点 (Token Endpoint)
+AUTHING_TOKEN_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/token"
+
+# 用户信息端点 (User Info Endpoint)
+AUTHING_USERINFO_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/me"
+
+# 登出端点 (Logout Endpoint)
+AUTHING_LOGOUT_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/session/end"
 
 # 登录回调URL (⚠️ 临时配置)
 # 在域名备案完成前，请使用服务器的公网IP地址。
@@ -188,7 +198,7 @@ npm run build
 
 ### **第 8 步：配置 Nginx 反向代理**
 
-Nginx 的配置**无需更改**。我们之前设置的 `server_name haxis.cn www.haxis.cn;` 已经可以同时处理来自 IP 地址的直接访问。
+Nginx 的配置**无需更改**。我们之前设置的 `server_name haxis.cn www.haxis.cn 175.178.237.158;` 已经可以同时处理来自 IP 地址的直接访问。
 
 ---
 

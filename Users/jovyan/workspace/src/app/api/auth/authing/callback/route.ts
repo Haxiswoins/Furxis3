@@ -1,5 +1,4 @@
 
-
 import { NextRequest, NextResponse } from 'next/server';
 import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
@@ -10,15 +9,16 @@ export async function GET(req: NextRequest) {
   const code = searchParams.get('code');
   const state = searchParams.get('state');
   
-  const issuer = process.env.AUTHING_ISSUER;
-  if (!code || !issuer) {
-    return NextResponse.json({ error: 'Authorization code or issuer is missing' }, { status: 400 });
+  const tokenEndpoint = process.env.AUTHING_TOKEN_ENDPOINT;
+  const userInfoEndpoint = process.env.AUTHING_USERINFO_ENDPOINT;
+
+  if (!code || !tokenEndpoint || !userInfoEndpoint) {
+    return NextResponse.json({ error: 'Authentication service is not fully configured (missing endpoints or authorization code).' }, { status: 500 });
   }
 
   try {
     // Exchange authorization code for tokens
-    // Use the URL constructor to safely join paths, avoiding double slashes.
-    const tokenUrl = new URL('/oidc/token', issuer);
+    const tokenUrl = new URL(tokenEndpoint);
     const tokenResponse = await fetch(tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -33,21 +33,20 @@ export async function GET(req: NextRequest) {
 
     const tokens = await tokenResponse.json();
     if (!tokenResponse.ok) {
-      console.error('Failed to fetch tokens:', tokens);
-      throw new Error(tokens.error_description || 'Failed to fetch tokens');
+      console.error('Failed to fetch tokens from Authing:', tokens);
+      throw new Error(tokens.error_description || 'Failed to exchange authorization code for tokens.');
     }
 
     // Fetch user info with the access token
-    // Use the URL constructor to safely join paths.
-    const userInfoUrl = new URL('/oidc/me', issuer);
+    const userInfoUrl = new URL(userInfoEndpoint);
     const userInfoResponse = await fetch(userInfoUrl, {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
     
     const userInfo = await userInfoResponse.json();
      if (!userInfoResponse.ok) {
-      console.error('Failed to fetch user info:', userInfo);
-      throw new Error(userInfo.error_description || 'Failed to fetch user info');
+      console.error('Failed to fetch user info from Authing:', userInfo);
+      throw new Error(userInfo.error_description || 'Failed to fetch user info.');
     }
 
     const session = await getIronSession<SessionData>(cookies(), {
@@ -76,7 +75,7 @@ export async function GET(req: NextRequest) {
                 returnTo = decodedState.returnTo;
             }
         } catch(e) {
-            console.error("Failed to parse state:", e);
+            console.error("Failed to parse state from Authing callback:", e);
         }
     }
     
