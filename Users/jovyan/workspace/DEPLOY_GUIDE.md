@@ -20,7 +20,7 @@
 
 | 服务商 | 功能 | 所需环境变量 | 获取指南 |
 | :--- | :--- | :--- | :--- |
-| **Authing** | 用户认证 (登录/注册) | `AUTHING_APP_ID`<br>`AUTHING_APP_SECRET`<br>`AUTHING_ISSUER`<br>`AUTHING_REDIRECT_URI`<br>`AUTHING_SECRET`<br>`ADMIN_EMAIL`<br>`NEXT_PUBLIC_AUTHING_LOGOUT_ENDPOINT`| 请参照 `Authing` 控制台的应用配置。 |
+| **Authing** | 用户认证 (登录/注册) | `AUTHING_APP_ID`<br>`AUTHING_APP_SECRET`<br>`AUTHING_REDIRECT_URI`<br>`AUTHING_SECRET`<br>`ADMIN_EMAIL`<br>`AUTHING_AUTH_ENDPOINT`<br>`AUTHING_TOKEN_ENDPOINT`<br>`AUTHING_USERINFO_ENDPOINT`<br>`NEXT_PUBLIC_AUTHING_LOGOUT_ENDPOINT`| 请参照 `Authing` 控制台的应用配置。 |
 | **Resend** | 邮件服务 (各类通知) | `RESEND_API_KEY` | 详细设置请务必参考项目中的 **`RESEND_GUIDE.md`** 文件。 |
 | **图片托管服务 (图床)** | 图片上传 | `IMAGE_UPLOAD_TOKEN`<br>`NEXT_PUBLIC_IMAGE_HOST` | Token请从图床后台获取。域名需单独配置。 |
 | **Google AI** | (未来功能) AI相关 | `GEMINI_API_KEY` | 当前未激活。如需使用，请前往 Google AI Studio 获取。 |
@@ -106,15 +106,15 @@ NEXT_PUBLIC_IMAGE_HOST="..."
 AUTHING_APP_ID="68a539bd60ad89fcaeb3585f"
 AUTHING_APP_SECRET="750fdd113a91158818471993b3f46a6a"
 
-# Issuer - 必须是您在 Authing 后台看到的完整地址
-AUTHING_ISSUER="https://icwh5jsh38rx-demo.authing.cn/oidc"
-
 # 登录回调URL (⚠️ 临时配置)
 # 这个地址必须与您在 Authing 后台配置的地址之一完全匹配。
 # 在域名备案完成前，请使用服务器的公网IP地址。
 AUTHING_REDIRECT_URI="http://175.178.237.158/api/auth/authing/callback"
 
-# 登出端点 (Logout Endpoint)
+# Authing 端点 (请从 Authing 控制台复制完整 URL)
+AUTHING_AUTH_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/auth"
+AUTHING_TOKEN_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/token"
+AUTHING_USERINFO_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/me"
 NEXT_PUBLIC_AUTHING_LOGOUT_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/session/end"
 
 # 用于加密会话的密钥, 请生成一个足够复杂的随机字符串 (至少32位)
@@ -198,5 +198,3 @@ ADMIN_EMAIL="..."
 3.  **重新构建并重启**：在服务器上再次运行 `npm run build` 和 `pm2 restart 前行无界`。
 
 部署完成！您的网站现在已经可以通过 IP 地址在您自己的服务器上成功运行了。
-
-    
