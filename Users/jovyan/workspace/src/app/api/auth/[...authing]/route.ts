@@ -1,4 +1,6 @@
 
+'use server';
+
 import { NextRequest, NextResponse } from "next/server";
 import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
@@ -17,7 +19,7 @@ export function GET(req: NextRequest) {
     }
 
     if (action === 'login') {
-        const loginUrl = new URL(`${issuer}/oidc/auth`);
+        const loginUrl = new URL('/oidc/auth', issuer);
         
         const clientId = process.env.AUTHING_APP_ID;
         const redirectUri = process.env.AUTHING_REDIRECT_URI;
