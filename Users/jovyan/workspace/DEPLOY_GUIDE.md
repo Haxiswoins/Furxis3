@@ -142,43 +142,36 @@ ADMIN_EMAIL="..."
 
 ---
 
-### **第 6 步：构建并启动应用**
+### **第 6 步：构建应用**
 
-1.  **构建应用**: 运行以下命令来创建 Next.js 应用的优化生产版本：
-    ```bash
-    npm run build
-    ```
-
-2.  **启动应用**: 构建完成后，使用以下命令启动服务器：
-    ```bash
-    npm start
-    ```
-
-默认情况下，应用会运行在 `3000` 端口。
+运行以下命令来创建 Next.js 应用的优化生产版本：
+```bash
+npm run build
+```
 
 ---
 
-### **第 7 步：使用 PM2 保持应用持续运行**
+### **第 7 步：使用 PM2 启动并管理应用**
 
-直接使用 `npm start` 启动的应用在您关闭终端后会停止。为了让您的网站在后台持续运行并能自动重启，强烈推荐使用进程管理器 `PM2`。
+为了让您的网站在后台持续运行并能自动重启，强烈推荐使用进程管理器 `PM2`。
 
-1.  在您的服务器上全局安装 PM2：
+1.  在您的服务器上全局安装 PM2 (如果尚未安装)：
     ```bash
     npm install pm2 -g
     ```
 
-2.  使用 PM2 来启动您的应用：
+2.  使用 PM2 来启动您的应用 (如果已启动，它会自动重启并加载新配置)：
     ```bash
     # 您可以将 "forward-infinity-app" 替换为您想为应用起的名字
     pm2 start npm --name "forward-infinity-app" -- start
     ```
 
-3.  **常用 PM2 命令**:
-    *   `pm2 list`: 查看所有正在运行的应用。
-    *   `pm2 restart forward-infinity-app`: 重启您的应用。
-    *   `pm2 stop forward-infinity-app`: 停止您的应用。
-    *   `pm2 logs forward-infinity-app`: 查看应用的实时日志。
-    *   `pm2 startup` 和 `pm2 save`: 设置开机自启动，非常重要！
+3.  设置开机自启动 (非常重要！)：
+    ```bash
+    pm2 startup
+    # (根据提示，可能需要您复制并执行一行命令)
+    pm2 save
+    ```
 
 ---
 
@@ -208,7 +201,7 @@ server {
     listen 80;
     listen [::]:80;
 
-    # 这里填写您的域名
+    # 这里填写您的域名，包含 www 和不包含 www 的版本
     server_name haxis.cn www.haxis.cn; 
 
     location / {
@@ -233,7 +226,7 @@ server {
 ```bash
 sudo ln -s /etc/nginx/sites-available/haxis.cn /etc/nginx/sites-enabled/
 ```
-> 这行命令会在 `sites-enabled` 目录中创建一个指向您配置文件的链接。
+> **注意**：如果提示文件已存在，说明您之前可能已经创建过，可以忽略此步。
 
 #### 4. 测试并重启 Nginx
 
@@ -248,7 +241,32 @@ sudo nginx -t
 sudo systemctl restart nginx
 ```
 
-**大功告成！** 现在，您应该可以直接在浏览器中输入 `http://haxis.cn` 来访问您的网站了！
+---
+
+### **第 9 步 (关键)：配置域名解析 (DNS)**
+
+**这是让您的域名指向服务器的最后一步。** 这个操作需要在您购买域名的服务商（如阿里云、腾讯云、GoDaddy）的控制台完成。
+
+1.  登录您的域名服务商，找到 `haxis.cn` 的 **DNS 管理**或**域名解析**页面。
+2.  添加以下 **两条** `A` 记录：
+
+    **第一条 (根域名):**
+    *   **主机记录 (Host/Name)**: `@`
+    *   **记录类型 (Type)**: `A`
+    *   **记录值 (Value/Points to)**: `175.178.237.158`
+
+    **第二条 (www 子域名):**
+    *   **主机记录 (Host/Name)**: `www`
+    *   **记录类型 (Type)**: `A`
+    *   **记录值 (Value/Points to)**: `175.178.237.158`
+    
+    > **提示**：TTL 值保持默认即可。
+
+3.  保存您的更改。
+
+**重要提示**：DNS 记录在全球生效需要一些时间，通常是几分钟到几小时不等。配置完成后，请耐心等待。您可以稍后尝试在浏览器中访问 `http://haxis.cn`。
+
+**大功告成！** 当 DNS 生效后，您应该就可以通过 `http://haxis.cn` 访问您的网站了！
 
 > **关于 HTTPS**: 以上配置只适用于 HTTP。启用 HTTPS (SSL加密) 是一个更复杂的步骤，通常需要您使用 Certbot 等工具为您的域名申请免费的 SSL 证书。这超出了本指南的范围，但 Nginx 是实现它的基础。
 
