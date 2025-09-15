@@ -1,11 +1,8 @@
 
+
 'use server';
 
 import { NextRequest, NextResponse } from "next/server";
-import { getIronSession } from 'iron-session';
-import { cookies } from 'next/headers';
-import type { SessionData } from '@/lib/session';
-
 
 export function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
@@ -19,8 +16,8 @@ export function GET(req: NextRequest) {
     }
 
     if (action === 'login') {
-        // Use the URL constructor to safely join the issuer and the path,
-        // preventing double slashes (e.g., /oidc/oidc/).
+        // Use the URL constructor to safely join the issuer and the path.
+        // This is the correct way to handle this and prevents double slashes.
         const loginUrl = new URL('/oidc/auth', issuer);
         
         const clientId = process.env.AUTHING_APP_ID;
@@ -38,6 +35,7 @@ export function GET(req: NextRequest) {
             }
         } else {
             console.error("Authing client ID or redirect URI is missing.");
+            // Redirect to a local login prompt page if config is missing
             return NextResponse.redirect(new URL('/login', req.url));
         }
         

@@ -47,13 +47,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
+      // Step 1: Clear the local server session
       await fetch('/api/auth/logout');
-      // Instead of reloading, fetch the user again to get the null state
-      await fetchUser();
-      // Then navigate to the home page
-      router.push('/');
+      setUser(null); // Immediately update UI to reflect logout
+      
+      // Step 2: Redirect to Authing's end session endpoint to clear the SSO session.
+      // This is the standard OIDC way to log out properly.
+      const issuer = process.env.AUTHING_ISSUER || '';
+      if (!issuer) {
+        console.error("AUTHING_ISSUER is not set, cannot perform a full logout.");
+        router.push('/'); // Fallback to just redirecting home
+        router.refresh();
+        return;
+      }
+
+      const postLogoutRedirectUri = new URL('/', window.location.origin).toString();
+      const logoutUrl = new URL('/oidc/session/end', issuer);
+      logoutUrl.searchParams.set('post_logout_redirect_uri', postLogoutRedirectUri);
+      
+      // Redirect the user to the Authing logout page. Authing will then redirect back to our home page.
+      window.location.href = logoutUrl.toString();
+
     } catch (error) {
       console.error('Logout failed', error);
+      // Even if logout fails, try to redirect home
+      router.push('/');
+      router.refresh();
     }
   };
 

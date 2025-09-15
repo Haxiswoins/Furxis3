@@ -1,12 +1,14 @@
+
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { getCharacterByName } from '@/lib/data-service';
 import { CharacterDetailClient, Images } from './client-page';
 import type { Character } from '@/types';
+import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }: { params: { characterName: string } }) {
+export async function generateMetadata({ params }: { params: { characterName: string } }): Promise<Metadata> {
   const characterName = decodeURIComponent(params.characterName as string);
   const character = await getCharacterByName(characterName);
 
@@ -17,7 +19,7 @@ export async function generateMetadata({ params }: { params: { characterName: st
   }
 
   return {
-    title: `${character.name} - 前行无界`,
+    title: character.name,
     description: character.description,
   };
 }
