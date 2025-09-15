@@ -85,13 +85,13 @@ npm install
     nano .env.local
     ```
 
-3.  **将您的真实密钥和配置信息填入文件中**。**请务必将 `...` 替换为您的实际值**，并确保以下两个URL是您当前服务器的正确地址：
+3.  **将您的真实密钥和配置信息填入文件中**。**请务必将 `...` 替换为您的实际值**，并确保以下两个URL是您网站的**最终域名地址**：
 
     ```env
 # 网站基础URL (⚠️ 极其重要！)
 # 这个URL是让您上传的图片在生产环境中正确显示所必需的。
-# 您的服务器IP是 175.178.237.158，请使用此值。
-NEXT_PUBLIC_BASE_URL="http://175.178.237.158:3000"
+# 请确保填写您网站的完整公网访问地址，并包含协议 (http/https)。
+NEXT_PUBLIC_BASE_URL="http://haxis.cn"
 
 # --- Resend API Key (用于邮件通知) ---
 # 详细配置请务必参考项目中的 RESEND_GUIDE.md
@@ -112,8 +112,8 @@ AUTHING_APP_SECRET="..."
 AUTHING_ISSUER="..."
 
 # 登录回调URL, 必须与您在 Authing 应用配置中的 "登录回调 URL" 完全一致
-# 您的服务器IP是 175.178.237.158，请使用此值。
-AUTHING_REDIRECT_URI="http://175.178.237.158:3000/api/auth/authing/callback"
+# 您的域名是 haxis.cn，请使用此值。
+AUTHING_REDIRECT_URI="http://haxis.cn/api/auth/authing/callback"
 
 # 用于加密会话的密钥, 请生成一个足够复杂的随机字符串 (至少32位)
 # 您可以在您的服务器或本地终端使用 `openssl rand -base64 32` 命令生成一个
@@ -136,7 +136,7 @@ ADMIN_EMAIL="..."
 1.  **登录到您的 Authing 控制台**。
 2.  进入您的应用，找到 **应用配置** -> **登录回调 URL**。
 3.  **非常重要**：将您的服务器回调地址完整地粘贴进去：
-    **`http://175.178.237.158:3000/api/auth/authing/callback`**
+    **`http://haxis.cn/api/auth/authing/callback`**
     
     > **提示**：此列表支持填写多个地址，每个地址占一行。您可以同时保留本地开发和线上生产的地址。
 
@@ -154,11 +154,11 @@ ADMIN_EMAIL="..."
     npm start
     ```
 
-默认情况下，应用会运行在 `3000` 端口。您现在应该可以通过服务器的 IP 地址和端口访问您的网站了 (`http://175.178.237.158:3000`)。
+默认情况下，应用会运行在 `3000` 端口。
 
 ---
 
-### **(推荐) 第 7 步：使用 PM2 保持应用持续运行**
+### **第 7 步：使用 PM2 保持应用持续运行**
 
 直接使用 `npm start` 启动的应用在您关闭终端后会停止。为了让您的网站在后台持续运行并能自动重启，强烈推荐使用进程管理器 `PM2`。
 
@@ -182,10 +182,76 @@ ADMIN_EMAIL="..."
 
 ---
 
-### **(可选但强烈推荐) 第 8 步：配置反向代理（如 Nginx）**
+### **第 8 步：配置 Nginx 反向代理 (使用 `haxis.cn` 域名访问)**
 
-为了让用户能通过域名（例如 `www.yourdomain.com`）直接访问您的网站（而不是 `http://IP:3000`），并启用 HTTPS 加密，您需要设置一个反向代理。Nginx 是一个非常流行的选择。
+这一步是让您能通过 `haxis.cn` 直接访问网站的关键。它会将外部对您域名的访问请求，转发到内部运行在 3000 端口的应用上。
 
-这通常涉及编辑 Nginx 的配置文件，将来自您域名的请求转发到 Next.js 应用正在运行的本地端口（`http://localhost:3000`）。同时，您也需要在此处配置 SSL 证书。这是一个专业的系统管理任务，具体配置会根据您的服务器和域名设置而异。
+#### 1. 安装 Nginx
 
-部署完成！您的网站现在已经在您自己的服务器上成功运行了。
+如果您的服务器是 Ubuntu/Debian 系统，运行以下命令来安装 Nginx：
+```bash
+sudo apt update
+sudo apt install nginx -y
+```
+
+#### 2. 创建 Nginx 配置文件
+
+我们需要为您的网站创建一个专门的配置文件。
+首先，创建一个新的配置文件：
+```bash
+sudo nano /etc/nginx/sites-available/haxis.cn
+```
+
+然后，**将下面所有的配置代码完整地复制并粘贴到这个新打开的文件中**：
+```nginx
+server {
+    listen 80;
+    listen [::]:80;
+
+    # 这里填写您的域名
+    server_name haxis.cn www.haxis.cn; 
+
+    location / {
+        # 将请求转发到您在 3000 端口运行的 Next.js 应用
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+粘贴完成后，保存并关闭文件 (在 `nano` 中，按 `Ctrl+X`，然后按 `Y`，最后按 `Enter`)。
+
+#### 3. 激活配置
+
+现在，我们需要告诉 Nginx 启用这个新配置。我们通过创建一个“快捷方式”来做到这一点：
+```bash
+sudo ln -s /etc/nginx/sites-available/haxis.cn /etc/nginx/sites-enabled/
+```
+> 这行命令会在 `sites-enabled` 目录中创建一个指向您配置文件的链接。
+
+#### 4. 测试并重启 Nginx
+
+在重启之前，先测试一下配置文件语法是否有误，这是一个好习惯：
+```bash
+sudo nginx -t
+```
+如果您看到 `syntax is ok` 和 `test is successful` 的字样，说明一切正常。
+
+最后，重启 Nginx 来让所有配置生效：
+```bash
+sudo systemctl restart nginx
+```
+
+**大功告成！** 现在，您应该可以直接在浏览器中输入 `http://haxis.cn` 来访问您的网站了！
+
+> **关于 HTTPS**: 以上配置只适用于 HTTP。启用 HTTPS (SSL加密) 是一个更复杂的步骤，通常需要您使用 Certbot 等工具为您的域名申请免费的 SSL 证书。这超出了本指南的范围，但 Nginx 是实现它的基础。
+
+部署完成！您的网站现在已经在您自己的服务器上，并通过域名成功运行了。
+
+    
