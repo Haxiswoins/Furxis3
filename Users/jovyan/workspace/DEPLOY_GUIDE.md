@@ -121,7 +121,7 @@ AUTHING_TOKEN_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/token"
 AUTHING_USERINFO_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/me"
 
 # 登出端点 (Logout Endpoint)
-AUTHING_LOGOUT_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/session/end"
+NEXT_PUBLIC_AUTHING_LOGOUT_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/session/end"
 
 # 登录回调URL (⚠️ 临时配置)
 # 在域名备案完成前，请使用服务器的公网IP地址。
@@ -230,3 +230,5 @@ Nginx 的配置**无需更改**。我们之前设置的 `server_name haxis.cn ww
 2.  **重新构建并重启**：在服务器上再次运行 `npm run build` 和 `pm2 restart 前行无界`。
 
 部署完成！您的网站现在已经可以通过 IP 地址在您自己的服务器上成功运行了。
+
+    
