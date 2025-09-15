@@ -19,6 +19,8 @@ export function GET(req: NextRequest) {
     }
 
     if (action === 'login') {
+        // Use the URL constructor to safely join the issuer and the path,
+        // preventing double slashes (e.g., /oidc/oidc/).
         const loginUrl = new URL('/oidc/auth', issuer);
         
         const clientId = process.env.AUTHING_APP_ID;
