@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Genkit AI configuration.
@@ -21,8 +22,6 @@ export const ai = genkit({
   plugins: [
     googleAI({
       // The API key is usually picked up from the GOOGLE_API_KEY or GOOGLE_GENAI_API_KEY environment variables.
-      // You can explicitly set it here if needed:
-      // apiKey: process.env.GOOGLE_API_KEY,
     }),
   ],
 });

@@ -1,5 +1,4 @@
 
-
 'use server';
 /**
  * @fileOverview A function to check for pending orders and notify the admin.
@@ -8,7 +7,7 @@
  */
 
 import { getAllOrders, getSiteContent } from '@/lib/data-service';
-import { sendEmail } from './send-email-flow';
+import { sendEmail } from '@/ai/flows/send-email-flow';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -62,7 +61,7 @@ export async function notifyAdminOfPendingOrders(): Promise<string> {
     htmlBody += `
       </ul>
       <p>祝好！</p>
-      <p>Suitopia 自动助手</p>
+      <p>前行无界 自动助手</p>
     `;
 
     try {
