@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { getCharacterByName, getCharacterSeries } from '@/lib/data-service';
+import { getCharacterByName } from '@/lib/data-service';
 import { CharacterDetailClient, Images } from './client-page';
 import type { Character } from '@/types';
 
@@ -43,7 +43,7 @@ export default async function AdoptionDetailPage({ params }: { params: { charact
     character.imageUrl2,
     character.imageUrl3,
     character.imageUrl4
-  ].filter((url): url is string => !!url && url.trim() !== '');
+  ].filter((url): url is string => !!url);
 
   return (
     <div
