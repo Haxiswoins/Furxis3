@@ -111,16 +111,11 @@ NEXT_PUBLIC_IMAGE_HOST="..."
 AUTHING_APP_ID="68a539bd60ad89fcaeb3585f"
 AUTHING_APP_SECRET="750fdd113a91158818471993b3f46a6a"
 
-# 认证端点 (Authentication Endpoint)
-AUTHING_AUTH_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/auth"
+# Issuer URL (⚠️ 关键配置！)
+# 这个地址必须包含 /oidc 后缀，请直接复制粘贴。
+AUTHING_ISSUER="https://icwh5jsh38rx-demo.authing.cn/oidc"
 
-# 令牌端点 (Token Endpoint)
-AUTHING_TOKEN_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/token"
-
-# 用户信息端点 (User Info Endpoint)
-AUTHING_USERINFO_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/me"
-
-# 登出端点 (Logout Endpoint)
+# 登出端点 (Logout Endpoint)，用于前端登出跳转
 NEXT_PUBLIC_AUTHING_LOGOUT_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/session/end"
 
 # 登录回调URL (⚠️ 临时配置)
@@ -230,5 +225,3 @@ Nginx 的配置**无需更改**。我们之前设置的 `server_name haxis.cn ww
 2.  **重新构建并重启**：在服务器上再次运行 `npm run build` 和 `pm2 restart 前行无界`。
 
 部署完成！您的网站现在已经可以通过 IP 地址在您自己的服务器上成功运行了。
-
-    
