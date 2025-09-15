@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview A function to check for pending orders and notify the admin.

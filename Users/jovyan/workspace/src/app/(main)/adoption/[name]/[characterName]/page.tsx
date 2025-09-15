@@ -1,5 +1,3 @@
-
-
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { getCharacterByName, getCharacterSeries } from '@/lib/data-service';
@@ -76,4 +74,3 @@ export default async function AdoptionDetailPage({ params }: { params: { charact
     </div>
   );
 }
-
