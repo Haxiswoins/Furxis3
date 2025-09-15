@@ -1,6 +1,6 @@
 
 import { getCommissionOptions, getSiteContent } from '@/lib/data-service';
-import { CommissionPageClient } from '@/app/(main)/commission/client-page';
+import { CommissionPageClient } from './client-page';
 import type { CommissionOption } from '@/types';
 
 export const dynamic = 'force-dynamic';
