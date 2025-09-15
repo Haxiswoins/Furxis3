@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
   const code = searchParams.get('code');
   const state = searchParams.get('state');
   
+  // Directly use the full endpoint URLs from environment variables
   const tokenEndpoint = process.env.AUTHING_TOKEN_ENDPOINT;
   const userInfoEndpoint = process.env.AUTHING_USERINFO_ENDPOINT;
 
@@ -17,7 +18,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Exchange authorization code for tokens
+    // Step 1: Exchange authorization code for tokens
     const tokenUrl = new URL(tokenEndpoint);
     const tokenResponse = await fetch(tokenUrl, {
       method: 'POST',
@@ -37,7 +38,7 @@ export async function GET(req: NextRequest) {
       throw new Error(tokens.error_description || 'Failed to exchange authorization code for tokens.');
     }
 
-    // Fetch user info with the access token
+    // Step 2: Fetch user info with the access token
     const userInfoUrl = new URL(userInfoEndpoint);
     const userInfoResponse = await fetch(userInfoUrl, {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
@@ -49,6 +50,7 @@ export async function GET(req: NextRequest) {
       throw new Error(userInfo.error_description || 'Failed to fetch user info.');
     }
 
+    // Step 3: Create and save the user session
     const session = await getIronSession<SessionData>(cookies(), {
       password: process.env.AUTHING_SECRET!,
       cookieName: 'suitopia-session',
@@ -67,6 +69,7 @@ export async function GET(req: NextRequest) {
 
     await session.save();
 
+    // Step 4: Redirect user back to the originally intended page
     let returnTo = '/home';
     if (state) {
         try {

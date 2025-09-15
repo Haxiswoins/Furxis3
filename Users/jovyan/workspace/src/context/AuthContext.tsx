@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // This is the standard OIDC way to log out properly.
       const logoutEndpoint = process.env.NEXT_PUBLIC_AUTHING_LOGOUT_ENDPOINT;
       if (!logoutEndpoint) {
-        console.error("AUTHING_LOGOUT_ENDPOINT is not set, cannot perform a full OIDC logout. Redirecting home.");
+        console.error("NEXT_PUBLIC_AUTHING_LOGOUT_ENDPOINT is not set, cannot perform a full OIDC logout. Redirecting home.");
         router.push('/');
         router.refresh();
         return;

@@ -8,6 +8,7 @@ export function GET(req: NextRequest) {
     const action = req.nextUrl.pathname.split('/').pop();
     const returnTo = searchParams.get('returnTo');
 
+    // This is the correct, full URL for the authorization endpoint.
     const authEndpoint = process.env.AUTHING_AUTH_ENDPOINT;
     if (!authEndpoint) {
         console.error("AUTHING_AUTH_ENDPOINT environment variable is not set.");
@@ -28,10 +29,12 @@ export function GET(req: NextRequest) {
             loginUrl.searchParams.set('prompt', 'login');
             
             if (returnTo) {
+                // Securely encode the returnTo path in the state parameter
                 loginUrl.searchParams.set('state', Buffer.from(JSON.stringify({ returnTo })).toString('base64'));
             }
         } else {
             console.error("Authing client ID or redirect URI is missing.");
+            // Redirect to a generic error page or the main login page if something is misconfigured.
             return NextResponse.redirect(new URL('/login', req.url));
         }
         
@@ -45,5 +48,6 @@ export function GET(req: NextRequest) {
 
 
 export async function POST(req: NextRequest) {
+  // Allow POST requests to be handled by the same logic for flexibility.
   return GET(req);
 }
