@@ -167,8 +167,8 @@ npm run build
 
 2.  使用 PM2 来启动您的应用 (如果已启动，它会自动重启并加载新配置)：
     ```bash
-    # 您可以将 "forward-infinity-app" 替换为您想为应用起的名字
-    pm2 start npm --name "forward-infinity-app" -- start
+    # 注意：这里的名称“前行无界”是您为应用指定的名称
+    pm2 start npm --name "前行无界" -- start
     ```
 
 3.  设置开机自启动 (非常重要！)：
@@ -177,6 +177,12 @@ npm run build
     # (根据提示，可能需要您复制并执行一行命令)
     pm2 save
     ```
+    > **常用 PM2 命令**:
+    > *   `pm2 list`: 查看所有正在运行的应用。
+    > *   `pm2 restart 前行无界`: 重启您的应用。
+    > *   `pm2 stop 前行无界`: 停止您的应用。
+    > *   `pm2 logs 前行无界`: 查看应用的实时日志。
+
 
 ---
 
@@ -211,6 +217,6 @@ Nginx 的配置**无需更改**。我们之前设置的 `server_name haxis.cn ww
 当您的域名 `haxis.cn` 成功备案后，请记得执行以下操作：
 
 1.  **修改 `.env.local` 文件**：将 `NEXT_PUBLIC_BASE_URL` 和 `AUTHING_REDIRECT_URI` 的值从 IP 地址改回 `http://haxis.cn`。
-2.  **重新构建并重启**：在服务器上再次运行 `npm run build` 和 `pm2 restart forward-infinity-app`。
+2.  **重新构建并重启**：在服务器上再次运行 `npm run build` 和 `pm2 restart 前行无界`。
 
 部署完成！您的网站现在已经可以通过 IP 地址在您自己的服务器上成功运行了。
