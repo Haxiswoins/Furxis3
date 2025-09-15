@@ -1,3 +1,4 @@
+
 # 网站服务器部署指南
 
 本文档将指导您如何将此 Next.js 应用程序部署到您自己的服务器。
@@ -43,13 +44,14 @@
 
 ```bash
 # 请将下面的 URL 替换为您自己的项目 GitHub 仓库地址
-git clone https://github.com/Haxiswoins/Furxis3.git
+git clone https://github.com/YourUsername/YourRepository.git
 ```
 
-这会在当前目录下创建一个名为 `Furxis3` 的文件夹。接下来，请进入这个文件夹：
+这会在当前目录下创建一个与您仓库同名的文件夹。接下来，请进入这个文件夹：
 
 ```bash
-cd Furxis3
+# 请将 "YourRepository" 替换为您的文件夹名
+cd YourRepository
 ```
 
 后续的所有操作都将在这个项目文件夹中进行。
@@ -83,9 +85,45 @@ npm install
     nano .env.local
     ```
 
-3.  **将您的真实密钥和配置信息填入文件中**。文件内容应如下所示，**请务必将所有 `...` 替换为您的实际值**。
+3.  **将您的真实密钥和配置信息填入文件中**。**请务必将 `...` 替换为您的实际值**，并确保以下两个URL是您当前服务器的正确地址：
 
-    > **重要提示**: `AUTHING_SECRET` 用于保护用户登录会话的安全，请务必使用一个足够强大的随机字符串。您可以在服务器终端通过 `openssl rand -base64 32` 命令生成一个。
+    ```env
+# 网站基础URL (⚠️ 极其重要！)
+# 这个URL是让您上传的图片在生产环境中正确显示所必需的。
+# 您的服务器IP是 175.178.237.158，请使用此值。
+NEXT_PUBLIC_BASE_URL="http://175.178.237.158:3000"
+
+# --- Resend API Key (用于邮件通知) ---
+# 详细配置请务必参考项目中的 RESEND_GUIDE.md
+RESEND_API_KEY="..."
+
+# --- 图片上传服务配置 ---
+# 这是用于将图片上传到您的图床的API密钥 (Token)。
+IMAGE_UPLOAD_TOKEN="..."
+
+# 这是您的图床域名，不包含 "https://"。例如：cdn.example.com
+NEXT_PUBLIC_IMAGE_HOST="..."
+
+# --- Authing 应用配置 (用于用户认证) ---
+# 您可以从 Authing 控制台 > 选择您的自建应用 > 应用配置 中找到以下大部分值。
+AUTHING_APP_ID="..."
+AUTHING_APP_SECRET="..."
+# Issuer URL, 通常格式为 https://<YOUR-SUBDOMAIN>.authing.cn
+AUTHING_ISSUER="..."
+
+# 登录回调URL, 必须与您在 Authing 应用配置中的 "登录回调 URL" 完全一致
+# 您的服务器IP是 175.178.237.158，请使用此值。
+AUTHING_REDIRECT_URI="http://175.178.237.158:3000/api/auth/authing/callback"
+
+# 用于加密会话的密钥, 请生成一个足够复杂的随机字符串 (至少32位)
+# 您可以在您的服务器或本地终端使用 `openssl rand -base64 32` 命令生成一个
+AUTHING_SECRET="..."
+
+# 管理员邮箱地址
+# 拥有此邮箱的用户登录后将自动获得网站的管理员权限
+ADMIN_EMAIL="..."
+    ```
+    > **重要提示**: `AUTHING_SECRET` 用于保护用户登录会话的安全，请务必使用一个足够强大的随机字符串。
 
 4.  保存并关闭文件 (在 `nano` 中，按 `Ctrl+X`，然后按 `Y`，最后按 `Enter`)。
 
@@ -93,13 +131,14 @@ npm install
 
 ### **第 5 步：在 Authing 中配置回调 URL (部署后必须操作)**
 
-为了让 Authing 知道在用户登录成功后应该将他们安全地送回您的网站，您**必须**在 Authing 控制台中配置回调 URL 白名单。
+为了让 Authing 知道在用户登录成功后应该将他们安全地送回您的网站，您**必须**配置回调 URL 白名单。
 
 1.  **登录到您的 Authing 控制台**。
 2.  进入您的应用，找到 **应用配置** -> **登录回调 URL**。
-3.  **非常重要**：将您的网站回调地址 `https://haxis.cn/api/auth/authing/callback` 完整地粘贴进去。
+3.  **非常重要**：将您的服务器回调地址完整地粘贴进去：
+    **`http://175.178.237.158:3000/api/auth/authing/callback`**
     
-    > **提示**：此列表支持填写多个地址，每个地址占一行。如果您还需要在本地开发调试，可以同时保留本地的 `http://localhost:3000/api/auth/authing/callback` 地址。
+    > **提示**：此列表支持填写多个地址，每个地址占一行。您可以同时保留本地开发和线上生产的地址。
 
 ---
 
@@ -115,7 +154,7 @@ npm install
     npm start
     ```
 
-默认情况下，应用会运行在 `3000` 端口。您现在应该可以通过服务器的 IP 地址和端口访问您的网站了（例如 `http://YOUR_SERVER_IP:3000`）。但要通过域名访问，还需要下一步。
+默认情况下，应用会运行在 `3000` 端口。您现在应该可以通过服务器的 IP 地址和端口访问您的网站了 (`http://175.178.237.158:3000`)。
 
 ---
 
@@ -145,7 +184,7 @@ npm install
 
 ### **(可选但强烈推荐) 第 8 步：配置反向代理（如 Nginx）**
 
-为了让用户能通过 `haxis.cn` 直接访问您的网站（而不是 `http://域名:3000`），并启用 HTTPS 加密，您需要设置一个反向代理。Nginx 是一个非常流行的选择。
+为了让用户能通过域名（例如 `www.yourdomain.com`）直接访问您的网站（而不是 `http://IP:3000`），并启用 HTTPS 加密，您需要设置一个反向代理。Nginx 是一个非常流行的选择。
 
 这通常涉及编辑 Nginx 的配置文件，将来自您域名的请求转发到 Next.js 应用正在运行的本地端口（`http://localhost:3000`）。同时，您也需要在此处配置 SSL 证书。这是一个专业的系统管理任务，具体配置会根据您的服务器和域名设置而异。
 

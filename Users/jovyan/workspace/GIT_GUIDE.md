@@ -1,3 +1,4 @@
+
 # Git 与 GitHub 工作流程指南 for Firebase Studio
 
 本文档将指导您如何将这个 Firebase Studio 项目与您自己的 Git 和 GitHub 仓库连接起来，实现代码的版本控制、备份和恢复。
@@ -16,7 +17,7 @@
 
 1.  登录您的 GitHub 账户。
 2.  点击右上角的 "+" 号，选择 "New repository"。
-3.  为您的仓库取一个名字（例如 `my-nextjs-project`）。
+3.  为您的仓库取一个名字（例如 `forward-infinity-project`）。
 4.  **非常重要**：请**不要**勾选 "Add a README file", "Add .gitignore", 或 "Choose a license"。我们要从一个完全空的仓库开始。
 5.  点击 "Create repository"。
 6.  创建成功后，您会看到一个页面，上面显示了您的仓库地址，格式通常是 `https://github.com/YourUsername/YourRepositoryName.git`。**请复制这个地址**，下一步会用到。
