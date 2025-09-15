@@ -2,7 +2,7 @@
 import { MetadataRoute } from 'next';
 import { getWorks, getCharacterSeries, getCharacters, getCommissionOptions } from '@/lib/data-service';
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.example.com';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     
@@ -14,6 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/adoption',
         '/works',
         '/profile',
+        '/privacy',
     ].map((route) => ({
         url: `${BASE_URL}${route}`,
         lastModified: new Date(),
@@ -37,7 +38,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const characters = await getCharacters();
     const adoptionCharacterRoutes = await Promise.all(characters.map(async (character) => {
         const series = characterSeries.find(s => s.id === character.seriesId);
-        const seriesName = series ? series.name : '';
+        const seriesName = series ? series.name : 'unknown'; // fallback
         return {
             url: `${BASE_URL}/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(character.name)}`,
             lastModified: new Date(),
@@ -55,7 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ...staticRoutes,
         ...commissionRoutes,
         ...adoptionSeriesRoutes,
-        ...adoptionCharacterRoutes,
+        ...adoptionCharacterRoutes.filter(route => !route.url.includes('unknown')), // Filter out invalid routes
         ...workRoutes,
     ];
 }
