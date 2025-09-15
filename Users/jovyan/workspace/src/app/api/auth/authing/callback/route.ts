@@ -16,7 +16,8 @@ export async function GET(req: NextRequest) {
 
   try {
     // Exchange authorization code for tokens
-    const tokenUrl = new URL(issuer + '/oidc/token');
+    // Use the URL constructor to safely join paths, avoiding double slashes.
+    const tokenUrl = new URL('/oidc/token', issuer);
     const tokenResponse = await fetch(tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -31,17 +32,20 @@ export async function GET(req: NextRequest) {
 
     const tokens = await tokenResponse.json();
     if (!tokenResponse.ok) {
+      console.error('Failed to fetch tokens:', tokens);
       throw new Error(tokens.error_description || 'Failed to fetch tokens');
     }
 
     // Fetch user info with the access token
-    const userInfoUrl = new URL(issuer + '/oidc/me');
+    // Use the URL constructor to safely join paths.
+    const userInfoUrl = new URL('/oidc/me', issuer);
     const userInfoResponse = await fetch(userInfoUrl, {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
     
     const userInfo = await userInfoResponse.json();
      if (!userInfoResponse.ok) {
+      console.error('Failed to fetch user info:', userInfo);
       throw new Error(userInfo.error_description || 'Failed to fetch user info');
     }
 
@@ -83,6 +87,6 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('Authentication callback error:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-    return NextResponse.json({ error: 'Authentication failed', details: errorMessage }, { status: 500 });
+    return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(errorMessage)}`, req.url));
   }
 }
