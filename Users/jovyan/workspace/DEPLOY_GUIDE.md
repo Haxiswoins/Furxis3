@@ -107,15 +107,17 @@ IMAGE_UPLOAD_TOKEN="..."
 NEXT_PUBLIC_IMAGE_HOST="..."
 
 # --- Authing 应用配置 (用于用户认证) ---
-# 您可以从 Authing 控制台 > 选择您的自建应用 > 应用配置 中找到以下值。
+# 您可以从 Authing 控制台 > 选择您的自建应用 > 应用配置 > 端点信息 中找到以下所有值。
 AUTHING_APP_ID="68a539bd60ad89fcaeb3585f"
 AUTHING_APP_SECRET="750fdd113a91158818471993b3f46a6a"
 
-# Issuer URL (⚠️ 关键配置！)
-# 这个地址必须包含 /oidc 后缀，请直接复制粘贴。
-AUTHING_ISSUER="https://icwh5jsh38rx-demo.authing.cn/oidc"
-
-# 登出端点 (Logout Endpoint)，用于前端登出跳转
+# 认证端点 (Authorization Endpoint)
+AUTHING_AUTH_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/auth"
+# 令牌端点 (Token Endpoint)
+AUTHING_TOKEN_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/token"
+# 用户信息端点 (UserInfo Endpoint)
+AUTHING_USERINFO_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/me"
+# 登出端点 (Logout Endpoint)
 NEXT_PUBLIC_AUTHING_LOGOUT_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/session/end"
 
 # 登录回调URL (⚠️ 临时配置)

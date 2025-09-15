@@ -15,7 +15,6 @@ export function GET(req: NextRequest) {
     }
 
     if (action === 'login') {
-        // Directly use the full authentication endpoint from environment variables.
         const loginUrl = new URL(authEndpoint);
         
         const clientId = process.env.AUTHING_APP_ID;
@@ -29,20 +28,18 @@ export function GET(req: NextRequest) {
             loginUrl.searchParams.set('prompt', 'login');
             
             if (returnTo) {
-                // State is used to pass the returnTo URL through the OIDC flow.
                 loginUrl.searchParams.set('state', Buffer.from(JSON.stringify({ returnTo })).toString('base64'));
             }
         } else {
             console.error("Authing client ID or redirect URI is missing.");
-            // Fallback to a local login prompt page if critical config is missing.
             return NextResponse.redirect(new URL('/login', req.url));
         }
         
         return NextResponse.redirect(loginUrl);
     }
     
-    // The logout logic is handled by the client-side context now, redirecting directly to Authing.
-    // This server-side route is primarily for initiating login.
+    // The logout logic is now handled exclusively by /api/auth/logout.
+    // Any other action passed to this dynamic route is considered a bad request.
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
 }
 
