@@ -85,13 +85,15 @@ npm install
     nano .env.local
     ```
 
-3.  **将您的真实密钥和配置信息填入文件中**。**请务必将 `...` 替换为您的实际值**，并确保以下两个URL是您网站的**最终域名地址**：
+3.  **将您的真实密钥和配置信息填入文件中**。**请务必将 `...` 替换为您的实际值**。
+
+    > **⚠️ 临时配置警告 (备案期间)**
+    > 由于您的域名 `haxis.cn` 正在备案，我们需要暂时使用服务器的公网 IP 地址进行访问和测试。请按照以下临时配置填写。**域名备案成功后，请务必将这里的 IP 地址改回您的域名 `http://haxis.cn`**。
 
     ```env
-# 网站基础URL (⚠️ 极其重要！)
-# 这个URL是让您上传的图片在生产环境中正确显示所必需的。
-# 请确保填写您网站的完整公网访问地址，并包含协议 (http/https)。
-NEXT_PUBLIC_BASE_URL="http://haxis.cn"
+# 网站基础URL (⚠️ 临时配置)
+# 在域名备案完成前，请使用服务器的公网IP地址。
+NEXT_PUBLIC_BASE_URL="http://175.178.237.158"
 
 # --- Resend API Key (用于邮件通知) ---
 # 详细配置请务必参考项目中的 RESEND_GUIDE.md
@@ -111,9 +113,9 @@ AUTHING_APP_SECRET="..."
 # Issuer URL, 通常格式为 https://<YOUR-SUBDOMAIN>.authing.cn
 AUTHING_ISSUER="..."
 
-# 登录回调URL, 必须与您在 Authing 应用配置中的 "登录回调 URL" 完全一致
-# 您的域名是 haxis.cn，请使用此值。
-AUTHING_REDIRECT_URI="http://haxis.cn/api/auth/authing/callback"
+# 登录回调URL (⚠️ 临时配置)
+# 在域名备案完成前，请使用服务器的公网IP地址。
+AUTHING_REDIRECT_URI="http://175.178.237.158/api/auth/authing/callback"
 
 # 用于加密会话的密钥, 请生成一个足够复杂的随机字符串 (至少32位)
 # 您可以在您的服务器或本地终端使用 `openssl rand -base64 32` 命令生成一个
@@ -135,10 +137,13 @@ ADMIN_EMAIL="..."
 
 1.  **登录到您的 Authing 控制台**。
 2.  进入您的应用，找到 **应用配置** -> **登录回调 URL**。
-3.  **非常重要**：将您的服务器回调地址完整地粘贴进去：
-    **`http://haxis.cn/api/auth/authing/callback`**
+3.  **非常重要**：将您的**IP访问地址**和**最终域名地址**都添加进去。每个地址占一行。
     
-    > **提示**：此列表支持填写多个地址，每个地址占一行。您可以同时保留本地开发和线上生产的地址。
+    请将以下两个地址都粘贴到输入框中：
+    *   `http://175.178.237.158/api/auth/authing/callback`
+    *   `http://haxis.cn/api/auth/authing/callback`
+
+    > **提示**: 同时保留两个地址，可以确保在备案期间和备案完成后，登录功能都能正常工作，无需再次修改。
 
 ---
 
@@ -175,77 +180,15 @@ npm run build
 
 ---
 
-### **第 8 步：配置 Nginx 反向代理 (使用 `haxis.cn` 域名访问)**
+### **第 8 步：配置 Nginx 反向代理**
 
-这一步是让您能通过 `haxis.cn` 直接访问网站的关键。它会将外部对您域名的访问请求，转发到内部运行在 3000 端口的应用上。
-
-#### 1. 安装 Nginx
-
-如果您的服务器是 Ubuntu/Debian 系统，运行以下命令来安装 Nginx：
-```bash
-sudo apt update
-sudo apt install nginx -y
-```
-
-#### 2. 创建 Nginx 配置文件
-
-我们需要为您的网站创建一个专门的配置文件。
-首先，创建一个新的配置文件：
-```bash
-sudo nano /etc/nginx/sites-available/haxis.cn
-```
-
-然后，**将下面所有的配置代码完整地复制并粘贴到这个新打开的文件中**：
-```nginx
-server {
-    listen 80;
-    listen [::]:80;
-
-    # 这里填写您的域名，包含 www 和不包含 www 的版本
-    server_name haxis.cn www.haxis.cn; 
-
-    location / {
-        # 将请求转发到您在 3000 端口运行的 Next.js 应用
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
-粘贴完成后，保存并关闭文件 (在 `nano` 中，按 `Ctrl+X`，然后按 `Y`，最后按 `Enter`)。
-
-#### 3. 激活配置
-
-现在，我们需要告诉 Nginx 启用这个新配置。我们通过创建一个“快捷方式”来做到这一点：
-```bash
-sudo ln -s /etc/nginx/sites-available/haxis.cn /etc/nginx/sites-enabled/
-```
-> **注意**：如果提示文件已存在，说明您之前可能已经创建过，可以忽略此步。
-
-#### 4. 测试并重启 Nginx
-
-在重启之前，先测试一下配置文件语法是否有误，这是一个好习惯：
-```bash
-sudo nginx -t
-```
-如果您看到 `syntax is ok` 和 `test is successful` 的字样，说明一切正常。
-
-最后，重启 Nginx 来让所有配置生效：
-```bash
-sudo systemctl restart nginx
-```
+Nginx 的配置**无需更改**。我们之前设置的 `server_name haxis.cn www.haxis.cn;` 已经可以同时处理来自 IP 地址的直接访问。
 
 ---
 
 ### **第 9 步 (关键)：配置域名解析 (DNS)**
 
-**这是让您的域名指向服务器的最后一步。** 这个操作需要在您购买域名的服务商（如阿里云、腾讯云、GoDaddy）的控制台完成。
+**此步骤请在您的域名 `haxis.cn` 备案成功后再操作。**
 
 1.  登录您的域名服务商，找到 `haxis.cn` 的 **DNS 管理**或**域名解析**页面。
 2.  添加以下 **两条** `A` 记录：
@@ -262,12 +205,12 @@ sudo systemctl restart nginx
     
     > **提示**：TTL 值保持默认即可。
 
-3.  保存您的更改。
+---
+### **域名备案成功后**
 
-**重要提示**：DNS 记录在全球生效需要一些时间，通常是几分钟到几小时不等。配置完成后，请耐心等待。您可以稍后尝试在浏览器中访问 `http://haxis.cn`。
+当您的域名 `haxis.cn` 成功备案后，请记得执行以下操作：
 
-**大功告成！** 当 DNS 生效后，您应该就可以通过 `http://haxis.cn` 访问您的网站了！
+1.  **修改 `.env.local` 文件**：将 `NEXT_PUBLIC_BASE_URL` 和 `AUTHING_REDIRECT_URI` 的值从 IP 地址改回 `http://haxis.cn`。
+2.  **重新构建并重启**：在服务器上再次运行 `npm run build` 和 `pm2 restart forward-infinity-app`。
 
-> **关于 HTTPS**: 以上配置只适用于 HTTP。启用 HTTPS (SSL加密) 是一个更复杂的步骤，通常需要您使用 Certbot 等工具为您的域名申请免费的 SSL 证书。这超出了本指南的范围，但 Nginx 是实现它的基础。
-
-部署完成！您的网站现在已经在您自己的服务器上，并通过域名成功运行了。
+部署完成！您的网站现在已经可以通过 IP 地址在您自己的服务器上成功运行了。
