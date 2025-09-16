@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -39,8 +38,7 @@ type CharacterListPageClientProps = {
   characters: Character[];
 }
 
-function CharacterGrid({ characters }: { characters: Character[] }) {
-    const seriesName = characters[0]?.seriesId; // Assuming all characters are from the same series
+function CharacterGrid({ characters, seriesName }: { characters: Character[]; seriesName: string; }) {
 
     return (
          <motion.div 
@@ -109,14 +107,14 @@ export function CharacterListPageClient({ series, characters }: CharacterListPag
       {availableCharacters.length > 0 && (
           <div>
             <h2 className="text-2xl font-headline pl-4 border-l-4 border-primary mb-6">待领养</h2>
-            <CharacterGrid characters={availableCharacters} />
+            <CharacterGrid characters={availableCharacters} seriesName={series.name} />
           </div>
       )}
 
       {adoptedCharacters.length > 0 && (
           <div>
             <h2 className="text-2xl font-headline pl-4 border-l-4 border-muted-foreground text-muted-foreground mb-6">已领养</h2>
-            <CharacterGrid characters={adoptedCharacters} />
+            <CharacterGrid characters={adoptedCharacters} seriesName={series.name} />
           </div>
       )}
       
