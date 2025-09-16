@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -32,22 +33,22 @@ type AdminCharacterSeriesClientProps = {
     series: CharacterSeries[];
 }
 
-export function AdminCharacterSeriesClient({ series }: AdminCharacterSeriesClientProps) {
+export function AdminCharacterSeriesClient({ series: initialSeries }: AdminCharacterSeriesClientProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [series, setSeries] = useState<CharacterSeries[]>(initialSeries);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
   
   const handleDelete = async (id: string) => {
-    setIsDeleting(true);
+    setIsDeleting(id);
     try {
         await deleteCharacterSeries(id);
-        toast({ title: '删除成功', description: '系列已从数据库中移除。页面即将刷新...' });
-        // Refresh the page to ensure data consistency from the server
-        router.refresh();
+        setSeries(prevSeries => prevSeries.filter(s => s.id !== id));
+        toast({ title: '删除成功', description: '系列已从数据库中移除。' });
     } catch (error) {
         toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
     } finally {
-        setIsDeleting(false);
+        setIsDeleting(null);
     }
   };
 
@@ -84,7 +85,7 @@ export function AdminCharacterSeriesClient({ series }: AdminCharacterSeriesClien
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" disabled={isDeleting}>
+                         <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" disabled={!!isDeleting}>
                            <Trash2 className="h-4 w-4" />
                          </Button>
                       </AlertDialogTrigger>
@@ -97,8 +98,8 @@ export function AdminCharacterSeriesClient({ series }: AdminCharacterSeriesClien
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>取消</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(item.id)} disabled={isDeleting}>
-                            {isDeleting ? '删除中...' : '确认删除'}
+                          <AlertDialogAction onClick={() => handleDelete(item.id)} disabled={isDeleting === item.id}>
+                            {isDeleting === item.id ? '删除中...' : '确认删除'}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -108,7 +109,7 @@ export function AdminCharacterSeriesClient({ series }: AdminCharacterSeriesClien
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className="text-center">
+                <TableCell colSpan={4} className="text-center h-24">
                   没有找到任何系列。
                 </TableCell>
               </TableRow>

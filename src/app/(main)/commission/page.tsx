@@ -1,6 +1,6 @@
 
 import { getCommissionOptions, getSiteContent } from '@/lib/data-service';
-import { CommissionPageClient } from './page-client';
+import { CommissionPageClient } from './client-page';
 import type { CommissionOption } from '@/types';
 
 export const dynamic = 'force-dynamic';
@@ -12,7 +12,7 @@ export default async function CommissionPage() {
   ]);
 
   const commissionOptionsByYear = options.reduce((acc, option) => {
-    const year = option.commissionDate ? option.commissionDate.substring(0, 4) : '未知年份';
+    const year = option.commissionDate ? new Date(option.commissionDate).getFullYear().toString() : '未知年份';
     if (!acc[year]) {
       acc[year] = [];
     }
