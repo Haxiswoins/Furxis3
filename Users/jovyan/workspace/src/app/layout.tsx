@@ -4,7 +4,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
-import { Playfair_Display, Noto_Serif_SC, Noto_Sans_SC } from 'next/font/google';
+import { Playfair_Display, Noto_Sans_SC } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { getSiteContent } from '@/lib/data-service';
 
@@ -22,12 +22,7 @@ const fontHeadline = Playfair_Display({
   display: 'swap',
 });
 
-const fontSerifSC = Noto_Serif_SC({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  variable: '--font-serif-sc',
-  display: 'swap',
-});
+// Noto Serif SC is now imported in globals.css to avoid build-time downloads
 
 const fontBody = Noto_Sans_SC({
   subsets: ['latin'],
@@ -69,7 +64,7 @@ export default async function RootLayout({
   
   return (
     <html lang="en" suppressHydrationWarning>
-       <body className={cn(fontHeadline.variable, fontSerifSC.variable, fontBody.variable)}>
+       <body className={cn(fontHeadline.variable, fontBody.variable)}>
           <ThemeInitializer sunriseHour={sunriseHour} sunsetHour={sunsetHour} />
           <ThemeProvider>
             <AuthProvider>
