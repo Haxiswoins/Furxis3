@@ -31,7 +31,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { getAggregatedUsers, grantBadgeToUser, grantBadgeToUsers, getBadges } from '@/lib/data-service';
+import { grantBadgeToUser, grantBadgeToUsers, getAggregatedUsers } from '@/lib/data-service';
 import type { Badge, AggregatedUser } from '@/types';
 import { Badge as BadgeIcon, Search, ChevronRight, ArrowUpDown, X, Mail } from 'lucide-react';
 import { format } from 'date-fns';
