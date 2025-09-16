@@ -1,9 +1,6 @@
 
 import { getCharacters } from '@/lib/data-service';
 import { AdminCharactersClient } from './client-page';
-import type { Character } from '@/types';
-
-export const dynamic = 'force-dynamic';
 
 export default async function AdminCharactersPage() {
   const characters = await getCharacters();
@@ -16,3 +13,5 @@ export default async function AdminCharactersPage() {
 
   return <AdminCharactersClient characters={sorted} />;
 }
+
+    

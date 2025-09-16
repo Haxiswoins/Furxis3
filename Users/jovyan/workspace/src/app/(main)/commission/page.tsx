@@ -1,4 +1,5 @@
 
+
 import { getCommissionOptions, getSiteContent } from '@/lib/data-service';
 import { CommissionPageClient } from './client-page';
 import type { CommissionOption } from '@/types';
@@ -43,5 +44,7 @@ export default async function CommissionPage() {
     </div>
   );
 }
+
+    
 
     

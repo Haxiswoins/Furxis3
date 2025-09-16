@@ -319,3 +319,5 @@ export function BadgesClientPage({ initialBadges }: BadgesClientPageProps) {
     </div>
   );
 }
+
+    
