@@ -9,16 +9,11 @@ import { cn } from '@/lib/utils';
 import { getSiteContent } from '@/lib/data-service';
 
 export const metadata: Metadata = {
-<<<<<<< HEAD
-  title: 'Suitopia',
-  description: 'A platform for Fursuit commissions and adoptions.',
-=======
   title: {
     template: '%s - 前行无界',
     default: '前行无界',
   },
   description: '前行无界工作室 (FORWARD INFINITY) - 兽装定制与设计。',
->>>>>>> 5114224 (Initial commit: Project setup from Firebase Studio)
 };
 
 const fontHeadline = Playfair_Display({

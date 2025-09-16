@@ -31,8 +31,7 @@ fi
 
 # 3. 创建一个新的提交
 echo "正在创建新的提交..."
-# 使用 --allow-empty-message 允许在某些自动化场景下提交空信息
-git commit -m "$COMMIT_MESSAGE" --allow-empty
+git commit -m "$COMMIT_MESSAGE"
 echo "提交已创建！"
 
 

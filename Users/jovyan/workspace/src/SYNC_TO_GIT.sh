@@ -7,8 +7,9 @@ set -e
 # === 脚本开始 ===
 echo "🚀 开始将当前更改同步到 Git..."
 
-# 0. 强制设置默认的 pull 策略为 rebase，以保持清晰的提交历史
+# 0. 设置默认的 pull 策略为 rebase，以保持清晰的提交历史
 # 这可以避免 "fatal: Need to specify how to reconcile divergent branches" 错误
+# 注意：在某些协作流程中，您可能更喜欢 'merge'。对于单人开发，'rebase' 通常更佳。
 git config pull.rebase true
 
 # 1. 将所有当前文件夹中的更改（新增、修改、删除）添加到暂存区
@@ -16,17 +17,23 @@ echo "正在添加所有文件更改..."
 git add .
 
 # 2. 获取提交信息
-COMMIT_MESSAGE="$1"
+if [ -z "$1" ]; then
+  echo "请输入本次更新的描述信息 (例如: '修复了bug' 或 '添加了新功能')，然后按 Enter:"
+  read COMMIT_MESSAGE
+else
+  COMMIT_MESSAGE="$1"
+fi
+
+# 如果没有输入任何信息，提供一个默认值
 if [ -z "$COMMIT_MESSAGE" ]; then
   COMMIT_MESSAGE="Sync: Update project files"
+  echo "未提供描述，使用默认信息: '$COMMIT_MESSAGE'"
 fi
-echo "使用提交信息: '$COMMIT_MESSAGE'"
 
 # 3. 创建一个新的提交
 echo "正在创建新的提交..."
 # 使用 --allow-empty-message 允许在某些自动化场景下提交空信息
-# 如果暂存区为空，则不会创建提交，也不会报错
-git commit --allow-empty -m "$COMMIT_MESSAGE"
+git commit -m "$COMMIT_MESSAGE" --allow-empty
 echo "提交已创建！"
 
 
@@ -36,8 +43,7 @@ echo "✅ 本地提交已成功创建！"
 echo ""
 echo "下一步，请在终端手动运行以下命令来将您的提交推送到 GitHub："
 echo "\n"
-echo "    git pull origin \"3.1（增加过渡动画）\" --rebase"
 echo "    git push"
 echo "\n"
-echo "这个命令会先将远程的更改合并到本地，然后再将您的代码上传。"
+echo "这个命令会将您刚刚创建的“存档点”上传到您的 GitHub 仓库。"
 echo "========================================================================"

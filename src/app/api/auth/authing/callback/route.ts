@@ -9,14 +9,17 @@ export async function GET(req: NextRequest) {
   const code = searchParams.get('code');
   const state = searchParams.get('state');
   
-  const issuer = process.env.AUTHING_ISSUER;
-  if (!code || !issuer) {
-    return NextResponse.json({ error: 'Authorization code or issuer is missing' }, { status: 400 });
+  // Directly use the full endpoint URLs from environment variables
+  const tokenEndpoint = process.env.AUTHING_TOKEN_ENDPOINT;
+  const userInfoEndpoint = process.env.AUTHING_USERINFO_ENDPOINT;
+
+  if (!code || !tokenEndpoint || !userInfoEndpoint) {
+    return NextResponse.json({ error: 'Authentication service is not fully configured (missing endpoints or authorization code).' }, { status: 500 });
   }
 
   try {
-    // Exchange authorization code for tokens
-    const tokenUrl = new URL(issuer + '/oidc/token');
+    // Step 1: Exchange authorization code for tokens
+    const tokenUrl = new URL(tokenEndpoint);
     const tokenResponse = await fetch(tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -31,20 +34,23 @@ export async function GET(req: NextRequest) {
 
     const tokens = await tokenResponse.json();
     if (!tokenResponse.ok) {
-      throw new Error(tokens.error_description || 'Failed to fetch tokens');
+      console.error('Failed to fetch tokens from Authing:', tokens);
+      throw new Error(tokens.error_description || 'Failed to exchange authorization code for tokens.');
     }
 
-    // Fetch user info with the access token
-    const userInfoUrl = new URL(issuer + '/oidc/me');
+    // Step 2: Fetch user info with the access token
+    const userInfoUrl = new URL(userInfoEndpoint);
     const userInfoResponse = await fetch(userInfoUrl, {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
     
     const userInfo = await userInfoResponse.json();
      if (!userInfoResponse.ok) {
-      throw new Error(userInfo.error_description || 'Failed to fetch user info');
+      console.error('Failed to fetch user info from Authing:', userInfo);
+      throw new Error(userInfo.error_description || 'Failed to fetch user info.');
     }
 
+    // Step 3: Create and save the user session
     const session = await getIronSession<SessionData>(cookies(), {
       password: process.env.AUTHING_SECRET!,
       cookieName: 'suitopia-session',
@@ -63,6 +69,7 @@ export async function GET(req: NextRequest) {
 
     await session.save();
 
+    // Step 4: Redirect user back to the originally intended page
     let returnTo = '/home';
     if (state) {
         try {
@@ -71,17 +78,18 @@ export async function GET(req: NextRequest) {
                 returnTo = decodedState.returnTo;
             }
         } catch(e) {
-            console.error("Failed to parse state:", e);
+            console.error("Failed to parse state from Authing callback:", e);
         }
     }
     
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || req.nextUrl.origin;
+    const redirectUrl = new URL(returnTo, baseUrl);
 
-    return NextResponse.redirect(new URL(returnTo, baseUrl));
+    return NextResponse.redirect(redirectUrl);
 
   } catch (error) {
     console.error('Authentication callback error:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-    return NextResponse.json({ error: 'Authentication failed', details: errorMessage }, { status: 500 });
+    return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(errorMessage)}`, req.url));
   }
 }
