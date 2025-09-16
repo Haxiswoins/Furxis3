@@ -22,7 +22,6 @@ async function readData<T>(fileName: string): Promise<T> {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
       console.warn(`Data file ${fileName} not found, returning empty array/object.`);
       // Ensure we return an object if the type is not an array
-      // This is a basic check, might need refinement for complex types
       if (fileName.includes('siteContent')) {
         return {} as T;
       }

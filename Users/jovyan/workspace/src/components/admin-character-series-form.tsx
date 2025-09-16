@@ -138,7 +138,7 @@ export function AdminCharacterSeriesForm({ series }: AdminCharacterSeriesFormPro
             <FormLabel>封面图片</FormLabel>
             <div className="flex items-center gap-4">
                 <div className="w-48 h-32 relative rounded-md border bg-muted flex-shrink-0">
-                  <Image src={imageUrlValue || imagePreview || "https://placehold.co/600x800.png"} alt="图片预览" fill style={{objectFit:'cover'}} className="rounded-md" />
+                  <Image src={imageUrlValue || imagePreview || "https://placehold.co/800x600.png"} alt="图片预览" fill style={{objectFit:'cover'}} className="rounded-md" />
                 </div>
                 <div className="space-y-2">
                     <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>

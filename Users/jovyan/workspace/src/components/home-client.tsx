@@ -46,14 +46,15 @@ export function HomeClient({ content }: HomeClientProps) {
     if (isWarping) return;
     setTargetPath(path);
     setIsWarping(true);
+    // The timeout should match the animation duration
     setTimeout(() => {
         router.push(path);
-        // Reset state after navigation to allow re-entry animation if user comes back
+        // A short delay after navigation to allow the new page to render before resetting
         setTimeout(() => {
           setIsWarping(false);
           setTargetPath(null);
-        }, 100);
-    }, 600);
+        }, 100); 
+    }, 600); // This should match the CSS animation duration
   };
   
 
@@ -164,14 +165,11 @@ export function HomeClient({ content }: HomeClientProps) {
       </div>
       {/* Transition Mask */}
       {isWarping && (
-        <motion.div 
-            className="fixed inset-0 z-[100] bg-background"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, ease: 'easeInOut'}}
+        <div 
+            className="fixed inset-0 z-[100] bg-background animate-warp"
             style={{ pointerEvents: 'none' }}
         >
-        </motion.div>
+        </div>
       )}
     </>
   );
