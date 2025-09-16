@@ -13,6 +13,7 @@ export async function GET() {
   });
 
   if (!session.isLoggedIn) {
+    // Explicitly return a valid JSON object with a null user.
     return NextResponse.json({ user: null });
   }
 
