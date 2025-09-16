@@ -8,6 +8,7 @@ set -e
 echo "🚀 开始将当前更改同步到 Git..."
 
 # 0. 设置默认的 pull 策略为 rebase，以保持清晰的提交历史
+# 这可以避免 "fatal: Need to specify how to reconcile divergent branches" 错误
 git config pull.rebase true
 
 # 1. 检查远程 'origin' 是否存在，如果不存在则尝试从 .git/config 中恢复
