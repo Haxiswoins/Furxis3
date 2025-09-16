@@ -1,8 +1,9 @@
 
-
 import { getCommissionOptions, getSiteContent } from '@/lib/data-service';
 import { CommissionPageClient } from './client-page';
 import type { CommissionOption } from '@/types';
+
+export const dynamic = 'force-dynamic';
 
 export default async function CommissionPage() {
   const [options, content] = await Promise.all([
@@ -44,7 +45,3 @@ export default async function CommissionPage() {
     </div>
   );
 }
-
-    
-
-    
