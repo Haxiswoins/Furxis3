@@ -1,6 +1,4 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -73,20 +71,16 @@
   body {
     @apply bg-background text-foreground;
   }
-  
-  :root {
-      --font-serif-sc: 'Noto Serif SC', serif;
-  }
 }
 
 /* Hide number input arrows and custom scrollbar styles */
 @layer utilities {
   .bg-gradient-cover-bottom {
-    background-image: linear-gradient(to top, hsla(var(--background), 0.7), transparent 40%);
+    background-image: linear-gradient(to top, hsla(0, 0%, 0%, 0.5) 0%, hsla(0, 0%, 0%, 0.2) 20%, hsla(0, 0%, 0%, 0) 40%);
   }
 
   .dark .bg-gradient-cover-bottom {
-      background-image: linear-gradient(to top, hsla(var(--background), 0.7), transparent 40%);
+      background-image: linear-gradient(to top, hsla(0, 0%, 0%, 0.5) 0%, hsla(0, 0%, 0%, 0.2) 20%, hsla(0, 0%, 0%, 0) 40%);
   }
 
 
