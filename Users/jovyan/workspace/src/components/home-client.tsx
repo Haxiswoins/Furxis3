@@ -40,11 +40,19 @@ type HomeClientProps = {
 export function HomeClient({ content }: HomeClientProps) {
   const router = useRouter();
   const [isWarping, setIsWarping] = useState(false);
+  const [targetPath, setTargetPath] = useState<string | null>(null);
 
   const handleNavigate = (path: string) => {
+    if (isWarping) return;
+    setTargetPath(path);
     setIsWarping(true);
     setTimeout(() => {
         router.push(path);
+        // Reset state after navigation to allow re-entry animation if user comes back
+        setTimeout(() => {
+          setIsWarping(false);
+          setTargetPath(null);
+        }, 100);
     }, 600);
   };
   
@@ -155,14 +163,16 @@ export function HomeClient({ content }: HomeClientProps) {
         </motion.div>
       </div>
       {/* Transition Mask */}
-      <motion.div 
-        className="fixed inset-0 z-[100] bg-background"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isWarping ? 1 : 0 }}
-        transition={{ duration: 0.6, ease: 'easeInOut'}}
-        style={{ pointerEvents: 'none' }}
-      >
-      </motion.div>
+      {isWarping && (
+        <motion.div 
+            className="fixed inset-0 z-[100] bg-background"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, ease: 'easeInOut'}}
+            style={{ pointerEvents: 'none' }}
+        >
+        </motion.div>
+      )}
     </>
   );
 }

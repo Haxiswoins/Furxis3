@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A function to check for pending orders and notify the admin.
@@ -14,7 +15,7 @@ export async function notifyAdminOfPendingOrders(): Promise<string> {
     console.log("Running daily check for pending orders...");
 
     const allOrders = await getAllOrders();
-    const pendingStatuses = ['处理中', '待确认', '已确认'];
+    const pendingStatuses = ['处理中', '待确认', '已确认', '排队中', '制作中', '退养中'];
     const pendingOrders = allOrders.filter(order => pendingStatuses.includes(order.status));
 
     if (pendingOrders.length === 0) {
