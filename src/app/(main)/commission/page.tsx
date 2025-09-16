@@ -20,7 +20,7 @@ export default async function CommissionPage() {
     return acc;
   }, {} as Record<string, CommissionOption[]>);
 
-  // Sort commissions within each year by month, descending
+  // Sort commissions within each year by date, descending
   for (const year in commissionOptionsByYear) {
     commissionOptionsByYear[year].sort((a, b) => {
       const dateA = new Date(a.commissionDate || 0).getTime();

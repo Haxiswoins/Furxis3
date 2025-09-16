@@ -53,7 +53,7 @@ function CommissionOptionsList({ commissionOptions }: CommissionOptionsListProps
   const statusStyles = theme === 'dark' ? darkStatusStyles : lightStatusStyles;
 
   return (
-    <motion.div 
+    <motion.div
       className="flex flex-col gap-8"
       variants={containerVariants}
       initial="hidden"
