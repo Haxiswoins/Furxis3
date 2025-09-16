@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -78,7 +79,7 @@ function CommissionOptionsList({ commissionOptions }: CommissionOptionsListProps
                     <p className="text-xs opacity-80 mt-4 line-clamp-2 md:line-clamp-3" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}>{item.description}</p>
                   </div>
                 </div>
-                 <Badge variant="outline" className={cn("absolute top-4 right-4 text-xs font-semibold backdrop-blur-sm", statusStyles[item.status])}>
+                 <Badge variant="outline" className={cn("absolute top-4 right-4 text-xs font-semibold backdrop-blur-sm", statusStyles[item.status as keyof typeof statusStyles])}>
                   {item.status}
                 </Badge>
               </div>
