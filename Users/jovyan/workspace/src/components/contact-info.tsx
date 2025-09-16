@@ -7,9 +7,9 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import type { SiteContent } from '@/types';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import QRCode from 'qrcode.react';
-import { Separator } from './ui/separator';
+import { Separator } from '@/components/ui/separator';
 
 type ContactInfoProps = {
   content: SiteContent | null;
