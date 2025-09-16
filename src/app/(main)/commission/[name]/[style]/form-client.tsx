@@ -1,0 +1,452 @@
+
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { chinaDivisions } from '@/lib/china-divisions';
+import { useAuth } from '@/context/AuthContext';
+import { createCommissionApplication } from '@/lib/data-service';
+import type { CommissionStyle, CommissionOption, SiteContent, ApplicationData } from '@/types';
+import { uploadImage } from '@/lib/upload-service';
+import { Upload, X } from 'lucide-react';
+import Image from 'next/image';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import Link from 'next/link';
+
+type CommissionApplicationFormClientProps = {
+  commissionOption: CommissionOption;
+  commissionStyle: CommissionStyle;
+  siteContent: SiteContent | null;
+}
+
+export function CommissionApplicationFormClient({ commissionOption, commissionStyle, siteContent }: CommissionApplicationFormClientProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { toast } = useToast();
+  const { user, login } = useAuth();
+  const isLoggedIn = !!user;
+
+  const [formSubmitting, setFormSubmitting] = useState(false);
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
+  const [agreedToContract, setAgreedToContract] = useState(false);
+
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+  const [cities, setCities] = useState<string[]>([]);
+  const [districts, setDistricts] = useState<string[]>([]);
+  
+  const [referenceImageFiles, setReferenceImageFiles] = useState<(File | null)[]>([null, null]);
+  const [referenceImagePreviews, setReferenceImagePreviews] = useState<(string | null)[]>([null, null]);
+  const fileInputRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
+  
+  const [needsMagneticEyes, setNeedsMagneticEyes] = useState(false);
+  
+  const fanPrice = siteContent?.fanPrice ?? 150;
+  const magneticEyePrice = siteContent?.magneticEyePrice ?? 200;
+  
+  const [timeLeft, setTimeLeft] = useState<string | null>(null);
+  const [isCommissionOpen, setIsCommissionOpen] = useState(commissionOption.status !== '即将开放');
+
+  useEffect(() => {
+    if (commissionOption.status !== '即将开放' || !commissionOption.commissionDate) {
+      setIsCommissionOpen(commissionOption.status === '开放中');
+      return;
+    }
+
+    const calculateTimeLeft = () => {
+      const difference = +new Date(commissionOption.commissionDate) - +new Date();
+      
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((difference / 1000 / 60) % 60);
+        
+        setTimeLeft(`剩余 ${days}天 ${hours}小时 ${minutes}分`);
+        setIsCommissionOpen(false);
+      } else {
+        setTimeLeft(null);
+        setIsCommissionOpen(true);
+      }
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, [commissionOption]);
+
+
+  const handleProvinceChange = (province: string) => {
+    setSelectedProvince(province);
+    const provinceData = chinaDivisions.find(p => p.name === province);
+    const newCities = provinceData ? provinceData.cities.map(c => c.name) : [];
+    setCities(newCities);
+    setSelectedCity('');
+    setDistricts([]);
+  };
+
+  const handleCityChange = (city: string) => {
+    setSelectedCity(city);
+    const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
+    const cityData = provinceData?.cities.find(c => c.name === city);
+    const newDistricts = cityData ? cityData.districts : [];
+    setDistricts(newDistricts);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast({
+          title: "图片太大",
+          description: "请上传小于5MB的图片。",
+          variant: "destructive",
+        });
+        if(fileInputRefs[index].current) {
+            fileInputRefs[index].current!.value = "";
+        }
+        return;
+      }
+      const newFiles = [...referenceImageFiles];
+      newFiles[index] = file;
+      setReferenceImageFiles(newFiles);
+
+      const newPreviews = [...referenceImagePreviews];
+      newPreviews[index] = URL.createObjectURL(file);
+      setReferenceImagePreviews(newPreviews);
+    }
+  };
+
+  const clearImage = (index: number) => {
+    const newFiles = [...referenceImageFiles];
+    newFiles[index] = null;
+    setReferenceImageFiles(newFiles);
+    
+    const newPreviews = [...referenceImagePreviews];
+    newPreviews[index] = null;
+    setReferenceImagePreviews(newPreviews);
+
+    if(fileInputRefs[index].current) {
+        fileInputRefs[index].current!.value = "";
+    }
+  }
+  
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!user || !commissionStyle || !commissionOption) return;
+
+    if (!isCommissionOpen) {
+      toast({
+        title: "委托尚未开放",
+        description: "请等待倒计时结束后再提交。",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setFormSubmitting(true);
+    let uploadedUrls: (string | null)[] = [null, null];
+    
+    try {
+        await Promise.all(referenceImageFiles.map(async (file, index) => {
+            if (file) {
+                uploadedUrls[index] = await uploadImage(file, `references/${user.uid}_${Date.now()}_${index}`);
+            }
+        }));
+
+      const formData = new FormData(e.currentTarget);
+      const applicationData: ApplicationData = {
+        userName: formData.get('name') as string,
+        age: formData.get('age') as string,
+        phone: formData.get('phone') as string,
+        qq: formData.get('qq') as string,
+        email: formData.get('email') as string,
+        height: formData.get('height') as string,
+        weight: formData.get('weight') as string,
+        province: selectedProvince,
+        city: selectedCity,
+        district: formData.get('district') as string,
+        addressDetail: formData.get('addressDetail') as string,
+        referenceImageUrl: uploadedUrls[0],
+        referenceImageUrl2: uploadedUrls[1],
+        hasFan: formData.get('hasFan') === 'on',
+        magneticEyes: formData.get('magneticEyes') === 'on',
+        magneticEyesCount: Number(formData.get('magneticEyesCount')) || 0,
+      };
+      
+      const commissionInfo = {
+        styleName: commissionStyle.name,
+        optionName: commissionOption.name,
+        imageUrl: commissionStyle.imageUrl,
+        price: commissionStyle.price,
+      };
+
+      await createCommissionApplication(user.uid, commissionInfo, applicationData, fanPrice, magneticEyePrice);
+      toast({
+        title: "申请已提交！",
+        description: "我们的团队将审核您的信息并与您联系。",
+      });
+      router.push('/orders');
+    } catch (error) {
+      console.error("申请失败:", error);
+      toast({
+        title: "申请失败",
+        description: error instanceof Error ? error.message : "提交申请时发生错误，请稍后再试。",
+        variant: "destructive",
+      });
+    } finally {
+        setFormSubmitting(false);
+    }
+  };
+
+  const renderLoginDialog = () => (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button size="lg" className="w-full">申请估价</Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>需要登录</AlertDialogTitle>
+          <AlertDialogDescription>
+            您需要登录后才能申请估价。
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>取消</AlertDialogCancel>
+          <AlertDialogAction onClick={() => login()}>
+            登录
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
+  const renderSubmitButton = () => {
+    if (!isCommissionOpen) {
+      return (
+        <Button size="lg" className="w-full" type="submit" disabled>
+          {timeLeft || '即将开放...'}
+        </Button>
+      );
+    }
+
+    return (
+      <Button size="lg" className="w-full" type="submit" disabled={formSubmitting || !agreedToPrivacy || !agreedToContract}>
+        {formSubmitting ? '提交中...' : '申请估价'}
+      </Button>
+    )
+  };
+  
+  const contractText = siteContent?.commissionContractText;
+  const privacyPolicyText = siteContent?.privacyPolicyText;
+
+  return (
+    <Card className="w-full">
+      <CardHeader>
+          <CardTitle className="text-3xl font-headline">{commissionOption.name} - {commissionStyle.name}</CardTitle>
+          <CardDescription className="mt-2 text-base">{commissionStyle.description}</CardDescription>
+      </CardHeader>
+
+      <form onSubmit={handleFormSubmit}>
+         <CardContent className="space-y-4">
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[0, 1].map(index => (
+                <div key={index} className="space-y-1">
+                  <Label>设定参考图 {index + 1} (可选)</Label>
+                  <div className="flex items-center gap-4">
+                      <div className="w-32 h-32 relative rounded-md border bg-muted flex-shrink-0">
+                          {referenceImagePreviews[index] ? (
+                          <>
+                              <Image src={referenceImagePreviews[index]!} alt={`设定图预览 ${index + 1}`} fill style={{objectFit:'cover'}} className="rounded-md" />
+                              <Button type="button" variant="ghost" size="icon" className="absolute top-0 right-0 bg-black/50 hover:bg-black/70 text-white rounded-full h-6 w-6" onClick={() => clearImage(index)}>
+                              <X className="h-4 w-4" />
+                              </Button>
+                          </>
+                          ) : (
+                          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                              <Upload className="h-8 w-8"/>
+                          </div>
+                          )}
+                      </div>
+                      <Button type="button" variant="outline" onClick={() => fileInputRefs[index].current?.click()}>
+                          {referenceImagePreviews[index] ? '更换图片' : '选择图片'}
+                      </Button>
+                      <Input 
+                          id={`referenceImage-${index}`}
+                          name={`referenceImage-${index}`}
+                          type="file" 
+                          accept="image/*"
+                          className="hidden"
+                          ref={fileInputRefs[index]}
+                          onChange={(e) => handleFileChange(e, index)}
+                      />
+                  </div>
+                  <p className="text-xs text-muted-foreground pt-1">大小不超过5MB。</p>
+                </div>
+              ))}
+            </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <Label htmlFor="name">您的姓名</Label>
+              <Input id="name" name="name" placeholder="请输入您的姓名" required />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="age">年龄</Label>
+              <Input id="age" name="age" type="number" placeholder="请输入您的年龄" required />
+            </div>
+             <div className="space-y-1">
+              <Label htmlFor="phone">电话</Label>
+              <Input id="phone" name="phone" placeholder="请输入您的电话" required />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="qq">QQ</Label>
+              <Input id="qq" name="qq" placeholder="请输入您的QQ号" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="email">邮箱地址</Label>
+              <Input id="email" name="email" type="email" placeholder="you@example.com" defaultValue={user?.email || ''} required />
+            </div>
+             <div className="space-y-1">
+              <Label htmlFor="height">身高 (cm)</Label>
+              <Input id="height" name="height" type="number" placeholder="例如：175" required />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="weight">体重 (kg)</Label>
+              <Input id="weight" name="weight" type="number" placeholder="例如：60" required />
+            </div>
+          </div>
+          
+          <div className="space-y-1">
+            <Label>地址</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <Select name="province" onValueChange={handleProvinceChange} required>
+                <SelectTrigger><SelectValue placeholder="选择省份" /></SelectTrigger>
+                <SelectContent>
+                  {chinaDivisions.map(p => <SelectItem key={p.name} value={p.name}>{p.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select name="city" onValueChange={handleCityChange} value={selectedCity} disabled={cities.length === 0} required>
+                <SelectTrigger><SelectValue placeholder="选择城市" /></SelectTrigger>
+                <SelectContent>
+                  {cities.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select name="district" disabled={districts.length === 0} required>
+                <SelectTrigger><SelectValue placeholder="选择区/县" /></SelectTrigger>
+                <SelectContent>
+                  {districts.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+           <div className="space-y-1">
+              <Label htmlFor="addressDetail">详细地址</Label>
+              <Textarea id="addressDetail" name="addressDetail" placeholder="请输入街道、门牌号等详细信息" required />
+          </div>
+
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="hasFan" name="hasFan" />
+              <label htmlFor="hasFan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                是否安装头内风扇模块 (+￥{fanPrice})
+              </label>
+            </div>
+             <div className="flex items-center space-x-2">
+                <Checkbox id="magneticEyes" name="magneticEyes" checked={needsMagneticEyes} onCheckedChange={(checked) => setNeedsMagneticEyes(checked as boolean)} />
+                <label htmlFor="magneticEyes" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    是否需要磁吸可替换眼 (+￥{magneticEyePrice}/双)
+                </label>
+            </div>
+
+            {needsMagneticEyes && (
+                <div className="pl-6">
+                    <Label htmlFor="magneticEyesCount">选择数量</Label>
+                    <Select name="magneticEyesCount" defaultValue="1">
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="选择数量" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="1">1 双</SelectItem>
+                            <SelectItem value="2">2 双</SelectItem>
+                            <SelectItem value="3">3 双</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            )}
+          </div>
+
+          <div className="space-y-2 pt-2">
+              <div className="flex items-start space-x-2">
+                  <Checkbox id="terms" checked={agreedToContract} onCheckedChange={(checked) => setAgreedToContract(checked as boolean)} />
+                  <div className="grid gap-1.5 leading-none">
+                      <label
+                        htmlFor="terms"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                       我已阅读并同意{' '}
+                       <Dialog>
+                          <DialogTrigger asChild>
+                             <span className="text-primary hover:underline cursor-pointer">《委托服务条款》</span>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-3xl">
+                              <DialogHeader>
+                                  <DialogTitle className="text-xl">委托服务条款</DialogTitle>
+                              </DialogHeader>
+                              <ScrollArea className="h-[60vh] pr-6">
+                                  <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
+                                      {contractText || "合同条款正在加载中..."}
+                                  </div>
+                              </ScrollArea>
+                          </DialogContent>
+                      </Dialog>
+                    </label>
+                  </div>
+              </div>
+               <div className="flex items-start space-x-2 mt-2">
+                  <Checkbox id="privacy" checked={agreedToPrivacy} onCheckedChange={(checked) => setAgreedToPrivacy(checked as boolean)} />
+                    <div className="grid gap-1.5 leading-none">
+                       <label
+                          htmlFor="privacy"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                         我已阅读并同意{' '}
+                         <Dialog>
+                            <DialogTrigger asChild>
+                               <span className="text-primary hover:underline cursor-pointer">《隐私政策》</span>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-3xl">
+                                <DialogHeader>
+                                    <DialogTitle className="text-xl">隐私政策</DialogTitle>
+                                </DialogHeader>
+                                <ScrollArea className="h-[60vh] pr-6">
+                                    <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
+                                        {privacyPolicyText || "隐私政策正在加载中..."}
+                                    </div>
+                                </ScrollArea>
+                            </DialogContent>
+                          </Dialog>
+                          ，并授权网站为履行订单处理我的个人信息。
+                      </label>
+                    </div>
+              </div>
+          </div>
+         </CardContent>
+
+          <CardFooter>
+             {isLoggedIn ? renderSubmitButton() : renderLoginDialog()}
+          </CardFooter>
+        </form>
+    </Card>
+  );
+}
