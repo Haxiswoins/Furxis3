@@ -1,4 +1,3 @@
-
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
@@ -36,8 +35,6 @@ const fontBody = Noto_Sans_SC({
   display: 'swap',
 })
 
-// This inline script is crucial for preventing theme flash.
-// It runs before React hydrates, setting the correct theme class on the HTML element.
 const ThemeInitializer = ({ sunriseHour, sunsetHour }: { sunriseHour: number; sunsetHour: number; }) => {
   const scriptTxt = `
     (function() {
@@ -48,7 +45,6 @@ const ThemeInitializer = ({ sunriseHour, sunsetHour }: { sunriseHour: number; su
         const theme = (currentHour >= sunrise && currentHour < sunset) ? 'light' : 'dark';
         document.documentElement.classList.add(theme);
       } catch (e) {
-        // Fallback to a default theme in case of any errors
         console.error('Failed to set initial theme:', e);
         document.documentElement.classList.add('dark');
       }

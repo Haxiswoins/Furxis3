@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { getAggregatedUsers, getBadges } from '@/lib/data-service';
 import { UserManagementPageClient } from './client-page';
@@ -26,7 +25,6 @@ function LoadingSkeleton() {
 }
 
 export default async function UserManagementPage() {
-    // Fetch data on the server
     const [users, badges] = await Promise.all([getAggregatedUsers(), getBadges()]);
 
     return (
