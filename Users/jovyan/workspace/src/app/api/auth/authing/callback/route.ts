@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
@@ -8,7 +9,6 @@ export async function GET(req: NextRequest) {
   const code = searchParams.get('code');
   const state = searchParams.get('state');
   
-  // Directly use the full endpoint URLs from environment variables
   const tokenEndpoint = process.env.AUTHING_TOKEN_ENDPOINT;
   const userInfoEndpoint = process.env.AUTHING_USERINFO_ENDPOINT;
 
@@ -68,16 +68,21 @@ export async function GET(req: NextRequest) {
 
     await session.save();
 
-    // Step 4: Redirect user back to the originally intended page
-    let returnTo = '/home';
+    // Step 4: Securely determine redirect URL.
+    // This is the critical fix: we no longer assume `state` exists.
+    let returnTo = '/home'; // Default to home page.
     if (state) {
         try {
+            // Only parse if state exists.
             const decodedState = JSON.parse(Buffer.from(state, 'base64').toString('ascii'));
-            if(decodedState.returnTo) {
-                returnTo = decodedState.returnTo;
+            if(decodedState.returnTo && typeof decodedState.returnTo === 'string') {
+                // Sanitize the returnTo path to prevent open redirect vulnerabilities.
+                const safePath = decodedState.returnTo.startsWith('/') ? decodedState.returnTo : `/${decodedState.returnTo}`;
+                returnTo = safePath;
             }
         } catch(e) {
-            console.error("Failed to parse state from Authing callback:", e);
+            // If state is malformed, log it but do not crash. Fallback to '/home'.
+            console.error("Failed to parse state from Authing callback, redirecting to /home. Error:", e);
         }
     }
     
