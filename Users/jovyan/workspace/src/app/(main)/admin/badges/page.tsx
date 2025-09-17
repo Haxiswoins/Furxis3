@@ -6,7 +6,3 @@ export default async function BadgesPage() {
   const badges = await getBadges();
   return <BadgesClientPage initialBadges={badges} />;
 }
-
-    
-
-    

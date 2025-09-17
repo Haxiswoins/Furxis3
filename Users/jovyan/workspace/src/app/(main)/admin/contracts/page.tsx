@@ -6,7 +6,3 @@ export default async function ContractsPage() {
   const content = await getSiteContent();
   return <ContractsClientPage initialContent={content} />;
 }
-
-    
-
-    

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import {
   Table,
   TableBody,
@@ -29,7 +29,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from "@/components/ui/checkbox"
-import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { grantBadgeToUser, grantBadgeToUsers, getAggregatedUsers } from '@/lib/data-service';
 import type { Badge, AggregatedUser } from '@/types';
@@ -39,6 +38,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AnimatePresence, motion } from 'framer-motion';
+import React from 'react';
 
 type SortKey = 'name' | 'registrationDate' | 'completedOrders' | 'notSelectedOrders' | 'badgeCount';
 type SortDirection = 'asc' | 'desc';
@@ -127,8 +127,8 @@ function BulkGrantFloatPanel({
   onGrant,
   onCancel,
 }: BulkGrantFloatPanelProps) {
-  const [selectedBadgeId, setSelectedBadgeId] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedBadgeId, setSelectedBadgeId] = React.useState('');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const handleGrant = async () => {
     setIsSubmitting(true);

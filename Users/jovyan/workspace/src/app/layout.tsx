@@ -1,3 +1,4 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
@@ -6,7 +7,6 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { Playfair_Display, Noto_Serif_SC, Noto_Sans_SC } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { getSiteContent } from '@/lib/data-service';
-import { AppShell } from '@/app/(main)/app-shell';
 
 export const metadata: Metadata = {
   title: {
@@ -36,6 +36,8 @@ const fontBody = Noto_Sans_SC({
   display: 'swap',
 })
 
+// This inline script is crucial for preventing theme flash.
+// It runs before React hydrates, setting the correct theme class on the HTML element.
 const ThemeInitializer = ({ sunriseHour, sunsetHour }: { sunriseHour: number; sunsetHour: number; }) => {
   const scriptTxt = `
     (function() {
@@ -46,6 +48,7 @@ const ThemeInitializer = ({ sunriseHour, sunsetHour }: { sunriseHour: number; su
         const theme = (currentHour >= sunrise && currentHour < sunset) ? 'light' : 'dark';
         document.documentElement.classList.add(theme);
       } catch (e) {
+        // Fallback to a default theme in case of any errors
         console.error('Failed to set initial theme:', e);
         document.documentElement.classList.add('dark');
       }
@@ -66,11 +69,13 @@ export default async function RootLayout({
   
   return (
     <html lang="en" suppressHydrationWarning>
+       <head>
+          <script src="/CurveGradientBg.min.js" async />
+       </head>
        <body className={cn(fontHeadline.variable, fontSerifSC.variable, fontBody.variable)}>
           <ThemeInitializer sunriseHour={sunriseHour} sunsetHour={sunsetHour} />
           <ThemeProvider>
             <AuthProvider>
-                {/* The AppShell now lives inside the (main) layout */}
                 {children}
             </AuthProvider>
             <Toaster />
