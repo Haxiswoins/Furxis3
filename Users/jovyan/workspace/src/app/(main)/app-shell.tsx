@@ -81,6 +81,8 @@ export function AppShell({
     }
   }
 
+  // Auth routes are now handled by the root layout, but AppShell won't render for them.
+  // This check can be simplified or removed if auth routes are moved outside (main).
   if (isAuthRoute) {
       return <>{children}</>;
   }
