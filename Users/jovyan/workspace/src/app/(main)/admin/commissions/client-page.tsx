@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -33,18 +32,17 @@ type AdminCommissionsClientProps = {
     commissionOptions: CommissionOption[];
 }
 
-export function AdminCommissionsClient({ commissionOptions: initialCommissionOptions }: AdminCommissionsClientProps) {
+export function AdminCommissionsClient({ commissionOptions }: AdminCommissionsClientProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [commissionOptions, setCommissionOptions] = useState<CommissionOption[]>(initialCommissionOptions);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
     setIsDeleting(id);
     try {
       await deleteCommissionOption(id);
-      setCommissionOptions(prevOptions => prevOptions.filter(o => o.id !== id));
       toast({ title: '删除成功', description: '委托选项已从数据库中移除。' });
+      router.refresh();
     } catch (error) {
       toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
     } finally {

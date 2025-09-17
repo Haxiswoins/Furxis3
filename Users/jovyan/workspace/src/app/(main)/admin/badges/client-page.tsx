@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -22,6 +21,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { Separator } from '@/components/ui/separator';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   name: z.string().min(1, '徽章名称不能为空'),
@@ -46,6 +46,7 @@ type BadgesClientPageProps = {
 
 export function BadgesClientPage({ initialBadges }: BadgesClientPageProps) {
   const { toast } = useToast();
+  const router = useRouter();
   const [badges, setBadges] = useState<Badge[]>(initialBadges);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -81,7 +82,7 @@ export function BadgesClientPage({ initialBadges }: BadgesClientPageProps) {
       await saveBadge(values);
       toast({ title: '保存成功！', description: `徽章 "${values.name}" 已添加。` });
       form.reset();
-      fetchBadges();
+      router.refresh();
     } catch (error) {
       toast({ title: '保存失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
     } finally {
@@ -107,7 +108,7 @@ export function BadgesClientPage({ initialBadges }: BadgesClientPageProps) {
     try {
       await deleteBadge(badgeId);
       toast({ title: '删除成功', description: '徽章及其关联数据已删除。' });
-      fetchBadges();
+      router.refresh();
     } catch (error) {
        toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
     } finally {
@@ -121,6 +122,7 @@ export function BadgesClientPage({ initialBadges }: BadgesClientPageProps) {
       const result = await grantBadgeConditionally(values.conditionBadgeIds, values.resultBadgeId);
       toast({ title: '操作成功', description: result.message });
       conditionalGrantForm.reset();
+      router.refresh();
     } catch (error) {
       const message = error instanceof Error ? error.message : '发生未知错误';
       toast({ title: '操作失败', description: message, variant: 'destructive' });

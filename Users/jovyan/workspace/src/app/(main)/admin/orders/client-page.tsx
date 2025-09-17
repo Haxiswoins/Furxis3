@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -141,11 +140,10 @@ function OrdersTable({ title, icon: Icon, orders, statusStyles, isDeleting, hand
     );
 }
 
-export function AdminOrdersClient({ orders: initialOrders }: { orders: Order[] }) {
+export function AdminOrdersClient({ orders }: { orders: Order[] }) {
   const router = useRouter();
   const { toast } = useToast();
   const { theme } = useTheme();
-  const [allOrders, setAllOrders] = useState<Order[]>(initialOrders);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const statusStyles = theme === 'dark' ? darkStatusStyles : lightStatusStyles;
@@ -155,8 +153,8 @@ export function AdminOrdersClient({ orders: initialOrders }: { orders: Order[] }
     setIsDeleting(id);
     try {
         await deleteOrder(id);
-        setAllOrders(prevOrders => prevOrders.filter(o => o.id !== id));
         toast({ title: '删除成功', description: '订单已从数据库中移除。' });
+        router.refresh();
     } catch (error) {
         toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
     } finally {
@@ -164,8 +162,8 @@ export function AdminOrdersClient({ orders: initialOrders }: { orders: Order[] }
     }
   };
 
-  const currentOrders = allOrders.filter(order => !historicalStatuses.includes(order.status));
-  const historicalOrders = allOrders.filter(order => historicalStatuses.includes(order.status));
+  const currentOrders = orders.filter(order => !historicalStatuses.includes(order.status));
+  const historicalOrders = orders.filter(order => historicalStatuses.includes(order.status));
 
   return (
     <div className="space-y-8">

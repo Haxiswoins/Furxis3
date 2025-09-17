@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -101,18 +100,17 @@ function CharactersTable({ characters, isDeleting, handleDelete, router }: {
     )
 }
 
-export function AdminCharactersClient({ characters: initialCharacters }: { characters: Character[] }) {
+export function AdminCharactersClient({ characters }: { characters: Character[] }) {
   const router = useRouter();
   const { toast } = useToast();
-  const [characters, setCharacters] = useState<Character[]>(initialCharacters);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   
   const handleDelete = async (id: string) => {
     setIsDeleting(id);
     try {
         await deleteCharacter(id);
-        setCharacters(prevChars => prevChars.filter(c => c.id !== id));
         toast({ title: '删除成功', description: '角色已从数据库中移除。' });
+        router.refresh();
     } catch (error) {
         toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
     } finally {
@@ -121,10 +119,10 @@ export function AdminCharactersClient({ characters: initialCharacters }: { chara
   };
 
   const { availableCharacters, adoptedCharacters } = useMemo(() => {
-    const available = initialCharacters.filter(c => c.status === '待领养' || !c.status);
-    const adopted = initialCharacters.filter(c => c.status === '已领养');
+    const available = characters.filter(c => c.status === '待领养' || !c.status);
+    const adopted = characters.filter(c => c.status === '已领养');
     return { availableCharacters: available, adoptedCharacters: adopted };
-  }, [initialCharacters]);
+  }, [characters]);
 
   return (
     <div className="space-y-8">
