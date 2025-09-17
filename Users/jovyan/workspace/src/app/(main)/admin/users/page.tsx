@@ -1,4 +1,5 @@
 
+import * as React from 'react';
 import { getAggregatedUsers, getBadges } from '@/lib/data-service';
 import { UserManagementPageClient } from './client-page';
 import { Skeleton } from '@/components/ui/skeleton';
