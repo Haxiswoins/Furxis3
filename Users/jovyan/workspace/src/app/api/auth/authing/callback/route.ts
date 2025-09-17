@@ -54,8 +54,12 @@ export async function GET(req: NextRequest) {
       password: process.env.AUTHING_SECRET!,
       cookieName: 'suitopia-session',
       cookieOptions: {
-        secure: process.env.NODE_ENV === 'production',
+        // This is the critical change. The 'secure' flag is now conditional.
+        // It will be true only if the base URL starts with 'https'.
+        // This allows cookies to be set over HTTP during development or IP-based access.
+        secure: process.env.NEXT_PUBLIC_BASE_URL?.startsWith('https://'),
         httpOnly: true,
+        sameSite: 'lax',
       },
     });
 
@@ -69,19 +73,15 @@ export async function GET(req: NextRequest) {
     await session.save();
 
     // Step 4: Securely determine redirect URL.
-    // This is the critical fix: we no longer assume `state` exists.
     let returnTo = '/home'; // Default to home page.
     if (state) {
         try {
-            // Only parse if state exists.
             const decodedState = JSON.parse(Buffer.from(state, 'base64').toString('ascii'));
             if(decodedState.returnTo && typeof decodedState.returnTo === 'string') {
-                // Sanitize the returnTo path to prevent open redirect vulnerabilities.
                 const safePath = decodedState.returnTo.startsWith('/') ? decodedState.returnTo : `/${decodedState.returnTo}`;
                 returnTo = safePath;
             }
         } catch(e) {
-            // If state is malformed, log it but do not crash. Fallback to '/home'.
             console.error("Failed to parse state from Authing callback, redirecting to /home. Error:", e);
         }
     }
