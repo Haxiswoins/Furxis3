@@ -96,13 +96,14 @@ export function AppShell({
               </PageAnimationWrapper>
           </main>
           <footer className="w-full py-8 text-center text-xs text-muted-foreground z-10">
-              <div className="flex flex-col md:flex-row items-center justify-center gap-x-4 gap-y-2">
+              <div className="flex flex-col items-center justify-center gap-2">
                 <ContactInfo content={siteContent} />
-                <Link href="/privacy" className="hover:text-primary transition-colors">隐私政策</Link>
-                <p>Developed by Haxis & Mark</p>
-                <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                  粤ICP备2025475175号-1
-                </a>
+                <div className="flex items-center justify-center gap-x-4">
+                  <Link href="/privacy" className="hover:text-primary transition-colors">隐私政策</Link>
+                  <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                    粤ICP备2025475175号-1
+                  </a>
+                </div>
               </div>
           </footer>
       </div>
