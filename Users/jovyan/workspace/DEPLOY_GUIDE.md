@@ -50,13 +50,10 @@
 
 2.  **将您的真实密钥和配置信息填入文件中**。**请务必将所有 `...` 替换为您的实际值**。
 
-    > **⚠️ 临时配置指南 (域名备案期间)**
-    > 由于您的域名 `haxis.cn` 正在备案，我们需要暂时使用服务器的公网 IP 地址进行访问和测试。**域名备案成功后，请务必将这里的 IP 地址改回您的域名 `http://haxis.cn`**。
-
     ```env
-# 网站基础URL (⚠️ 临时配置)
-# 在域名备案完成前，请使用服务器的公网IP地址，并确保与下方回调地址中的域名/IP一致。
-NEXT_PUBLIC_BASE_URL="http://175.178.237.158"
+# 网站基础URL (⚠️ 极其重要！)
+# 请确保填写您网站的完整公网访问地址，并包含协议 (https)
+NEXT_PUBLIC_BASE_URL="https://haxis.cn"
 
 # --- Resend API Key (用于邮件通知) ---
 RESEND_API_KEY="..."
@@ -69,10 +66,9 @@ NEXT_PUBLIC_IMAGE_HOST="..."
 AUTHING_APP_ID="68a539bd60ad89fcaeb3585f"
 AUTHING_APP_SECRET="750fdd113a91158818471993b3f46a6a"
 
-# 登录回调URL (⚠️ 临时配置)
+# 登录回调URL
 # 这个地址必须与您在 Authing 后台配置的地址之一完全匹配。
-# 在域名备案完成前，请使用服务器的公网IP地址。
-AUTHING_REDIRECT_URI="http://175.178.237.158/api/auth/authing/callback"
+AUTHING_REDIRECT_URI="https://haxis.cn/api/auth/authing/callback"
 
 # Authing 端点 (请从 Authing 控制台复制完整 URL)
 AUTHING_AUTH_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/auth"
@@ -92,19 +88,18 @@ ADMIN_EMAIL="..."
 
 ---
 
-### **第 5 步：在 Authing 中配置回调 URL (一劳永逸)**
+### **第 5 步：在 Authing 中配置回调 URL**
 
 为了让 Authing 知道在用户登录成功后应该将他们安全地送回您的网站，您**必须**配置回调 URL 白名单。
 
 1.  **登录到您的 Authing 控制台**。
 2.  进入您的应用，找到 **应用配置** -> **登录回调 URL**。
-3.  **非常重要**：将您的**IP访问地址**和**最终域名地址**都添加进去。每个地址占一行。
+3.  将您的域名回调地址添加进去。
     
-    请将以下两个地址都粘贴到输入框中：
-    *   `http://175.178.237.158/api/auth/authing/callback`
-    *   `http://haxis.cn/api/auth/authing/callback`
+    请将以下地址粘贴到输入框中：
+    *   `https://haxis.cn/api/auth/authing/callback`
 
-    > **提示**: 同时保留两个地址，可以确保在备案期间和备案完成后，登录功能都能正常工作，**无需再次修改 Authing 的配置**。
+    > **提示**: 您也可以保留 `http://175.178.237.158/api/auth/authing/callback` 用于测试。
 
 ---
 
@@ -112,21 +107,5 @@ ADMIN_EMAIL="..."
 
 1.  **构建应用**: 运行 `npm run build`
 2.  **启动应用**: 使用 `pm2 restart 前行无界 || pm2 start npm --name "前行无界" -- start`
-
----
-
-### **第 7 步 (关键)：域名备案成功后**
-
-当您的域名 `haxis.cn` 成功备案后，请记得执行以下**唯一需要修改**的操作：
-
-1.  **登录服务器**，进入项目目录。
-2.  **修改 `.env.local` 文件**：将 `NEXT_PUBLIC_BASE_URL` 和 `AUTHING_REDIRECT_URI` 的值从 IP 地址改回 `http://haxis.cn`。
-    ```diff
-    - NEXT_PUBLIC_BASE_URL="http://175.178.237.158"
-    - AUTHING_REDIRECT_URI="http://175.178.237.158/api/auth/authing/callback"
-    + NEXT_PUBLIC_BASE_URL="http://haxis.cn"
-    + AUTHING_REDIRECT_URI="http://haxis.cn/api/auth/authing/callback"
-    ```
-3.  **重新构建并重启**：在服务器上再次运行 `npm run build` 和 `pm2 restart 前行无界`。
 
 部署完成！

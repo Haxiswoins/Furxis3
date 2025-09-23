@@ -54,10 +54,8 @@ export async function GET(req: NextRequest) {
       password: process.env.AUTHING_SECRET!,
       cookieName: 'suitopia-session',
       cookieOptions: {
-        // This is the critical change. The 'secure' flag is now conditional.
-        // It will be true only if the base URL starts with 'https'.
-        // This allows cookies to be set over HTTP during development or IP-based access.
-        secure: process.env.NEXT_PUBLIC_BASE_URL?.startsWith('https://'),
+        // Now that the site is on HTTPS, the 'secure' flag should always be true.
+        secure: true,
         httpOnly: true,
         sameSite: 'lax',
       },
