@@ -3,7 +3,6 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ContactInfo } from '@/components/contact-info';
 import type { SiteContent } from '@/types';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -60,14 +59,14 @@ export function HomeClient({ content }: HomeClientProps) {
 
   return (
     <>
-      <div className="container mx-auto flex flex-col min-h-screen">
+      <div className="container mx-auto">
         <motion.div 
-            className="relative z-10 flex-grow"
+            className="relative z-10"
             initial="hidden"
             animate="visible"
             variants={containerVariants}
         >
-            <div className="w-full py-8 md:py-12 pt-24">
+            <div className="w-full py-8 md:py-12">
             <motion.div className="text-center mb-10 md:mb-16 px-4" variants={itemVariants}>
                 <div onClick={() => handleNavigate('/')} className="cursor-pointer">
                     <div className="relative inline-block group px-4">
@@ -153,18 +152,6 @@ export function HomeClient({ content }: HomeClientProps) {
             </motion.div>
             </div>
         </motion.div>
-        <footer className="w-full py-8 text-center text-xs text-muted-foreground relative z-10">
-          <motion.div variants={itemVariants}>
-            <div className="space-x-4">
-              <ContactInfo content={content} />
-              <Link href="/privacy" className="hover:text-primary transition-colors">隐私政策</Link>
-            </div>
-            <p className="mt-4">Developed by Haxis & Mark</p>
-            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="mt-2 block hover:text-primary transition-colors">
-              粤ICP备2025475175号-1
-            </a>
-          </motion.div>
-        </footer>
       </div>
       {/* Transition Mask */}
       {isWarping && (
@@ -177,4 +164,3 @@ export function HomeClient({ content }: HomeClientProps) {
     </>
   );
 }
-

@@ -81,22 +81,21 @@ export function AppShell({
     }
   }
 
-  // Auth routes are now handled by the root layout, but AppShell won't render for them.
-  // This check can be simplified or removed if auth routes are moved outside (main).
+  // Auth routes are now handled by the root layout, so AppShell won't render for them.
   if (isAuthRoute) {
       return <>{children}</>;
   }
 
-  // All other pages get the main wrapper with header and background
+  // All other pages get the main wrapper with header and footer
   return (
       <div className="relative flex flex-col min-h-screen bg-background">
           <Header />
-          <main className="relative z-10 flex flex-col flex-grow pt-24 pb-16">
+          <main className="relative z-10 flex-grow flex flex-col pt-24 pb-16">
               <PageAnimationWrapper>
                 {children}
               </PageAnimationWrapper>
           </main>
-          <footer className="w-full py-8 text-center text-xs text-muted-foreground mt-auto relative z-10">
+          <footer className="w-full py-8 text-center text-xs text-muted-foreground z-10">
               <div className="space-x-4">
                 <ContactInfo content={siteContent} />
                 <Link href="/privacy" className="hover:text-primary transition-colors">隐私政策</Link>
