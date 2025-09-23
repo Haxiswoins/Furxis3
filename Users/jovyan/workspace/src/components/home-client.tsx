@@ -159,6 +159,9 @@ export function HomeClient({ content }: HomeClientProps) {
                   <Link href="/privacy" className="hover:text-primary transition-colors">隐私政策</Link>
                 </div>
                 <p className="mt-4">Developed by Haxis & Mark</p>
+                <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="mt-2 block hover:text-primary transition-colors">
+                  粤ICP备2025475175号-1
+                </a>
               </motion.div>
             </footer>
         </motion.div>
