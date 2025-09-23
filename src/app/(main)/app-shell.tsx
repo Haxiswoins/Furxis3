@@ -81,25 +81,29 @@ export function AppShell({
     }
   }
 
+  // Auth routes are now handled by the root layout, so AppShell won't render for them.
   if (isAuthRoute) {
       return <>{children}</>;
   }
 
-  // All other pages get the main wrapper with header and background
+  // All other pages get the main wrapper with header and footer
   return (
       <div className="relative flex flex-col min-h-screen bg-background">
           <Header />
-          <main className="relative z-10 flex flex-col flex-grow pt-24 pb-16">
+          <main className="relative z-10 flex-grow flex flex-col pt-24 pb-16">
               <PageAnimationWrapper>
                 {children}
               </PageAnimationWrapper>
           </main>
-          <footer className="w-full py-8 text-center text-xs text-muted-foreground mt-auto relative z-10">
-              <div className="space-x-4">
+          <footer className="w-full py-8 text-center text-xs text-muted-foreground z-10">
+              <div className="flex flex-col md:flex-row items-center justify-center gap-x-4 gap-y-2">
                 <ContactInfo content={siteContent} />
                 <Link href="/privacy" className="hover:text-primary transition-colors">隐私政策</Link>
+                <p>Developed by Haxis & Mark</p>
+                <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                  粤ICP备2025475175号-1
+                </a>
               </div>
-              <p className="mt-4">Developed by Haxis & Mark</p>
           </footer>
       </div>
   );
