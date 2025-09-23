@@ -98,7 +98,7 @@ export function AppShell({
           <footer className="w-full py-8 text-center text-xs text-muted-foreground z-10">
               <div className="flex flex-col items-center justify-center gap-2">
                 <ContactInfo content={siteContent} />
-                <div className="flex items-center gap-x-4">
+                <div className="flex items-center justify-center gap-x-4">
                   <Link href="/privacy" className="hover:text-primary transition-colors">隐私政策</Link>
                   <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                     粤ICP备2025475175号-1
