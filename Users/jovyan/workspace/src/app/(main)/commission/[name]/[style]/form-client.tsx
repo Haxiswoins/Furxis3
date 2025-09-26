@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -96,12 +96,12 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
   const watchCity = form.watch('city');
   const watchMagneticEyes = form.watch('magneticEyes');
   
-  const cities = React.useMemo(() => {
+  const cities = useMemo(() => {
     const province = chinaDivisions.find(p => p.name === watchProvince);
     return province ? province.cities.map(c => c.name) : [];
   }, [watchProvince]);
   
-  const districts = React.useMemo(() => {
+  const districts = useMemo(() => {
     const province = chinaDivisions.find(p => p.name === watchProvince);
     const city = province?.cities.find(c => c.name === watchCity);
     return city ? city.districts : [];
