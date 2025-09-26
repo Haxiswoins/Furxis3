@@ -197,3 +197,76 @@ ADMIN_EMAIL="..."
 这通常涉及编辑 Nginx 的配置文件，将来自您域名的请求转发到 Next.js 应用正在运行的本地端口（`http://localhost:3000`）。这是一个专业的系统管理任务，具体配置会根据您的服务器和域名设置而异。
 
 部署完成！您的网站现在已经在您自己的服务器上成功运行了。
+
+---
+
+## 附录：配置 SSL 证书自动续订与部署
+
+如果您想让服务器在您的腾讯云 SSL 证书续订后，自动将新证书下载并部署到 Nginx，您可以借助 `acme.sh` 这个强大的工具脚本来实现自动化。
+
+**核心原理**：`acme.sh` 通过腾讯云的 API，可以代替您完成“下载新证书 -> 替换旧证书 -> 重载 Nginx”这一系列操作。配置完成后，它会通过定时任务（CronJob）自动运行，您无需再手动干预。
+
+### **步骤 1: 获取腾讯云 API 密钥**
+
+`acme.sh` 需要一个 API 密钥来和您的腾讯云账户通信。
+
+1.  登录**腾讯云控制台**。
+2.  进入**访问管理 (CAM)** -> **API密钥管理**。
+3.  创建一个新的 API 密钥，并**立即记下** `SecretId` 和 `SecretKey`。这是与您的账户通信的“密码”，请妥善保管。
+
+### **步骤 2: 在服务器上安装 acme.sh**
+
+通过 SSH 登录您的服务器，然后执行以下命令来安装 `acme.sh` 脚本：
+
+```bash
+# 从官方源下载并安装
+curl https://get.acme.sh | sh -s email=your_email@example.com
+```
+> 将 `your_email@example.com` 替换为您自己的邮箱地址，用于接收证书续订相关的通知。
+
+安装脚本会自动将 `acme.sh` 添加到您系统的定时任务中，以便将来自动续订。
+
+### **步骤 3: 配置 acme.sh 使用腾讯云 API**
+
+运行以下两条命令，将您刚才获取的腾讯云 API 密钥设置为环境变量。`acme.sh` 会自动读取并使用它们。
+
+```bash
+# 将 "YOUR_SECRET_ID" 替换为您的真实 SecretId
+export Tencent_SecretId="YOUR_SECRET_ID"
+
+# 将 "YOUR_SECRET_KEY" 替换为您的真实 SecretKey
+export Tencent_SecretKey="YOUR_SECRET_KEY"
+```
+
+> **提示**: 这个配置只在当前终端会话中有效。关闭终端后会失效，但 `acme.sh` 会将它们保存在自己的配置文件中，所以您只需在首次配置时执行一次即可。
+
+### **步骤 4: 使用 acme.sh 签发/续订证书并自动部署**
+
+这是最核心的一步。运行以下命令，`acme.sh` 会：
+1.  通过 DNS 验证您对 `haxis.cn` 域名的所有权（利用您刚配置的 API 密钥）。
+2.  为您签发一个新的证书。
+3.  将证书文件 (`haxis.cn.crt`) 和私钥文件 (`haxis.cn.key`) **安装**到您指定的 `/root/ssl/` 目录。
+4.  在安装完成后，自动执行 `systemctl reload nginx` 命令。
+
+请执行以下命令：
+
+```bash
+# 请确保将 haxis.cn 替换为您自己的域名
+~/.acme.sh/acme.sh --issue --dns dns_tencent -d haxis.cn \
+--key-file /root/ssl/haxis.cn.key \
+--fullchain-file /root/ssl/haxis.cn_bundle.crt \
+--reloadcmd "sudo systemctl reload nginx"
+```
+
+**命令详解：**
+*   `--issue --dns dns_tencent`: 表示使用腾讯云的 DNS 服务进行验证。
+*   `-d haxis.cn`: 指定要签发证书的域名。
+*   `--key-file /root/ssl/haxis.cn.key`: **安装**私钥到这个路径。
+*   `--fullchain-file /root/ssl/haxis.cn_bundle.crt`: **安装**完整的证书链文件到这个路径。
+*   `--reloadcmd "sudo systemctl reload nginx"`: 在每次证书成功续订并**安装**后，自动执行这个命令来重载 Nginx。
+
+### **步骤 5: 完成！**
+
+执行完上述命令后，`acme.sh` 不仅会立即为您获取最新的证书并部署好，它还会**自动记住**您的所有配置。
+
+在未来的日子里，它会通过系统定时任务每天检查证书有效期。当证书快到期时，它会自动重复步骤4的所有操作，实现真正的“全自动”证书续订和部署。您从此无需再手动关心证书的有效期问题。
