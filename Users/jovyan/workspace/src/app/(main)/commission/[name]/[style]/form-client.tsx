@@ -295,7 +295,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                              ) : <Upload className="h-8 w-8 text-muted-foreground mx-auto my-auto" />}
                            </div>
                            <Label htmlFor={fieldName} className="cursor-pointer">
-                              <Button type="button" asChild>
+                              <Button type="button" variant="outline" asChild>
                                 <span>{field.value ? '更换图片' : '选择图片'}</span>
                               </Button>
                            </Label>

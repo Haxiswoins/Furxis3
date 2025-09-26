@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   Table,
   TableBody,
@@ -38,7 +38,6 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AnimatePresence, motion } from 'framer-motion';
-import React from 'react';
 
 type SortKey = 'name' | 'registrationDate' | 'completedOrders' | 'notSelectedOrders' | 'badgeCount';
 type SortDirection = 'asc' | 'desc';
