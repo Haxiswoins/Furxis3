@@ -54,7 +54,6 @@ export async function GET(req: NextRequest) {
       password: process.env.AUTHING_SECRET!,
       cookieName: 'suitopia-session',
       cookieOptions: {
-        // Now that the site is on HTTPS, the 'secure' flag should always be true.
         secure: true,
         httpOnly: true,
         sameSite: 'lax',

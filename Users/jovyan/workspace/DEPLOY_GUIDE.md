@@ -29,7 +29,7 @@
 
 ### **第 2 步：获取项目代码**
 
-通过 SSH 登录到您的服务器，然后运行 `git clone` 将代码克隆到您的服务器上（例如 `forward-infinity` 目录）。
+通过 SSH 登录到您的服务器，然后运行 `git clone` 将代码克隆到您的服务器上。
 
 ---
 
@@ -53,6 +53,7 @@
     ```env
 # 网站基础URL (⚠️ 极其重要！)
 # 请确保填写您网站的完整公网访问地址，并包含协议 (https)
+# 例如: https://www.yourdomain.com
 NEXT_PUBLIC_BASE_URL="https://haxis.cn"
 
 # --- Resend API Key (用于邮件通知) ---
@@ -63,49 +64,53 @@ IMAGE_UPLOAD_TOKEN="..."
 NEXT_PUBLIC_IMAGE_HOST="..."
 
 # --- Authing 应用配置 (用于用户认证) ---
-AUTHING_APP_ID="68a539bd60ad89fcaeb3585f"
-AUTHING_APP_SECRET="750fdd113a91158818471993b3f46a6a"
+AUTHING_APP_ID="..."
+AUTHING_APP_SECRET="..."
 
 # 登录回调URL
-# 这个地址必须与您在 Authing 后台配置的地址之一完全匹配。
+# 您的服务器必须使用这个地址来接收 Authing 的回调。
+# ⚠️ 这个值必须与您在第5步中添加到 Authing 白名单中的地址完全一致！
 AUTHING_REDIRECT_URI="https://haxis.cn/api/auth/authing/callback"
 
-# Authing 端点 (请从 Authing 控制台复制完整 URL)
-AUTHING_AUTH_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/auth"
-AUTHING_TOKEN_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/token"
-AUTHING_USERINFO_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/me"
-NEXT_PUBLIC_AUTHING_LOGOUT_ENDPOINT="https://icwh5jsh38rx-demo.authing.cn/oidc/session/end"
+# Authing 端点 (请从 Authing 控制台的应用配置页面复制完整的 URL)
+AUTHING_AUTH_ENDPOINT="https://..."
+AUTHING_TOKEN_ENDPOINT="https://..."
+AUTHING_USERINFO_ENDPOINT="https://..."
+NEXT_PUBLIC_AUTHING_LOGOUT_ENDPOINT="https://..."
 
 # 用于加密会话的密钥, 请生成一个足够复杂的随机字符串 (至少32位)
+# 您可以在终端使用 `openssl rand -base64 32` 命令生成。
 AUTHING_SECRET="..."
 
 # 管理员邮箱地址
 ADMIN_EMAIL="..."
     ```
-    > **重要提示**: `AUTHING_SECRET` 用于保护用户登录会话的安全，请务必使用一个足够强大的随机字符串。您可以在终端使用 `openssl rand -base64 32` 命令生成。
+    > **重要提示**: `AUTHING_SECRET` 用于保护用户登录会话的安全，请务必使用一个足够强大的随机字符串。
 
 3.  保存并关闭文件 (在 `nano` 中，按 `Ctrl+X`，然后按 `Y`，最后按 `Enter`)。
 
 ---
 
-### **第 5 步：在 Authing 中配置回调 URL**
+### **第 5 步：在 Authing 中配置回调 URL (解决问题的关键)**
 
-为了让 Authing 知道在用户登录成功后应该将他们安全地送回您的网站，您**必须**配置回调 URL 白名单。
+为了让 Authing 知道在用户登录成功后应该将他们安全地送回您网站的哪个地址，您**必须**将这个地址添加到回调 URL 白名单。
 
 1.  **登录到您的 Authing 控制台**。
-2.  进入您的应用，找到 **应用配置** -> **登录回调 URL**。
-3.  将您的域名回调地址添加进去。
-    
-    请将以下地址粘贴到输入框中：
-    *   `https://haxis.cn/api/auth/authing/callback`
+2.  在左侧菜单进入 **应用**，然后选择您正在使用的应用。
+3.  在您的应用页面中，找到 **应用配置** 选项卡。
+4.  向下滚动找到 **登录回调 URL** 的配置区域。
+5.  **将您网站的回调地址完整地粘贴进去**。这个地址的格式为：`您网站的公网域名/api/auth/authing/callback`。
 
-    > **提示**: 您也可以保留 `http://175.178.237.158/api/auth/authing/callback` 用于测试。
+    根据您的 `.env.local` 文件配置，您需要添加的地址是：
+    *   **`https://haxis.cn/api/auth/authing/callback`**
+
+    > **提示**: 此列表支持填写多个地址，每个地址占一行。如果您本地也需要开发测试，可以把本地地址 `http://localhost:3000/api/auth/authing/callback` 也加上。
 
 ---
 
 ### **第 6 步：构建并启动应用**
 
 1.  **构建应用**: 运行 `npm run build`
-2.  **启动应用**: 使用 `pm2 restart 前行无界 || pm2 start npm --name "前行无界" -- start`
+2.  **启动应用**: 使用 PM2 或 `npm start` 启动。
 
-部署完成！
+部署完成！配置好回调 URL 后，登录问题应该就解决了。
