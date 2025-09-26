@@ -1,8 +1,11 @@
 
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,7 +24,31 @@ import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import Link from 'next/link';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+
+const formSchema = z.object({
+  name: z.string().min(1, '姓名不能为空'),
+  age: z.string().min(1, '年龄不能为空'),
+  phone: z.string().min(1, '电话不能为空'),
+  qq: z.string().optional(),
+  email: z.string().email('请输入有效的邮箱地址'),
+  height: z.string().min(1, '身高不能为空'),
+  weight: z.string().min(1, '体重不能为空'),
+  province: z.string().min(1, '请选择省份'),
+  city: z.string().min(1, '请选择城市'),
+  district: z.string().min(1, '请选择地区'),
+  addressDetail: z.string().min(1, '详细地址不能为空'),
+  referenceImage: z.instanceof(File).optional(),
+  referenceImage2: z.instanceof(File).optional(),
+  hasFan: z.boolean().default(false),
+  magneticEyes: z.boolean().default(false),
+  magneticEyesCount: z.string().default('0'),
+  agreedToContract: z.boolean().refine(val => val === true, { message: '您必须同意服务条款' }),
+  agreedToPrivacy: z.boolean().refine(val => val === true, { message: '您必须同意隐私政策' }),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
 
 type CommissionApplicationFormClientProps = {
   commissionOption: CommissionOption;
@@ -31,31 +58,67 @@ type CommissionApplicationFormClientProps = {
 
 export function CommissionApplicationFormClient({ commissionOption, commissionStyle, siteContent }: CommissionApplicationFormClientProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const { toast } = useToast();
   const { user, login } = useAuth();
   const isLoggedIn = !!user;
 
   const [formSubmitting, setFormSubmitting] = useState(false);
-  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
-  const [agreedToContract, setAgreedToContract] = useState(false);
-
-  const [selectedProvince, setSelectedProvince] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
-  const [cities, setCities] = useState<string[]>([]);
-  const [districts, setDistricts] = useState<string[]>([]);
-  
-  const [referenceImageFiles, setReferenceImageFiles] = useState<(File | null)[]>([null, null]);
-  const [referenceImagePreviews, setReferenceImagePreviews] = useState<(string | null)[]>([null, null]);
-  const fileInputRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
-  
-  const [needsMagneticEyes, setNeedsMagneticEyes] = useState(false);
   
   const fanPrice = siteContent?.fanPrice ?? 150;
   const magneticEyePrice = siteContent?.magneticEyePrice ?? 200;
   
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
   const [isCommissionOpen, setIsCommissionOpen] = useState(commissionOption.status !== '即将开放');
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: '',
+      age: '',
+      phone: '',
+      qq: '',
+      email: user?.email || '',
+      height: '',
+      weight: '',
+      province: '',
+      city: '',
+      district: '',
+      addressDetail: '',
+      hasFan: false,
+      magneticEyes: false,
+      magneticEyesCount: '1',
+      agreedToContract: false,
+      agreedToPrivacy: false,
+    },
+  });
+
+  const watchProvince = form.watch('province');
+  const watchCity = form.watch('city');
+  const watchMagneticEyes = form.watch('magneticEyes');
+  
+  const cities = React.useMemo(() => {
+    const province = chinaDivisions.find(p => p.name === watchProvince);
+    return province ? province.cities.map(c => c.name) : [];
+  }, [watchProvince]);
+  
+  const districts = React.useMemo(() => {
+    const province = chinaDivisions.find(p => p.name === watchProvince);
+    const city = province?.cities.find(c => c.name === watchCity);
+    return city ? city.districts : [];
+  }, [watchProvince, watchCity]);
+  
+  useEffect(() => {
+    if (!cities.includes(watchCity)) {
+        form.setValue('city', '');
+    }
+  }, [cities, watchCity, form]);
+
+  useEffect(() => {
+    if (!districts.includes(form.getValues('district'))) {
+        form.setValue('district', '');
+    }
+  }, [districts, form]);
+
 
   useEffect(() => {
     if (commissionOption.status !== '即将开放' || !commissionOption.commissionDate) {
@@ -85,64 +148,8 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     return () => clearInterval(timer);
   }, [commissionOption]);
 
-
-  const handleProvinceChange = (province: string) => {
-    setSelectedProvince(province);
-    const provinceData = chinaDivisions.find(p => p.name === province);
-    const newCities = provinceData ? provinceData.cities.map(c => c.name) : [];
-    setCities(newCities);
-    setSelectedCity('');
-    setDistricts([]);
-  };
-
-  const handleCityChange = (city: string) => {
-    setSelectedCity(city);
-    const provinceData = chinaDivisions.find(p => p.name === selectedProvince);
-    const cityData = provinceData?.cities.find(c => c.name === city);
-    const newDistricts = cityData ? cityData.districts : [];
-    setDistricts(newDistricts);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        toast({
-          title: "图片太大",
-          description: "请上传小于5MB的图片。",
-          variant: "destructive",
-        });
-        if(fileInputRefs[index].current) {
-            fileInputRefs[index].current!.value = "";
-        }
-        return;
-      }
-      const newFiles = [...referenceImageFiles];
-      newFiles[index] = file;
-      setReferenceImageFiles(newFiles);
-
-      const newPreviews = [...referenceImagePreviews];
-      newPreviews[index] = URL.createObjectURL(file);
-      setReferenceImagePreviews(newPreviews);
-    }
-  };
-
-  const clearImage = (index: number) => {
-    const newFiles = [...referenceImageFiles];
-    newFiles[index] = null;
-    setReferenceImageFiles(newFiles);
-    
-    const newPreviews = [...referenceImagePreviews];
-    newPreviews[index] = null;
-    setReferenceImagePreviews(newPreviews);
-
-    if(fileInputRefs[index].current) {
-        fileInputRefs[index].current!.value = "";
-    }
-  }
   
-  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleFormSubmit = async (values: FormValues) => {
     if (!user || !commissionStyle || !commissionOption) return;
 
     if (!isCommissionOpen) {
@@ -158,30 +165,30 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     let uploadedUrls: (string | null)[] = [null, null];
     
     try {
-        await Promise.all(referenceImageFiles.map(async (file, index) => {
-            if (file) {
-                uploadedUrls[index] = await uploadImage(file, `references/${user.uid}_${Date.now()}_${index}`);
-            }
-        }));
+        if (values.referenceImage) {
+            uploadedUrls[0] = await uploadImage(values.referenceImage, `references/${user.uid}_${Date.now()}_0`);
+        }
+        if (values.referenceImage2) {
+            uploadedUrls[1] = await uploadImage(values.referenceImage2, `references/${user.uid}_${Date.now()}_1`);
+        }
 
-      const formData = new FormData(e.currentTarget);
       const applicationData: ApplicationData = {
-        userName: formData.get('name') as string,
-        age: formData.get('age') as string,
-        phone: formData.get('phone') as string,
-        qq: formData.get('qq') as string,
-        email: formData.get('email') as string,
-        height: formData.get('height') as string,
-        weight: formData.get('weight') as string,
-        province: selectedProvince,
-        city: selectedCity,
-        district: formData.get('district') as string,
-        addressDetail: formData.get('addressDetail') as string,
+        userName: values.name,
+        age: values.age,
+        phone: values.phone,
+        qq: values.qq,
+        email: values.email,
+        height: values.height,
+        weight: values.weight,
+        province: values.province,
+        city: values.city,
+        district: values.district,
+        addressDetail: values.addressDetail,
         referenceImageUrl: uploadedUrls[0],
         referenceImageUrl2: uploadedUrls[1],
-        hasFan: formData.get('hasFan') === 'on',
-        magneticEyes: formData.get('magneticEyes') === 'on',
-        magneticEyesCount: Number(formData.get('magneticEyesCount')) || 0,
+        hasFan: values.hasFan,
+        magneticEyes: values.magneticEyes,
+        magneticEyesCount: Number(values.magneticEyesCount) || 0,
       };
       
       const commissionInfo = {
@@ -241,7 +248,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     }
 
     return (
-      <Button size="lg" className="w-full" type="submit" disabled={formSubmitting || !agreedToPrivacy || !agreedToContract}>
+      <Button size="lg" className="w-full" type="submit" disabled={formSubmitting || !form.formState.isValid}>
         {formSubmitting ? '提交中...' : '申请估价'}
       </Button>
     )
@@ -256,199 +263,139 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
           <CardTitle className="text-3xl font-headline">{commissionOption.name} - {commissionStyle.name}</CardTitle>
           <CardDescription className="mt-2 text-base">{commissionStyle.description}</CardDescription>
       </CardHeader>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+          <CardContent className="space-y-4">
 
-      <form onSubmit={handleFormSubmit}>
-         <CardContent className="space-y-4">
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[0, 1].map(index => (
-                <div key={index} className="space-y-1">
-                  <Label>设定参考图 {index + 1} (可选)</Label>
-                  <div className="flex items-center gap-4">
-                      <div className="w-32 h-32 relative rounded-md border bg-muted flex-shrink-0">
-                          {referenceImagePreviews[index] ? (
-                          <>
-                              <Image src={referenceImagePreviews[index]!} alt={`设定图预览 ${index + 1}`} fill style={{objectFit:'cover'}} className="rounded-md" />
-                              <Button type="button" variant="ghost" size="icon" className="absolute top-0 right-0 bg-black/50 hover:bg-black/70 text-white rounded-full h-6 w-6" onClick={() => clearImage(index)}>
-                              <X className="h-4 w-4" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[ 'referenceImage', 'referenceImage2' ].map((fieldName, index) => (
+                <FormField
+                  key={fieldName}
+                  control={form.control}
+                  name={fieldName as 'referenceImage' | 'referenceImage2'}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>设定参考图 {index + 1} (可选)</FormLabel>
+                      <FormControl>
+                        <div className="flex items-center gap-4">
+                           <div className="w-32 h-32 relative rounded-md border bg-muted flex-shrink-0">
+                             {field.value ? (
+                                <>
+                                  <Image src={URL.createObjectURL(field.value)} alt={`预览 ${index + 1}`} fill style={{objectFit:'cover'}} className="rounded-md"/>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute top-0 right-0 bg-black/50 hover:bg-black/70 text-white rounded-full h-6 w-6"
+                                    onClick={() => field.onChange(undefined)}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </>
+                             ) : <Upload className="h-8 w-8 text-muted-foreground mx-auto my-auto" />}
+                           </div>
+                           <Label htmlFor={fieldName} className="cursor-pointer">
+                              <Button type="button" asChild>
+                                <span>{field.value ? '更换图片' : '选择图片'}</span>
                               </Button>
-                          </>
-                          ) : (
-                          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                              <Upload className="h-8 w-8"/>
-                          </div>
-                          )}
-                      </div>
-                      <Button type="button" variant="outline" onClick={() => fileInputRefs[index].current?.click()}>
-                          {referenceImagePreviews[index] ? '更换图片' : '选择图片'}
-                      </Button>
-                      <Input 
-                          id={`referenceImage-${index}`}
-                          name={`referenceImage-${index}`}
-                          type="file" 
-                          accept="image/*"
-                          className="hidden"
-                          ref={fileInputRefs[index]}
-                          onChange={(e) => handleFileChange(e, index)}
-                      />
-                  </div>
-                  <p className="text-xs text-muted-foreground pt-1">大小不超过5MB。</p>
-                </div>
+                           </Label>
+                           <Input
+                             id={fieldName}
+                             type="file"
+                             accept="image/*"
+                             className="hidden"
+                             onBlur={field.onBlur}
+                             name={field.name}
+                             onChange={(e) => field.onChange(e.target.files?.[0])}
+                           />
+                        </div>
+                      </FormControl>
+                      <FormDescription>大小不超过5MB。</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               ))}
             </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Label htmlFor="name">您的姓名</Label>
-              <Input id="name" name="name" placeholder="请输入您的姓名" required />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="age">年龄</Label>
-              <Input id="age" name="age" type="number" placeholder="请输入您的年龄" required />
-            </div>
-             <div className="space-y-1">
-              <Label htmlFor="phone">电话</Label>
-              <Input id="phone" name="phone" placeholder="请输入您的电话" required />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="qq">QQ</Label>
-              <Input id="qq" name="qq" placeholder="请输入您的QQ号" />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="email">邮箱地址</Label>
-              <Input id="email" name="email" type="email" placeholder="you@example.com" defaultValue={user?.email || ''} required />
-            </div>
-             <div className="space-y-1">
-              <Label htmlFor="height">身高 (cm)</Label>
-              <Input id="height" name="height" type="number" placeholder="例如：175" required />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="weight">体重 (kg)</Label>
-              <Input id="weight" name="weight" type="number" placeholder="例如：60" required />
-            </div>
-          </div>
-          
-          <div className="space-y-1">
-            <Label>地址</Label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <Select name="province" onValueChange={handleProvinceChange} required>
-                <SelectTrigger><SelectValue placeholder="选择省份" /></SelectTrigger>
-                <SelectContent>
-                  {chinaDivisions.map(p => <SelectItem key={p.name} value={p.name}>{p.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              <Select name="city" onValueChange={handleCityChange} value={selectedCity} disabled={cities.length === 0} required>
-                <SelectTrigger><SelectValue placeholder="选择城市" /></SelectTrigger>
-                <SelectContent>
-                  {cities.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              <Select name="district" disabled={districts.length === 0} required>
-                <SelectTrigger><SelectValue placeholder="选择区/县" /></SelectTrigger>
-                <SelectContent>
-                  {districts.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-           <div className="space-y-1">
-              <Label htmlFor="addressDetail">详细地址</Label>
-              <Textarea id="addressDetail" name="addressDetail" placeholder="请输入街道、门牌号等详细信息" required />
-          </div>
-
-          <div className="space-y-4 pt-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox id="hasFan" name="hasFan" />
-              <label htmlFor="hasFan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                是否安装头内风扇模块 (+￥{fanPrice})
-              </label>
-            </div>
-             <div className="flex items-center space-x-2">
-                <Checkbox id="magneticEyes" name="magneticEyes" checked={needsMagneticEyes} onCheckedChange={(checked) => setNeedsMagneticEyes(checked as boolean)} />
-                <label htmlFor="magneticEyes" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    是否需要磁吸可替换眼 (+￥{magneticEyePrice}/双)
-                </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>您的姓名</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="age" render={({ field }) => (<FormItem><FormLabel>年龄</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="phone" render={({ field }) => (<FormItem><FormLabel>电话</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="qq" render={({ field }) => (<FormItem><FormLabel>QQ</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>邮箱地址</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="height" render={({ field }) => (<FormItem><FormLabel>身高 (cm)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <FormField control={form.control} name="weight" render={({ field }) => (<FormItem><FormLabel>体重 (kg)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
             </div>
 
-            {needsMagneticEyes && (
-                <div className="pl-6">
-                    <Label htmlFor="magneticEyesCount">选择数量</Label>
-                    <Select name="magneticEyesCount" defaultValue="1">
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="选择数量" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="1">1 双</SelectItem>
-                            <SelectItem value="2">2 双</SelectItem>
-                            <SelectItem value="3">3 双</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-            )}
-          </div>
+            <div className="space-y-1">
+              <Label>地址</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <FormField control={form.control} name="province" render={({ field }) => (<FormItem><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="选择省份" /></SelectTrigger></FormControl><SelectContent>{chinaDivisions.map(p => <SelectItem key={p.name} value={p.name}>{p.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                <FormField control={form.control} name="city" render={({ field }) => (<FormItem><Select onValueChange={field.onChange} value={field.value} disabled={cities.length === 0}><FormControl><SelectTrigger><SelectValue placeholder="选择城市" /></SelectTrigger></FormControl><SelectContent>{cities.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                <FormField control={form.control} name="district" render={({ field }) => (<FormItem><Select onValueChange={field.onChange} value={field.value} disabled={districts.length === 0}><FormControl><SelectTrigger><SelectValue placeholder="选择区/县" /></SelectTrigger></FormControl><SelectContent>{districts.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+              </div>
+            </div>
+            <FormField control={form.control} name="addressDetail" render={({ field }) => (<FormItem><FormLabel>详细地址</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
 
-          <div className="space-y-2 pt-2">
-              <div className="flex items-start space-x-2">
-                  <Checkbox id="terms" checked={agreedToContract} onCheckedChange={(checked) => setAgreedToContract(checked as boolean)} />
-                  <div className="grid gap-1.5 leading-none">
-                      <label
-                        htmlFor="terms"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                       我已阅读并同意{' '}
-                       <Dialog>
-                          <DialogTrigger asChild>
-                             <span onClick={(e) => e.preventDefault()} className="text-primary hover:underline cursor-pointer">《委托服务条款》</span>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-3xl">
-                              <DialogHeader>
-                                  <DialogTitle className="text-xl">委托服务条款</DialogTitle>
-                              </DialogHeader>
-                              <ScrollArea className="h-[60vh] pr-6">
-                                  <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
-                                      {contractText || "合同条款正在加载中..."}
-                                  </div>
-                              </ScrollArea>
-                          </DialogContent>
+            <div className="space-y-4 pt-2">
+                <FormField control={form.control} name="hasFan" render={({ field }) => (<FormItem className="flex flex-row items-start space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><div className="space-y-1 leading-none"><FormLabel>是否安装头内风扇模块 (+￥{fanPrice})</FormLabel></div></FormItem>)} />
+                <FormField control={form.control} name="magneticEyes" render={({ field }) => (<FormItem className="flex flex-row items-start space-x-3 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><div className="space-y-1 leading-none"><FormLabel>是否需要磁吸可替换眼 (+￥{magneticEyePrice}/双)</FormLabel></div></FormItem>)} />
+                {watchMagneticEyes && (
+                    <div className="pl-6">
+                        <FormField control={form.control} name="magneticEyesCount" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>选择数量</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl><SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger></FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="1">1 双</SelectItem>
+                                        <SelectItem value="2">2 双</SelectItem>
+                                        <SelectItem value="3">3 双</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </FormItem>
+                        )}/>
+                    </div>
+                )}
+            </div>
+
+            <div className="space-y-4 pt-2">
+              <FormField control={form.control} name="agreedToContract" render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                  <div className="space-y-1 leading-none">
+                    <label htmlFor="agreedToContract" className="text-sm font-medium">我已阅读并同意{' '}
+                      <Dialog><DialogTrigger asChild><span className="text-primary hover:underline cursor-pointer" onClick={(e) => e.preventDefault()}>《委托服务条款》</span></DialogTrigger>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle className="text-xl">委托服务条款</DialogTitle></DialogHeader><ScrollArea className="h-[60vh] pr-6"><div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{contractText || "合同条款正在加载中..."}</div></ScrollArea></DialogContent>
                       </Dialog>
                     </label>
+                    <FormMessage />
                   </div>
-              </div>
-               <div className="flex items-start space-x-2 mt-2">
-                  <Checkbox id="privacy" checked={agreedToPrivacy} onCheckedChange={(checked) => setAgreedToPrivacy(checked as boolean)} />
-                    <div className="grid gap-1.5 leading-none">
-                       <label
-                          htmlFor="privacy"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                         我已阅读并同意{' '}
-                         <Dialog>
-                            <DialogTrigger asChild>
-                               <span onClick={(e) => e.preventDefault()} className="text-primary hover:underline cursor-pointer">《隐私政策》</span>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-3xl">
-                                <DialogHeader>
-                                    <DialogTitle className="text-xl">隐私政策</DialogTitle>
-                                </DialogHeader>
-                                <ScrollArea className="h-[60vh] pr-6">
-                                    <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">
-                                        {privacyPolicyText || "隐私政策正在加载中..."}
-                                    </div>
-                                </ScrollArea>
-                            </DialogContent>
-                          </Dialog>
-                          ，并授权网站为履行订单处理我的个人信息。
-                      </label>
-                    </div>
-              </div>
-          </div>
-         </CardContent>
+                </FormItem>
+              )}/>
+              <FormField control={form.control} name="agreedToPrivacy" render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                  <div className="space-y-1 leading-none">
+                    <label htmlFor="agreedToPrivacy" className="text-sm font-medium">我已阅读并同意{' '}
+                      <Dialog><DialogTrigger asChild><span className="text-primary hover:underline cursor-pointer" onClick={(e) => e.preventDefault()}>《隐私政策》</span></DialogTrigger>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle className="text-xl">隐私政策</DialogTitle></DialogHeader><ScrollArea className="h-[60vh] pr-6"><div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{privacyPolicyText || "隐私政策正在加载中..."}</div></ScrollArea></DialogContent>
+                      </Dialog>
+                      ，并授权网站为履行订单处理我的个人信息。
+                    </label>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}/>
+            </div>
+          </CardContent>
 
           <CardFooter>
-             {isLoggedIn ? renderSubmitButton() : renderLoginDialog()}
+            {isLoggedIn ? renderSubmitButton() : renderLoginDialog()}
           </CardFooter>
         </form>
+      </Form>
     </Card>
   );
 }
-
-    
