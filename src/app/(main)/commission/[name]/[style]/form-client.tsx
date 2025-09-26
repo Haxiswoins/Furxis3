@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -24,7 +24,7 @@ import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 
 const formSchema = z.object({
   name: z.string().min(1, '姓名不能为空'),
@@ -96,12 +96,12 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
   const watchCity = form.watch('city');
   const watchMagneticEyes = form.watch('magneticEyes');
   
-  const cities = React.useMemo(() => {
+  const cities = useMemo(() => {
     const province = chinaDivisions.find(p => p.name === watchProvince);
     return province ? province.cities.map(c => c.name) : [];
   }, [watchProvince]);
   
-  const districts = React.useMemo(() => {
+  const districts = useMemo(() => {
     const province = chinaDivisions.find(p => p.name === watchProvince);
     const city = province?.cities.find(c => c.name === watchCity);
     return city ? city.districts : [];
