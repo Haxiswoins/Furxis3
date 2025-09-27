@@ -365,7 +365,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
               <FormField control={form.control} name="agreedToContract" render={({ field }) => (
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                   <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} id="agreedToContract" /></FormControl>
-                  <div className="grid gap-1.5 leading-none">
+                  <div className="space-y-1 leading-none">
                      <Label htmlFor="agreedToContract" className="text-sm font-medium">我已阅读并同意</Label>{' '}
                       <Dialog>
                         <DialogTrigger asChild>
@@ -388,7 +388,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
               <FormField control={form.control} name="agreedToPrivacy" render={({ field }) => (
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                   <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} id="agreedToPrivacy" /></FormControl>
-                   <div className="grid gap-1.5 leading-none">
+                   <div className="space-y-1 leading-none">
                      <Label htmlFor="agreedToPrivacy" className="text-sm font-medium">我已阅读并同意</Label>{' '}
                       <Dialog>
                         <DialogTrigger asChild>
@@ -422,4 +422,3 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     </Card>
   );
 }
-

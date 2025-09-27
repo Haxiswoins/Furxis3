@@ -190,5 +190,3 @@ export type AggregatedUser = {
   cancelledOrders: number;
   badgeCount: number;
 };
-
-    
