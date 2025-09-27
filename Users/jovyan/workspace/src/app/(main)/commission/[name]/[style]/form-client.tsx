@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
@@ -23,7 +24,7 @@ import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 
 const formSchema = z.object({
@@ -367,20 +368,20 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                   <div className="space-y-1 leading-none">
                      <Label htmlFor="agreedToContract" className="text-sm font-medium">
                        我已阅读并同意{' '}
-                       <Dialog>
-                          <DialogTrigger asChild>
-                            <span className="text-primary hover:underline cursor-pointer">《委托服务条款》</span>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-3xl">
-                            <DialogHeader>
-                              <DialogTitle className="text-xl">委托服务条款</DialogTitle>
-                              <DialogDescription>请仔细阅读以下条款。</DialogDescription>
-                            </DialogHeader>
-                            <ScrollArea className="h-[60vh] pr-6">
-                              <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{contractText || "合同条款正在加载中..."}</div>
-                            </ScrollArea>
-                          </DialogContent>
-                       </Dialog>
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <span className="text-primary hover:underline cursor-pointer">《委托服务条款》</span>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-3xl">
+                                <DialogHeader>
+                                <DialogTitle className="text-xl">委托服务条款</DialogTitle>
+                                <DialogDescription>请仔细阅读以下条款。</DialogDescription>
+                                </DialogHeader>
+                                <ScrollArea className="h-[60vh] pr-6">
+                                <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{contractText || "合同条款正在加载中..."}</div>
+                                </ScrollArea>
+                            </DialogContent>
+                        </Dialog>
                      </Label>
                     <FormMessage />
                   </div>
@@ -393,18 +394,18 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                      <Label htmlFor="agreedToPrivacy" className="text-sm font-medium">
                        我已阅读并同意{' '}
                         <Dialog>
-                          <DialogTrigger asChild>
-                             <span className="text-primary hover:underline cursor-pointer">《隐私政策》</span>
-                          </DialogTrigger>
-                           <DialogContent className="max-w-3xl">
-                            <DialogHeader>
-                              <DialogTitle className="text-xl">隐私政策</DialogTitle>
-                               <DialogDescription>请仔细阅读以下条款。</DialogDescription>
-                            </DialogHeader>
-                            <ScrollArea className="h-[60vh] pr-6">
-                              <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{privacyPolicyText || "隐私政策正在加载中..."}</div>
-                            </ScrollArea>
-                          </DialogContent>
+                            <DialogTrigger asChild>
+                                <span className="text-primary hover:underline cursor-pointer">《隐私政策》</span>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-3xl">
+                                <DialogHeader>
+                                <DialogTitle className="text-xl">隐私政策</DialogTitle>
+                                <DialogDescription>请仔细阅读以下条款。</DialogDescription>
+                                </DialogHeader>
+                                <ScrollArea className="h-[60vh] pr-6">
+                                <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{privacyPolicyText || "隐私政策正在加载中..."}</div>
+                                </ScrollArea>
+                            </DialogContent>
                         </Dialog>
                         ，并授权网站为履行订单处理我的个人信息。
                      </Label>
@@ -423,5 +424,3 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     </Card>
   );
 }
-
-    

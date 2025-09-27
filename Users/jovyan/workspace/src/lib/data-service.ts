@@ -44,7 +44,8 @@ async function writeData(fileName:string, data: any): Promise<void> {
 // Site Content
 export async function getSiteContent(): Promise<SiteContent> {
   // Site content is an object, not an array
-  return await readData<SiteContent>('siteContent.json');
+  const content = await readData<SiteContent>('siteContent.json');
+  return content || {};
 }
 
 export async function saveSiteContent(content: SiteContent): Promise<void> {
@@ -444,7 +445,7 @@ export async function createAdoptionApplication(character: Character, userId: st
 }
 
 
-type CommissionInfo = {
+export type CommissionInfo = {
     styleName: string;
     optionName: string;
     imageUrl: string;

@@ -1,4 +1,8 @@
 
+import type { CommissionInfo as CI } from '@/lib/data-service';
+
+export type CommissionInfo = CI;
+
 export type CharacterSeries = {
   id: string;
   name: string;
