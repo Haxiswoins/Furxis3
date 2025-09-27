@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
@@ -18,13 +17,13 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { chinaDivisions } from '@/lib/china-divisions';
 import { useAuth } from '@/context/AuthContext';
 import { createCommissionApplication } from '@/lib/data-service';
-import type { CommissionStyle, CommissionOption, SiteContent, ApplicationData } from '@/types';
+import type { CommissionStyle, CommissionOption, SiteContent, ApplicationData, CommissionInfo } from '@/types';
 import { uploadImage } from '@/lib/upload-service';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 
 const formSchema = z.object({
@@ -192,7 +191,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
         magneticEyesCount: Number(values.magneticEyesCount) || 0,
       };
       
-      const commissionInfo = {
+      const commissionInfo: CommissionInfo = {
         styleName: commissionStyle.name,
         optionName: commissionOption.name,
         imageUrl: commissionStyle.imageUrl || '',
@@ -361,7 +360,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                 )}
             </div>
 
-             <div className="space-y-4 pt-2">
+            <div className="space-y-4 pt-2">
               <FormField control={form.control} name="agreedToContract" render={({ field }) => (
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                   <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} id="agreedToContract" /></FormControl>
@@ -400,7 +399,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                            <DialogContent className="max-w-3xl">
                             <DialogHeader>
                               <DialogTitle className="text-xl">隐私政策</DialogTitle>
-                              <DialogDescription>请仔细阅读以下条款。</DialogDescription>
+                               <DialogDescription>请仔细阅读以下条款。</DialogDescription>
                             </DialogHeader>
                             <ScrollArea className="h-[60vh] pr-6">
                               <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{privacyPolicyText || "隐私政策正在加载中..."}</div>
@@ -424,3 +423,5 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     </Card>
   );
 }
+
+    
