@@ -1,5 +1,4 @@
 
-
 export type CharacterSeries = {
   id: string;
   name: string;
@@ -41,7 +40,7 @@ export type CommissionStyle = {
   name: string;
   price: string;
   description: string;
-  imageUrl: string;
+  imageUrl?: string;
   tags: string[];
 };
 

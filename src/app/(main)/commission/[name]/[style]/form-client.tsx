@@ -365,9 +365,17 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                   <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                   <div className="space-y-1 leading-none">
-                    <label htmlFor="agreedToContract" className="text-sm font-medium">我已阅读并同意{' '}
-                      <Dialog><DialogTrigger asChild><span className="text-primary hover:underline cursor-pointer" onClick={(e) => e.preventDefault()}>《委托服务条款》</span></DialogTrigger>
-                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle className="text-xl">委托服务条款</DialogTitle></DialogHeader><ScrollArea className="h-[60vh] pr-6"><div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{contractText || "合同条款正在加载中..."}</div></ScrollArea></DialogContent>
+                    <label className="text-sm font-medium">我已阅读并同意{' '}
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <span className="text-primary hover:underline cursor-pointer">《委托服务条款》</span>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-3xl">
+                          <DialogHeader><DialogTitle className="text-xl">委托服务条款</DialogTitle></DialogHeader>
+                          <ScrollArea className="h-[60vh] pr-6">
+                            <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{contractText || "合同条款正在加载中..."}</div>
+                          </ScrollArea>
+                        </DialogContent>
                       </Dialog>
                     </label>
                     <FormMessage />
@@ -378,9 +386,17 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                   <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                   <div className="space-y-1 leading-none">
-                    <label htmlFor="agreedToPrivacy" className="text-sm font-medium">我已阅读并同意{' '}
-                      <Dialog><DialogTrigger asChild><span className="text-primary hover:underline cursor-pointer" onClick={(e) => e.preventDefault()}>《隐私政策》</span></DialogTrigger>
-                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle className="text-xl">隐私政策</DialogTitle></DialogHeader><ScrollArea className="h-[60vh] pr-6"><div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{privacyPolicyText || "隐私政策正在加载中..."}</div></ScrollArea></DialogContent>
+                    <label className="text-sm font-medium">我已阅读并同意{' '}
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <span className="text-primary hover:underline cursor-pointer">《隐私政策》</span>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-3xl">
+                          <DialogHeader><DialogTitle className="text-xl">隐私政策</DialogTitle></DialogHeader>
+                          <ScrollArea className="h-[60vh] pr-6">
+                            <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{privacyPolicyText || "隐私政策正在加载中..."}</div>
+                          </ScrollArea>
+                        </DialogContent>
                       </Dialog>
                       ，并授权网站为履行订单处理我的个人信息。
                     </label>

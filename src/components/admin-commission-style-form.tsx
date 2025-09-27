@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,12 +11,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { getCommissionOptions, saveCommissionStyle } from '@/lib/data-service';
-import { uploadImage } from '@/lib/upload-service';
 import type { CommissionStyle, CommissionOption } from '@/types';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import Image from 'next/image';
-import { Upload } from 'lucide-react';
 
 const formSchema = z.object({
   commissionOptionId: z.string().min(1, '必须选择一个所属委托'),
@@ -37,10 +34,7 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(commissionStyle?.imageUrl || null);
   const [commissionOptions, setCommissionOptions] = useState<CommissionOption[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -68,37 +62,19 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
         tags: commissionStyle.tags.join(', ') || '',
         imageUrl: commissionStyle.imageUrl || '',
       });
-      setImagePreview(commissionStyle.imageUrl);
     }
   }, [commissionStyle, form]);
 
-  const imageUrlValue = form.watch('imageUrl');
-
   async function handleSave(values: FormValues) {
-    if (!commissionStyle && !imageFile && !values.imageUrl) {
-        toast({ title: '图片缺失', description: '新增委托样式必须上传图片或提供URL。', variant: 'destructive' });
-        return;
-    }
-
     setLoading(true);
     try {
-      let finalImageUrl = values.imageUrl || commissionStyle?.imageUrl;
-
-      if (imageFile && !values.imageUrl) {
-        finalImageUrl = await uploadImage(imageFile, `commission-styles/${values.name}_${Date.now()}`);
-      }
-
-      if (!finalImageUrl) {
-        throw new Error("图片未提供。");
-      }
-
       const styleData: Omit<CommissionStyle, 'id'> = {
         commissionOptionId: values.commissionOptionId,
         name: values.name,
         price: values.price,
         description: values.description,
         tags: values.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-        imageUrl: finalImageUrl,
+        imageUrl: values.imageUrl,
       };
       
       await saveCommissionStyle(styleData, commissionStyle?.id);
@@ -120,15 +96,6 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
       setLoading(false);
     }
   }
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-        setImageFile(file);
-        setImagePreview(URL.createObjectURL(file));
-        form.setValue('imageUrl', '');
-    }
-  };
 
   return (
     <Form {...form}>
@@ -161,43 +128,23 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
         <FormField control={form.control} name="description" render={({ field }) => ( <FormItem> <FormLabel>描述</FormLabel> <FormControl><Textarea placeholder="关于这个样式的详细说明..." {...field} rows={5} /></FormControl> <FormMessage /> </FormItem> )}/>
         <FormField control={form.control} name="tags" render={({ field }) => ( <FormItem> <FormLabel>标签</FormLabel> <FormControl><Input placeholder="例如：标准, 全包" {...field} /></FormControl> <FormDescription>使用逗号分隔不同的标签。</FormDescription> <FormMessage /> </FormItem> )}/>
         
-        <div className="space-y-2">
-            <FormLabel>图片</FormLabel>
-            <div className="flex items-center gap-4">
-                <div className="w-32 h-32 relative rounded-md border bg-muted flex-shrink-0">
-                    <Image src={imageUrlValue || imagePreview || "https://placehold.co/600x800.png"} alt="图片预览" fill style={{objectFit:'cover'}} className="rounded-md" />
-                </div>
-                <div className="space-y-2">
-                    <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                        <Upload className="mr-2 h-4 w-4" />
-                        本地上传
-                    </Button>
-                    <Input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        ref={fileInputRef}
-                        onChange={handleFileChange}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="imageUrl"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                    <Input placeholder="或在此处粘贴图片URL" {...field} onChange={(e) => {
-                                        field.onChange(e);
-                                        if(e.target.value) setImageFile(null);
-                                    }}/>
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-                </div>
-            </div>
-             <FormDescription>优先使用URL。</FormDescription>
-        </div>
-        
+        <FormField
+          control={form.control}
+          name="imageUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>图片 URL (可选)</FormLabel>
+              <FormControl>
+                <Input placeholder="https://example.com/image.png" {...field} />
+              </FormControl>
+              <FormDescription>
+                这张图片将作为此样式的封面展示在委托选择页。如果留空，将不会显示图片。
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="flex items-center gap-4">
           <Button type="submit" disabled={loading}>
             {loading ? '保存中...' : '保存更改'}

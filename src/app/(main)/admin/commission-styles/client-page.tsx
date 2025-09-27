@@ -79,9 +79,15 @@ export function AdminCommissionStylesClient({ styles: initialStyles, options }: 
               styles.map((style) => (
                 <TableRow key={style.id}>
                   <TableCell>
-                    <div className="relative w-16 h-16 rounded-md overflow-hidden">
-                      <Image src={style.imageUrl} alt={style.name} width={64} height={64} style={{objectFit: 'cover'}} />
-                    </div>
+                    {style.imageUrl ? (
+                        <div className="relative w-16 h-16 rounded-md overflow-hidden">
+                            <Image src={style.imageUrl} alt={style.name} width={64} height={64} style={{objectFit: 'cover'}} />
+                        </div>
+                    ) : (
+                        <div className="relative w-16 h-16 rounded-md bg-muted flex items-center justify-center">
+                            <span className="text-xs text-muted-foreground">无图</span>
+                        </div>
+                    )}
                   </TableCell>
                   <TableCell className="font-medium">{style.name}</TableCell>
                   <TableCell>{getOptionName(style.commissionOptionId)}</TableCell>
