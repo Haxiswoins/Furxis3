@@ -59,7 +59,7 @@ function CharacterGrid({ characters, seriesName }: { characters: Character[]; se
                             alt={char.name}
                             fill
                             sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                            className={cn("object-cover transition-transform duration-500 group-hover:scale-105", char.status === '已领养' && 'grayscale')}
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
                             />
                         </div>
                     </Link>
@@ -75,8 +75,8 @@ function CharacterGrid({ characters, seriesName }: { characters: Character[]; se
                     <CardFooter className="p-4 bg-muted/50 flex justify-between items-center">
                     <p className="text-base font-bold text-primary">¥{char.price}</p>
                     <Link href={`/adoption/${encodeURIComponent(seriesName)}/${encodeURIComponent(char.name)}`} passHref>
-                        <Button size="sm" className={cn(char.status === '已领养' && "bg-gray-400 dark:bg-gray-600 hover:bg-gray-500 text-white cursor-pointer")}>
-                            {char.status === '已领养' ? '查看详情' : <><Heart className="mr-2 h-4 w-4" /> 详情</>}
+                        <Button size="sm" disabled={char.status === '已领养'}>
+                            {char.status === '已领养' ? '已被领养' : <><Heart className="mr-2 h-4 w-4" /> 详情</>}
                         </Button>
                     </Link>
                     </CardFooter>
