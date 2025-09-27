@@ -17,8 +17,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { chinaDivisions } from '@/lib/china-divisions';
 import { useAuth } from '@/context/AuthContext';
-import { createCommissionApplication } from '@/lib/data-service';
-import type { CommissionStyle, CommissionOption, SiteContent, ApplicationData, CommissionInfo } from '@/types';
+import { createCommissionApplication, type CommissionInfo } from '@/lib/data-service';
+import type { CommissionStyle, CommissionOption, SiteContent, ApplicationData } from '@/types';
 import { uploadImage } from '@/lib/upload-service';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
@@ -365,13 +365,11 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
               <FormField control={form.control} name="agreedToContract" render={({ field }) => (
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                   <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} id="agreedToContract" /></FormControl>
-                  <div className="space-y-1 leading-none">
-                     <Label htmlFor="agreedToContract" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                       我已阅读并同意{' '}
-                      </Label>
+                  <div className="grid gap-1.5 leading-none">
+                     <Label htmlFor="agreedToContract" className="text-sm font-medium">我已阅读并同意</Label>{' '}
                       <Dialog>
                         <DialogTrigger asChild>
-                          <span className="text-primary hover:underline cursor-pointer">《委托服务条款》</span>
+                          <Button variant="link" className="p-0 h-auto -translate-y-1"><span className="text-primary hover:underline cursor-pointer">《委托服务条款》</span></Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-3xl">
                           <DialogHeader>
@@ -390,13 +388,11 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
               <FormField control={form.control} name="agreedToPrivacy" render={({ field }) => (
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                   <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} id="agreedToPrivacy" /></FormControl>
-                   <div className="space-y-1 leading-none">
-                     <Label htmlFor="agreedToPrivacy" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                       我已阅读并同意{' '}
-                      </Label>
+                   <div className="grid gap-1.5 leading-none">
+                     <Label htmlFor="agreedToPrivacy" className="text-sm font-medium">我已阅读并同意</Label>{' '}
                       <Dialog>
                         <DialogTrigger asChild>
-                           <span className="text-primary hover:underline cursor-pointer">《隐私政策》</span>
+                           <Button variant="link" className="p-0 h-auto -translate-y-1"><span className="text-primary hover:underline cursor-pointer">《隐私政策》</span></Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-3xl">
                           <DialogHeader>
@@ -408,7 +404,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                           </ScrollArea>
                         </DialogContent>
                       </Dialog>
-                       <Label htmlFor="agreedToPrivacy" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                       <Label htmlFor="agreedToPrivacy" className="text-sm font-medium">
                         ，并授权网站为履行订单处理我的个人信息。
                        </Label>
                     <FormMessage />
@@ -426,3 +422,4 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     </Card>
   );
 }
+
