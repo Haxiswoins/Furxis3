@@ -448,7 +448,7 @@ export async function createAdoptionApplication(character: Character, userId: st
 export type CommissionInfo = {
     styleName: string;
     optionName: string;
-    imageUrl: string;
+    imageUrl?: string;
     price: string;
 }
 export async function createCommissionApplication(userId: string, commissionInfo: CommissionInfo, applicationData: ApplicationData, fanPrice: number, magneticEyePrice: number): Promise<string> {
@@ -970,3 +970,5 @@ export async function grantBadgeToUsers(userIds: string[], badgeId: string): Pro
         return { success: true, message: '所有选中的用户都已经拥有该徽章，未执行任何操作。' };
     }
 }
+
+    

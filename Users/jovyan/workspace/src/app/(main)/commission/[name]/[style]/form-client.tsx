@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { chinaDivisions } from '@/lib/china-divisions';
 import { useAuth } from '@/context/AuthContext';
-import { createCommissionApplication, type CommissionInfo } from '@/lib/data-service';
+import { createCommissionApplication } from '@/lib/data-service';
 import type { CommissionStyle, CommissionOption, SiteContent, ApplicationData } from '@/types';
 import { uploadImage } from '@/lib/upload-service';
 import { Upload, X } from 'lucide-react';
@@ -192,7 +192,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
         magneticEyesCount: Number(values.magneticEyesCount) || 0,
       };
       
-      const commissionInfo: CommissionInfo = {
+      const commissionInfo = {
         styleName: commissionStyle.name,
         optionName: commissionOption.name,
         imageUrl: commissionStyle.imageUrl || '',
@@ -369,7 +369,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                      <Label htmlFor="agreedToContract" className="text-sm font-medium">我已阅读并同意</Label>{' '}
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button variant="link" className="p-0 h-auto -translate-y-1"><span className="text-primary hover:underline cursor-pointer">《委托服务条款》</span></Button>
+                           <Button variant="link" className="p-0 h-auto -translate-y-1" type="button"><span className="text-primary hover:underline cursor-pointer">《委托服务条款》</span></Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-3xl">
                           <DialogHeader>
@@ -392,7 +392,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                      <Label htmlFor="agreedToPrivacy" className="text-sm font-medium">我已阅读并同意</Label>{' '}
                       <Dialog>
                         <DialogTrigger asChild>
-                           <Button variant="link" className="p-0 h-auto -translate-y-1"><span className="text-primary hover:underline cursor-pointer">《隐私政策》</span></Button>
+                           <Button variant="link" className="p-0 h-auto -translate-y-1" type="button"><span className="text-primary hover:underline cursor-pointer">《隐私政策》</span></Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-3xl">
                           <DialogHeader>
@@ -422,3 +422,5 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     </Card>
   );
 }
+
+    
