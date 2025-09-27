@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
@@ -24,11 +23,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No file provided.' }, { status: 400 });
   }
 
-  // 3. Get the secure API token from server-side environment variables
+  // 3. Get the secure API token and host from server-side environment variables
   const uploadToken = process.env.IMAGE_UPLOAD_TOKEN;
-  const uploadTcUrl = process.env.NEXT_PUBLIC_IMAGE_HOST;
-  if (!uploadToken) {
-    console.error("IMAGE_UPLOAD_TOKEN is not configured on the server.");
+  const uploadHost = process.env.NEXT_PUBLIC_IMAGE_HOST;
+
+  if (!uploadToken || !uploadHost) {
+    console.error("IMAGE_UPLOAD_TOKEN or NEXT_PUBLIC_IMAGE_HOST is not configured on the server.");
     return NextResponse.json({ error: 'Image upload service is not configured.' }, { status: 500 });
   }
 
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   
   // 5. Securely call the external image hosting service
   try {
-    const uploadUrl = 'https://'+uploadTcUrl+'/api/v1/upload';
+    const uploadUrl = `https://${uploadHost}/api/v1/upload`;
 
     const response = await fetch(uploadUrl, {
         method: 'POST',
@@ -46,7 +46,6 @@ export async function POST(req: NextRequest) {
             // Securely add the Authorization token from the server-side environment
             'Authorization': `Bearer ${uploadToken}`,
             'Accept': 'application/json',
-            'Content-Type': 'multipart/form-data'
         },
         body: externalFormData,
     });

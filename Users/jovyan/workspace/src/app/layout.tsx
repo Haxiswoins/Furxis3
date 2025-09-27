@@ -66,7 +66,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
        <head>
-          <script src="/CurveGradientBg.min.js" async />
+          {/* The script is now loaded directly in the head for early execution */}
        </head>
        <body className={cn(fontHeadline.variable, fontSerifSC.variable, fontBody.variable)}>
           <ThemeInitializer sunriseHour={sunriseHour} sunsetHour={sunsetHour} />

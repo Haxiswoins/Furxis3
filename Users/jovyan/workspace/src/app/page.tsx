@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useTheme } from '@/context/ThemeContext';
@@ -41,9 +40,17 @@ export default function WelcomePage() {
             return;
         }
 
+        const scriptId = 'curve-gradient-bg-script';
+        if (document.getElementById(scriptId)) {
+            // Script already loaded, maybe just re-initialize
+            return;
+        }
+
         const script = document.createElement('script');
+        script.id = scriptId;
         script.src = "/CurveGradientBg.min.js";
         script.async = true;
+        
         script.onload = () => {
             if (animationInstance.current || !document.getElementById('box')) return;
         
@@ -77,15 +84,17 @@ export default function WelcomePage() {
 
         return () => {
             clearTimeout(contentTimer);
-            if (scriptElement.current && scriptElement.current.parentNode) {
-                scriptElement.current.parentNode.removeChild(scriptElement.current);
-            }
             if (animationInstance.current && typeof animationInstance.current.destroy === 'function') {
-                animationInstance.current.destroy();
+                 try {
+                    animationInstance.current.destroy();
+                } catch (e) {
+                    // Ignore errors on destroy as the script might already be gone
+                }
             }
             animationInstance.current = null;
         };
     }, [isClient, theme]);
+
 
     const handleNavigate = () => {
         setIsWarping(true);
@@ -157,7 +166,7 @@ export default function WelcomePage() {
             </motion.div>
 
             <motion.div
-                    className="absolute bottom-4 w-full text-center text-xs text-muted-foreground"
+                    className="absolute bottom-4 w-full text-center text-xs text-white/40"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: isContentVisible && !isWarping ? 1 : 0 }}
                     transition={{ duration: 1.0, ease: 'easeOut' }}
