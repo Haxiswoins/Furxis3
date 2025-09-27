@@ -1,22 +1,21 @@
-
 [
   {
     "id": "style_1723282148161",
     "commissionOptionId": "comm_1723281987010",
     "name": "标准全身",
-    "price": "￥15000 起",
-    "description": "包含头壳、身体、手爪、脚爪和尾巴的全套兽装，采用高质量人造毛皮制作。",
-    "imageUrl": "https://placehold.co/600x800.png",
+    "price": "12000 起",
+    "description": "包含头、身体、爪、户外脚和尾巴的全身兽装。",
     "tags": [
       "全身",
       "标准"
-    ]
+    ],
+    "imageUrl": "https://placehold.co/600x800.png"
   },
   {
     "id": "style_1723282194168",
     "commissionOptionId": "comm_1723281987010",
     "name": "半装",
-    "price": "￥3800 起",
+    "price": "3800 起",
     "description": "包含头、手爪。适合轻度活动和展示。",
     "tags": [
       "半身",
@@ -27,25 +26,34 @@
   {
     "id": "style_1800000000001",
     "commissionOptionId": "comm_1723282061321",
-    "name": "复古蒸汽朋克",
-    "price": "需估价",
-    "description": "结合了黄铜齿轮、皮革和复古元素的兽装设计，细节丰富。",
-    "imageUrl": "https://placehold.co/800x1000.png",
+    "name": "半装委托",
+    "price": "3680 起",
+    "description": "包含手爪、头，适合轻度活动与展示。",
     "tags": [
-      "全身",
-      "蒸汽朋克"
-    ]
+      "半装"
+    ],
+    "imageUrl": "https://placehold.co/800x1000.png"
   },
   {
     "id": "style_1800000000002",
     "commissionOptionId": "comm_1723282061321",
-    "name": "Q版兽装",
-    "price": "￥8000 起",
-    "description": "可爱的Q版大头风格，强调角色的萌感。",
-    "imageUrl": "https://placehold.co/800x1000.png",
+    "name": "全装委托",
+    "price": "10000 起",
+    "description": "包含头部、爪子、户外脚等内容的标准全身委托。",
     "tags": [
-      "Q版",
-      "可爱"
-    ]
+      "全装，需估价"
+    ],
+    "imageUrl": "https://placehold.co/800x1000.png"
+  },
+  {
+    "id": "style_1758943551546",
+    "commissionOptionId": "comm_1758940508791",
+    "name": "贴身全装",
+    "price": "22000 起",
+    "description": "采用国产或进口贴身弹力毛制作的贴身全装，最大程度的展示您的身材，赋予您兽装角色更独特的个性。",
+    "tags": [
+      "贴身，全装，弹力毛"
+    ],
+    "imageUrl": "11"
   }
 ]

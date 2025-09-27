@@ -1,56 +1,47 @@
 [
   {
-    "id": "char_1723282498223",
-    "seriesId": "series_1723282303884",
-    "name": "星尘",
-    "species": "机械狐",
-    "price": "18888",
-    "description": "拥有在星际间穿梭能力的机械狐，外壳由未知合金构成，能反射出星云的色彩。",
+    "id": "char_1758940900392",
+    "seriesId": "series_1723456000003",
+    "name": "领航员",
+    "species": "兔与龙混系",
+    "price": "3680",
+    "description": "在前往半人马座阿尔法星的旅途中承担为星际飞船领航的职责。",
     "tags": [
-      "赛博朋克",
-      "狐狸",
-      "LED"
-    ],
-    "status": "已领养",
-    "applicants": 12,
-    "imageUrl": "https://placehold.co/600x800.png",
-    "imageUrl1": "https://placehold.co/600x800.png",
-    "imageUrl2": "https://placehold.co/600x800.png",
-    "imageUrl3": "https://placehold.co/600x800.png",
-    "imageUrl4": "https://placehold.co/600x800.png"
-  },
-  {
-    "id": "char_1723282568656",
-    "seriesId": "series_1723282303884",
-    "name": "烛龙",
-    "species": "神话龙",
-    "price": "25000",
-    "description": "闭眼为夜，睁眼为昼的古老神龙。鳞片在不同光线下会呈现火焰与深海的色泽。",
-    "tags": [
-      "中国风",
-      "龙",
-      "神话"
-    ],
-    "applicants": 10,
-    "imageUrl": "https://placehold.co/600x800.png",
-    "imageUrl1": "https://placehold.co/600x800.png",
-    "imageUrl2": "https://placehold.co/600x800.png",
-    "imageUrl3": "https://placehold.co/600x800.png",
-    "imageUrl4": "https://placehold.co/600x800.png"
-  },
-  {
-    "id": "char_1757225350702",
-    "seriesId": "series_1723282303884",
-    "name": "11",
-    "species": "11",
-    "price": "1111",
-    "description": "11111111111111",
-    "tags": [
-      "11"
+      "兔，龙，机械混合。"
     ],
     "status": "待领养",
     "applicants": 0,
-    "imageUrl": "/uploads/characters/11_0_1757225347749/560d32d6-766c-4f44-8251-57471c5adc92-6516c2c25e96e47716853e714df40da5.jpg",
-    "imageUrl1": "/uploads/characters/11_1_1757225347750/ab33aff1-5cf3-4c40-b560-d32f2086a89e-6516c2c25e96e47716853e714df40da5.jpg"
+    "imageUrl": "https://cdn.markjoker.top/i/2025/08/23/68a916b142800.jpg",
+    "imageUrl1": "https://cdn.markjoker.top/i/2025/08/23/68a916b16b6f6.jpg"
+  },
+  {
+    "id": "char_1758941225395",
+    "seriesId": "series_1723456000003",
+    "name": "探险家",
+    "species": "龙",
+    "price": "3680",
+    "description": "在前往半人马座阿尔法星的旅途中，承担前往各潜在宜居星球的探险筹备与组织工作。",
+    "tags": [
+      "龙，机械混合"
+    ],
+    "status": "已领养",
+    "applicants": 1,
+    "imageUrl": "https://cdn.markjoker.top/i/2025/09/27/68d74f7f50967.png",
+    "imageUrl1": "https://cdn.markjoker.top/i/2025/09/27/68d75016ba750.jpg"
+  },
+  {
+    "id": "char_1758941857831",
+    "seriesId": "series_1758941504296",
+    "name": "可是我爱你",
+    "species": "犬",
+    "price": "13000",
+    "description": "无处可藏的又无处可去的爱，以及那渐渐浮现的忧伤。",
+    "tags": [
+      "多层，外置装饰"
+    ],
+    "status": "待领养",
+    "applicants": 0,
+    "imageUrl": "https://cdn.markjoker.top/i/2025/08/23/68a916b0878e0.jpg",
+    "imageUrl1": "https://cdn.markjoker.top/i/2025/08/23/68a916b151451.jpg"
   }
 ]
