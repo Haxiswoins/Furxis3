@@ -40,7 +40,7 @@ export type CommissionStyle = {
   name: string;
   price: string;
   description: string;
-  imageUrl: string;
+  imageUrl?: string;
   tags: string[];
 };
 

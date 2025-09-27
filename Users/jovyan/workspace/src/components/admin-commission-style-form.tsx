@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,7 +21,7 @@ const formSchema = z.object({
   price: z.string().min(1, { message: '价格不能为空。' }),
   description: z.string().min(10, { message: '描述至少需要10个字符。' }),
   tags: z.string(),
-  imageUrl: z.string().url({ message: '请输入一个有效的图片URL。' }),
+  imageUrl: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -106,7 +106,7 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
             render={({ field }) => (
             <FormItem>
                 <FormLabel>所属委托</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                         <SelectTrigger>
                             <SelectValue placeholder="选择一个所属的委托类型" />
@@ -127,8 +127,6 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
         <FormField control={form.control} name="price" render={({ field }) => ( <FormItem> <FormLabel>价格 (元)</FormLabel> <FormControl><Input placeholder="例如：15000" {...field} /></FormControl> <FormDescription>价格将以“￥{'{price}'}”的格式显示。如果价格不固定，可填写“起”或“需估价”，展示时会自动拼接。</FormDescription> <FormMessage /> </FormItem> )}/>
         <FormField control={form.control} name="description" render={({ field }) => ( <FormItem> <FormLabel>描述</FormLabel> <FormControl><Textarea placeholder="关于这个样式的详细说明..." {...field} rows={5} /></FormControl> <FormMessage /> </FormItem> )}/>
         <FormField control={form.control} name="tags" render={({ field }) => ( <FormItem> <FormLabel>标签</FormLabel> <FormControl><Input placeholder="例如：标准, 全包" {...field} /></FormControl> <FormDescription>使用逗号分隔不同的标签。</FormDescription> <FormMessage /> </FormItem> )}/>
-        
-        <FormField control={form.control} name="imageUrl" render={({ field }) => ( <FormItem> <FormLabel>图片 URL</FormLabel> <FormControl><Input placeholder="https://example.com/image.png" {...field} /></FormControl> <FormDescription>这张图片将作为此样式的封面展示。</FormDescription><FormMessage /> </FormItem> )}/>
         
         <div className="flex items-center gap-4">
           <Button type="submit" disabled={loading}>
