@@ -448,7 +448,7 @@ export async function createAdoptionApplication(character: Character, userId: st
 export type CommissionInfo = {
     styleName: string;
     optionName: string;
-    imageUrl: string;
+    imageUrl?: string;
     price: string;
 }
 export async function createCommissionApplication(userId: string, commissionInfo: CommissionInfo, applicationData: ApplicationData, fanPrice: number, magneticEyePrice: number): Promise<string> {
