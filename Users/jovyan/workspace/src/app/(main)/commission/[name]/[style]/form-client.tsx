@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
@@ -194,7 +195,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
       const commissionInfo = {
         styleName: commissionStyle.name,
         optionName: commissionOption.name,
-        imageUrl: commissionStyle.imageUrl,
+        imageUrl: commissionStyle.imageUrl || '',
         price: commissionStyle.price,
       };
 
@@ -360,48 +361,54 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                 )}
             </div>
 
-            <div className="space-y-4 pt-2">
+             <div className="space-y-4 pt-2">
               <FormField control={form.control} name="agreedToContract" render={({ field }) => (
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                  <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                  <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} id="agreedToContract" /></FormControl>
                   <div className="space-y-1 leading-none">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                         <label htmlFor={field.name} className="text-sm font-medium cursor-pointer">
-                            我已阅读并同意{' '}
-                            <span className="text-primary hover:underline">《委托服务条款》</span>
-                         </label>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-3xl">
-                        <DialogHeader><DialogTitle className="text-xl">委托服务条款</DialogTitle></DialogHeader>
-                        <ScrollArea className="h-[60vh] pr-6">
-                          <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{contractText || "合同条款正在加载中..."}</div>
-                        </ScrollArea>
-                      </DialogContent>
-                    </Dialog>
+                     <Label htmlFor="agreedToContract" className="text-sm font-medium">
+                       我已阅读并同意{' '}
+                       <Dialog>
+                          <DialogTrigger asChild>
+                            <span className="text-primary hover:underline cursor-pointer">《委托服务条款》</span>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-3xl">
+                            <DialogHeader>
+                              <DialogTitle className="text-xl">委托服务条款</DialogTitle>
+                              <DialogDescription>请仔细阅读以下条款。</DialogDescription>
+                            </DialogHeader>
+                            <ScrollArea className="h-[60vh] pr-6">
+                              <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{contractText || "合同条款正在加载中..."}</div>
+                            </ScrollArea>
+                          </DialogContent>
+                       </Dialog>
+                     </Label>
                     <FormMessage />
                   </div>
                 </FormItem>
               )}/>
               <FormField control={form.control} name="agreedToPrivacy" render={({ field }) => (
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                  <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                  <div className="space-y-1 leading-none">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                         <label htmlFor={field.name} className="text-sm font-medium cursor-pointer">
-                            我已阅读并同意{' '}
-                            <span className="text-primary hover:underline">《隐私政策》</span>
-                            ，并授权网站为履行订单处理我的个人信息。
-                         </label>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-3xl">
-                        <DialogHeader><DialogTitle className="text-xl">隐私政策</DialogTitle></DialogHeader>
-                        <ScrollArea className="h-[60vh] pr-6">
-                          <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{privacyPolicyText || "隐私政策正在加载中..."}</div>
-                        </ScrollArea>
-                      </DialogContent>
-                    </Dialog>
+                  <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} id="agreedToPrivacy" /></FormControl>
+                   <div className="space-y-1 leading-none">
+                     <Label htmlFor="agreedToPrivacy" className="text-sm font-medium">
+                       我已阅读并同意{' '}
+                        <Dialog>
+                          <DialogTrigger asChild>
+                             <span className="text-primary hover:underline cursor-pointer">《隐私政策》</span>
+                          </DialogTrigger>
+                           <DialogContent className="max-w-3xl">
+                            <DialogHeader>
+                              <DialogTitle className="text-xl">隐私政策</DialogTitle>
+                              <DialogDescription>请仔细阅读以下条款。</DialogDescription>
+                            </DialogHeader>
+                            <ScrollArea className="h-[60vh] pr-6">
+                              <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{privacyPolicyText || "隐私政策正在加载中..."}</div>
+                            </ScrollArea>
+                          </DialogContent>
+                        </Dialog>
+                        ，并授权网站为履行订单处理我的个人信息。
+                     </Label>
                     <FormMessage />
                   </div>
                 </FormItem>

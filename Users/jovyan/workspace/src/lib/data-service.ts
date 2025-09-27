@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import fs from 'fs/promises';
@@ -493,7 +494,7 @@ export async function createCommissionApplication(userId: string, commissionInfo
         orderNumber,
         orderType: '委托订单',
         status: '处理中',
-        imageUrl: commissionInfo.imageUrl,
+        imageUrl: commissionInfo.imageUrl || '',
         orderDate: new Date().toISOString(),
         total: finalPriceDesc,
         shippingAddress: `${applicationData.province} ${applicationData.city} ${applicationData.district} ${applicationData.addressDetail}`,
