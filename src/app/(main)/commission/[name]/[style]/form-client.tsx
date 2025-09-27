@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
@@ -363,43 +364,47 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
             <div className="space-y-4 pt-2">
               <FormField control={form.control} name="agreedToContract" render={({ field }) => (
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                  <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                  <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} id="agreedToContract" /></FormControl>
                   <div className="space-y-1 leading-none">
-                    <label className="text-sm font-medium">我已阅读并同意{' '}
+                     <Label htmlFor="agreedToContract" className="text-sm font-medium">我已阅读并同意</Label>{' '}
                       <Dialog>
                         <DialogTrigger asChild>
                           <span className="text-primary hover:underline cursor-pointer">《委托服务条款》</span>
                         </DialogTrigger>
                         <DialogContent className="max-w-3xl">
-                          <DialogHeader><DialogTitle className="text-xl">委托服务条款</DialogTitle></DialogHeader>
+                          <DialogHeader>
+                            <DialogTitle className="text-xl">委托服务条款</DialogTitle>
+                            <DialogDescription>请仔细阅读以下条款。</DialogDescription>
+                          </DialogHeader>
                           <ScrollArea className="h-[60vh] pr-6">
                             <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{contractText || "合同条款正在加载中..."}</div>
                           </ScrollArea>
                         </DialogContent>
                       </Dialog>
-                    </label>
                     <FormMessage />
                   </div>
                 </FormItem>
               )}/>
               <FormField control={form.control} name="agreedToPrivacy" render={({ field }) => (
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                  <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                  <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} id="agreedToPrivacy" /></FormControl>
                   <div className="space-y-1 leading-none">
-                    <label className="text-sm font-medium">我已阅读并同意{' '}
+                     <Label htmlFor="agreedToPrivacy" className="text-sm font-medium">我已阅读并同意</Label>{' '}
                       <Dialog>
                         <DialogTrigger asChild>
-                          <span className="text-primary hover:underline cursor-pointer">《隐私政策》</span>
+                           <span className="text-primary hover:underline cursor-pointer">《隐私政策》</span>
                         </DialogTrigger>
                         <DialogContent className="max-w-3xl">
-                          <DialogHeader><DialogTitle className="text-xl">隐私政策</DialogTitle></DialogHeader>
+                          <DialogHeader>
+                            <DialogTitle className="text-xl">隐私政策</DialogTitle>
+                             <DialogDescription>请仔细阅读以下条款。</DialogDescription>
+                          </DialogHeader>
                           <ScrollArea className="h-[60vh] pr-6">
                             <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{privacyPolicyText || "隐私政策正在加载中..."}</div>
                           </ScrollArea>
                         </DialogContent>
                       </Dialog>
                       ，并授权网站为履行订单处理我的个人信息。
-                    </label>
                     <FormMessage />
                   </div>
                 </FormItem>
