@@ -68,28 +68,19 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
         tags: commissionStyle.tags.join(', ') || '',
         imageUrl: commissionStyle.imageUrl || '',
       });
-      setImagePreview(commissionStyle.imageUrl);
+      setImagePreview(commissionStyle.imageUrl || null);
     }
   }, [commissionStyle, form]);
 
   const imageUrlValue = form.watch('imageUrl');
 
   async function handleSave(values: FormValues) {
-    if (!commissionStyle && !imageFile && !values.imageUrl) {
-        toast({ title: '图片缺失', description: '新增委托样式必须上传图片或提供URL。', variant: 'destructive' });
-        return;
-    }
-
     setLoading(true);
     try {
       let finalImageUrl = values.imageUrl || commissionStyle?.imageUrl;
 
       if (imageFile && !values.imageUrl) {
         finalImageUrl = await uploadImage(imageFile, `commission-styles/${values.name}_${Date.now()}`);
-      }
-
-      if (!finalImageUrl) {
-        throw new Error("图片未提供。");
       }
 
       const styleData: Omit<CommissionStyle, 'id'> = {
@@ -139,7 +130,7 @@ export function AdminCommissionStyleForm({ commissionStyle }: AdminCommissionSty
             render={({ field }) => (
             <FormItem>
                 <FormLabel>所属委托</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                         <SelectTrigger>
                             <SelectValue placeholder="选择一个所属的委托类型" />
