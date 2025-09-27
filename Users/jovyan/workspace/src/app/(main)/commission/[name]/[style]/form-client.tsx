@@ -24,7 +24,7 @@ import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 
 const formSchema = z.object({
@@ -370,7 +370,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                        我已阅读并同意{' '}
                         <Dialog>
                             <DialogTrigger asChild>
-                                <span className="text-primary hover:underline cursor-pointer">《委托服务条款》</span>
+                                <span className="text-primary hover:underline cursor-pointer" onClick={(e) => e.preventDefault()}>《委托服务条款》</span>
                             </DialogTrigger>
                             <DialogContent className="max-w-3xl">
                                 <DialogHeader>
@@ -395,7 +395,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                        我已阅读并同意{' '}
                         <Dialog>
                             <DialogTrigger asChild>
-                                <span className="text-primary hover:underline cursor-pointer">《隐私政策》</span>
+                               <span className="text-primary hover:underline cursor-pointer" onClick={(e) => e.preventDefault()}>《隐私政策》</span>
                             </DialogTrigger>
                             <DialogContent className="max-w-3xl">
                                 <DialogHeader>
@@ -424,3 +424,5 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     </Card>
   );
 }
+
+    

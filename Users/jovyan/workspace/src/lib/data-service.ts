@@ -970,3 +970,5 @@ export async function grantBadgeToUsers(userIds: string[], badgeId: string): Pro
         return { success: true, message: '所有选中的用户都已经拥有该徽章，未执行任何操作。' };
     }
 }
+
+    
