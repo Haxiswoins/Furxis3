@@ -93,7 +93,7 @@ export function AdminCharacterSeriesClient({ series: initialSeries }: AdminChara
                         <AlertDialogHeader>
                           <AlertDialogTitle>确定要删除吗?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            此操作无法撤销。这将永久删除系列 "{item.name}" 及其下所有角色。
+                            此操作无法撤销。这将永久删除系列 &quot;{item.name}&quot; 及其下所有角色。
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

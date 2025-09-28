@@ -74,7 +74,7 @@ function CharactersTable({ characters, isDeleting, handleDelete, router }: {
                                 <AlertDialogHeader>
                                 <AlertDialogTitle>确定要删除吗?</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                    此操作无法撤销。这将永久删除角色 "{char.name}"。
+                                    此操作无法撤销。这将永久删除角色 &quot;{char.name}&quot;。
                                 </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>

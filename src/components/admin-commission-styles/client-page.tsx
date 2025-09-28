@@ -22,7 +22,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, ImageIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { deleteCommissionStyle } from '@/lib/data-service';
 import type { CommissionStyle, CommissionOption } from '@/types';
@@ -79,8 +79,12 @@ export function AdminCommissionStylesClient({ styles: initialStyles, options }: 
               styles.map((style) => (
                 <TableRow key={style.id}>
                   <TableCell>
-                    <div className="relative w-16 h-16 rounded-md overflow-hidden">
-                      <Image src={style.imageUrl} alt={style.name} width={64} height={64} style={{objectFit: 'cover'}} />
+                    <div className="relative w-16 h-16 rounded-md overflow-hidden bg-muted flex items-center justify-center">
+                      {style.imageUrl ? (
+                        <Image src={style.imageUrl} alt={style.name} width={64} height={64} style={{objectFit: 'cover'}} />
+                      ) : (
+                        <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                      )}
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">{style.name}</TableCell>
