@@ -22,12 +22,17 @@ async function readData<T>(fileName: string): Promise<T> {
     // If the file doesn't exist, return an empty array or a default object
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
       console.warn(`Data file ${fileName} not found, returning empty array/object.`);
+      // Ensure we return an object if the type is not an array
+      if (fileName.includes('siteContent')) {
+        return {} as T;
+      }
       return [] as T;
     }
     console.error(`Error reading data from ${fileName}:`, error);
     throw error;
   }
 }
+
 
 // Generic function to write data to a JSON file
 async function writeData(fileName:string, data: any): Promise<void> {
@@ -39,7 +44,8 @@ async function writeData(fileName:string, data: any): Promise<void> {
 // Site Content
 export async function getSiteContent(): Promise<SiteContent> {
   // Site content is an object, not an array
-  return await readData<SiteContent>('siteContent.json');
+  const content = await readData<SiteContent>('siteContent.json');
+  return content || {};
 }
 
 export async function saveSiteContent(content: SiteContent): Promise<void> {
@@ -439,10 +445,10 @@ export async function createAdoptionApplication(character: Character, userId: st
 }
 
 
-type CommissionInfo = {
+export type CommissionInfo = {
     styleName: string;
     optionName: string;
-    imageUrl: string;
+    imageUrl?: string;
     price: string;
 }
 export async function createCommissionApplication(userId: string, commissionInfo: CommissionInfo, applicationData: ApplicationData, fanPrice: number, magneticEyePrice: number): Promise<string> {
@@ -489,7 +495,7 @@ export async function createCommissionApplication(userId: string, commissionInfo
         orderNumber,
         orderType: '委托订单',
         status: '处理中',
-        imageUrl: commissionInfo.imageUrl,
+        imageUrl: commissionInfo.imageUrl || '',
         orderDate: new Date().toISOString(),
         total: finalPriceDesc,
         shippingAddress: `${applicationData.province} ${applicationData.city} ${applicationData.district} ${applicationData.addressDetail}`,
@@ -964,3 +970,7 @@ export async function grantBadgeToUsers(userIds: string[], badgeId: string): Pro
         return { success: true, message: '所有选中的用户都已经拥有该徽章，未执行任何操作。' };
     }
 }
+
+    
+
+    
