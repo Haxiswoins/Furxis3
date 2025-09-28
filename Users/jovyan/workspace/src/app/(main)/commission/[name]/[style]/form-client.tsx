@@ -195,7 +195,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
       const commissionInfo = {
         styleName: commissionStyle.name,
         optionName: commissionOption.name,
-        imageUrl: commissionStyle.imageUrl,
+        imageUrl: commissionStyle.imageUrl || '',
         price: commissionStyle.price,
       };
 
