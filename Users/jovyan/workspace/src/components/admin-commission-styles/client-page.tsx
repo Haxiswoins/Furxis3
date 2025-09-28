@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -77,8 +78,12 @@ export function AdminCommissionStylesClient({ styles, options }: AdminCommission
               styles.map((style) => (
                 <TableRow key={style.id}>
                   <TableCell>
-                    <div className="relative w-16 h-16 rounded-md overflow-hidden">
-                      <Image src={style.imageUrl} alt={style.name} width={64} height={64} style={{objectFit: 'cover'}} />
+                    <div className="relative w-16 h-16 rounded-md bg-muted flex items-center justify-center">
+                      {style.imageUrl ? (
+                        <Image src={style.imageUrl} alt={style.name} width={64} height={64} style={{objectFit: 'cover'}} className="rounded-md" />
+                      ) : (
+                        <span className="text-xs text-muted-foreground">无图</span>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">{style.name}</TableCell>
