@@ -24,7 +24,7 @@ import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription as RealDialogDescription } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription as FormDesc } from '@/components/ui/form';
 
 const formSchema = z.object({
@@ -374,7 +374,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                         <DialogContent className="max-w-3xl">
                           <DialogHeader>
                             <DialogTitle className="text-xl">委托服务条款</DialogTitle>
-                            <DialogDescription>请仔细阅读以下条款。</DialogDescription>
+                            <RealDialogDescription>请仔细阅读以下条款。</RealDialogDescription>
                           </DialogHeader>
                           <ScrollArea className="h-[60vh] pr-6">
                             <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{contractText || "合同条款正在加载中..."}</div>
@@ -397,7 +397,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                         <DialogContent className="max-w-3xl">
                           <DialogHeader>
                             <DialogTitle className="text-xl">隐私政策</DialogTitle>
-                             <DialogDescription>请仔细阅读以下条款。</DialogDescription>
+                             <RealDialogDescription>请仔细阅读以下条款。</RealDialogDescription>
                           </DialogHeader>
                           <ScrollArea className="h-[60vh] pr-6">
                             <div className="prose dark:prose-invert whitespace-pre-wrap text-sm text-muted-foreground">{privacyPolicyText || "隐私政策正在加载中..."}</div>
