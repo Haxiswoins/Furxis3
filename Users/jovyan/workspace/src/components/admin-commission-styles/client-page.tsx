@@ -34,17 +34,18 @@ type AdminCommissionStylesClientProps = {
     options: CommissionOption[];
 }
 
-export function AdminCommissionStylesClient({ styles, options }: AdminCommissionStylesClientProps) {
+export function AdminCommissionStylesClient({ styles: initialStyles, options }: AdminCommissionStylesClientProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const [styles, setStyles] = useState<CommissionStyle[]>(initialStyles);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
     setIsDeleting(id);
     try {
       await deleteCommissionStyle(id);
+      setStyles(prevStyles => prevStyles.filter(s => s.id !== id));
       toast({ title: '删除成功', description: '委托样式已从数据库中移除。' });
-      router.refresh();
     } catch (error) {
       toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
     } finally {
