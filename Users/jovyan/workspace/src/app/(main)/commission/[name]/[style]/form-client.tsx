@@ -25,7 +25,7 @@ import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription as FormDesc } from '@/components/ui/form';
 
 const formSchema = z.object({
   name: z.string().min(1, '姓名不能为空'),
@@ -311,7 +311,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
                            />
                         </div>
                       </FormControl>
-                      <FormDescription>大小不超过5MB。</FormDescription>
+                      <FormDesc>大小不超过5MB。</FormDesc>
                       <FormMessage />
                     </FormItem>
                   )}
