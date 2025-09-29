@@ -5,7 +5,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { ListOrdered, LogOut, Badge } from 'lucide-react';
+import { ListOrdered, LogOut, Award } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -70,7 +70,7 @@ export default function ProfilePage() {
           </Link>
           <Link href="/my-badges" passHref>
             <Button className="w-full" size="lg" variant="secondary">
-              <Badge className="mr-2" />
+              <Award className="mr-2" />
               我的徽章
             </Button>
           </Link>

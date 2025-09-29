@@ -49,7 +49,7 @@ function LoginPageContent() {
             </Button>
             <p className="text-xs text-muted-foreground px-4">
               继续操作即表示您已阅读并同意我们的{' '}
-              <Link href="/privacy" className="underline hover:text-primary" target="_blank">
+              <Link href="/privacy" className="underline hover:text-primary" target="_blank" rel="noopener noreferrer">
                 《隐私政策》
               </Link>
               。
