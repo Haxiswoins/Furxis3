@@ -54,9 +54,6 @@ export async function uploadImage(file: File | Blob | string, fileName: string):
     throw new Error("Invalid file type provided for upload. Must be a File, Blob, or Data URL string.");
   }
 
-  // *** DIAGNOSTIC LOGGING ***
-  console.log('Uploading file with type:', blob.type, 'and size:', blob.size);
-
   // 2. Create FormData and append the blob
   const formData = new FormData();
   // The backend expects a field named 'file'. We give it a standard name.
