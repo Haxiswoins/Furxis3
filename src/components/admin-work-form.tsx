@@ -95,7 +95,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
     const file = e.target.files?.[0];
     if (file) {
       setAvatarOriginalName(file.name);
-      setAvatarOriginalType(file.type); // Store the original MIME type
+      setAvatarOriginalType(file.type);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImageToCrop(reader.result as string);
@@ -106,7 +106,6 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
   };
 
   const handleCropComplete = (croppedImageBlob: Blob) => {
-      // Use the original file's name and a fallback type if the blob's type is missing
       const finalType = croppedImageBlob.type || avatarOriginalType;
       const croppedFile = new File([croppedImageBlob], avatarOriginalName, { type: finalType });
       
@@ -144,11 +143,19 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
     setLoading(true);
 
     try {
-        let finalAvatarUrl = work?.avatarUrl;
+        let finalAvatarUrl = work?.avatarUrl ?? ''; // Default to existing or empty string
+
+        // Scenario 1: A new file has been cropped and is ready for upload.
         if (avatarFile && watchedAvatarUrl?.startsWith('blob:')) {
             const fileName = `works/${values.workName || 'untitled'}/avatar_${Date.now()}`;
             finalAvatarUrl = await uploadImage(avatarFile, fileName);
-        } else if (!watchedAvatarUrl) {
+        } 
+        // Scenario 2: The URL is a new http/https link pasted by the user.
+        else if (watchedAvatarUrl && (watchedAvatarUrl.startsWith('http:') || watchedAvatarUrl.startsWith('https:'))) {
+            finalAvatarUrl = watchedAvatarUrl;
+        }
+        // Scenario 3: The avatar has been cleared.
+        else if (!watchedAvatarUrl) {
             finalAvatarUrl = '';
         }
 
@@ -272,7 +279,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
                                     <Button type="button" variant="ghost" size="icon" className="absolute top-0 right-0 bg-black/50 hover:bg-black/70 text-white rounded-full h-6 w-6" onClick={clearAvatar}>
                                         <X className="h-4 w-4" />
                                     </Button>
-                                </>
+                                <>
                             ) : null }
                         </div>
                         <div className="space-y-2">
