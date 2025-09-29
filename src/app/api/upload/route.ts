@@ -31,30 +31,38 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Image upload service is not configured.' }, { status: 500 });
   }
 
-  // 4. Create a new FormData to forward to the external image host
-  const externalFormData = new FormData();
-  externalFormData.append('file', file);
-  
+  // 4. Read file content into a buffer
+  const fileBuffer = await file.arrayBuffer();
+
   // 5. Securely call the external image hosting service
   try {
     const uploadUrl = 'https://cdn.markjoker.top/api/v1/upload';
 
+    // Create a new FormData to forward to the external image host
+    const externalFormData = new FormData();
+    externalFormData.append('file', new Blob([fileBuffer], { type: file.type }), file.name);
+
     const response = await fetch(uploadUrl, {
         method: 'POST',
         headers: {
-            // Securely add the Authorization token from the server-side environment
             'Authorization': `Bearer ${uploadToken}`,
             'Accept': 'application/json',
         },
         body: externalFormData,
     });
-
+    
     const result = await response.json();
 
     if (!response.ok || !result.status) {
-        // Log the actual error from the image host for debugging
-        console.error('Image host error:', result.message);
-        throw new Error(result.message || "File upload failed at the hosting service.");
+        console.error('Image host error:', result.message || response.statusText);
+        // Try to provide a more specific error if possible
+        let errorMessage = "File upload failed at the hosting service.";
+        if (result.message) {
+            errorMessage = result.message;
+        } else if (response.headers.get('content-type')?.includes('text/html')) {
+            errorMessage = `Received HTML error page from image host (status: ${response.status})`;
+        }
+        throw new Error(errorMessage);
     }
     
     // 6. Extract the final URL and return it to the client
@@ -68,6 +76,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Server-side upload error:", error);
     const message = error instanceof Error ? error.message : "An unknown error occurred during upload.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    // Return a more specific error to the client
+    return NextResponse.json({ error: `Upload failed: ${message}` }, { status: 500 });
   }
 }

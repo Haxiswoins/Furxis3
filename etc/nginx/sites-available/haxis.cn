@@ -22,6 +22,9 @@ server {
     listen 443 ssl;
     server_name haxis.cn; # 您的域名
 
+    # 设置允许的客户端请求体的最大大小，例如10MB
+    client_max_body_size 10m;
+
     # --- 证书路径配置 ---
     # 指向您之前上传的 SSL 证书文件
     ssl_certificate /root/ssl/haxis.cn_bundle.crt;
