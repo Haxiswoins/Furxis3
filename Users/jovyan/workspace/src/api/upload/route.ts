@@ -24,54 +24,53 @@ export async function POST(req: NextRequest) {
     console.error("IMAGE_UPLOAD_TOKEN or NEXT_PUBLIC_IMAGE_HOST is not configured on the server.");
     return NextResponse.json({ error: 'Image upload service is not configured.' }, { status: 500 });
   }
-
-  // 3. Get the Content-Type from the original request.
-  // This is CRITICAL for the external server to understand the multipart/form-data payload,
-  // as it includes the boundary definition.
-  const contentType = req.headers.get('content-type');
-  if (!contentType) {
-      return NextResponse.json({ error: 'Content-Type header is missing from the upload request.' }, { status: 400 });
-  }
-
-  // 4. Securely stream the request body to the external image hosting service.
-  // This acts as a true proxy, avoiding re-parsing/re-creating FormData, which is more efficient
-  // and prevents data corruption, especially for large files.
+  
   try {
+    // 3. Correctly parse the multipart/form-data from the incoming request.
+    const formData = await req.formData();
+    const file = formData.get('file') as File | null;
+
+    if (!file) {
+      return NextResponse.json({ error: 'No file found in the request.' }, { status: 400 });
+    }
+
+    // 4. Re-create a new FormData to forward to the external image host.
+    // This is the correct and robust way to handle file proxying.
+    const externalFormData = new FormData();
+    externalFormData.append('file', file);
+    
+    // 5. Securely call the external image hosting service with the new FormData.
     const uploadUrl = `https://${uploadHost}/api/v1/upload`;
 
     const response = await fetch(uploadUrl, {
         method: 'POST',
         headers: {
-            // Pass the bearer token for authorization.
+            // The 'Authorization' and 'Accept' headers are necessary.
             'Authorization': `Bearer ${uploadToken}`,
-            // We're expecting a JSON response.
             'Accept': 'application/json',
-            // Pass the original Content-Type header directly. This is the key fix.
-            'Content-Type': contentType, 
+            // IMPORTANT: Do NOT set the 'Content-Type' header here.
+            // `fetch` will automatically set it to 'multipart/form-data' with the correct boundary
+            // when the body is a FormData object.
         },
-        // Stream the body directly from the incoming Next.js request.
-        body: req.body,
-        // The 'duplex' property is required by fetch when streaming a request body.
-        // @ts-ignore
-        duplex: 'half',
+        body: externalFormData,
     });
 
     // --- Robust Error Handling ---
     if (!response.ok) {
+        // Attempt to parse the error response from the image host.
         let errorMessage = `Image host failed with status: ${response.status}`;
         try {
-            // Attempt to parse a JSON error response first.
             const errorResult = await response.json();
             errorMessage = errorResult.message || JSON.stringify(errorResult);
         } catch (e) {
             // If the error response isn't JSON, read it as text.
             const errorText = await response.text();
             console.error('Image host returned a non-JSON error response:', errorText);
-            // Handle the specific plain text error from this particular image server.
-            if (errorText.includes('Unsupported file type')) {
+            // Handle specific plain text errors from this particular image server if needed.
+            if (errorText && errorText.toLowerCase().includes('unsupported file type')) {
                 errorMessage = '不支持的文件类型';
             } else {
-                errorMessage = "图片托管服务返回了意外错误，请检查服务器日志。";
+                errorMessage = "图片托管服务返回了意外的文本错误，请检查服务器日志。";
             }
         }
         // Throw an error that will be caught and sent back to the client.
@@ -87,6 +86,7 @@ export async function POST(req: NextRequest) {
     }
     
     // 6. Extract the final URL and return it to the client.
+    // The previous logic used `result.data.links.url`, the correct path is `result.data.url`
     if (result.data && result.data.url) {
         return NextResponse.json({ url: result.data.url });
     } else {
@@ -97,6 +97,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Server-side upload proxy error:", error);
     const message = error instanceof Error ? error.message : "An unknown error occurred during the server-side upload.";
+    // Ensure the client gets a consistent error format.
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
