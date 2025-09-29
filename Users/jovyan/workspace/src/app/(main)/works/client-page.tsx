@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -91,7 +92,7 @@ function AvatarView({ works }: { works: Work[] }) {
                 <motion.div key={work.id} variants={itemVariants}>
                     <Link href={`/works/${work.id}`} className="group flex flex-col items-center gap-2 text-center">
                         <Avatar className="h-20 w-20 md:h-24 md:w-24 border-2 border-transparent group-hover:border-primary transition-all duration-300">
-                           <AvatarImage src={work.avatarUrl || work.imageUrls[0]} alt={work.workName} />
+                           <AvatarImage src={work.avatarUrl || work.imageUrls[0]} alt={work.workName} className="object-cover" />
                            <AvatarFallback>{work.workName.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <p className="text-sm font-headline transition-colors duration-300 group-hover:text-primary truncate w-full">{work.workName}</p>
