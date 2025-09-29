@@ -1,3 +1,4 @@
+
 import { getSiteContent } from '@/lib/data-service';
 import { ContentClientPage } from './client-page';
 
@@ -7,3 +8,5 @@ export default async function SiteContentAdminPage() {
     const siteContent = await getSiteContent();
     return <ContentClientPage initialContent={siteContent} />
 }
+
+    
