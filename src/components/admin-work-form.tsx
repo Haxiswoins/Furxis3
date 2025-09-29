@@ -1,6 +1,5 @@
 
-'use client';
-
+import * as React from 'react';
 import { useState, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
