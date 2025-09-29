@@ -50,11 +50,13 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   
-  const [imageFiles, setImageFiles] = useState<(File | null)[]>(Array(5).fill(null));
+  // Use a more robust state to track file data and its original name
+  const [imageFiles, setImageFiles] = useState<{ file: File | null; name: string; }[]>(Array(5).fill({ file: null, name: '' }));
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   const [cropperOpen, setCropperOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
+  const [avatarOriginalName, setAvatarOriginalName] = useState('avatar.png');
 
   const fileInputRefs = useMemo(() => Array(5).fill(null).map(() => React.createRef<HTMLInputElement>()), []);
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -80,7 +82,8 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
     const file = e.target.files?.[0];
     if (file) {
       const newImageFiles = [...imageFiles];
-      newImageFiles[index] = file;
+      // Store the file object and its original name
+      newImageFiles[index] = { file: file, name: file.name };
       setImageFiles(newImageFiles);
       
       const newUrls = [...form.getValues('imageUrls')];
@@ -92,6 +95,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
   const handleAvatarFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setAvatarOriginalName(file.name); // Store original name
       const reader = new FileReader();
       reader.onloadend = () => {
         setImageToCrop(reader.result as string);
@@ -102,7 +106,8 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
   };
 
   const handleCropComplete = (croppedImageBlob: Blob) => {
-      const croppedFile = new File([croppedImageBlob], 'avatar.png', { type: 'image/png' });
+      // Use the stored original name for the new cropped file
+      const croppedFile = new File([croppedImageBlob], avatarOriginalName, { type: 'image/png' });
       setAvatarFile(croppedFile);
       form.setValue('avatarUrl', URL.createObjectURL(croppedFile));
       setCropperOpen(false);
@@ -112,7 +117,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
 
   const clearImage = (index: number) => {
     const newImageFiles = [...imageFiles];
-    newImageFiles[index] = null;
+    newImageFiles[index] = { file: null, name: '' };
     setImageFiles(newImageFiles);
     
     const newUrls = [...form.getValues('imageUrls')];
@@ -138,29 +143,36 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
 
     try {
         let finalAvatarUrl = work?.avatarUrl;
+        // Check if a new avatar was cropped and is waiting for upload
         if (avatarFile && watchedAvatarUrl?.startsWith('blob:')) {
-            finalAvatarUrl = await uploadImage(avatarFile, `works/${values.workName}_avatar_${Date.now()}`);
-        } else if (watchedAvatarUrl) {
-            finalAvatarUrl = watchedAvatarUrl;
+            const fileName = `works/${values.workName || 'untitled'}/avatar_${Date.now()}`;
+            finalAvatarUrl = await uploadImage(avatarFile, fileName);
+        } else if (!watchedAvatarUrl) {
+            finalAvatarUrl = ''; // Ensure avatar is cleared if URL is empty
         }
 
         const finalImageUrls: string[] = [];
 
         for (let i = 0; i < values.imageUrls.length; i++) {
-            const file = imageFiles[i];
+            const imageState = imageFiles[i];
             const url = values.imageUrls[i];
-            if (file && url?.startsWith('blob:')) {
-                const uploadedUrl = await uploadImage(file, `works/${values.workName}_${i}_${Date.now()}`);
+
+            // Check if a new file was selected and is waiting for upload
+            if (imageState.file && url?.startsWith('blob:')) {
+                const fileName = `works/${values.workName || 'untitled'}/image_${i}_${Date.now()}`;
+                const uploadedUrl = await uploadImage(imageState.file, fileName);
                 finalImageUrls.push(uploadedUrl);
             } else if (url && url.trim() !== '') {
+                // Keep existing URLs
                 finalImageUrls.push(url.trim());
             }
         }
         
         setIsUploading(false);
 
-        if (finalImageUrls.length === 0) {
-            toast({ title: '图片缺失', description: '新增作品必须上传至少一张图片或提供URL。', variant: 'destructive' });
+        // The logic to check for at least one image can be refined based on requirements
+        if (finalImageUrls.length === 0 && !finalAvatarUrl) {
+            toast({ title: '内容缺失', description: '您必须至少上传一张作品图片或一个作品头像。', variant: 'destructive' });
             setLoading(false);
             return;
         }
@@ -333,7 +345,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
                                             field.onChange(e);
                                             if (e.target.value) {
                                                 const newImageFiles = [...imageFiles];
-                                                newImageFiles[index] = null;
+                                                newImageFiles[index] = { file: null, name: '' }; // Reset file state
                                                 setImageFiles(newImageFiles);
                                             }
                                         }}/>
@@ -348,7 +360,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
         
         <div className="flex items-center gap-4">
           <Button type="submit" disabled={loading}>
-            {loading ? (isUploading ? '图片上传中...' : '保存作品') : '保存作品'}
+            {loading ? (isUploading ? '图片上传中...' : '保存中...') : '保存作品'}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.back()}>
             返回
