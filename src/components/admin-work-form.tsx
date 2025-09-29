@@ -279,7 +279,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
                                     <Button type="button" variant="ghost" size="icon" className="absolute top-0 right-0 bg-black/50 hover:bg-black/70 text-white rounded-full h-6 w-6" onClick={clearAvatar}>
                                         <X className="h-4 w-4" />
                                     </Button>
-                                <>
+                                </>
                             ) : null }
                         </div>
                         <div className="space-y-2">
