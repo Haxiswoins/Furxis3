@@ -125,7 +125,7 @@ export function AdminOrdersClient({ orders: initialOrders }: AdminOrdersClientPr
                         <AlertDialogHeader>
                           <AlertDialogTitle>确定要删除吗?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            此操作无法撤销。这将永久删除订单 "{order.orderNumber}"。
+                            此操作无法撤销。这将永久删除订单 &quot;{order.orderNumber}&quot;。
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

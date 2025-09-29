@@ -94,7 +94,7 @@ export function AdminWorksClient({ works: initialWorks }: AdminWorksClientProps)
                         <AlertDialogHeader>
                           <AlertDialogTitle>确定要删除吗?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            此操作无法撤销。这将永久删除作品 "{item.workName}"。
+                            此操作无法撤销。这将永久删除作品 &quot;{item.workName}&quot;。
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

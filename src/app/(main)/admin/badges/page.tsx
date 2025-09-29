@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -60,11 +60,7 @@ export default function BadgesPage() {
     defaultValues: { conditionBadgeIds: [], resultBadgeId: '' },
   });
 
-  useEffect(() => {
-    fetchBadges();
-  }, []);
-
-  async function fetchBadges() {
+  const fetchBadges = useCallback(async () => {
     setLoading(true);
     try {
         const badgesData = await getBadges();
@@ -74,7 +70,12 @@ export default function BadgesPage() {
     } finally {
         setLoading(false);
     }
-  }
+  }, [toast]);
+
+  useEffect(() => {
+    fetchBadges();
+  }, [fetchBadges]);
+
 
   async function handleSave(values: FormValues) {
     setSubmitting(true);

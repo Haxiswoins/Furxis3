@@ -94,7 +94,7 @@ export function AdminCommissionsClient({ commissionOptions: initialCommissionOpt
                         <AlertDialogHeader>
                           <AlertDialogTitle>确定要删除吗?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            此操作无法撤销。这将永久删除选项 "{option.name}"。
+                            此操作无法撤销。这将永久删除选项 &quot;{option.name}&quot;。
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

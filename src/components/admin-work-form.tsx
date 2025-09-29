@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -57,7 +57,7 @@ export function AdminWorkForm({ work }: AdminWorkFormProps) {
   const [cropperOpen, setCropperOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
 
-  const fileInputRefs = Array(5).fill(null).map(() => useRef<HTMLInputElement>(null));
+  const fileInputRefs = useMemo(() => Array(5).fill(null).map(() => React.createRef<HTMLInputElement>()), []);
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormValues>({

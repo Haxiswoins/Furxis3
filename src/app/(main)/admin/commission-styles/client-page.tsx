@@ -104,7 +104,7 @@ export function AdminCommissionStylesClient({ styles: initialStyles, options }: 
                         <AlertDialogHeader>
                           <AlertDialogTitle>确定要删除吗?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            此操作无法撤销。这将永久删除样式 "{style.name}"。
+                            此操作无法撤销。这将永久删除样式 &quot;{style.name}&quot;。
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

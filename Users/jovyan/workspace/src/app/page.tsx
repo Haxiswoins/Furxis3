@@ -39,10 +39,9 @@ export default function WelcomePage() {
         if (!isClient || !theme) {
             return;
         }
-
+        
         const scriptId = 'curve-gradient-bg-script';
         if (document.getElementById(scriptId)) {
-            // Script already loaded, maybe just re-initialize
             return;
         }
 
@@ -84,6 +83,9 @@ export default function WelcomePage() {
 
         return () => {
             clearTimeout(contentTimer);
+             if (scriptElement.current && scriptElement.current.parentNode) {
+                scriptElement.current.parentNode.removeChild(scriptElement.current);
+            }
             if (animationInstance.current && typeof animationInstance.current.destroy === 'function') {
                  try {
                     animationInstance.current.destroy();
