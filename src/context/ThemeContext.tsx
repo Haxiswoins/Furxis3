@@ -1,28 +1,44 @@
 
 'use client';
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 
 type Theme = 'dark' | 'light';
 
 type ThemeContextType = {
-  theme: Theme | null;
+  theme: Theme;
+  toggleTheme: () => void;
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  // This hook is simplified to just read from the DOM, as the initial script
-  // in RootLayout is the source of truth on initial load.
-  const theme: Theme | null =
-    typeof window !== 'undefined'
-      ? document.documentElement.classList.contains('light')
-        ? 'light'
-        : 'dark'
-      : null; // Return null on the server.
+  const [theme, setTheme] = useState<Theme>('light'); // Default theme
+
+  useEffect(() => {
+    // Set initial theme from localStorage or system preference
+    const storedTheme = localStorage.getItem('theme') as Theme;
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = storedTheme || (systemPrefersDark ? 'dark' : 'light');
+    setTheme(initialTheme);
+    document.documentElement.classList.toggle('dark', initialTheme === 'dark');
+    document.documentElement.classList.toggle('light', initialTheme === 'light');
+  }, []);
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => {
+      const newTheme = prevTheme === 'light' ? 'dark' : 'light';
+      localStorage.setItem('theme', newTheme);
+      document.documentElement.classList.remove('light', 'dark');
+      document.documentElement.classList.add(newTheme);
+      return newTheme;
+    });
+  };
+
+  const value = useMemo(() => ({ theme, toggleTheme }), [theme]);
 
   return (
-    <ThemeContext.Provider value={{ theme }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   );

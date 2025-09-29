@@ -26,74 +26,67 @@ export default function WelcomePage() {
     const [isContentVisible, setIsContentVisible] = useState(false);
     const [isWarping, setIsWarping] = useState(false);
     const animationInstance = useRef<any>(null);
-    const scriptElement = useRef<HTMLScriptElement | null>(null);
     
     useEffect(() => {
         setIsClient(true);
-    }, []);
-
-    useEffect(() => {
         router.prefetch('/home');
     }, [router]);
 
     useEffect(() => {
-        if (!isClient || !theme) {
-            return;
-        }
+        if (!isClient) return;
+
+        const lightThemeColors = ["#ffffff","#24428a","#ffffff","#ff7b00","#ff0000","#ffa033"];
+        const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#1a1b29"];
 
         const script = document.createElement('script');
         script.src = "/CurveGradientBg.min.js";
         script.async = true;
-        script.onload = () => {
-            if (animationInstance.current || !document.getElementById('box')) return;
-        
+
+        const initAnimation = () => {
             if (window.Color4Bg && typeof window.Color4Bg.CurveGradientBg === 'function') {
+                if (animationInstance.current) {
+                    animationInstance.current.destroy(); // Clean up existing instance
+                }
                 try {
-                    const lightThemeColors = ["#ffffff","#24428a","#ffffff","#ff7b00","#ff0000","#ffa033"];
-                    const darkThemeColors = ["#9FE3EE","#1E5880","#103E62","#002848","#051124","#1a1b29"];
-                    
-                    const instance = new window.Color4Bg.CurveGradientBg({
+                    animationInstance.current = new window.Color4Bg.CurveGradientBg({
                         dom: "box",
                         colors: theme === 'light' ? lightThemeColors : darkThemeColors,
                         loop: true
                     });
-                    
-                    instance.update('scale', 0.2);
-                    instance.update('noise', 0.02);
-                    
-                    animationInstance.current = instance;
-
+                    animationInstance.current.update('scale', 0.2);
+                    animationInstance.current.update('noise', 0.02);
                 } catch (error) {
                     console.error('Failed to initialize CurveGradientBg:', error);
                 }
             }
         };
-        script.onerror = (e) => console.error('Failed to load CurveGradientBg.min.js script:', e);
 
+        script.onload = initAnimation;
+        script.onerror = (e) => console.error('Failed to load CurveGradientBg.min.js script:', e);
+        
         document.body.appendChild(script);
-        scriptElement.current = script;
 
         const contentTimer = setTimeout(() => setIsContentVisible(true), 500);
 
         return () => {
             clearTimeout(contentTimer);
-            if (scriptElement.current && scriptElement.current.parentNode) {
-                scriptElement.current.parentNode.removeChild(scriptElement.current);
-            }
+            document.body.removeChild(script);
             if (animationInstance.current && typeof animationInstance.current.destroy === 'function') {
                 animationInstance.current.destroy();
             }
             animationInstance.current = null;
         };
-    }, [isClient, theme]);
+
+    }, [isClient, theme]); // Effect now correctly depends on the theme string
 
     const handleNavigate = () => {
         setIsWarping(true);
         setTimeout(() => router.push('/home'), 800); 
     };
   
-    if (!isClient || !theme) {
-        return null;
+    if (!isClient) {
+        // Render a static fallback or nothing on the server
+        return <div className="absolute inset-0 z-0 bg-background"></div>;
     }
 
     return (
