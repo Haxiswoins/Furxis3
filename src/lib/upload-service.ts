@@ -37,27 +37,14 @@ function dataURLtoBlob(dataUrl: string): Blob {
  * @returns A Promise that resolves with the final URL of the uploaded image.
  */
 export async function uploadImage(file: File | Blob | string, fileName: string): Promise<string> {
-  let blob: Blob;
 
-  // 1. Ensure we have a Blob to work with
-  if (typeof file === 'string') {
-    // If it's a string, assume it's a Data URL and convert it
-    try {
-      blob = dataURLtoBlob(file);
-    } catch (error) {
-      throw new Error(`Invalid Data URL provided for upload: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  } else if (file instanceof File || file instanceof Blob) {
-    // If it's already a File or Blob, use it directly
-    blob = file;
-  } else {
-    throw new Error("Invalid file type provided for upload. Must be a File, Blob, or Data URL string.");
-  }
+  const normalizedFile = normalizeToFile(file, fileName);
 
   // 2. Create FormData and append the blob
   const formData = new FormData();
   // The backend expects a field named 'file'. We give it a standard name.
-  formData.append('file', blob, fileName);
+  formData.append('file', normalizedFile);
+
 
   // 3. Send the request to our backend proxy
   try {
@@ -90,3 +77,22 @@ export async function uploadImage(file: File | Blob | string, fileName: string):
     throw new Error("An unknown error occurred during file upload.");
   }
 }
+
+function normalizeToFile(file: File | Blob | string, fileName: string): File {
+  if (typeof file === "string") {
+    // 这里假设 string 是 DataURL
+    const arr = file.split(",");
+    const mime = arr[0].match(/:(.*?);/)?.[1] || "application/octet-stream";
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) u8arr[n] = bstr.charCodeAt(n);
+    return new File([u8arr], fileName, { type: mime });
+  } else if (file instanceof File) {
+    return file;
+  } else if (file instanceof Blob) {
+    return new File([file], fileName, { type: file.type || "application/octet-stream" });
+  }
+  throw new Error("Unsupported file type");
+}
+

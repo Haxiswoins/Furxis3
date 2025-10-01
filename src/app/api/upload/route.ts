@@ -15,6 +15,15 @@ export async function POST(req: NextRequest) {
   if (!session.isLoggedIn) {
     return NextResponse.json({ error: 'Unauthorized: You must be logged in to upload files.' }, { status: 401 });
   }
+
+  // 2. Get the file from the incoming request
+  const formData = await req.formData();
+  const file = formData.get('file') as File | null;
+
+  if (!file) {
+    return NextResponse.json({ error: 'No file provided.' }, { status: 400 });
+  }
+
   
   // 2. Get the secure API token from server-side environment variables
   const uploadToken = process.env.IMAGE_UPLOAD_TOKEN;
@@ -30,6 +39,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Content-Type header is missing.' }, { status: 400 });
   }
 
+  const externalFormData = new FormData();
+  externalFormData.append('file', file);
+
   // 4. Securely stream the request body to the external image hosting service.
   // This acts as a true proxy, avoiding re-parsing/re-creating FormData which can corrupt the file data.
   try {
@@ -41,10 +53,10 @@ export async function POST(req: NextRequest) {
             'Authorization': `Bearer ${uploadToken}`,
             'Accept': 'application/json',
             // Pass the original Content-Type header directly.
-            'Content-Type': contentType, 
+            //'Content-Type': contentType, 
         },
         // Stream the body directly from the incoming request.
-        body: req.body,
+        body: externalFormData,
         // The 'duplex' property is required by fetch when streaming a request body.
         // @ts-ignore
         duplex: 'half',
@@ -85,8 +97,8 @@ export async function POST(req: NextRequest) {
     }
     
     // 6. Extract the final URL and return it to the client
-    if (result.data && result.data.url) {
-        return NextResponse.json({ url: result.data.url });
+    if (result.data && result.data.links.url) {
+        return NextResponse.json({ url: result.data.links.url });
     } else {
         console.error('Unexpected response format from image host:', result);
         throw new Error("在图片托管服务的响应中未找到图片 URL。");
