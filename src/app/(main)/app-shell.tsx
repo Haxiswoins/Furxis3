@@ -103,6 +103,9 @@ export function AppShell({
                   <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                     粤ICP备2025475175号-1
                   </a>
+                  <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44010502003569" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                    粤公网安备44010502003569号
+                  </a>
                 </div>
               </div>
           </footer>
