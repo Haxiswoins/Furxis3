@@ -4,6 +4,9 @@ import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
 import type { SessionData } from '@/lib/session';
 
+// Define a whitelist of allowed image MIME types for security.
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
 // This is the secure, server-side proxy for image uploads.
 export async function POST(req: NextRequest) {
   // 1. Authenticate the user session to prevent unauthorized uploads.
@@ -34,46 +37,44 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No file found in the request.' }, { status: 400 });
     }
 
-    // 4. Re-create a new FormData to forward to the external image host.
+    // 4. *** CRITICAL SECURITY STEP: Validate the file's MIME type against the whitelist. ***
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        return NextResponse.json({ error: '不支持的文件类型' }, { status: 400 });
+    }
+
+    // 5. Re-create a new FormData to forward to the external image host.
     // This is the correct and robust way to handle file proxying.
     const externalFormData = new FormData();
     externalFormData.append('file', file);
     
-    // 5. Securely call the external image hosting service with the new FormData.
+    // 6. Securely call the external image hosting service with the new FormData.
     const uploadUrl = `https://${uploadHost}/api/v1/upload`;
 
     const response = await fetch(uploadUrl, {
         method: 'POST',
         headers: {
-            // The 'Authorization' and 'Accept' headers are necessary.
             'Authorization': `Bearer ${uploadToken}`,
             'Accept': 'application/json',
-            // IMPORTANT: Do NOT set the 'Content-Type' header here.
-            // `fetch` will automatically set it to 'multipart/form-data' with the correct boundary
-            // when the body is a FormData object.
         },
         body: externalFormData,
     });
 
     // --- Robust Error Handling ---
     if (!response.ok) {
-        // Attempt to parse the error response from the image host.
         let errorMessage = `Image host failed with status: ${response.status}`;
         try {
             const errorResult = await response.json();
             errorMessage = errorResult.message || JSON.stringify(errorResult);
         } catch (e) {
-            // If the error response isn't JSON, read it as text.
             const errorText = await response.text();
             console.error('Image host returned a non-JSON error response:', errorText);
-            // Handle specific plain text errors from this particular image server if needed.
+            // Re-check for specific text errors if JSON parsing fails.
             if (errorText && errorText.toLowerCase().includes('unsupported file type')) {
                 errorMessage = '不支持的文件类型';
             } else {
                 errorMessage = "图片托管服务返回了意外的文本错误，请检查服务器日志。";
             }
         }
-        // Throw an error that will be caught and sent back to the client.
         throw new Error(errorMessage);
     }
 
@@ -85,8 +86,7 @@ export async function POST(req: NextRequest) {
         throw new Error(result.message || "图片托管服务报告了一个未知失败。");
     }
     
-    // 6. Extract the final URL and return it to the client.
-    // The previous logic used `result.data.links.url`, the correct path is `result.data.url`
+    // 7. Extract the final URL and return it to the client.
     if (result.data && result.data.url) {
         return NextResponse.json({ url: result.data.url });
     } else {
@@ -97,7 +97,6 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Server-side upload proxy error:", error);
     const message = error instanceof Error ? error.message : "An unknown error occurred during the server-side upload.";
-    // Ensure the client gets a consistent error format.
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

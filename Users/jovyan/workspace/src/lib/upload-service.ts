@@ -1,22 +1,21 @@
 
 'use client';
 
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
 /**
  * Converts a data URL string to a Blob object.
- * This is necessary for handling images that have been cropped or modified on the client-side,
- * which are often represented as base64 data URLs.
  * @param dataUrl The data URL to convert.
  * @returns The converted Blob object.
  */
 function dataURLtoBlob(dataUrl: string): Blob {
   const arr = dataUrl.split(',');
-  // Check if the Data URL format is valid
   if (arr.length < 2) {
-    throw new Error('Invalid Data URL: Lacking comma separator.');
+    throw new Error('Invalid Data URL');
   }
   const mimeMatch = arr[0].match(/:(.*?);/);
   if (!mimeMatch || mimeMatch.length < 2) {
-    throw new Error('Could not determine MIME type from Data URL.');
+    throw new Error('Could not determine MIME type from Data URL');
   }
   const mime = mimeMatch[1];
   const bstr = atob(arr[1]);
@@ -31,6 +30,19 @@ function dataURLtoBlob(dataUrl: string): Blob {
 }
 
 
+function normalizeToFile(file: File | Blob | string, fileName: string): File {
+  if (typeof file === "string") {
+    // This assumes the string is a DataURL
+    const blob = dataURLtoBlob(file);
+    return new File([blob], fileName, { type: blob.type });
+  } else if (file instanceof File) {
+    return file;
+  } else if (file instanceof Blob) {
+    return new File([file], fileName, { type: file.type || "application/octet-stream" });
+  }
+  throw new Error("Unsupported file type provided to normalizeToFile.");
+}
+
 /**
  * Uploads a file, Blob, or Data URL to the server.
  * It sends the file to our own backend API route (`/api/upload`), which then securely 
@@ -43,49 +55,25 @@ function dataURLtoBlob(dataUrl: string): Blob {
  * @throws An error if the upload process fails at any stage.
  */
 export async function uploadImage(file: File | Blob | string, fileName: string): Promise<string> {
-  let blob: Blob;
-  let uploadFileName = fileName;
+  const normalizedFile = normalizeToFile(file, fileName);
 
-  // 1. Ensure we have a Blob to work with and determine the correct filename.
-  if (typeof file === 'string') {
-    // If it's a string, assume it's a Data URL and convert it to a Blob.
-    try {
-      blob = dataURLtoBlob(file);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error during Data URL conversion.';
-      throw new Error(`Invalid Data URL provided for upload: ${message}`);
-    }
-  } else if (file instanceof File) {
-    // If it's a File object, we can use it directly.
-    // The `fileName` parameter is still used for the logical path, but the original file name is also available.
-    blob = file;
-    uploadFileName = file.name; // Prefer the original file's name.
-  } else if (file instanceof Blob) {
-    // If it's a generic Blob, use it directly.
-    blob = file;
-  } else {
-    throw new Error("Invalid file type provided. Must be a File, Blob, or Data URL string.");
+  // Frontend validation: Check MIME type before uploading
+  if (!ALLOWED_IMAGE_TYPES.includes(normalizedFile.type)) {
+    throw new Error(`不支持的文件类型。请上传以下格式的图片： ${ALLOWED_IMAGE_TYPES.join(', ')}`);
   }
 
-  // 2. Create FormData and append the blob.
-  // The backend expects a field named 'file'.
   const formData = new FormData();
-  formData.append('file', blob, uploadFileName);
+  formData.append('file', normalizedFile);
   
-  // 3. Send the request to our backend proxy endpoint.
   try {
     const response = await fetch('/api/upload', {
       method: 'POST',
       body: formData,
-      // IMPORTANT: Do NOT set the 'Content-Type' header manually.
-      // The browser will automatically set it to 'multipart/form-data' 
-      // with the correct boundary, which is essential for the server to parse the file.
     });
 
     const result = await response.json();
 
     if (!response.ok) {
-      // Use the structured error message from our backend if available, otherwise provide a generic one.
       throw new Error(result.error || `Upload failed with status code: ${response.status}`);
     }
 
@@ -96,14 +84,12 @@ export async function uploadImage(file: File | Blob | string, fileName: string):
     }
   } catch (error) {
     console.error("Upload Service Client Error:", error);
-    // Re-throw a user-friendly error for the calling component to handle.
     if (error instanceof Error) {
-        // Avoid duplicating "Upload failed:" if it's already in the message.
         const message = error.message.startsWith('Upload failed') 
             ? error.message 
-            : `Upload failed: ${error.message}`;
+            : `上传失败: ${error.message}`;
         throw new Error(message);
     }
-    throw new Error("An unknown error occurred during the file upload process.");
+    throw new Error("上传文件时发生未知错误。");
   }
 }
