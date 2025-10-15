@@ -82,54 +82,168 @@
 2.  **初始化Node.js项目并安装依赖**:
     ```bash
     npm init -y
-    npm install express pg cors dotenv
+    npm install express pg cors dotenv helmet express-rate-limit
     ```
     *   `express`: Web框架。
     *   `pg`: PostgreSQL的Node.js驱动。
     *   `cors`: 处理跨域请求。
     *   `dotenv`: 管理环境变量。
+    *   `helmet`: 设置安全相关的HTTP头。
+    *   `express-rate-limit`: 限制API请求频率。
 
 3.  **创建核心API文件 `server.js`**:
     ```bash
     nano server.js
     ```
-    将以下代码粘贴进去。这是一个**基础的、未经安全加固的示例**，用于获取所有订单：
+    将以下这份**经过安全加固的、包含完整CRUD示例**的代码粘贴进去：
     ```javascript
     require('dotenv').config();
     const express = require('express');
     const cors = require('cors');
+    const helmet = require('helmet');
+    const rateLimit = require('express-rate-limit');
     const { Pool } = require('pg');
 
     const app = express();
-    const port = 4000; // 为API服务选择一个与Next.js(3000)不同的端口
+    // 为API服务选择一个与Next.js(3000)不同的端口
+    const port = process.env.PORT || 4000;
 
+    // --- 安全中间件配置 ---
+
+    // 1. 设置基础的安全HTTP头
+    app.use(helmet());
+
+    // 2. 配置CORS，只允许您的Next.js前端域名访问
+    const corsOptions = {
+        origin: process.env.NEXT_PUBLIC_BASE_URL,
+        optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+    };
+    app.use(cors(corsOptions));
+    
+    // 3. 配置请求频率限制，防止暴力攻击
+    const limiter = rateLimit({
+        windowMs: 15 * 60 * 1000, // 15分钟
+        max: 100, // 每个IP在15分钟内最多请求100次
+        standardHeaders: true,
+        legacyHeaders: false,
+    });
+    app.use('/api/', limiter);
+
+    // 4. 解析JSON请求体
+    app.use(express.json());
+
+    // 5. API密钥认证中间件 - 这是一个简单的安全层，确保只有您的Next.js应用能调用API
+    const apiKeyMiddleware = (req, res, next) => {
+        const apiKey = req.headers['x-api-key'];
+        if (apiKey && apiKey === process.env.API_KEY) {
+            next();
+        } else {
+            res.status(401).json({ error: 'Unauthorized' });
+        }
+    };
+    
     // --- 数据库连接 ---
     const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
     });
 
-    // --- 中间件 ---
-    app.use(cors({
-        origin: process.env.NEXT_PUBLIC_BASE_URL // 只允许您的Next.js前端访问
-    }));
-    app.use(express.json());
+    // --- API 路由 ---
+    // 所有API路由都应使用apiKeyMiddleware进行保护
+    const apiRouter = express.Router();
+    apiRouter.use(apiKeyMiddleware);
 
-    // --- API 路由示例：获取所有订单 ---
-    // ！！！警告：这是一个未经验证的示例，实际生产中必须添加身份验证！
-    app.get('/api/orders', async (req, res) => {
+    // 示例：为 'orders' 表创建完整的 CRUD 操作
+
+    // GET /api/orders - 获取所有订单
+    apiRouter.get('/orders', async (req, res) => {
       try {
-        // 假设您已创建了一个名为 'orders' 的表
+        // 使用参数化查询防止SQL注入 (虽然这里没有参数，但这是最佳实践)
         const result = await pool.query('SELECT * FROM orders ORDER BY "orderDate" DESC');
         res.json(result.rows);
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching orders:', err);
         res.status(500).json({ error: 'Internal Server Error' });
       }
     });
 
-    // 您需要为 orders, works, characters 等所有数据类型创建对应的增删改查(CRUD)路由
-    // 例如: POST /api/orders, PUT /api/orders/:id, DELETE /api/orders/:id 等
+    // GET /api/orders/:id - 获取单个订单
+    apiRouter.get('/orders/:id', async (req, res) => {
+        const { id } = req.params;
+        try {
+            const result = await pool.query('SELECT * FROM orders WHERE id = $1', [id]);
+            if (result.rows.length === 0) {
+                return res.status(404).json({ error: 'Order not found' });
+            }
+            res.json(result.rows[0]);
+        } catch (err) {
+            console.error(`Error fetching order ${id}:`, err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    });
 
+    // POST /api/orders - 创建新订单 (注意：这里的字段需要和你的数据表完全对应)
+    apiRouter.post('/orders', async (req, res) => {
+        // 实际应用中，这里需要用Zod之类的库做严格的数据验证
+        const { userId, productName, total, status } = req.body;
+        if (!userId || !productName || !total || !status) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+        try {
+            const result = await pool.query(
+                'INSERT INTO orders ("userId", "productName", total, status, "orderDate") VALUES ($1, $2, $3, $4, NOW()) RETURNING *',
+                [userId, productName, total, status]
+            );
+            res.status(201).json(result.rows[0]);
+        } catch (err) {
+            console.error('Error creating order:', err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    });
+
+    // PUT /api/orders/:id - 更新订单
+    apiRouter.put('/orders/:id', async (req, res) => {
+        const { id } = req.params;
+        // 在实际应用中，只允许更新特定字段，例如 status, total, shippingTrackingId
+        const { status, total } = req.body;
+        if (!status && !total) {
+             return res.status(400).json({ error: 'No updateable fields provided' });
+        }
+        try {
+            // 动态构建更新查询，这是一个更安全的做法
+            const result = await pool.query(
+                'UPDATE orders SET status = $1, total = $2 WHERE id = $3 RETURNING *',
+                [status, total, id]
+            );
+            if (result.rows.length === 0) {
+                return res.status(404).json({ error: 'Order not found' });
+            }
+            res.json(result.rows[0]);
+        } catch (err) {
+            console.error(`Error updating order ${id}:`, err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    });
+    
+    // DELETE /api/orders/:id - 删除订单
+    apiRouter.delete('/orders/:id', async (req, res) => {
+        const { id } = req.params;
+        try {
+            const result = await pool.query('DELETE FROM orders WHERE id = $1 RETURNING *', [id]);
+            if (result.rowCount === 0) {
+                return res.status(404).json({ error: 'Order not found' });
+            }
+            res.status(204).send(); // 204 No Content表示成功删除
+        } catch (err) {
+            console.error(`Error deleting order ${id}:`, err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    });
+
+
+    // 将受保护的路由应用到 /api 路径下
+    app.use('/api', apiRouter);
+
+    // --- 启动服务器 ---
     app.listen(port, () => {
       console.log(`Forward Infinity API server listening on port ${port}`);
     });
@@ -139,10 +253,20 @@
     ```bash
     nano .env
     ```
-    将您的数据库连接字符串和前端URL填入：
+    将您的数据库连接字符串、前端URL，以及一个**新生成的API密钥**填入：
     ```
+    # 数据库连接字符串
     DATABASE_URL="postgresql://forward_infinity_user:一个非常复杂的密码@localhost:5432/forward_infinity_db"
+    
+    # 允许访问API的前端域名
     NEXT_PUBLIC_BASE_URL="您网站的完整域名，例如 https://www.yourdomain.com"
+    
+    # 用于保护API的密钥，请生成一个足够复杂的随机字符串
+    # 您可以在终端用 `openssl rand -base64 32` 命令生成
+    API_KEY="一个非常非常复杂的随机字符串"
+    
+    # API服务运行的端口 (可选)
+    PORT=4000
     ```
 
 5.  **（关键）创建数据表和迁移数据**:
@@ -155,11 +279,15 @@
 现在，回到您Firebase Studio中的Next.js项目，我们将修改代码，让它不再读写本地文件，而是去调用您刚刚创建的后端API。
 
 1.  **修改环境变量**:
-    在您的Next.js项目的 `.env.local` 文件中，添加一个新的变量，指向您的API服务器地址：
+    在您的Next.js项目的 `.env.local` 文件中，添加API地址和API密钥：
     ```
+    # 您的新后端API地址
     NEXT_PUBLIC_API_BASE_URL="http://localhost:4000/api" 
     # 在服务器上，这里通常是 http://localhost:4000/api
     # 如果您的API部署在不同机器上，请使用其公网地址
+    
+    # 您在后端 .env 文件中设置的同一个API密钥
+    API_KEY="一个非常非常复杂的随机字符串"
     ```
 
 2.  **重构 `src/lib/data-service.ts`**:
@@ -182,35 +310,54 @@
     // 'use server';
     // 不再需要 'fs'
     import type { Order } from '@/types';
-    import { revalidatePath } from 'next/cache';
+    import { revalidateTag } from 'next/cache';
 
     const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const API_KEY = process.env.API_KEY;
+
+    // 创建一个包含通用头部的fetch实例
+    const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
+        const headers = {
+            ...options.headers,
+            'Content-Type': 'application/json',
+            'X-API-Key': API_KEY || '',
+        };
+        
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            ...options,
+            headers,
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => ({ error: '请求失败，且无法解析错误信息' }));
+            console.error(`API Error: ${response.status} ${response.statusText}`, errorBody);
+            throw new Error(errorBody.error || 'API请求失败');
+        }
+
+        if (response.status === 204) { // No Content
+            return;
+        }
+
+        return response.json();
+    };
 
     export async function getAllOrders(): Promise<Order[]> {
       try {
-        const res = await fetch(`${API_BASE_URL}/orders`, {
-          next: { tags: ['orders'] } // 用于按需重新验证
-        });
-        if (!res.ok) {
-          throw new Error('Failed to fetch orders from API');
-        }
-        return res.json();
+        // 使用next.js的fetch缓存和重新验证机制
+        return await apiFetch('/orders', { next: { tags: ['orders'] } });
       } catch (error) {
         console.error('Data service error fetching orders:', error);
         return []; // 出错时返回空数组
       }
     }
     
-    // 对于写入操作，例如 updateOrder，您需要使用 POST 或 PUT 方法
+    // 对于写入操作，例如 updateOrder
     export async function updateOrder(orderId: string, data: Partial<Order>): Promise<void> {
-        await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+        await apiFetch(`/orders/${orderId}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
         });
-        // revalidatePath('/admin/orders'); // 这种方式可能不再有效，
-                                         // 您需要在前端进行状态更新或重新获取数据
-        revalidateTag('orders'); // 按标签重新验证
+        revalidateTag('orders'); // 按标签重新验证，使缓存失效
     }
     ```
 
