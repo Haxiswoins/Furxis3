@@ -490,7 +490,7 @@
     API_KEY="一个非常非常复杂的随机字符串"
     ```
 
-2.  **重构 `src/lib/data-service.ts`**:
+2.  **重构 `src/lib/data-service.ts`**（已经重构）:
     您需要将这个文件中的所有函数，从读写 `fs` 模块，改为使用 `fetch` 调用您的新API。这是一个漫长但必须的过程。
 
     **这是一个 `getAllOrders` 函数的重构示例：**
