@@ -276,17 +276,19 @@
 
 ## 第三步：重构Next.js应用的数据服务
 
-现在，回到您Firebase Studio中的Next.js项目，我们将修改代码，让它不再读写本地文件，而是去调用您刚刚创建的后端API。
+> **⚠️ 注意：这一步是在您本地的Firebase Studio项目中操作，而不是在服务器上！**
+> 您需要修改您Next.js应用的代码，让它去调用您刚刚在服务器上创建的新后端API。
+
+现在，回到您Firebase Studio中的Next.js项目。
 
 1.  **修改环境变量**:
-    在您的Next.js项目的 `.env.local` 文件中，添加API地址和API密钥：
+    在您的Next.js项目的 `.env.local` 文件中，添加API地址和API密钥。**请确保将占位符替换为您自己的真实值！**
     ```
     # 您的新后端API地址
+    # 如果您的API服务和Next.js应用在同一台服务器上，这个值通常就是 http://localhost:4000/api
     NEXT_PUBLIC_API_BASE_URL="http://localhost:4000/api" 
-    # 在服务器上，这里通常是 http://localhost:4000/api
-    # 如果您的API部署在不同机器上，请使用其公网地址
     
-    # 您在后端 .env 文件中设置的同一个API密钥
+    # ！！！注意：这里必须填写您在后端 .env 文件中设置的同一个API密钥
     API_KEY="一个非常非常复杂的随机字符串"
     ```
 
