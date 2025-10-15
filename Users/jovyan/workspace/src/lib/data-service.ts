@@ -1,5 +1,4 @@
 
-
 'use server';
 
 import fs from 'fs/promises';
@@ -488,6 +487,12 @@ export async function createCommissionApplication(userId: string, commissionInfo
         }
     }
 
+    // Security enhancement: Validate imageUrl protocol
+    let safeImageUrl = '';
+    if (commissionInfo.imageUrl && (commissionInfo.imageUrl.startsWith('http://') || commissionInfo.imageUrl.startsWith('https://'))) {
+        safeImageUrl = commissionInfo.imageUrl;
+    }
+
     const newOrderData: Order = {
         id: newId,
         userId,
@@ -495,7 +500,7 @@ export async function createCommissionApplication(userId: string, commissionInfo
         orderNumber,
         orderType: '委托订单',
         status: '处理中',
-        imageUrl: commissionInfo.imageUrl || '',
+        imageUrl: safeImageUrl,
         orderDate: new Date().toISOString(),
         total: finalPriceDesc,
         shippingAddress: `${applicationData.province} ${applicationData.city} ${applicationData.district} ${applicationData.addressDetail}`,
@@ -970,5 +975,9 @@ export async function grantBadgeToUsers(userIds: string[], badgeId: string): Pro
         return { success: true, message: '所有选中的用户都已经拥有该徽章，未执行任何操作。' };
     }
 }
+
+    
+
+    
 
     
