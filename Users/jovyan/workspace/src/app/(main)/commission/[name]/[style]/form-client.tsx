@@ -1,9 +1,8 @@
 
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -59,6 +58,7 @@ type CommissionApplicationFormClientProps = {
 
 export function CommissionApplicationFormClient({ commissionOption, commissionStyle, siteContent }: CommissionApplicationFormClientProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { toast } = useToast();
   const { user, login } = useAuth();
   const isLoggedIn = !!user;
@@ -231,7 +231,7 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>取消</AlertDialogCancel>
-          <AlertDialogAction onClick={() => login()}>
+          <AlertDialogAction onClick={() => login(pathname)}>
             登录
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -422,5 +422,3 @@ export function CommissionApplicationFormClient({ commissionOption, commissionSt
     </Card>
   );
 }
-
-    

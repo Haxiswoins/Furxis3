@@ -43,8 +43,8 @@ export function AdminCharacterSeriesClient({ series: initialSeries }: AdminChara
     setIsDeleting(id);
     try {
         await deleteCharacterSeries(id);
-        setSeries(prevSeries => prevSeries.filter(s => s.id !== id));
         toast({ title: '删除成功', description: '系列已从数据库中移除。' });
+        router.refresh();
     } catch (error) {
         toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
     } finally {

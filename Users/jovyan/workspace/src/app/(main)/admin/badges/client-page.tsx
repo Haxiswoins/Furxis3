@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -64,7 +64,7 @@ export function BadgesClientPage({ initialBadges }: BadgesClientPageProps) {
     defaultValues: { conditionBadgeIds: [], resultBadgeId: '' },
   });
 
-  async function fetchBadges() {
+  const fetchBadges = useCallback(async () => {
     setLoading(true);
     try {
         const badgesData = await getBadges();
@@ -74,7 +74,12 @@ export function BadgesClientPage({ initialBadges }: BadgesClientPageProps) {
     } finally {
         setLoading(false);
     }
-  }
+  }, [toast]);
+
+  useEffect(() => {
+      setBadges(initialBadges);
+  }, [initialBadges]);
+
 
   async function handleSave(values: FormValues) {
     setSubmitting(true);
@@ -82,7 +87,7 @@ export function BadgesClientPage({ initialBadges }: BadgesClientPageProps) {
       await saveBadge(values);
       toast({ title: '保存成功！', description: `徽章 "${values.name}" 已添加。` });
       form.reset();
-      router.refresh();
+      router.refresh(); // Refresh data from server
     } catch (error) {
       toast({ title: '保存失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
     } finally {
@@ -108,7 +113,7 @@ export function BadgesClientPage({ initialBadges }: BadgesClientPageProps) {
     try {
       await deleteBadge(badgeId);
       toast({ title: '删除成功', description: '徽章及其关联数据已删除。' });
-      router.refresh();
+      router.refresh(); // Refresh data from server
     } catch (error) {
        toast({ title: '删除失败', description: '操作失败，请稍后重试。', variant: 'destructive' });
     } finally {
@@ -122,7 +127,7 @@ export function BadgesClientPage({ initialBadges }: BadgesClientPageProps) {
       const result = await grantBadgeConditionally(values.conditionBadgeIds, values.resultBadgeId);
       toast({ title: '操作成功', description: result.message });
       conditionalGrantForm.reset();
-      router.refresh();
+      router.refresh(); // Refresh data from server
     } catch (error) {
       const message = error instanceof Error ? error.message : '发生未知错误';
       toast({ title: '操作失败', description: message, variant: 'destructive' });

@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import { format } from 'date-fns';
-import { Camera, FileUp, Sparkles, X } from 'lucide-react';
+import { FileUp, Sparkles } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -152,7 +152,7 @@ function FileScanner({ onScanSuccess }: { onScanSuccess: (data: string) => void 
 }
 
 export function MyBadgesClientPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, login } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [badges, setBadges] = useState<(UserBadge & { badge?: BadgeType })[]>([]);
@@ -162,7 +162,7 @@ export function MyBadgesClientPage() {
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
-      router.push('/login');
+      login('/my-badges');
       return;
     }
     
@@ -174,7 +174,7 @@ export function MyBadgesClientPage() {
     }
     
     fetchUserBadges();
-  }, [user, authLoading, router]);
+  }, [user, authLoading, router, login]);
 
   const handleScanSuccess = (data: string) => {
     setIsScannerOpen(false);
@@ -287,5 +287,3 @@ export function MyBadgesClientPage() {
     </div>
   );
 }
-
-    
