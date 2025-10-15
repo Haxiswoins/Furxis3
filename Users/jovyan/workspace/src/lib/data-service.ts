@@ -275,6 +275,21 @@ export async function getOrderById(orderId: string): Promise<Order | null> {
   return allOrders.find(o => o.id === orderId) || null;
 }
 
+/**
+ * A secure function to get an order by its ID, ensuring it belongs to the specified user.
+ * This MUST be used for user-facing pages to prevent data leakage.
+ * @param orderId The ID of the order to fetch.
+ * @param userId The ID of the user who must own the order.
+ * @returns The order object if found and owned by the user, otherwise null.
+ */
+export async function getSecureOrderById(orderId: string, userId: string): Promise<Order | null> {
+  const order = await getOrderById(orderId);
+  if (!order || order.userId !== userId) {
+    return null; // Return null if order doesn't exist or doesn't belong to the user
+  }
+  return order;
+}
+
 export async function updateOrder(orderId: string, data: Partial<Order>): Promise<void> {
     const allOrders = await readData<Order[]>('orders.json');
     const orderIndex = allOrders.findIndex(o => o.id === orderId);
@@ -975,9 +990,3 @@ export async function grantBadgeToUsers(userIds: string[], badgeId: string): Pro
         return { success: true, message: '所有选中的用户都已经拥有该徽章，未执行任何操作。' };
     }
 }
-
-    
-
-    
-
-    
